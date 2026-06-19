@@ -1,6 +1,0 @@
-obsidian_plugin:
-  enabled: true
-  plugin_id: secondbrain-agent
-  local_dashboard_url: http://localhost:8765
-  local_api_url: http://localhost:8787
-  vault_relative_install_path: .obsidian/plugins/secondbrain-agent

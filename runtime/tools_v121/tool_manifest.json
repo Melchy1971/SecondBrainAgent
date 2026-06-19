@@ -1,0 +1,340 @@
+[
+  {
+    "name": "agent.run",
+    "description": "Run autonomous agent objective",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "objective"
+      ],
+      "properties": {
+        "objective": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "agent.execute"
+    ],
+    "risk_level": 3,
+    "requires_approval": true,
+    "enabled": true
+  },
+  {
+    "name": "connectors.status",
+    "description": "Read connector status",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "connectors.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "connectors.sync",
+    "description": "Sync one connector",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "connectors.sync"
+    ],
+    "risk_level": 2,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "connectors.sync_all",
+    "description": "Sync all enabled connectors",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "connectors.sync"
+    ],
+    "risk_level": 2,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "graph.ingest_text",
+    "description": "Ingest text into graph",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "graph.write"
+    ],
+    "risk_level": 2,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "graph.search",
+    "description": "Search graph entities",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "array"
+    },
+    "scopes": [
+      "graph.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "graph.status",
+    "description": "Read knowledge graph status",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "graph.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "rag.answer",
+    "description": "Answer with local RAG context",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "rag.read"
+    ],
+    "risk_level": 2,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "swarm.agents",
+    "description": "List swarm agents",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "output_schema": {
+      "type": "array"
+    },
+    "scopes": [
+      "swarm.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "swarm.consensus",
+    "description": "Read swarm consensus",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "array"
+    },
+    "scopes": [
+      "swarm.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "swarm.run",
+    "description": "Run a multi-agent swarm task",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "objective"
+      ],
+      "properties": {
+        "objective": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "swarm.write"
+    ],
+    "risk_level": 2,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "swarm.status",
+    "description": "Read swarm status",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "swarm.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "swarm.task",
+    "description": "Read swarm task",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "task_id"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "swarm.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "system.status",
+    "description": "Read local system status",
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "system.read"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  },
+  {
+    "name": "workflow.run",
+    "description": "Run workflow objective",
+    "input_schema": {
+      "type": "object",
+      "required": [
+        "name",
+        "objective"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "objective": {
+          "type": "string"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "scopes": [
+      "workflow.execute"
+    ],
+    "risk_level": 3,
+    "requires_approval": true,
+    "enabled": true
+  }
+]

@@ -1,9 +1,0 @@
-chatgpt_import:
-  enabled: true
-  watch_folder: H:\SecondBrainAgent\SecondBrain-Inbox\ChatGPT\exports
-  processed_folder: H:\SecondBrainAgent\SecondBrain-Inbox\ChatGPT\processed
-  target_folder: H:\SecondBrainAgent\SecondBrain\05_Quellen\ChatGPT
-  report_folder: H:\SecondBrainAgent\SecondBrain\99_System\chatgpt_import
-  auto_tags: true
-  update_semantic_search: true
-  update_secondbrain_os: false

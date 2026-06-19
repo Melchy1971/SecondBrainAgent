@@ -1,2 +1,0 @@
-{"time": "2026-06-19 10:08:43", "type": "gui.start", "payload": {"host": "127.0.0.1", "port": 8850}}
-{"time": "2026-06-19 10:09:16", "type": "script.run", "payload": {"script": "import_ai_exports.py", "ok": true}}

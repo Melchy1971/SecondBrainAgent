@@ -1,0 +1,16 @@
+runtime:
+  version: "11.1"
+  profile: safe
+  services:
+    eventbus: true
+    connectors: true
+    rag: true
+    ai: true
+    agent: true
+    monitoring: true
+    desktop_commands: true
+    gui: false
+  persistence:
+    state_dir: runtime/state
+    session_dir: runtime/sessions
+    activity_limit: 500

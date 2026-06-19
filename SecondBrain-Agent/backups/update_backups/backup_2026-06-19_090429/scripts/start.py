@@ -1,1 +1,0 @@
-print('SecondBrain-Agent gestartet')

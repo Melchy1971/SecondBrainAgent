@@ -1,0 +1,12 @@
+{
+  "goals": [],
+  "preferences": {},
+  "profile_id": "default",
+  "projects": [],
+  "time_budget": {
+    "fixed_commitments_hours": 0.0,
+    "recovery_buffer_hours": 5.0,
+    "weekly_capacity_hours": 40.0
+  },
+  "updated_at": 1781863581.7556684
+}

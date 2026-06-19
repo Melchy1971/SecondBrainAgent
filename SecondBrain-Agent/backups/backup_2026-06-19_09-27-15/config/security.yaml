@@ -1,8 +1,0 @@
-security:
-  api_key_management: true
-  secrets_file: config/secrets.local.yaml
-  secrets_template: config/secrets.template.yaml
-  audit_log: logs/security_audit.log
-  store_plaintext_keys: false
-  email_send_allowed: false
-  destructive_actions_allowed: false

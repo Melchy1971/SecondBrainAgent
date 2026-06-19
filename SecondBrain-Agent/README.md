@@ -58,3 +58,115 @@ pytest -q tests/unit/test_runtime_v104_v105.py tests/test_smoke.py
 python scripts/run_v104_connector_sync.py
 python scripts/run_v105_ai_runtime.py
 ```
+
+
+## v10.7 Security & Governance
+Siehe `README_v10.7_DELTA.md` und `docs/SECURITY_V10_7.md`.
+
+## v10.8 Unified Launcher
+
+Startpunkt:
+
+```bash
+python launcher.py health
+python launcher.py init
+python launcher.py start
+```
+
+Dokumentation: `docs/LAUNCHER_v10.8.md`
+
+
+## v11.0 Autonomous Agent Runtime
+
+Start:
+
+```bash
+python launcher.py agent-status
+python launcher.py agent-run "Analysiere den aktuellen Stand"
+```
+
+
+## v11.1 Persistent Runtime
+
+Start:
+
+```powershell
+python launcher.py up
+python launcher.py status
+python launcher.py gui --snapshot
+```
+
+
+## v11.2 Workflow & Specialist Agents
+
+```powershell
+python launcher.py workflow-status
+python launcher.py workflow-run daily "Tagesbriefing erstellen"
+python launcher.py research-agent "Jarvis Entwicklungsstand zusammenfassen"
+python launcher.py docs-agent "Doku aktualisieren"
+```
+
+
+## v11.4 Voice Assistant 2.0
+
+```powershell
+python launcher.py voice-status
+python launcher.py voice-parse "Jarvis status"
+python launcher.py voice-handle "Jarvis notiz Neuer Gedanke"
+```
+
+
+## v11.5 Mobile Bridge
+
+```powershell
+python launcher.py mobile-status
+python launcher.py mobile-register "iPhone Markus" ios --trusted
+python launcher.py mobile-devices
+```
+
+
+## v11.6 API Bridge
+
+Start: `python launcher.py api-serve`
+
+Manifest: `python launcher.py api-manifest`
+
+Token: `python launcher.py api-token-create "Local Dashboard" --scopes read:status,read:metrics`
+
+
+## v11.7 Automation
+
+Start: `python launcher.py automation-status`
+
+
+
+## v11.8 Self Improvement
+
+```powershell
+python launcher.py improve-status
+python launcher.py improve-feedback user command launcher -2 --text "launcher failed"
+python launcher.py improve-analyze
+python launcher.py improve-recommend
+```
+
+
+## v12.1 Core Runtime
+
+Startstatus:
+
+```powershell
+python launcher.py core-status
+python launcher.py runtime-start
+python launcher.py bus-status
+python launcher.py tools
+```
+
+
+## v12.3 Knowledge Graph
+
+```powershell
+python launcher.py graph-status
+python launcher.py graph-ingest-text "Jarvis nutzt Gmail am 2026-06-19"
+python launcher.py graph-search Jarvis
+python launcher.py graph-neighbors Jarvis
+```

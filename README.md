@@ -1,2 +1,0 @@
-# SecondBrainAgent
-SecondBrain Agent

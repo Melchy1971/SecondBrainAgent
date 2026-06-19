@@ -1,0 +1,102 @@
+[
+  {
+    "type": "session.started",
+    "text": "",
+    "session_id": "vs_d777544f54fe",
+    "payload": {},
+    "id": "vevt_051c7346e934",
+    "ts": "2026-06-19T10:15:34.659916+00:00"
+  },
+  {
+    "type": "wake.detected",
+    "text": "Jarvis Status",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_bbdbc29acb71",
+    "ts": "2026-06-19T10:15:35.048663+00:00"
+  },
+  {
+    "type": "command.parsed",
+    "text": "Jarvis erstelle eine Notiz",
+    "session_id": "",
+    "payload": {
+      "intent": "capture",
+      "text": "Jarvis erstelle eine Notiz",
+      "target": "capture",
+      "payload": {
+        "text": "Jarvis erstelle eine Notiz",
+        "title": "Voice Capture"
+      },
+      "risk": 2,
+      "requires_approval": false
+    },
+    "id": "vevt_af644162a46f",
+    "ts": "2026-06-19T10:15:35.813295+00:00"
+  },
+  {
+    "type": "wake.detected",
+    "text": "Jarvis zeige Status",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_2f16073569a9",
+    "ts": "2026-06-19T10:15:36.222827+00:00"
+  },
+  {
+    "type": "speech.transcribed",
+    "text": "Jarvis zeige Status",
+    "session_id": "vs_d777544f54fe",
+    "payload": {},
+    "id": "vevt_f60c290837cd",
+    "ts": "2026-06-19T10:15:36.226527+00:00"
+  },
+  {
+    "type": "command.accepted",
+    "text": "Jarvis zeige Status",
+    "session_id": "vs_d777544f54fe",
+    "payload": {
+      "status": "accepted",
+      "command": {
+        "intent": "status",
+        "text": "Jarvis zeige Status",
+        "target": "core-status",
+        "payload": {},
+        "risk": 1,
+        "requires_approval": false
+      }
+    },
+    "id": "vevt_ef7f3e78a592",
+    "ts": "2026-06-19T10:15:36.233633+00:00"
+  },
+  {
+    "type": "speech.spoken",
+    "text": "System bereit",
+    "session_id": "vs_d777544f54fe",
+    "payload": {
+      "adapter": "console_streaming_tts",
+      "spoken": "System bereit",
+      "chars": 13
+    },
+    "id": "vevt_62b777b37de0",
+    "ts": "2026-06-19T10:15:36.623911+00:00"
+  },
+  {
+    "type": "session.interrupted",
+    "text": "",
+    "session_id": "vs_d777544f54fe",
+    "payload": {
+      "reason": "user_stop"
+    },
+    "id": "vevt_a9bce86ad41a",
+    "ts": "2026-06-19T10:15:37.061643+00:00"
+  }
+]
