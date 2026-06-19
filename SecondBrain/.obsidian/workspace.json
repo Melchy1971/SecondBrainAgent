@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "75_SecondBrainOS/SecondBrain_OS_Dashboard.md",
+                "file": "00_Handbuch/Import aus Chat Gpt.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "SecondBrain_OS_Dashboard"
+              "title": "Import aus Chat Gpt"
             }
           }
         ]
@@ -168,8 +168,8 @@
             "state": {
               "type": "copilot-chat-view",
               "state": {},
-              "icon": "message-square",
-              "title": "Copilot"
+              "icon": "lucide-ghost",
+              "title": "copilot-chat-view"
             }
           }
         ],
@@ -177,7 +177,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -196,28 +197,18 @@
   },
   "active": "3f5a0d5b72b23ec9",
   "lastOpenFiles": [
-    "88_VectorRAG/Vector_RAG_Index.md",
-    "88_VectorRAG/2026-06-19_090550_rag_answer.md",
-    "15_Prozesse/2026-06-18_prozesslandkarte.md",
-    "00_Handbuch/SecondBrain OS v9.1 – Einsteigerhandbuch.md",
-    "copilot/copilot-conversations/Tischtennisspiele_und_-Regeln@20260618_153730.md",
-    "copilot/copilot-conversations",
-    "22_Memory/2026-06-18_memory-replay.md",
-    "30_ProcessMining/2026-06-18_process-mining.md",
-    "39_Ontology/Ontology_Index.md",
-    "05_Quellen/Gemini/gemini_scheduled_actions_data.md",
-    "05_Quellen/Gemini/gemini_gems_data.md",
-    "99_System/gemini_import/2026-06-18_152010_gemini_import_report.json",
-    "99_System/gemini_import/2026-06-18_152010_gemini_import_report.md",
-    "99_System/gemini_import",
-    "05_Quellen/Gemini",
-    "05_Quellen",
-    "00_Handbuch/Import aus Chat Gpt.md",
     "87_ControlCenter",
     "86_DigitalTwinV6",
     "85_PluginEcosystem",
     "84_MonitoringTelemetry",
     "83_APIGateway",
+    "82_VoiceAssistant",
+    "81_ExecutiveDashboard",
+    "80_PersonalCRM",
+    "79_SimulationEngineV2",
+    "78_LearningEngine",
+    "77_RecommendationEngine",
+    "00_Handbuch/Import aus Chat Gpt.md",
     "33_PersonalERP/CRM/CRM_Index.md",
     "36_EventBus/2026-06-18_event-summary.md",
     "copilot/copilot-custom-prompts/Remove URLs.md",
@@ -231,6 +222,15 @@
     "copilot/copilot-custom-prompts/Make longer.md",
     "copilot/copilot-custom-prompts/Make shorter.md",
     "copilot/copilot-custom-prompts/Emojify.md",
-    "copilot/copilot-custom-prompts/Explain like I am 5.md"
+    "copilot/copilot-custom-prompts/Explain like I am 5.md",
+    "copilot/copilot-custom-prompts/Simplify.md",
+    "copilot/copilot-custom-prompts/Summarize.md",
+    "copilot/copilot-custom-prompts/Translate to Chinese.md",
+    "copilot/copilot-custom-prompts/Fix grammar and spelling.md",
+    "01_Projekte/PDF-Analyse-Tool.md",
+    "90_Templates/task.md",
+    "90_Templates/source.md",
+    "90_Templates/project.md",
+    "90_Templates/note.md"
   ]
 }

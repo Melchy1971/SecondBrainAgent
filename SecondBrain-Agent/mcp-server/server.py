@@ -406,5 +406,13 @@ def update_preflight_v96() -> str:
     result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
     return (result.stdout + "\n" + result.stderr)[-4000:]
 
+
+@mcp.tool()
+def run_v97_cycle() -> str:
+    """Startet den SecondBrain v9.7 AI Copilot Cycle."""
+    script = AGENT / "scripts" / "run_v97_cycle.py"
+    result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
+    return (result.stdout + "\n" + result.stderr)[-4000:]
+
 if __name__ == "__main__":
     mcp.run()

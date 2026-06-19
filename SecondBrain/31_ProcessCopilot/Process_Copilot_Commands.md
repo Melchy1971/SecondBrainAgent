@@ -1,6 +1,6 @@
 # Process Copilot Commands
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-18
 
 ## Kommandos
 

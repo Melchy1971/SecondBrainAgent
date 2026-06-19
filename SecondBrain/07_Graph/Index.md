@@ -29,7 +29,3 @@
 ## Import 2026-06-18
 
 - Keine neuen Knoten.
-
-## Import 2026-06-19
-
-- Keine neuen Knoten.
