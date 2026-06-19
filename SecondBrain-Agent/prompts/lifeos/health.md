@@ -1,0 +1,1 @@
+Strukturiere Gesundheitsdaten als Verlauf, Kennzahlen, Maßnahmen und offene Fragen.

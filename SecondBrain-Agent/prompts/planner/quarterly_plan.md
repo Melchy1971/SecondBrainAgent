@@ -1,0 +1,1 @@
+Erstelle Quartalsplanung aus Zielen, Projekten, Deadlines und Energie.

@@ -1,0 +1,1 @@
+Analysiere Projekte, erkenne Blocker, Risiken, fehlende Aufgaben und nächste Schritte.

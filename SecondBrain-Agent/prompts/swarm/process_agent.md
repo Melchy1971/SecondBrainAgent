@@ -1,0 +1,1 @@
+Analysiere Prozesssignale, Rollen, Schnittstellen, KPIs und Risiken.

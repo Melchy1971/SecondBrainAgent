@@ -1,0 +1,236 @@
+{
+  "main": {
+    "id": "c661bd15df6874c2",
+    "type": "split",
+    "children": [
+      {
+        "id": "03fc4905e26907e1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3f5a0d5b72b23ec9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "75_SecondBrainOS/SecondBrain_OS_Dashboard.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "SecondBrain_OS_Dashboard"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "de5a22d64c7401d7",
+    "type": "split",
+    "children": [
+      {
+        "id": "8c8ca403a4650afd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ec68139f18388775",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Dateiexplorer"
+            }
+          },
+          {
+            "id": "53c604ea16108fbd",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Suchen"
+            }
+          },
+          {
+            "id": "cb328476d4dc62fd",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Lesezeichen"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "3d0c071c6a478cc7",
+    "type": "split",
+    "children": [
+      {
+        "id": "06920e2188ac2511",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "003c85b1a15fd735",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rückverweise"
+            }
+          },
+          {
+            "id": "86abab50b9c73775",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Ausgehende Links"
+            }
+          },
+          {
+            "id": "88bcf3e60e9602b4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "83ef83cca3ef848d",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Alle Eigenschaften"
+            }
+          },
+          {
+            "id": "ae8f75cb4ff722a3",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Gliederung"
+            }
+          },
+          {
+            "id": "45158103c035881b",
+            "type": "leaf",
+            "state": {
+              "type": "copilot-chat-view",
+              "state": {},
+              "icon": "message-square",
+              "title": "Copilot"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Schnellauswahl öffnen": false,
+      "graph:Graph-Ansicht öffnen": false,
+      "canvas:Neuen Canvas erstellen": false,
+      "daily-notes:Heutige Notiz öffnen": false,
+      "templates:Vorlage einfügen": false,
+      "command-palette:Befehlspalette öffnen": false,
+      "bases:Neue Base erstellen": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-importer:Open Importer": false,
+      "copilot:Open Copilot Chat": false,
+      "secondbrain-agent:SecondBrain Agent": false
+    }
+  },
+  "active": "3f5a0d5b72b23ec9",
+  "lastOpenFiles": [
+    "88_VectorRAG/Vector_RAG_Index.md",
+    "88_VectorRAG/2026-06-19_090550_rag_answer.md",
+    "15_Prozesse/2026-06-18_prozesslandkarte.md",
+    "00_Handbuch/SecondBrain OS v9.1 – Einsteigerhandbuch.md",
+    "copilot/copilot-conversations/Tischtennisspiele_und_-Regeln@20260618_153730.md",
+    "copilot/copilot-conversations",
+    "22_Memory/2026-06-18_memory-replay.md",
+    "30_ProcessMining/2026-06-18_process-mining.md",
+    "39_Ontology/Ontology_Index.md",
+    "05_Quellen/Gemini/gemini_scheduled_actions_data.md",
+    "05_Quellen/Gemini/gemini_gems_data.md",
+    "99_System/gemini_import/2026-06-18_152010_gemini_import_report.json",
+    "99_System/gemini_import/2026-06-18_152010_gemini_import_report.md",
+    "99_System/gemini_import",
+    "05_Quellen/Gemini",
+    "05_Quellen",
+    "00_Handbuch/Import aus Chat Gpt.md",
+    "87_ControlCenter",
+    "86_DigitalTwinV6",
+    "85_PluginEcosystem",
+    "84_MonitoringTelemetry",
+    "83_APIGateway",
+    "33_PersonalERP/CRM/CRM_Index.md",
+    "36_EventBus/2026-06-18_event-summary.md",
+    "copilot/copilot-custom-prompts/Remove URLs.md",
+    "00_Handbuch/SecondBrain OS – Benutzerhandbuch für Einsteiger.md",
+    "copilot/copilot-custom-prompts/Clip Web Page.md",
+    "copilot/copilot-custom-prompts/Clip YouTube Transcript.md",
+    "copilot/copilot-custom-prompts/Rewrite as tweet thread.md",
+    "copilot/copilot-custom-prompts/Rewrite as tweet.md",
+    "copilot/copilot-custom-prompts/Generate glossary.md",
+    "copilot/copilot-custom-prompts/Generate table of contents.md",
+    "copilot/copilot-custom-prompts/Make longer.md",
+    "copilot/copilot-custom-prompts/Make shorter.md",
+    "copilot/copilot-custom-prompts/Emojify.md",
+    "copilot/copilot-custom-prompts/Explain like I am 5.md"
+  ]
+}

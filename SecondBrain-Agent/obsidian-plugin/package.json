@@ -1,0 +1,13 @@
+{
+  "name": "secondbrain-agent-obsidian-plugin",
+  "version": "6.4.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "obsidian": "latest"
+  }
+}

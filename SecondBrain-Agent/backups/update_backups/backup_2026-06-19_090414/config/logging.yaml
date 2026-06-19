@@ -1,0 +1,8 @@
+logging:
+  import_log: logs/import.log
+  error_log: logs/error.log
+  audit_log: logs/audit.log
+  runtime_log: logs/runtime.log
+  max_log_size_mb: 10
+  redact_secrets: true
+  keep_days: 30

@@ -1,0 +1,1 @@
+Simuliere Priorisierung und Entscheidungsmuster auf Basis vorhandener Memory-Notizen.

@@ -1,0 +1,1 @@
+Überwache Projekte, erkenne Blocker, erstelle Roadmap, Kanban und Statusbericht.

@@ -1,0 +1,1 @@
+Simuliere Auswirkungen eines Szenarios auf Projekte, Aufgaben, Risiken und Entscheidungen.

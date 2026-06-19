@@ -1,0 +1,25 @@
+workflows:
+  import_all:
+    description: Importiert ChatGPT, Gemini und Perplexity Exporte.
+    steps:
+      - import_ai_exports
+      - semantic_index
+      - knowledge_graph
+  daily_briefing:
+    description: Erstellt Tageslage.
+    steps:
+      - project_intelligence
+      - recommendations
+      - executive_dashboard
+  weekly_review:
+    description: Wochenreview.
+    steps:
+      - data_warehouse
+      - learning_engine
+      - digital_twin
+      - control_center
+  project_plan:
+    description: Erstellt Projektordner über /plan.
+    steps:
+      - create_project_folder
+      - project_intelligence

@@ -1,0 +1,1 @@
+Erzeuge Morgenbriefing: Projekte, Risiken, Termine, Tagesziele, Wissenslücken.

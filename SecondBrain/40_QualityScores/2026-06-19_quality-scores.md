@@ -1,0 +1,208 @@
+# Knowledge Quality Scores
+
+Datum: 2026-06-19
+
+| Score | Notiz |
+|---:|---|
+| 15 | [[2026-06-18_calendar-intelligence]] |
+| 15 | [[2026-06-18_chief-of-staff]] |
+| 15 | [[2026-06-18_chief-of-staff-v2]] |
+| 15 | [[2026-06-18_decision-intelligence]] |
+| 15 | [[2026-06-18_evening-review]] |
+| 15 | [[2026-06-18_event-summary]] |
+| 15 | [[2026-06-18_learning-report]] |
+| 15 | [[2026-06-18_monitoring]] |
+| 15 | [[2026-06-18_personal-kpis]] |
+| 15 | [[2026-06-18_rag_exit]] |
+| 15 | [[2026-06-18_recommendations]] |
+| 15 | [[2026-06-18_simulation_2]] |
+| 15 | [[2026-06-18_software-factory]] |
+| 15 | [[2026-06-19]] |
+| 15 | [[2026-06-19_calendar-intelligence]] |
+| 15 | [[2026-06-19_chief-of-staff]] |
+| 15 | [[2026-06-19_chief-of-staff-v2]] |
+| 15 | [[2026-06-19_decision-intelligence]] |
+| 15 | [[2026-06-19_evening-review]] |
+| 15 | [[2026-06-19_event-summary]] |
+| 15 | [[2026-06-19_learning-report]] |
+| 15 | [[2026-06-19_monitoring]] |
+| 15 | [[2026-06-19_personal-kpis]] |
+| 15 | [[2026-06-19_recommendations]] |
+| 15 | [[2026-06-19_software-factory]] |
+| 15 | [[Business_OS_Modules]] |
+| 15 | [[CRM_Index]] |
+| 15 | [[Context_Map]] |
+| 15 | [[DMS_Index]] |
+| 15 | [[Decision_Intelligence]] |
+| 15 | [[Decision_Journal]] |
+| 15 | [[Digital_Twin_Profile]] |
+| 15 | [[Digital_Twin_Profile]] |
+| 15 | [[Digital_Twin_v4]] |
+| 15 | [[Enterprise_RAG_Status]] |
+| 15 | [[Event]] |
+| 15 | [[Executive_Dashboard]] |
+| 15 | [[Executive_Dashboard]] |
+| 15 | [[Executive_Dashboard_v9]] |
+| 15 | [[Federation_Index]] |
+| 15 | [[Finance_Index]] |
+| 15 | [[Finanzen_Index]] |
+| 15 | [[Full_Knowledge_Graph]] |
+| 15 | [[Gesundheit_Index]] |
+| 15 | [[Goal]] |
+| 15 | [[Goal_Map]] |
+| 15 | [[Health_Index]] |
+| 15 | [[KPI]] |
+| 15 | [[Knowledge_Twin]] |
+| 15 | [[Life_OS]] |
+| 15 | [[Local_AI_Cluster]] |
+| 15 | [[MCP_Ecosystem_Status]] |
+| 15 | [[Ontology_Node]] |
+| 15 | [[Personal_AGI_OS]] |
+| 15 | [[Plugin_Ecosystem]] |
+| 15 | [[Plugin_Marketplace]] |
+| 15 | [[Process_Copilot_Commands]] |
+| 15 | [[Process_Mining]] |
+| 15 | [[Process_Twin]] |
+| 15 | [[Projects_Index]] |
+| 15 | [[Refactoring_Proposal]] |
+| 15 | [[Reisen_Index]] |
+| 15 | [[Semantic_Index]] |
+| 15 | [[Semantic_OS_Status]] |
+| 15 | [[Simulation]] |
+| 15 | [[Software_Factory]] |
+| 15 | [[Team_Rollen]] |
+| 15 | [[Verein_Index]] |
+| 15 | [[Verein_Index]] |
+| 15 | [[Voice_Assistant_Status]] |
+| 15 | [[Workflow_Catalog]] |
+| 15 | [[dim_note_types]] |
+| 15 | [[facts_documents]] |
+| 15 | [[facts_documents]] |
+| 15 | [[facts_tags]] |
+| 20 | [[Emojify]] |
+| 20 | [[Explain like I am 5]] |
+| 20 | [[Fix grammar and spelling]] |
+| 20 | [[Generate glossary]] |
+| 20 | [[Generate table of contents]] |
+| 20 | [[Make longer]] |
+| 20 | [[Make shorter]] |
+| 20 | [[Remove URLs]] |
+| 20 | [[Rewrite as tweet]] |
+| 20 | [[Rewrite as tweet thread]] |
+| 20 | [[Simplify]] |
+| 20 | [[Summarize]] |
+| 20 | [[Translate to Chinese]] |
+| 30 | [[2026-06-18_agent-economy]] |
+| 30 | [[2026-06-18_autonomous-project-plan]] |
+| 30 | [[2026-06-18_knowledge-gaps]] |
+| 30 | [[2026-06-18_learning-plan]] |
+| 30 | [[2026-06-18_life-os-dashboard]] |
+| 30 | [[2026-06-18_research-backlog]] |
+| 30 | [[2026-06-19_agent-economy]] |
+| 30 | [[2026-06-19_autonomous-project-plan]] |
+| 30 | [[2026-06-19_knowledge-gaps]] |
+| 30 | [[2026-06-19_learning-plan]] |
+| 30 | [[2026-06-19_life-os-dashboard]] |
+| 30 | [[2026-06-19_research-backlog]] |
+| 30 | [[Agent_Collaboration_Protocol]] |
+| 30 | [[Agent_Swarm_Status]] |
+| 30 | [[Decision_Intelligence_v2]] |
+| 30 | [[Decision_Journal]] |
+| 30 | [[Digital_Twin_v5]] |
+| 30 | [[Digital_Twin_v6]] |
+| 30 | [[Import aus Chat Gpt]] |
+| 30 | [[Index]] |
+| 30 | [[Knowledge_Lineage]] |
+| 30 | [[MCP_Hub_Status]] |
+| 30 | [[Personal_CRM_Index]] |
+| 30 | [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] |
+| 30 | [[SecondBrain_OS_Control_Center]] |
+| 30 | [[SecondBrain_OS_Dashboard]] |
+| 30 | [[facts_decisions]] |
+| 30 | [[facts_decisions]] |
+| 30 | [[facts_projects]] |
+| 40 | [[task]] |
+| 45 | [[2026-06-18]] |
+| 45 | [[2026-06-18_context-map]] |
+| 45 | [[2026-06-18_daily-briefing]] |
+| 45 | [[2026-06-18_knowledge-compression]] |
+| 45 | [[2026-06-18_meeting-intelligence]] |
+| 45 | [[2026-06-18_memory-replay]] |
+| 45 | [[2026-06-18_prediction-report]] |
+| 45 | [[2026-06-18_process-design-backlog]] |
+| 45 | [[2026-06-18_process-mining]] |
+| 45 | [[2026-06-18_project-intelligence]] |
+| 45 | [[2026-06-18_prozesslandkarte]] |
+| 45 | [[2026-06-18_quality-scores]] |
+| 45 | [[2026-06-18_recommendations]] |
+| 45 | [[2026-06-18_refactoring-proposals]] |
+| 45 | [[2026-06-18_search_gemini-import]] |
+| 45 | [[2026-06-18_self-improvement-plan]] |
+| 45 | [[2026-06-18_semantic-deduplication]] |
+| 45 | [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] |
+| 45 | [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] |
+| 45 | [[2026-06-19_context-map]] |
+| 45 | [[2026-06-19_daily-briefing]] |
+| 45 | [[2026-06-19_knowledge-compression]] |
+| 45 | [[2026-06-19_meeting-intelligence]] |
+| 45 | [[2026-06-19_memory-replay]] |
+| 45 | [[2026-06-19_prediction-report]] |
+| 45 | [[2026-06-19_process-design-backlog]] |
+| 45 | [[2026-06-19_process-mining]] |
+| 45 | [[2026-06-19_project-intelligence]] |
+| 45 | [[2026-06-19_prozesslandkarte]] |
+| 45 | [[2026-06-19_quality-scores]] |
+| 45 | [[2026-06-19_recommendations]] |
+| 45 | [[2026-06-19_refactoring-proposals]] |
+| 45 | [[2026-06-19_self-improvement-plan]] |
+| 45 | [[2026-06-19_semantic-deduplication]] |
+| 45 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] |
+| 45 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] |
+| 45 | [[Calendar_Agent_Memory_v2]] |
+| 45 | [[ChiefOfStaff_Memory]] |
+| 45 | [[Daily_Plan]] |
+| 45 | [[Decision_Agent_Memory_v2]] |
+| 45 | [[Decision_Register]] |
+| 45 | [[Executive_Agent_Memory_v2]] |
+| 45 | [[Executive_Memory]] |
+| 45 | [[Meeting_Agent_Memory_v2]] |
+| 45 | [[Memory_Profile]] |
+| 45 | [[Monthly_Plan]] |
+| 45 | [[Ontology_Index]] |
+| 45 | [[Process_Agent_Memory_v2]] |
+| 45 | [[Process_Memory]] |
+| 45 | [[Project_Agent_Memory_v2]] |
+| 45 | [[Project_Memory]] |
+| 45 | [[Quarterly_Plan]] |
+| 45 | [[Research_Agent_Memory_v2]] |
+| 45 | [[Research_Memory]] |
+| 45 | [[SecondBrain OS v9.1 – Einsteigerhandbuch]] |
+| 45 | [[Temporal_Graph]] |
+| 45 | [[Weekly_Plan]] |
+| 45 | [[facts_tasks]] |
+| 45 | [[facts_tasks]] |
+| 45 | [[weighted_edges]] |
+| 50 | [[Clip YouTube Transcript]] |
+| 55 | [[Aufgabe]] |
+| 55 | [[Browser_Source]] |
+| 55 | [[Email_Analysis]] |
+| 55 | [[Knowledge_Node]] |
+| 55 | [[Project_Status]] |
+| 55 | [[Projekt]] |
+| 55 | [[Wissen]] |
+| 55 | [[note]] |
+| 55 | [[project]] |
+| 55 | [[source]] |
+| 65 | [[Clip Web Page]] |
+| 65 | [[Tischtennisspiele_und_-Regeln@20260618_153730]] |
+| 70 | [[Daily_Briefing]] |
+| 70 | [[Decision]] |
+| 70 | [[Knowledge_Gap]] |
+| 70 | [[Meeting]] |
+| 70 | [[Process]] |
+| 70 | [[gemini_gems_data]] |
+| 70 | [[gemini_scheduled_actions_data]] |
+| 75 | [[PDF-Analyse-Tool]] |
+| 85 | [[2026-06-18_nicht-unterstuetzter-dateityp-gemini-export-zip]] |
+| 85 | [[2026-06-18_projekt-secondbrain-agent-v0-3]] |
+| 100 | [[2026-06-18_https-obsidian-md]] |

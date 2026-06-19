@@ -1,0 +1,1 @@
+Erzeuge Tagesprioritäten, Risiken, Entscheidungen und empfohlene nächste Schritte.

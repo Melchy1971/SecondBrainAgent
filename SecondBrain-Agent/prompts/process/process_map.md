@@ -1,0 +1,1 @@
+Extrahiere Prozess, Rollen, Systeme, Input, Output, Risiken, KPIs und Schnittstellen.

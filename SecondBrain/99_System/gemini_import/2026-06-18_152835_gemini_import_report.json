@@ -1,0 +1,12 @@
+{
+  "time": "2026-06-18T15:28:35",
+  "source": "gemini",
+  "zip": "C:\\Users\\User\\Downloads\\gemini-export.zip",
+  "imported_count": 2,
+  "error_count": 0,
+  "imported": [
+    "H:\\SecondBrainAgent\\SecondBrain\\05_Quellen\\Gemini\\gemini_gems_data.md",
+    "H:\\SecondBrainAgent\\SecondBrain\\05_Quellen\\Gemini\\gemini_scheduled_actions_data.md"
+  ],
+  "errors": []
+}

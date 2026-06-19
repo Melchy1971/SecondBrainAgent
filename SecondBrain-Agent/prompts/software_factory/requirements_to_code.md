@@ -1,0 +1,1 @@
+Erzeuge Architektur, Tasks, Tests und Implementierungsvorschlag aus Anforderungen.

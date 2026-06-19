@@ -1,0 +1,1 @@
+Klassifiziere Inhalt in inbox, project, knowledge, person, task oder source. Gib nur den Typ zurück.

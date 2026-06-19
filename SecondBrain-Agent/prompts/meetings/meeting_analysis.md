@@ -1,0 +1,1 @@
+Extrahiere Zusammenfassung, Entscheidungen, Aufgaben, Risiken und offene Punkte aus Meetingtranskripten.

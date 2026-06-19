@@ -1,0 +1,1 @@
+Erzeuge BPMN, Swimlane, RACI, Testfälle, User Stories, KPIs und Prozessdokumentation.

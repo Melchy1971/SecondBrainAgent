@@ -1,0 +1,1 @@
+Zerlege Ziel in Teilziele, Projekte, Aufgaben und Termine.

@@ -1,0 +1,23 @@
+goals:
+  - id: ttr_1200
+    title: TTR über 1200
+    area: health_sport
+    status: active
+    target: 1200
+  - id: weight_95
+    title: Gewicht unter 95 kg
+    area: health
+    status: active
+    target: 95
+  - id: wissensdatenbank_1
+    title: Wissensdatenbank 1.0
+    area: projects
+    status: active
+  - id: secondbrain_v6
+    title: SecondBrain v6 stabilisieren
+    area: projects
+    status: active
+  - id: tt_buddy_release
+    title: Tischtennis-Buddy Release
+    area: projects
+    status: active

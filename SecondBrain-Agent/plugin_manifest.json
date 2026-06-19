@@ -1,0 +1,28 @@
+{
+  "name": "SecondBrain-Agent",
+  "version": "3.2.0",
+  "mode": "markdown-only",
+  "modules": [
+    "import",
+    "rag",
+    "graph",
+    "recommendations",
+    "governance",
+    "dashboard",
+    "autonomy",
+    "scheduler",
+    "rest_api",
+    "quality",
+    "conflicts",
+    "sync_health",
+    "migration"
+  ],
+  "providers": [
+    "ChatGPT",
+    "Claude",
+    "Gemini",
+    "Perplexity",
+    "Ollama"
+  ],
+  "status": "framework-ready"
+}

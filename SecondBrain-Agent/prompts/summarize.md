@@ -1,0 +1,1 @@
+Fasse den Inhalt deutsch zusammen: Kernaussage, Details, Relevanz, offene Punkte.

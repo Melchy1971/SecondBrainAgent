@@ -1,0 +1,1 @@
+Erzeuge maximal fünf fachliche Tags in Kleinschreibung.

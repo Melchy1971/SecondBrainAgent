@@ -1,0 +1,1 @@
+Erzeuge Obsidian-Backlinks für relevante Konzepte und Projekte.

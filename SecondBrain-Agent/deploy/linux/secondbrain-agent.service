@@ -1,0 +1,13 @@
+[Unit]
+Description=SecondBrain-Agent
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/markus/Obsidian/SecondBrain-Agent
+ExecStart=/usr/bin/python3 /home/markus/Obsidian/SecondBrain-Agent/scripts/scheduler.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

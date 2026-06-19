@@ -1,0 +1,5 @@
+vault_path: /Users/markus/Obsidian/SecondBrain
+inbox_path: /Users/markus/Obsidian/SecondBrain-Inbox
+system_path: /Users/markus/Obsidian/SecondBrain-Agent
+path_separator: "/"
+platform: macos

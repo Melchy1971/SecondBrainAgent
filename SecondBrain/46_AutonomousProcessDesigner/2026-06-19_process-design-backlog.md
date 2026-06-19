@@ -1,0 +1,73 @@
+# Autonomous Process Designer
+
+Datum: 2026-06-19
+
+## Prozesskandidaten
+
+- [[2026-06-18_https-obsidian-md]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[PDF-Analyse-Tool]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process_Mining]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Executive_Dashboard]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[KPI]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_daily-briefing]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_daily-briefing]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_prozesslandkarte]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_prozesslandkarte]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Digital_Twin_Profile]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_context-map]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_context-map]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_memory-replay]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Memory_Profile]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_memory-replay]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Temporal_Graph]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_semantic-deduplication]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_semantic-deduplication]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_prediction-report]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_prediction-report]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_process-mining]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_process-mining]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process_Copilot_Commands]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Executive_Dashboard]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Ontology_Index]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_quality-scores]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_quality-scores]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_refactoring-proposals]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_refactoring-proposals]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_process-design-backlog]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_process-design-backlog]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[SecondBrain OS v9.1 – Einsteigerhandbuch]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Workflow_Catalog]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_recommendations]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_recommendations]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Personal_CRM_Index]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Executive_Dashboard_v9]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Digital_Twin_v6]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[SecondBrain_OS_Control_Center]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Digital_Twin_Profile]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Digital_Twin_v5]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Project_Memory]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process_Memory]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Executive_Memory]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Agent_Collaboration_Protocol]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_personal-kpis]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_personal-kpis]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process_Twin]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Business_OS_Modules]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Personal_AGI_OS]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_project-intelligence]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_project-intelligence]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_self-improvement-plan]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_self-improvement-plan]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Research_Agent_Memory_v2]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Project_Agent_Memory_v2]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Calendar_Agent_Memory_v2]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Process_Agent_Memory_v2]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[Executive_Agent_Memory_v2]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[weighted_edges]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-19_self-healing-report]] → Prozessdokumentation / RACI / Testfälle prüfen
+- [[2026-06-18_self-healing-report]] → Prozessdokumentation / RACI / Testfälle prüfen

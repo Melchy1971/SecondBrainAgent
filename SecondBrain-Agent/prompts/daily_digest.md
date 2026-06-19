@@ -1,0 +1,1 @@
+Erzeuge Tageszusammenfassung mit neue Inhalte, Aufgaben, Entscheidungen, Risiken.

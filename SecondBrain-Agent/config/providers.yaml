@@ -1,0 +1,22 @@
+providers:
+  ChatGPT:
+    enabled: true
+    mode: export_import
+    inbox_folder: ChatGPT
+  Claude:
+    enabled: true
+    mode: export_import_mcp
+    inbox_folder: Claude
+  Gemini:
+    enabled: true
+    mode: export_import
+    inbox_folder: Gemini
+  Perplexity:
+    enabled: true
+    mode: export_import_sources
+    inbox_folder: Perplexity
+  Ollama:
+    enabled: true
+    mode: local
+    base_url: http://localhost:11434
+    inbox_folder: Ollama

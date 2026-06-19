@@ -1,0 +1,1 @@
+Analysiere Code, schreibe Tests, refactore sicher und dokumentiere Änderungen.

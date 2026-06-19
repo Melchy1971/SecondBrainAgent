@@ -1,0 +1,1 @@
+print('SecondBrain-Agent gestartet')

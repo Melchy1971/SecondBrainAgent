@@ -1,0 +1,16 @@
+services:
+  secondbrain-agent:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    container_name: secondbrain-agent
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+      - "8787:8787"
+    volumes:
+      - ../../SecondBrain:/vault
+      - ../../SecondBrain-Inbox:/inbox
+      - ../../SecondBrain-Agent:/app
+    environment:
+      - PYTHONUNBUFFERED=1

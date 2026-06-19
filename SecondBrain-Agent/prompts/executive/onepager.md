@@ -1,0 +1,1 @@
+Erzeuge einen Executive OnePager mit Ausgangslage, Problem, Wirkung, Empfehlung.

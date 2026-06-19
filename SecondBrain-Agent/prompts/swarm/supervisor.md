@@ -1,0 +1,1 @@
+Koordiniere spezialisierte Agenten. Erzeuge nur sichere Markdown-Vorschläge.

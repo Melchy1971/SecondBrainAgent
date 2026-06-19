@@ -1,0 +1,3 @@
+# ocr
+
+OCR-Pipeline vorbereitet.

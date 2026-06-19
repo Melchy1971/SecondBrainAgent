@@ -1,0 +1,9 @@
+{
+  "id": "secondbrain-agent",
+  "name": "SecondBrain Agent",
+  "version": "8.0.0",
+  "minAppVersion": "1.5.0",
+  "description": "Steuert SecondBrain OS, Semantic Search und lokale Agent Workflows.",
+  "author": "SecondBrain-Agent",
+  "isDesktopOnly": true
+}
