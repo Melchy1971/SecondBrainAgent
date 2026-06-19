@@ -1,0 +1,10 @@
+{
+  "items": [
+    {
+      "id": "doc-demo-1",
+      "title": "Entwicklungsplan v11-v12",
+      "text": "Priorität: Real Connectors, AI Runtime, Desktop Assistant, Security, Advanced RAG, Agent Kernel.",
+      "mime_type": "text/plain"
+    }
+  ]
+}

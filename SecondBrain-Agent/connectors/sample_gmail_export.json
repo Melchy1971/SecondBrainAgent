@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "id": "mail-demo-1",
+      "subject": "Projekt SecondBrain v10.4",
+      "from": "system@example.local",
+      "to": "markus@example.local",
+      "date": "2026-06-19T08:00:00+02:00",
+      "body": "Connector Foundation validieren, Event Store prüfen, AI Runtime vorbereiten.",
+      "labels": ["project", "secondbrain"],
+      "has_attachment": false
+    }
+  ]
+}

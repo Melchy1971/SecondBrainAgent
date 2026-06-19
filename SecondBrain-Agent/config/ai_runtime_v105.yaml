@@ -1,0 +1,5 @@
+ai_runtime:
+  default_provider: echo
+  ollama_enabled: false
+  ollama_base_url: http://localhost:11434
+  ollama_model: llama3.1
