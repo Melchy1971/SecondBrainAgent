@@ -1,5 +1,5 @@
 import argparse, json
-from secondbrain.mobile_app import MobileAppRuntime
+from secondbrain.learning import LearningEngine
 
 
 def out(obj):
@@ -7,52 +7,49 @@ def out(obj):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain OS v12.8 Mobile App Foundation launcher")
+    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain OS v12.9 Learning Engine launcher")
     parser.add_argument("--project-root", default=".")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    sub.add_parser("mobile2-status")
-    p = sub.add_parser("mobile2-register")
-    p.add_argument("device_id"); p.add_argument("name"); p.add_argument("--platform", default="ios"); p.add_argument("--trusted", action="store_true"); p.add_argument("--biometric", action="store_true")
-    sub.add_parser("mobile2-devices")
-    p = sub.add_parser("mobile2-command")
-    p.add_argument("device_id"); p.add_argument("command"); p.add_argument("--payload", default="{}")
-    sub.add_parser("mobile2-queue")
-    sub.add_parser("mobile2-drain")
-    p = sub.add_parser("mobile2-push")
-    p.add_argument("title"); p.add_argument("body"); p.add_argument("--device-id", default=None); p.add_argument("--priority", default="normal")
-    sub.add_parser("mobile2-push-outbox")
-    sub.add_parser("mobile2-widgets")
-    p = sub.add_parser("mobile2-widget-enable")
-    p.add_argument("widget_id"); p.add_argument("enabled", choices=["true", "false"])
-    p = sub.add_parser("mobile2-sync")
-    p.add_argument("device_id")
+    sub.add_parser("learn-status")
+    p = sub.add_parser("learn-experience")
+    p.add_argument("task")
+    p.add_argument("outcome")
+    p.add_argument("--success", action="store_true")
+    p.add_argument("--capability", default="general")
+    p.add_argument("--duration", type=float, default=0.0)
+    p.add_argument("--error", default=None)
+
+    sub.add_parser("learn-experiences")
+    sub.add_parser("learn-metrics")
+    sub.add_parser("learn-reflect")
+    sub.add_parser("learn-backlog-create")
+    sub.add_parser("learn-backlog")
+    p = sub.add_parser("learn-episode")
+    p.add_argument("title")
+    p.add_argument("summary")
+    p.add_argument("--experience-ids", default="")
 
     args = parser.parse_args()
-    mobile = MobileAppRuntime(args.project_root)
+    engine = LearningEngine(args.project_root)
 
-    if args.cmd == "mobile2-status":
-        out(mobile.status())
-    elif args.cmd == "mobile2-register":
-        out(mobile.devices.register(args.device_id, args.name, args.platform, args.trusted, args.biometric))
-    elif args.cmd == "mobile2-devices":
-        out(mobile.devices.list_devices())
-    elif args.cmd == "mobile2-command":
-        out(mobile.secure_command(args.device_id, args.command, json.loads(args.payload)))
-    elif args.cmd == "mobile2-queue":
-        out(mobile.queue.items())
-    elif args.cmd == "mobile2-drain":
-        out(mobile.queue.drain())
-    elif args.cmd == "mobile2-push":
-        out(mobile.push.send(args.title, args.body, args.device_id, args.priority))
-    elif args.cmd == "mobile2-push-outbox":
-        out(mobile.push.list())
-    elif args.cmd == "mobile2-widgets":
-        out(mobile.widgets.widgets())
-    elif args.cmd == "mobile2-widget-enable":
-        out(mobile.widgets.set_enabled(args.widget_id, args.enabled == "true"))
-    elif args.cmd == "mobile2-sync":
-        out(mobile.syncer.sync(args.device_id))
+    if args.cmd == "learn-status":
+        out(engine.status())
+    elif args.cmd == "learn-experience":
+        out(engine.add_experience(args.task, args.outcome, args.success, args.capability, args.duration, args.error))
+    elif args.cmd == "learn-experiences":
+        out(engine.experiences.list())
+    elif args.cmd == "learn-metrics":
+        out(engine.metrics.compute())
+    elif args.cmd == "learn-reflect":
+        out(engine.reflect())
+    elif args.cmd == "learn-backlog-create":
+        out(engine.create_backlog_from_reflection())
+    elif args.cmd == "learn-backlog":
+        out(engine.backlog.list())
+    elif args.cmd == "learn-episode":
+        ids = [x.strip() for x in args.experience_ids.split(",") if x.strip()]
+        out(engine.episodes.create(args.title, ids, args.summary))
 
 
 if __name__ == "__main__":
