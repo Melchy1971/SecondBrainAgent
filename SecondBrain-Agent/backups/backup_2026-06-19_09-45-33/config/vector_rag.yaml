@@ -1,0 +1,14 @@
+vector_rag:
+  enabled: true
+  provider: local_markdown_tfidf
+  future_provider: chroma_or_faiss
+  vault_path: H:\SecondBrainAgent\SecondBrain
+  index_path: H:\SecondBrainAgent\SecondBrain\99_System\vector_rag\vector_index.json
+  chunk_size_chars: 1800
+  chunk_overlap_chars: 200
+  top_k: 8
+  ollama:
+    enabled: true
+    base_url: http://localhost:11434
+    model: llama3.1
+    timeout_seconds: 120

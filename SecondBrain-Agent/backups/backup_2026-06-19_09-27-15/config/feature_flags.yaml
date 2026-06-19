@@ -1,0 +1,12 @@
+feature_flags:
+  production_ready_v96: true
+  installer_checks: true
+  update_rollback: true
+  backup_before_update: true
+  settings_audit: true
+  release_gate_strict: true
+  gui_settings: prepared
+  user_roles: prepared
+  audit_log: prepared
+  destructive_actions: false
+  email_send: false

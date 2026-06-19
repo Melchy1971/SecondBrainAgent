@@ -1,0 +1,24 @@
+production_ready:
+  required_python_min: "3.11"
+  required_paths:
+    vault: H:\SecondBrainAgent\SecondBrain
+    inbox: H:\SecondBrainAgent\SecondBrain-Inbox
+    agent: H:\SecondBrainAgent\SecondBrain-Agent
+  required_commands:
+    python: true
+    node: optional
+    npm: optional
+    npx: optional
+    ollama: optional
+  required_scripts:
+    - scripts\menu.py
+    - scripts\run_v9_cycle.py
+    - scripts\run_v95_cycle.py
+    - scripts\check_paths_v9.py
+    - scripts\release_gate_v9.py
+    - scripts\run_regression_tests_v9.py
+  forbidden_paths:
+    - H:\Obsidian
+  safe_mode:
+    destructive_actions_allowed: false
+    email_send_allowed: false

@@ -19,6 +19,14 @@
 - - [ ] Aufgabe ([[task]])
 - - [ ] ([[Aufgabe]])
 - - [ ] API entwickeln- [ ] Meeting vorbereiten- [ ] Dokumentation schreiben ([[SecondBrain OS v9.1 – Einsteigerhandbuch]])
+- - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | ([[2026-06-19_task-agent]])
+- - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | ([[2026-06-19_task-agent]])
+- - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | ([[2026-06-19_task-agent]])
+- - [ ] Aufgabe | offene Aufgaben | ([[2026-06-19_task-agent]])
+- - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | ([[2026-06-19_chief-of-staff-v98]])
+- - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | ([[2026-06-19_chief-of-staff-v98]])
+- - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | ([[2026-06-19_chief-of-staff-v98]])
+- - [ ] Aufgabe | offene Aufgaben | ([[2026-06-19_chief-of-staff-v98]])
 
 ## Risiken / Blocker
 
@@ -41,4 +49,4 @@
 - [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 - [[2026-06-19_autonomous-project-plan]]
-- [[2026-06-19_daily-briefing]]
+- [[2026-06-19_chief-of-staff-v98]]

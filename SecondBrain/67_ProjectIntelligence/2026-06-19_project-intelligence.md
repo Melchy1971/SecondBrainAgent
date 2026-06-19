@@ -4,33 +4,40 @@ Datum: 2026-06-19
 
 | Risiko | Offene Tasks | Projekt | Aktivität | Empfehlung |
 |---:|---:|---|---|---|
-| 269 | 0 | [[weighted_edges]] | hoch | Blocker/Risiken klären |
-| 50 | 0 | [[2026-06-19_prediction-report]] | hoch | Blocker/Risiken klären |
+| 331 | 0 | [[weighted_edges]] | hoch | Blocker/Risiken klären |
+| 60 | 0 | [[2026-06-19_project-agent]] | hoch | Blocker/Risiken klären |
+| 41 | 4 | [[2026-06-19_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
+| 22 | 0 | [[2026-06-19_self-reflection]] | hoch | Blocker/Risiken klären |
 | 19 | 0 | [[2026-06-18_prediction-report]] | hoch | Blocker/Risiken klären |
+| 6 | 0 | [[Goal_Map_v97]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[2026-06-18_semantic-deduplication]] | hoch | Blocker/Risiken klären |
+| 5 | 0 | [[Memory_Profile]] | hoch | Blocker/Risiken klären |
+| 5 | 0 | [[Knowledge_Intelligence_Dashboard_v99]] | hoch | Blocker/Risiken klären |
 | 5 | 0 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | hoch | Blocker/Risiken klären |
+| 5 | 0 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
+| 5 | 0 | [[2026-06-19_project-intelligence]] | hoch | Blocker/Risiken klären |
+| 5 | 0 | [[2026-06-19_daily-assistant]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Project_Memory]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Project_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
-| 4 | 0 | [[Memory_Profile]] | hoch | Blocker/Risiken klären |
-| 4 | 0 | [[Calendar_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
-| 4 | 0 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
-| 4 | 0 | [[2026-06-19_project-intelligence]] | hoch | Blocker/Risiken klären |
+| 4 | 0 | [[2026-06-19_process-agent]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[2026-06-19_memory-replay]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Process_Memory]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[Process_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
-| 2 | 0 | [[Executive_Memory]] | hoch | Blocker/Risiken klären |
-| 2 | 0 | [[Decision_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
-| 2 | 0 | [[2026-06-19_prozesslandkarte]] | hoch | Blocker/Risiken klären |
+| 2 | 0 | [[Calendar_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-19_project-monitor]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-19_daily-briefing]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-18_project-monitor]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-18_project-intelligence]] | hoch | Blocker/Risiken klären |
+| 1 | 0 | [[Personal_CRM_Index]] | hoch | Blocker/Risiken klären |
+| 1 | 0 | [[Executive_Memory]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[Executive_Dashboard_v9]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[Executive_Dashboard]] | hoch | Blocker/Risiken klären |
+| 1 | 0 | [[Entity_Index]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[Digital_Twin_v6]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[Digital_Twin_v5]] | hoch | Blocker/Risiken klären |
+| 1 | 0 | [[2026-06-19_prozesslandkarte]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[2026-06-19_personal-kpis]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[2026-06-19_decision-intelligence]] | hoch | Blocker/Risiken klären |
 | 1 | 0 | [[2026-06-19_autonomous-project-plan]] | hoch | Blocker/Risiken klären |
@@ -57,7 +64,6 @@ Datum: 2026-06-19
 | 0 | 0 | [[Quarterly_Plan]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Projekt]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Project_Status]] | niedrig | nächsten messbaren Schritt definieren |
-| 0 | 0 | [[Personal_CRM_Index]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Ontology_Index]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Monthly_Plan]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Knowledge_Lineage]] | niedrig | nächsten messbaren Schritt definieren |
@@ -66,7 +72,6 @@ Datum: 2026-06-19
 | 0 | 0 | [[Digital_Twin_Profile]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Digital_Twin_Profile]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Daily_Plan]] | niedrig | nächsten messbaren Schritt definieren |
-| 0 | 0 | [[ChiefOfStaff_Memory]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[Business_OS_Modules]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-19_software-factory]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-19_recommendations]] | niedrig | nächsten messbaren Schritt definieren |
@@ -76,6 +81,7 @@ Datum: 2026-06-19
 | 0 | 0 | [[2026-06-19_knowledge-compression]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-19_chief-of-staff]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-19_autonomy-report]] | niedrig | nächsten messbaren Schritt definieren |
+| 0 | 0 | [[2026-06-19_090550_rag_answer]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-18_software-factory]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-18_simulation_2]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[2026-06-18_search_gemini-import]] | niedrig | nächsten messbaren Schritt definieren |

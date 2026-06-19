@@ -1,0 +1,22 @@
+voice_layer_v103:
+  enabled: true
+  mode: text_command_first
+  hotword: prepared
+  speech_to_text:
+    provider: prepared
+    options:
+      - whisper_local
+      - windows_dictation
+      - browser_dictation
+  text_to_speech:
+    provider: prepared
+    options:
+      - windows_sapi
+      - edge_tts
+  safety:
+    destructive_actions: disabled
+    email_send: disabled
+    command_execution: review_first
+  inbox:
+    dictation_folder: H:\SecondBrainAgent\SecondBrain-Inbox\Voice\Dictation
+    audio_folder: H:\SecondBrainAgent\SecondBrain-Inbox\Voice\Audio

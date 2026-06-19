@@ -7,53 +7,53 @@ Aktualisiert: 2026-06-19
 
 ## Namenssignale
 
-- Score: 607
-- Frontmatter: 157
-- Tags: 139
-- Zusammenfassung: 136
-- Titel: 133
-- Links: 133
-- Risiken: 101
-- Schritt: 91
+- Score: 629
+- Frontmatter: 218
+- Tags: 212
+- Links: 205
+- Risiken: 163
+- Aufgaben: 138
+- Zusammenfassung: 137
+- Risiko: 134
+- Titel: 132
+- Signale: 130
+- Ergebnis: 124
+- Schritt: 87
 - Prozessdokumentation: 85
+- Datum: 84
+- Aktualisiert: 84
 - Testfälle: 84
-- Notizen: 72
-- Analyse: 69
-- Aktualisiert: 69
-- Tool: 65
-- Wissensnotiz: 65
-- Datum: 64
+- Notizen: 80
+- Analyse: 75
+- Agent: 72
+- Review: 72
+- Blocker: 71
+- Status: 70
+- Tool: 69
+- Wissensnotiz: 66
 - Wichtigste Notizen: 63
-- Blocker: 62
-- Aufgaben: 53
-- Nachbereitung: 48
-- Obsidian: 44
-- Entscheidungen: 44
-- Projekt: 42
-- Quellen: 42
-- Aufgabe: 41
-- Ergebnis: 41
-- Status: 37
-- Index: 35
-- Agent Masterplan: 35
-- Keine: 34
-- Meeting: 32
-- Häufige Tags: 32
-- Häufige Beziehungen: 32
-- Projekte: 31
-- Agent: 31
-- Kernnotizen: 31
-- Karteikarten: 31
-- Praxisaufgabe: 31
-- Agenda: 30
-- Import: 28
-- Einsteigerhandbuch: 27
-- Benutzerhandbuch: 27
-- Einsteiger: 27
-- Wissen: 26
-- Review: 26
-- Vorkommen: 26
-- Inbox: 25
-- Executive Summary: 24
-- Gemini: 23
-- Ziel: 22
+- Aufgabe: 61
+- Inhalt: 59
+- Annahmen: 58
+- Nachbereitung: 57
+- Alternativen: 56
+- Recherchefrage: 53
+- Quellenbedarf: 53
+- Entscheidungen: 52
+- Projekt: 51
+- Quellen: 48
+- Obsidian: 46
+- Wirkung: 46
+- Struktur: 44
+- Automatisierung: 44
+- Entscheidung: 43
+- Keine: 43
+- Anforderungen: 40
+- Meeting: 39
+- Benutzerhandbuch: 39
+- Einsteiger: 39
+- Index: 38
+- Einsteigerhandbuch: 38
+- Schritte: 36
+- Daily Digest: 35
+- Agenda: 35

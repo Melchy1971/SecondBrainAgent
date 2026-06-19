@@ -1,0 +1,38 @@
+knowledge_intelligence_v99:
+  entity_types:
+    - person
+    - organization
+    - project
+    - system
+    - product
+    - technology
+    - location
+    - date
+    - decision
+    - risk
+  relationship_types:
+    - mentions
+    - belongs_to
+    - blocks
+    - influences
+    - decides
+    - references
+    - creates_task
+  contradiction_detection:
+    enabled: true
+    status_keywords:
+      done:
+        - abgeschlossen
+        - erledigt
+        - fertig
+        - pass
+      open:
+        - offen
+        - todo
+        - geplant
+        - blocked
+        - blockiert
+  quality_thresholds:
+    weak_note_chars: 250
+    min_links: 1
+    min_tags: 1

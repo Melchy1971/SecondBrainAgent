@@ -1,0 +1,16 @@
+app_name: SecondBrain-Agent
+version: 10.2.0
+platform_mode: cross_platform
+default_language: de
+vault_path: H:\SecondBrainAgent\SecondBrain
+inbox_path: H:\SecondBrainAgent\SecondBrain-Inbox
+system_path: H:\SecondBrainAgent\SecondBrain-Agent
+data_model: markdown_only
+v102_enabled: true
+jarvis_control_center_gui_enabled: true
+gui_host: 127.0.0.1
+gui_port: 8850
+safe_mode_default: true
+destructive_actions_allowed: false
+email_send_allowed: false
+external_research_allowed: false

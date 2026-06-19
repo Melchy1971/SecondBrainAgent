@@ -10,40 +10,47 @@ def run(script, *args):
 def main():
     while True:
         print("")
-        print("SecondBrain OS v9.7 AI Copilot")
+        print("SecondBrain OS v10.3 Voice Layer")
         print("1 = Import AI Exports")
-        print("2 = SecondBrain v9.5 Cycle")
-        print("3 = SecondBrain v9.7 AI Copilot Cycle")
-        print("4 = RAG Antwort mit Ollama")
-        print("5 = Installer Check v9.6")
-        print("6 = Production Ready Gate v9.6")
-        print("7 = Path Check v9")
-        print("8 = Regression Tests v9")
-        print("9 = Pfade anzeigen")
+        print("2 = v10.2 GUI Cycle")
+        print("3 = v10.3 Voice Layer Cycle")
+        print("4 = Voice Status")
+        print("5 = Diktat importieren")
+        print("6 = Voice Command prüfen")
+        print("7 = Voice Command ausführen")
+        print("8 = Jarvis GUI starten")
+        print("9 = RAG Antwort mit Ollama")
+        print("10 = Path Check v9")
         print("0 = Beenden")
         choice = input("Auswahl: ").strip()
 
         if choice == "1":
             run("import_ai_exports.py")
         elif choice == "2":
-            run("run_v95_cycle.py")
+            run("run_v102_cycle.py")
         elif choice == "3":
-            run("run_v97_cycle.py")
+            run("run_v103_cycle.py")
         elif choice == "4":
+            run("voice_status_v103.py")
+        elif choice == "5":
+            p = input("Diktat-Datei oder leer für Ordnerimport: ").strip().strip('"')
+            if p:
+                run("import_dictation_v103.py", p)
+            else:
+                run("import_dictation_v103.py")
+        elif choice == "6":
+            cmd = input("Befehl: ").strip()
+            run("voice_command_v103.py", cmd)
+        elif choice == "7":
+            cmd = input("Befehl: ").strip()
+            run("voice_command_v103.py", cmd, "--execute")
+        elif choice == "8":
+            run("start_gui.py")
+        elif choice == "9":
             q = input("Frage: ").strip()
             run("rag_answer.py", q)
-        elif choice == "5":
-            run("installer_check_v96.py")
-        elif choice == "6":
-            run("production_ready_gate_v96.py")
-        elif choice == "7":
+        elif choice == "10":
             run("check_paths_v9.py")
-        elif choice == "8":
-            run("run_regression_tests_v9.py")
-        elif choice == "9":
-            print("Vault: H:\\SecondBrainAgent\\SecondBrain")
-            print("Inbox: H:\\SecondBrainAgent\\SecondBrain-Inbox")
-            print("Agent: H:\\SecondBrainAgent\\SecondBrain-Agent")
         elif choice == "0":
             break
         else:

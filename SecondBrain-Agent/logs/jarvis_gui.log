@@ -1,0 +1,7 @@
+{"time": "2026-06-19 10:08:43", "type": "gui.start", "payload": {"host": "127.0.0.1", "port": 8850}}
+{"time": "2026-06-19 10:09:16", "type": "script.run", "payload": {"script": "import_ai_exports.py", "ok": true}}
+{"time": "2026-06-19 10:10:14", "type": "script.run", "payload": {"script": "run_v10_cycle.py", "ok": false}}
+{"time": "2026-06-19 10:10:16", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-19 10:10:35", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-19 10:10:48", "type": "script.run", "payload": {"script": "release_gate_v9.py", "ok": true}}
+{"time": "2026-06-19 10:11:06", "type": "script.run", "payload": {"script": "production_ready_gate_v96.py", "ok": true}}

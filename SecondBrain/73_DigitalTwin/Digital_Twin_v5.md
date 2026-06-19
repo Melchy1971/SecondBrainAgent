@@ -4,14 +4,14 @@ Aktualisiert: 2026-06-19
 
 ## Prioritätsmodell
 
-- projekt: 605
-- prozess: 262
-- entscheidung: 97
+- projekt: 749
+- prozess: 312
+- entscheidung: 178
+- risiko: 170
+- automatisierung: 86
 - tischtennis: 58
-- gesundheit: 45
-- risiko: 40
-- automatisierung: 22
-- lokal: 9
+- gesundheit: 47
+- lokal: 10
 
 ## Wissensprofil
 

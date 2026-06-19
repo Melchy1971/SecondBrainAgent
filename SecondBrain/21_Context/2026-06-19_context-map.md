@@ -200,7 +200,7 @@ I thin
 
 ## unknown
 
-- Notizen: 201
+- Notizen: 235
 
 ### Wichtigste Notizen
 - [[PDF-Analyse-Tool]]
@@ -227,16 +227,16 @@ I thin
 ### Häufige Tags
 
 ### Häufige Beziehungen
-- [[weighted_edges]]: 355
-- [[2026-06-19_quality-scores]]: 206
-- [[2026-06-19_refactoring-proposals]]: 189
-- [[2026-06-18_self-healing-report]]: 144
-- [[2026-06-18_context-map]]: 139
-- [[Temporal_Graph]]: 134
-- [[Memory_Profile]]: 124
-- [[2026-06-18_quality-scores]]: 122
-- [[2026-06-18_self-improvement-plan]]: 122
-- [[2026-06-18_https-obsidian-md]]: 115
+- [[weighted_edges]]: 446
+- [[2026-06-19_quality-scores]]: 281
+- [[2026-06-19_refactoring-proposals]]: 266
+- [[2026-06-19_knowledge-quality]]: 194
+- [[2026-06-19_chief-of-staff-v98]]: 170
+- [[2026-06-18_context-map]]: 152
+- [[Temporal_Graph]]: 152
+- [[2026-06-19_semantic-deduplication]]: 151
+- [[Memory_Profile]]: 149
+- [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 149
 
 ## web_source
 

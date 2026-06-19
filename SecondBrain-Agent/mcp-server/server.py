@@ -3,6 +3,7 @@ import subprocess
 import re
 from datetime import datetime
 from mcp.server.fastmcp import FastMCP
+from secondbrain import mcp_tools_v101 as sbtools
 
 mcp = FastMCP("secondbrain")
 
@@ -411,6 +412,30 @@ def update_preflight_v96() -> str:
 def run_v97_cycle() -> str:
     """Startet den SecondBrain v9.7 AI Copilot Cycle."""
     script = AGENT / "scripts" / "run_v97_cycle.py"
+    result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
+    return (result.stdout + "\n" + result.stderr)[-4000:]
+
+
+@mcp.tool()
+def run_v98_cycle() -> str:
+    """Startet den SecondBrain v9.8 Agentic Work Cycle."""
+    script = AGENT / "scripts" / "run_v98_cycle.py"
+    result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
+    return (result.stdout + "\n" + result.stderr)[-4000:]
+
+
+@mcp.tool()
+def run_v99_cycle() -> str:
+    """Startet den SecondBrain v9.9 Knowledge Intelligence Cycle."""
+    script = AGENT / "scripts" / "run_v99_cycle.py"
+    result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
+    return (result.stdout + "\n" + result.stderr)[-4000:]
+
+
+@mcp.tool()
+def run_v10_cycle() -> str:
+    """Startet den SecondBrain v10 Personal OS Cycle."""
+    script = AGENT / "scripts" / "run_v10_cycle.py"
     result = subprocess.run(["python", str(script)], cwd=str(AGENT), capture_output=True, text=True)
     return (result.stdout + "\n" + result.stderr)[-4000:]
 

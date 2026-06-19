@@ -136,8 +136,6 @@ I thin
 - [[2026-06-18_context-map]] → [[Email]]
 - [[2026-06-18_context-map]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[2026-06-18_context-map]] → [[SecondBrain-Agent Masterplan v1.0]]
-- [[Memory_Profile]] → [[SecondBrain-Agent Masterplan v1.0]]
-- [[Memory_Profile]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[2026-06-18_memory-replay]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[2026-06-18_prediction-report]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] → [[SecondBrain-Agent Masterplan v1.0]]
@@ -153,6 +151,9 @@ I thin
 - [[2026-06-18_process-design-backlog]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[SecondBrain OS v9.1 – Einsteigerhandbuch]] → [[Projekt Wissensdatenbank]]
 - [[2026-06-18_nicht-unterstuetzter-dateityp-gemini-export-zip]] → [[Gemini]]
+- [[2026-06-19_chief-of-staff-v98]] → [[2026-06-19_
+
+]]
 - [[Tischtennisspiele_und_-Regeln@20260618_153730]] → [[Tischtennisschläger]]
 - [[Tischtennisspiele_und_-Regeln@20260618_153730]] → [[Tischtennisregeln]]
 - [[Tischtennisspiele_und_-Regeln@20260618_153730]] → [[Tischtennistaktik]]
@@ -193,6 +194,9 @@ I thin
 - [[weighted_edges]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[weighted_edges]] → [[SecondBrain-Agent Masterplan v1.0]]
 - [[weighted_edges]] → [[SecondBrain-Agent Masterplan v1.0]]
+- [[weighted_edges]] → [[2026-06-19_
+
+]]
 - [[weighted_edges]] → [[
 I thin
 ]]
@@ -210,6 +214,9 @@ I thin
 - [[weighted_edges]] → [[Tischtennisregeln]]
 - [[weighted_edges]] → [[Tischtennisschläger]]
 - [[weighted_edges]] → [[Tischtennistaktik]]
+- [[weighted_edges]] → [[2026-06-19_
+
+]]
 - [[weighted_edges]] → [[Projekt Wissensdatenbank]]
 - [[SecondBrain-Agent Dashboard]] → [[../reports/2026-06-19_import-report]]
 - [[SecondBrain-Agent Dashboard]] → [[../claude_review/2026-06-19_review-queue]]
@@ -222,7 +229,6 @@ I thin
 - [[2026-06-19_self-healing-report]] → [[Email]]
 - [[2026-06-19_self-healing-report]] → [[Python-Projekte]]
 - [[2026-06-19_self-healing-report]] → [[Automatisierung]]
-- [[2026-06-19_self-healing-report]] → [[Gemini]]
 
 ## Sicherheitsregel
 

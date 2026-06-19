@@ -1,0 +1,13 @@
+ai_layer:
+  provider: ollama
+  base_url: http://localhost:11434
+  default_model: llama3.1
+  timeout_seconds: 120
+  tasks:
+    classify: llama3.1
+    summarize: llama3.1
+    extract_tasks: llama3.1
+    tag: llama3.1
+    review: qwen
+    code: deepseek-coder
+    reasoning: qwen
