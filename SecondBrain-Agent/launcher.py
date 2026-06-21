@@ -1,56 +1,33 @@
 import argparse, json
-from secondbrain.learning import LearningEngine
+from secondbrain.installer_update import InstallerUpdateRuntime
 
-
-def out(obj):
-    print(json.dumps(obj, indent=2, ensure_ascii=False))
-
+def out(obj): print(json.dumps(obj, indent=2, ensure_ascii=False))
 
 def main():
-    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain OS v12.9 Learning Engine launcher")
-    parser.add_argument("--project-root", default=".")
-    sub = parser.add_subparsers(dest="cmd", required=True)
-
-    sub.add_parser("learn-status")
-    p = sub.add_parser("learn-experience")
-    p.add_argument("task")
-    p.add_argument("outcome")
-    p.add_argument("--success", action="store_true")
-    p.add_argument("--capability", default="general")
-    p.add_argument("--duration", type=float, default=0.0)
-    p.add_argument("--error", default=None)
-
-    sub.add_parser("learn-experiences")
-    sub.add_parser("learn-metrics")
-    sub.add_parser("learn-reflect")
-    sub.add_parser("learn-backlog-create")
-    sub.add_parser("learn-backlog")
-    p = sub.add_parser("learn-episode")
-    p.add_argument("title")
-    p.add_argument("summary")
-    p.add_argument("--experience-ids", default="")
-
-    args = parser.parse_args()
-    engine = LearningEngine(args.project_root)
-
-    if args.cmd == "learn-status":
-        out(engine.status())
-    elif args.cmd == "learn-experience":
-        out(engine.add_experience(args.task, args.outcome, args.success, args.capability, args.duration, args.error))
-    elif args.cmd == "learn-experiences":
-        out(engine.experiences.list())
-    elif args.cmd == "learn-metrics":
-        out(engine.metrics.compute())
-    elif args.cmd == "learn-reflect":
-        out(engine.reflect())
-    elif args.cmd == "learn-backlog-create":
-        out(engine.create_backlog_from_reflection())
-    elif args.cmd == "learn-backlog":
-        out(engine.backlog.list())
-    elif args.cmd == "learn-episode":
-        ids = [x.strip() for x in args.experience_ids.split(",") if x.strip()]
-        out(engine.episodes.create(args.title, ids, args.summary))
-
-
-if __name__ == "__main__":
-    main()
+    p=argparse.ArgumentParser(prog='secondbrain', description='SecondBrain OS v15.2 Installer & Update launcher')
+    p.add_argument('--project-root', default='.')
+    sub=p.add_subparsers(dest='cmd', required=True)
+    sub.add_parser('install-status')
+    sub.add_parser('install-manifest')
+    q=sub.add_parser('install-manifest-create'); q.add_argument('--version', default='15.2')
+    sub.add_parser('install-validate')
+    q=sub.add_parser('install-portable-plan'); q.add_argument('target_dir')
+    q=sub.add_parser('install-portable-marker'); q.add_argument('target_dir')
+    q=sub.add_parser('update-check'); q.add_argument('--current-version', default='unknown')
+    q=sub.add_parser('update-plan'); q.add_argument('--current-version', default='unknown')
+    q=sub.add_parser('update-run'); q.add_argument('--current-version', default='unknown')
+    sub.add_parser('update-backups')
+    q=sub.add_parser('rollback-plan'); q.add_argument('backup_id')
+    a=p.parse_args(); rt=InstallerUpdateRuntime(a.project_root)
+    if a.cmd=='install-status': out(rt.status())
+    elif a.cmd=='install-manifest': out(rt.manifest())
+    elif a.cmd=='install-manifest-create': out(rt.manifest_create(a.version))
+    elif a.cmd=='install-validate': out(rt.validate())
+    elif a.cmd=='install-portable-plan': out(rt.portable_plan(a.target_dir))
+    elif a.cmd=='install-portable-marker': out(rt.portable_marker(a.target_dir))
+    elif a.cmd=='update-check': out(rt.update_check(a.current_version))
+    elif a.cmd=='update-plan': out(rt.update_plan(a.current_version))
+    elif a.cmd=='update-run': out(rt.update_run(a.current_version))
+    elif a.cmd=='update-backups': out(rt.backups())
+    elif a.cmd=='rollback-plan': out(rt.rollback_plan(a.backup_id))
+if __name__ == '__main__': main()
