@@ -13258,13 +13258,6 @@
     "source": "vault"
   },
   {
-    "entity": "Simulation",
-    "type": "project_or_topic",
-    "note": "2026-06-22_recommendations",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\77_RecommendationEngine\\2026-06-22_recommendations.md",
-    "source": "vault"
-  },
-  {
     "entity": "Gemini",
     "type": "technology",
     "note": "2026-06-22_recommendations",
@@ -13916,6 +13909,13 @@
     "source": "vault"
   },
   {
+    "entity": "Fragen",
+    "type": "organization",
+    "note": "Personal_CRM_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\80_PersonalCRM\\Personal_CRM_Index.md",
+    "source": "vault"
+  },
+  {
     "entity": "Recherchefrage",
     "type": "organization",
     "note": "Personal_CRM_Index",
@@ -14211,13 +14211,6 @@
   },
   {
     "entity": "Tool",
-    "type": "project_or_topic",
-    "note": "Personal_CRM_Index",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\80_PersonalCRM\\Personal_CRM_Index.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Wichtigste Notizen",
     "type": "project_or_topic",
     "note": "Personal_CRM_Index",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\80_PersonalCRM\\Personal_CRM_Index.md",
@@ -19530,27 +19523,6 @@
     "source": "vault"
   },
   {
-    "entity": "Emojify",
-    "type": "person_or_topic",
-    "note": "2026-06-22_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Event",
-    "type": "person_or_topic",
-    "note": "2026-06-22_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Explain",
-    "type": "person_or_topic",
-    "note": "2026-06-22_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
     "entity": "Fix",
     "type": "person_or_topic",
     "note": "2026-06-22_self-improvement-plan",
@@ -19558,99 +19530,113 @@
     "source": "vault"
   },
   {
+    "entity": "Emojify",
+    "type": "project_or_topic",
+    "note": "2026-06-22_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Event",
+    "type": "project_or_topic",
+    "note": "2026-06-22_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Explain",
+    "type": "project_or_topic",
+    "note": "2026-06-22_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
     "entity": "Generate",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Goal",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Improving Knowledge Plan",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Links",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Make",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Maßnahme",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Notiz",
-    "type": "person_or_topic",
-    "note": "2026-06-22_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Remove",
-    "type": "person_or_topic",
-    "note": "2026-06-22_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Rewrite",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Score",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Self",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Simulation",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Titel",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
   },
   {
     "entity": "Zusammenfassung",
-    "type": "person_or_topic",
+    "type": "project_or_topic",
+    "note": "2026-06-22_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Obsidian",
+    "type": "technology",
     "note": "2026-06-22_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-22_self-improvement-plan.md",
     "source": "vault"
@@ -20220,6 +20206,188 @@
     "type": "project_or_topic",
     "note": "2026-06-19_090550_rag_answer",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-19_090550_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Answer",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Antwort",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Chunk",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Ein",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Eine Anleitung",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Eine Zusammenfassung",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Einige Tipps",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Ich",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Informationen",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Interesse",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Kauf",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Notizen",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Quellen",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Regeln",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Score",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Strategien",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Thema",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennis",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennisregeln",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennisschläger",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennisschlägers",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennisspiel",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennisspiels",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tischtennistaktik",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Verfügung",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Wenn",
+    "type": "person_or_topic",
+    "note": "2026-06-22_152059_rag_answer",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\2026-06-22_152059_rag_answer.md",
     "source": "vault"
   },
   {
@@ -24472,6 +24640,13 @@
     "source": "vault"
   },
   {
+    "entity": "Finanzen",
+    "type": "project_or_topic",
+    "note": "Entity_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\113_EntityExtraction\\Entity_Index.md",
+    "source": "vault"
+  },
+  {
     "entity": "Fokus",
     "type": "project_or_topic",
     "note": "Entity_Index",
@@ -24767,13 +24942,6 @@
   },
   {
     "entity": "Wissenslücken",
-    "type": "project_or_topic",
-    "note": "Entity_Index",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\113_EntityExtraction\\Entity_Index.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Wissensnotiz",
     "type": "project_or_topic",
     "note": "Entity_Index",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\113_EntityExtraction\\Entity_Index.md",
@@ -25291,13 +25459,6 @@
     "source": "vault"
   },
   {
-    "entity": "Fix",
-    "type": "person_or_topic",
-    "note": "2026-06-22_knowledge-quality",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
-    "source": "vault"
-  },
-  {
     "entity": "Aufgabe",
     "type": "project_or_topic",
     "note": "2026-06-22_knowledge-quality",
@@ -25312,21 +25473,7 @@
     "source": "vault"
   },
   {
-    "entity": "Emojify",
-    "type": "project_or_topic",
-    "note": "2026-06-22_knowledge-quality",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
-    "source": "vault"
-  },
-  {
     "entity": "Event",
-    "type": "project_or_topic",
-    "note": "2026-06-22_knowledge-quality",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Explain",
     "type": "project_or_topic",
     "note": "2026-06-22_knowledge-quality",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
@@ -25419,6 +25566,13 @@
   {
     "entity": "Wissen",
     "type": "project_or_topic",
+    "note": "2026-06-22_knowledge-quality",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Obsidian",
+    "type": "technology",
     "note": "2026-06-22_knowledge-quality",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\117_KnowledgeQuality\\2026-06-22_knowledge-quality.md",
     "source": "vault"
@@ -25585,13 +25739,6 @@
     "source": "vault"
   },
   {
-    "entity": "Lin",
-    "type": "person_or_topic",
-    "note": "Knowledge_Intelligence_Dashboard_v99",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\119_KnowledgeIntelligenceDashboard\\Knowledge_Intelligence_Dashboard_v99.md",
-    "source": "vault"
-  },
-  {
     "entity": "Was",
     "type": "person_or_topic",
     "note": "Knowledge_Intelligence_Dashboard_v99",
@@ -25621,13 +25768,6 @@
   },
   {
     "entity": "Anzahl",
-    "type": "project_or_topic",
-    "note": "Knowledge_Intelligence_Dashboard_v99",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\119_KnowledgeIntelligenceDashboard\\Knowledge_Intelligence_Dashboard_v99.md",
-    "source": "vault"
-  },
-  {
-    "entity": "Arbeitsmuster",
     "type": "project_or_topic",
     "note": "Knowledge_Intelligence_Dashboard_v99",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\119_KnowledgeIntelligenceDashboard\\Knowledge_Intelligence_Dashboard_v99.md",
@@ -26912,6 +27052,293 @@
     "type": "person_or_topic",
     "note": "2026-06-22_personal-kpis",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\123_PersonalKPIs\\2026-06-22_personal-kpis.md",
+    "source": "vault"
+  },
+  {
+    "entity": "2026-06-22",
+    "type": "date",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Google Calendar",
+    "type": "organization",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Perplexity Export",
+    "type": "organization",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Aktualisiert",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Analyse",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Bemerkung",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Bookmarks",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Browser",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Connector",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Connector Foundation",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Export",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Gemini Export",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Git Repository",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Gmail",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Import",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Outlook",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Outlook Calendar",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Read",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Schreibzugriff",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Tabs",
+    "type": "person_or_topic",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "ChatGPT",
+    "type": "technology",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Gemini",
+    "type": "technology",
+    "note": "Connector_Foundation_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\129_ConnectorFoundation\\Connector_Foundation_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Document Ingestion",
+    "type": "person_or_topic",
+    "note": "Document_Ingestion_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\130_DocumentIngestion\\Document_Ingestion_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Unterstützte Typen",
+    "type": "person_or_topic",
+    "note": "Document_Ingestion_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\130_DocumentIngestion\\Document_Ingestion_Status.md",
+    "source": "vault"
+  },
+  {
+    "entity": "2026-06-22",
+    "type": "date",
+    "note": "Dashboard_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\131_DashboardAPI\\Dashboard_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Aktualisiert",
+    "type": "project_or_topic",
+    "note": "Dashboard_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\131_DashboardAPI\\Dashboard_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Dashboard",
+    "type": "project_or_topic",
+    "note": "Dashboard_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\131_DashboardAPI\\Dashboard_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Name",
+    "type": "project_or_topic",
+    "note": "Dashboard_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\131_DashboardAPI\\Dashboard_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Pfad",
+    "type": "project_or_topic",
+    "note": "Dashboard_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\131_DashboardAPI\\Dashboard_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Agent",
+    "type": "organization",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Cycle",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Dashboard",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Funktionen",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Importe",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Jarvis Control Center",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Logs",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Pfade",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Regression Tests",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Release Gate",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Start",
+    "type": "project_or_topic",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "entity": "Python",
+    "type": "technology",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
     "source": "vault"
   },
   {

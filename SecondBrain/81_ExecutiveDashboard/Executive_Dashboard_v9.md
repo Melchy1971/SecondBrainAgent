@@ -4,12 +4,12 @@ Aktualisiert: 2026-06-22
 
 | KPI | Wert |
 |---|---:|
-| Markdown-Dateien | 301 |
+| Markdown-Dateien | 308 |
 | Projekte | 5 |
 | offene Aufgaben | 26 |
 | Risiko-/Blocker-Signale | 582 |
-| Entscheidungs-Signale | 264 |
-| Meeting-Signale | 282 |
+| Entscheidungs-Signale | 259 |
+| Meeting-Signale | 285 |
 
 ## Management-Fokus
 

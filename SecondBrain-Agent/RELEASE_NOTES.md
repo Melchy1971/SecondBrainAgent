@@ -1,11 +1,4 @@
-# SecondBrain-Agent v23.2 P5 Delta
+# SecondBrain-Agent v28.0
 
-Fokus:
-- Chat Streaming
-- Dock Layout
-- Live Console
-- Citation Viewer
-- Memory Graph
-- Connector Management
-- Persistent Settings
-- P5 Completion
+Version 1.0.0 General Availability.
+Systemweite Release-Gates erfolgreich abgeschlossen.

@@ -2,8 +2,8 @@
 
 | Typ | Anzahl |
 |---|---:|
+| unknown | 283 |
 | project | 4 |
-| unknown | 276 |
 | task | 3 |
 | email_analysis | 1 |
 | web_source | 1 |

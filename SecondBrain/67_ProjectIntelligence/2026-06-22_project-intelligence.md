@@ -4,23 +4,20 @@ Datum: 2026-06-22
 
 | Risiko | Offene Tasks | Projekt | Aktivität | Empfehlung |
 |---:|---:|---|---|---|
-| 72 | 0 | [[2026-06-22_project-agent]] | hoch | Blocker/Risiken klären |
+| 74 | 0 | [[2026-06-22_project-agent]] | hoch | Blocker/Risiken klären |
 | 63 | 0 | [[2026-06-19_project-agent]] | hoch | Blocker/Risiken klären |
 | 42 | 4 | [[2026-06-19_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
-| 41 | 4 | [[2026-06-22_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
 | 37 | 0 | [[weighted_edges]] | hoch | Blocker/Risiken klären |
-| 23 | 0 | [[2026-06-22_self-reflection]] | hoch | Blocker/Risiken klären |
 | 22 | 0 | [[2026-06-19_self-reflection]] | hoch | Blocker/Risiken klären |
+| 21 | 0 | [[2026-06-22_self-reflection]] | hoch | Blocker/Risiken klären |
 | 19 | 0 | [[2026-06-18_prediction-report]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[Knowledge_Intelligence_Dashboard_v99]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[Goal_Map_v97]] | hoch | Blocker/Risiken klären |
+| 6 | 0 | [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
+| 6 | 0 | [[2026-06-22_project-intelligence]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[2026-06-22_daily-os]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[2026-06-19_daily-os]] | hoch | Blocker/Risiken klären |
 | 6 | 0 | [[2026-06-18_semantic-deduplication]] | hoch | Blocker/Risiken klären |
-| 5 | 0 | [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
-| 5 | 0 | [[2026-06-22_project-intelligence]] | hoch | Blocker/Risiken klären |
-| 5 | 0 | [[2026-06-22_process-agent]] | hoch | Blocker/Risiken klären |
-| 5 | 0 | [[2026-06-22_daily-assistant]] | hoch | Blocker/Risiken klären |
 | 5 | 0 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | hoch | Blocker/Risiken klären |
 | 5 | 0 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | hoch | Blocker/Risiken klären |
 | 5 | 0 | [[2026-06-19_project-intelligence]] | hoch | Blocker/Risiken klären |
@@ -31,8 +28,8 @@ Datum: 2026-06-22
 | 4 | 0 | [[2026-06-19_memory-replay]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Project_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Process_Memory]] | hoch | Blocker/Risiken klären |
-| 3 | 0 | [[Process_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Calendar_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
+| 2 | 0 | [[Process_Agent_Memory_v2]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[Memory_Engine_Profile]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-19_project-monitor]] | hoch | Blocker/Risiken klären |
 | 2 | 0 | [[2026-06-19_daily-briefing]] | hoch | Blocker/Risiken klären |

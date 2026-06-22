@@ -4,21 +4,21 @@ Aktualisiert: 2026-06-22
 
 ## Nodes
 
-- document: 68
-- project: 54
-- task: 37
-- meeting: 29
+- document: 73
+- project: 56
+- task: 36
+- meeting: 30
 - decision: 26
 - system: 21
-- person: 17
 - process: 16
+- person: 16
 - risk: 10
 
 ## Edges
 
-- blocks: 4568
-- references: 780
-- decides: 618
+- blocks: 4581
+- references: 791
+- decides: 639
 - creates_task: 250
 - impacts: 5
 

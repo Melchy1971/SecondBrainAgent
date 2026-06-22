@@ -4,7 +4,7 @@ Datum: 2026-06-22
 
 ## Heute wichtig
 
-- Risiko prüfen: [[2026-06-22_project-agent]] (72)
+- Risiko prüfen: [[2026-06-22_project-agent]] (74)
 - Risiko prüfen: [[2026-06-19_project-agent]] (63)
 - Risiko prüfen: [[2026-06-19_prediction-report]] (59)
 - Risiko prüfen: [[2026-06-19_chief-of-staff-v98]] (42)

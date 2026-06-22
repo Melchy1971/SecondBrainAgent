@@ -4,20 +4,20 @@ Aktualisiert: 2026-06-22
 
 ## Relevante Notizen
 
-- [[2026-06-22_meeting-agent]] — Score 44
+- [[2026-06-22_meeting-agent]] — Score 48
 - [[2026-06-19_meeting-agent]] — Score 39
+- [[2026-06-22_meeting-intelligence]] — Score 38
 - [[2026-06-19_meeting-intelligence]] — Score 34
-- [[2026-06-22_meeting-intelligence]] — Score 33
 - [[2026-06-18_meeting-intelligence]] — Score 12
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 9
 - [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 9
-- [[Meeting_Agent_Memory_v2]] — Score 8
+- [[Meeting_Agent_Memory_v2]] — Score 9
 - [[2026-06-22_knowledge-quality]] — Score 7
 - [[weighted_edges]] — Score 6
+- [[Decision_Agent_Memory_v2]] — Score 6
 - [[2026-06-22_decision-agent]] — Score 6
 - [[2026-06-19_semantic-deduplication]] — Score 6
 - [[2026-06-19_quality-scores]] — Score 6
-- [[Decision_Agent_Memory_v2]] — Score 5
 - [[2026-06-22_reasoning-map]] — Score 5
 - [[2026-06-19_refactoring-proposals]] — Score 5
 - [[2026-06-19_knowledge-quality]] — Score 5
@@ -26,17 +26,18 @@ Aktualisiert: 2026-06-22
 - [[2026-06-19_decision-agent]] — Score 4
 - [[2026-06-18_semantic-deduplication]] — Score 4
 - [[Research_Memory]] — Score 3
+- [[Personal_CRM_Index]] — Score 3
 - [[Memory_Profile]] — Score 3
 - [[Executive_Memory]] — Score 3
 - [[Executive_Agent_Memory_v2]] — Score 3
 - [[2026-06-19_context-map]] — Score 3
 - [[2026-06-18_context-map]] — Score 3
 - [[SecondBrain OS v9.1 – Einsteigerhandbuch]] — Score 2
-- [[Personal_CRM_Index]] — Score 2
 - [[Meeting]] — Score 2
 - [[Knowledge_Intelligence_Dashboard_v99]] — Score 2
 - [[Digital_Twin_v6]] — Score 2
 - [[Calendar_Agent_Memory_v2]] — Score 2
+- [[2026-06-22_research-backlog-agent]] — Score 2
 - [[2026-06-22_recommendations]] — Score 2
 - [[2026-06-22_chief-of-staff-v98]] — Score 2
 - [[2026-06-19_knowledge-compression]] — Score 2
@@ -53,7 +54,6 @@ Aktualisiert: 2026-06-22
 - [[Quarterly_Plan]] — Score 1
 - [[Plugin_Ecosystem]] — Score 1
 - [[Monthly_Plan]] — Score 1
-- [[Meeting_Transcription_Status]] — Score 1
 
 ## Gelernte Tags
 

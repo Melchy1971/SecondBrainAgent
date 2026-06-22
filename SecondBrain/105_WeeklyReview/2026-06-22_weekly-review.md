@@ -4,10 +4,10 @@ Datum: 2026-06-22
 
 ## Kennzahlen
 
-- Notizen gesamt: 278
+- Notizen gesamt: 284
 - Offene Aufgaben: 26
-- Risiko-Signale: 570
-- Entscheidungs-Signale: 256
+- Risiko-Signale: 571
+- Entscheidungs-Signale: 257
 
 ## Review-Fragen
 

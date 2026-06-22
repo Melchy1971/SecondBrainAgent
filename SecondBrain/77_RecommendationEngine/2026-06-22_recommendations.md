@@ -6,7 +6,7 @@ Datum: 2026-06-22
 
 1. Risiken prüfen: [[Refactoring_Proposal]], [[2026-06-19_daily-briefing]], [[2026-06-18_daily-briefing]], [[2026-06-19_decision-intelligence]], [[2026-06-18_decision-intelligence]], [[2026-06-19_prozesslandkarte]], [[2026-06-18_prozesslandkarte]], [[2026-06-19_knowledge-gaps]], [[2026-06-18_knowledge-gaps]], [[2026-06-19_context-map]]
 2. Offene Aufgaben konsolidieren: 26
-3. Schwache Notizen verbessern: [[Email_Analysis]], [[Browser_Source]], [[Daily_Briefing]], [[Decision]], [[Meeting]], [[Process]], [[Knowledge_Gap]], [[Context_Map]], [[Decision_Intelligence]], [[Simulation]]
+3. Schwache Notizen verbessern: [[Obsidian]], [[Email_Analysis]], [[Browser_Source]], [[Daily_Briefing]], [[Decision]], [[Meeting]], [[Process]], [[Knowledge_Gap]], [[Context_Map]], [[Decision_Intelligence]]
 
 ## Häufige Themen
 

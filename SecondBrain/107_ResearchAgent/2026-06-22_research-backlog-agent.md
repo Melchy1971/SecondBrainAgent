@@ -7,10 +7,10 @@ Datum: 2026-06-22
 | 121 | [[2026-06-22_research-backlog-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 121 | [[2026-06-19_research-backlog-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 75 | [[2026-06-19_process-design-backlog]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 53 | [[2026-06-22_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 59 | [[2026-06-22_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 52 | [[2026-06-19_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 39 | [[2026-06-22_process-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 36 | [[2026-06-22_meeting-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 40 | [[2026-06-22_process-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 39 | [[2026-06-22_meeting-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 36 | [[2026-06-19_process-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 33 | [[2026-06-19_knowledge-gaps]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 33 | [[2026-06-18_knowledge-gaps]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
@@ -32,22 +32,22 @@ Datum: 2026-06-22
 | 9 | [[Weekly_Plan]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 9 | [[Quarterly_Plan]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 9 | [[Monthly_Plan]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 9 | [[2026-06-22_project-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 9 | [[2026-06-18_knowledge-compression]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 8 | [[2026-06-22_reasoning-map]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 7 | [[2026-06-22_project-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 6 | [[SecondBrain OS v9.1 – Einsteigerhandbuch]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 6 | [[2026-06-19_research-backlog]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 6 | [[2026-06-19_chief-of-staff-v2]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 6 | [[2026-06-18_chief-of-staff-v2]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 5 | [[Knowledge_Intelligence_Dashboard_v99]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[Entity_Index]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[2026-06-22_monitoring]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[2026-06-19_monitoring]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[2026-06-18_monitoring]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 5 | [[2026-06-18_daily-briefing]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 4 | [[Life_Dashboard_v10]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 4 | [[Knowledge_Intelligence_Dashboard_v99]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 4 | [[2026-06-19_chief-of-staff]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 4 | [[2026-06-18_research-backlog]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 4 | [[2026-06-18_projekt-secondbrain-agent-v0-3]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |

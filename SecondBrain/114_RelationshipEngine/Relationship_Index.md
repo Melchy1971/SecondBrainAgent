@@ -7,8 +7,8 @@ Aktualisiert: 2026-06-22
 | blocks | 4580 |
 | mentions | 805 |
 | decides | 640 |
+| references | 226 |
 | tagged_as | 225 |
-| references | 215 |
 | creates_task | 10 |
 | influences | 5 |
 

@@ -10,10 +10,12 @@ Datum: 2026-06-22
 | 0 | [[2026-06-19_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[2026-06-22_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Calendar_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[Document_Ingestion_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Email_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Federation_Index]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Goal_Map]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Meeting_Transcription_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[Obsidian]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Semantic_Index]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Semantic_OS_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Temporal_Knowledge_Graph]] | Frontmatter, Inhalt, Tags, Links, Struktur |
@@ -55,9 +57,11 @@ Datum: 2026-06-22
 | 20 | [[Browser_Source]] | Inhalt, Tags, Links, Struktur |
 | 20 | [[Business_OS_Modules]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[CRM_Index]] | Frontmatter, Inhalt, Tags, Links |
+| 20 | [[Connector_Foundation_Status]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[Context_Map]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[DMS_Index]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[Daily_Briefing]] | Inhalt, Tags, Links, Struktur |
+| 20 | [[Dashboard_Catalog]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[Decision]] | Inhalt, Tags, Links, Struktur |
 | 20 | [[Decision_Intelligence]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[Decision_Journal]] | Frontmatter, Inhalt, Tags, Links |
@@ -72,6 +76,7 @@ Datum: 2026-06-22
 | 20 | [[Goal]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[Goal_Map_v97]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[Health_Index]] | Frontmatter, Inhalt, Tags, Links |
+| 20 | [[Jarvis_Control_Center_GUI]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[KPI]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[Knowledge_Gap]] | Inhalt, Tags, Links, Struktur |
 | 20 | [[Knowledge_Node]] | Inhalt, Tags, Links, Struktur |
@@ -199,8 +204,3 @@ Datum: 2026-06-22
 | 40 | [[Rewrite as tweet]] | Tags, Links, Struktur |
 | 40 | [[Rewrite as tweet thread]] | Tags, Links, Struktur |
 | 40 | [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] | Frontmatter, Tags, Links |
-| 40 | [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] | Frontmatter, Tags, Links |
-| 40 | [[SecondBrain_OS_Control_Center]] | Frontmatter, Tags, Links |
-| 40 | [[SecondBrain_OS_Dashboard]] | Frontmatter, Tags, Links |
-| 40 | [[SecondBrain_v9_5_Control_Center]] | Frontmatter, Tags, Links |
-| 40 | [[Simplify]] | Tags, Links, Struktur |

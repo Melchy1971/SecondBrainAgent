@@ -5,6 +5,7 @@ Datum: 2026-06-22
 | Score | Notiz | Maßnahme |
 |---:|---|---|
 | 0 | [[2026-06-19_notifications]] | Titel/Tags/Links/Zusammenfassung ergänzen |
+| 0 | [[Obsidian]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-18_calendar-intelligence]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-18_chief-of-staff]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-18_chief-of-staff-v2]] | Titel/Tags/Links/Zusammenfassung ergänzen |
@@ -34,7 +35,6 @@ Datum: 2026-06-22
 | 15 | [[2026-06-19_weekly-review]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-22_calendar-intelligence]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-22_cross-source-intelligence]] | Titel/Tags/Links/Zusammenfassung ergänzen |
-| 15 | [[2026-06-22_event-bus]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-22_monitoring]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-22_personal-kpis]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[2026-06-22_weekly-review]] | Titel/Tags/Links/Zusammenfassung ergänzen |
@@ -48,6 +48,7 @@ Datum: 2026-06-22
 | 15 | [[Digital_Twin_Profile]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Digital_Twin_Profile]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Digital_Twin_v4]] | Titel/Tags/Links/Zusammenfassung ergänzen |
+| 15 | [[Document_Ingestion_Status]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Email_Connector_Status]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Enterprise_RAG_Status]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Event]] | Titel/Tags/Links/Zusammenfassung ergänzen |
@@ -63,6 +64,7 @@ Datum: 2026-06-22
 | 15 | [[Goal_Map]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Goal_Map_v97]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Health_Index]] | Titel/Tags/Links/Zusammenfassung ergänzen |
+| 15 | [[Jarvis_Control_Center_GUI]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[KPI]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Knowledge_Twin]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 15 | [[Life_OS]] | Titel/Tags/Links/Zusammenfassung ergänzen |
@@ -102,5 +104,3 @@ Datum: 2026-06-22
 | 20 | [[Generate table of contents]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 20 | [[Make longer]] | Titel/Tags/Links/Zusammenfassung ergänzen |
 | 20 | [[Make shorter]] | Titel/Tags/Links/Zusammenfassung ergänzen |
-| 20 | [[Remove URLs]] | Titel/Tags/Links/Zusammenfassung ergänzen |
-| 20 | [[Rewrite as tweet]] | Titel/Tags/Links/Zusammenfassung ergänzen |

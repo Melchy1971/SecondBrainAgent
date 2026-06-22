@@ -11,7 +11,7 @@ Aktualisiert: 2026-06-22
 - [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 33
+- [[Knowledge_Intelligence_Dashboard_v99]] — Score 35
 - [[2026-06-19_knowledge-compression]] — Score 14
 - [[2026-06-18_knowledge-compression]] — Score 9
 - [[2026-06-18_https-obsidian-md]] — Score 7

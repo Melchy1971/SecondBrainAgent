@@ -12,7 +12,7 @@ Datum: 2026-06-22
 
 ## Heute wichtig
 
-- Risiko prüfen: [[2026-06-22_project-agent]] (72)
+- Risiko prüfen: [[2026-06-22_project-agent]] (74)
 - Risiko prüfen: [[2026-06-19_project-agent]] (63)
 - Risiko prüfen: [[2026-06-19_prediction-report]] (59)
 - Risiko prüfen: [[2026-06-19_chief-of-staff-v98]] (42)
@@ -45,8 +45,8 @@ Datum: 2026-06-22
 | Priorität | Quelle | Aufgaben | Grund |
 |---:|---|---|---|
 | 140 | [[2026-06-19_chief-of-staff-v98]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
-| 137 | [[2026-06-22_chief-of-staff-v98]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
-| 17 | [[2026-06-22_task-agent]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
+| 138 | [[2026-06-22_chief-of-staff-v98]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | of | Risiko |
+| 24 | [[2026-06-22_task-agent]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
 | 17 | [[2026-06-19_task-agent]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
 | 6 | [[SecondBrain OS v9.1 – Einsteigerhandbuch]] | - [ ] API entwickeln- [ ] Meeting vorbereiten- [ ] Dokumentation schreiben | Entscheidung |
 | 3 | [[PDF-Analyse-Tool]] | 
@@ -54,7 +54,7 @@ Datum: 2026-06-22
 | 3 | [[2026-06-18_projekt-secondbrain-agent-v0-3]] | 
 - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |
 | 3 | [[2026-06-18_https-obsidian-md]] | 
-- [ ] Status prüfen
+- [ ] Status prüfen<br>- [ ] nächs
 
 ### 2026-06-22_project-agent
 
@@ -64,11 +64,11 @@ Datum: 2026-06-22
 
 | Score | Projekt | Aufgaben | Risiken | Entscheidungen | Status | Nächster Schritt |
 |---:|---|---:|---:|---:|---|---|
-| 290 | [[2026-06-22_project-agent]] | 0 | 72 | 1 | kritisch | Risiko klären |
+| 298 | [[2026-06-22_project-agent]] | 0 | 74 | 1 | kritisch | Risiko klären |
 | 254 | [[2026-06-19_project-agent]] | 0 | 63 | 1 | kritisch | Risiko klären |
 | 236 | [[2026-06-19_prediction-report]] | 0 | 59 | 0 | kritisch | Risiko klären |
 | 196 | [[2026-06-19_chief-of-staff-v98]] | 4 | 42 | 10 | kritisch | Risiko klären |
-| 192 | [[2026-06-22_chief-of-staff-v98]] | 4 | 41 | 10 | kritisch | Risiko klären |
+| 194 | [[2026-06-22_chief-of-staff-v98]] | 4 | 41 | 11 | kritisch | Risiko klären |
 | 148 | [[weighted_edges]] | 0 | 37 | 0 | kritisch | Risiko klären |
 | 130 | [[2026-06-19_self-reflection]] | 0 | 22 | 21 | kritisch | Risiko klären |
 | 126 | [[2026-06-22_self-reflection]] | 0 | 21 | 21 | kritisch | Risiko klären |
@@ -77,7 +77,7 @@ Datum: 2026-06-22
 | 48 | [[2026-06-19_reasoning-map]] | 0 | 5 | 14 | kritisch | Risiko klären |
 | 42 | [[2026-06-22_reasoning-map]] | 0 | 6 | 9 | kritisch | Risiko klären |
 | 40 | [[2026-06-22_task-agent]] | 4 | 5 | 6 | kritisch | Risiko klären |
-| 30 | [[Knowledge_Intelligence_Dashboard_v99]] | 0 | 6 | 3 | kritisch | Risiko klären |
+| 28 | [[Knowledge_Intelligence_Dashboard_v99]] | 0 | 6 | 2 | kritisch | Risiko klären |
 | 28 | [[2026-06-22_daily-os]] | 0 | 6 | 2 | kritisch | Risiko klären |
 | 28 | [[2026-06-19_task-agent]] | 4 | 3 | 4 | kritisch | Risiko klären |
 | 28 | [[2026-06-19_daily-os]] | 0 | 6 | 2 | kritisch | Risiko klären |
@@ -89,9 +89,9 @@ Datum: 2026-06-22
 | 24 | [[2026-06-18_semantic-deduplication]] | 0 | 6 | 0 | kritisch | Risiko klären |
 | 22 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | 0 | 5 | 1 | kritisch | Risiko klären |
 | 22 | [[2026-06-19_daily-assistant]] | 0 | 5 | 1 | kritisch | Risiko klären |
-| 20 | [[2026-06-22_process-agent]] | 0 | 5 | 0 | kritisch | Risiko klären |
 | 20 | [[2026-06-22_contradictions]] | 0 | 5 | 0 | kritisch | Risiko klären |
-| 20 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-proj
+| 20 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 0 | 5 | 0 | kritisch | Risiko klären |
+| 20 | [[2026-06
 
 ### 2026-06-22_decision-agent
 
@@ -140,11 +140,11 @@ Datum: 2026-06-22
 | 207 | [[weighted_edges]] | 37 | 37 | Automatisierung prüfen |
 | 165 | [[2026-06-22_project-agent]] | 5 | 74 | Automatisierung prüfen |
 | 141 | [[2026-06-19_project-agent]] | 4 | 63 | Automatisierung prüfen |
-| 108 | [[2026-06-22_chief-of-staff-v98]] | 8 | 41 | Automatisierung prüfen |
 | 108 | [[2026-06-19_chief-of-staff-v98]] | 7 | 42 | Automatisierung prüfen |
+| 105 | [[2026-06-22_chief-of-staff-v98]] | 7 | 41 | Automatisierung prüfen |
 | 99 | [[2026-06-19_process-design-backlog]] | 4 | 4 | Automatisierung prüfen |
 | 78 | [[2026-06-18_prediction-report]] | 13 | 19 | Automatisierung prüfen |
-| 58 | [[2026-06-22_process-agent]] | 5 | 5 | Automatisierung prüfen |
+| 54 | [[2026-06-22_process-agent]] | 4 | 4 | Automatisierung prüfen |
 | 48 | [[2026-06-19_process-agent]] | 4 | 4 | Automatisierung prüfen |
 | 32 | [[2026-06-18_semantic-deduplication]] | 6 | 6 | Automatisierung prüfen |
 | 31 | [[2026-06-18_process-design-backlog]] | 1 | 1 | Automatisierung prüfen |
@@ -162,12 +162,12 @@ Datum: 2026-06-22
 | 22 | [[2026-06-19_memory-replay]] | 4 | 4 | Automatisierung prüfen |
 | 22 | [[2026-06-19_contradictions]] | 4 | 4 | Automatisierung prüfen |
 | 18 | [[Process_Memory]] | 3 | 3 | Automatisierung prüfen |
-| 17 | [[Process_Agent_Memory_v2]] | 3 | 3 | Automatisierung prüfen |
 | 14 | [[2026-06-19_prozesslandkarte]] | 1 | 1 | Automatisierung prüfen |
 | 12 | [[Temporal_Graph]] | 2 | 2 | Automatisierung prüfen |
-| 12 | [[Memory_Engine_Profile]] | 2 | 2 | Automatisierung prüfen |
+| 12 | [[Process_Agent_Memory_v2]] | 2 | 2 | Automatisierung prüfen |
 | 12 | [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | 2 | 2 | Automatisierung prüfen |
-| 11 | [[2026-06-19_daily-brief
+| 11 | [[2026-06-19_daily-briefing]] | 2 | 2 | Automatisierung prüfen |
+| 11 | [[2026-06-18_simulat
 
 ## Priorisierte Tagesentscheidung
 

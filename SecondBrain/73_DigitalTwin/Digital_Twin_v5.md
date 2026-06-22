@@ -4,12 +4,12 @@ Aktualisiert: 2026-06-22
 
 ## Prioritätsmodell
 
-- projekt: 531
-- risiko: 320
-- prozess: 291
-- entscheidung: 264
-- automatisierung: 157
-- tischtennis: 42
+- projekt: 521
+- risiko: 325
+- prozess: 290
+- entscheidung: 259
+- automatisierung: 159
+- tischtennis: 51
 - gesundheit: 42
 - lokal: 12
 

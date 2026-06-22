@@ -43,6 +43,21 @@ den Hinweis "psutil fehlt".
 - `GET /api/run?script=NAME` - Skript ausfuehren (review-first)
 - `GET /api/rag?q=FRAGE` - RAG-Frage an das Vault
 - `GET /api/logs` - Tail von `jarvis_gui.log`
+- `GET /api/settings` - aktuelle Einstellungen lesen
+- `POST /api/settings` - Einstellungen speichern (JSON-Body, validiert)
+
+## Einstellungen (Menuepunkt "⚙ Einstellungen")
+
+Button in der Aktionsleiste oeffnet ein Modal. Konfigurierbar:
+
+- Ort (Anzeige), Breitengrad, Laengengrad (speist Open-Meteo)
+- News-Feed (RSS-URL), Anzahl Schlagzeilen (1-20)
+- Wetter-Intervall (Minuten, 1-720)
+- Akzentfarbe (CSS-Variable der GUI)
+
+Persistenz serverseitig in `config/hud_settings.json` (ueberlebt Neustart).
+Eingaben werden im Backend validiert und begrenzt; unbekannte Felder verworfen.
+Aenderungen wirken sofort (Wetter/News werden neu geladen, Akzentfarbe sofort gesetzt).
 
 ## Aktualisierung im Browser
 

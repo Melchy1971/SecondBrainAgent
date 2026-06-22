@@ -73,6 +73,56 @@ except Exception:  # pragma: no cover - Fallback ohne psutil
     _HAS_PSUTIL = False
 
 
+# --- Einstellungen (persistent) ---------------------------------------------
+SETTINGS_FILE = ROOT / "config" / "hud_settings.json"
+
+DEFAULT_SETTINGS = {
+    "place": WEATHER_PLACE,
+    "lat": WEATHER_LAT,
+    "lon": WEATHER_LON,
+    "news_rss": NEWS_RSS,
+    "news_max": NEWS_MAX,
+    "weather_min": 15,   # Wetter-Refresh im Browser (Minuten)
+    "accent": "#2fe6ff",  # HUD-Akzentfarbe
+}
+# Welche Felder duerfen ueberschrieben werden + Typ/Begrenzung.
+_NUM = {"lat": (-90, 90), "lon": (-180, 180), "news_max": (1, 20), "weather_min": (1, 720)}
+
+
+def load_settings() -> dict:
+    """Settings aus Datei, fehlende Werte aus DEFAULT_SETTINGS."""
+    data = dict(DEFAULT_SETTINGS)
+    try:
+        if SETTINGS_FILE.exists():
+            data.update(json.loads(SETTINGS_FILE.read_text(encoding="utf-8")))
+    except Exception as exc:
+        log_event("hud.settings_read_error", {"error": str(exc)})
+    return data
+
+
+def save_settings(incoming: dict) -> dict:
+    """Validiert eingehende Werte, mischt mit Bestand, schreibt Datei."""
+    current = load_settings()
+    for key, val in (incoming or {}).items():
+        if key not in DEFAULT_SETTINGS:
+            continue
+        if key in _NUM:
+            try:
+                num = float(val)
+            except (TypeError, ValueError):
+                continue
+            lo, hi = _NUM[key]
+            num = max(lo, min(hi, num))
+            current[key] = int(num) if key in ("news_max", "weather_min") else num
+        else:
+            current[key] = str(val)[:300]
+    SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SETTINGS_FILE.write_text(json.dumps(current, ensure_ascii=False, indent=2),
+                             encoding="utf-8")
+    log_event("hud.settings_saved", current)
+    return current
+
+
 # --- Datenfunktionen ---------------------------------------------------------
 def _disk_path() -> str:
     """Pfad fuer disk_usage: Laufwerk von ROOT, sonst vorhandener Fallback."""
@@ -139,9 +189,11 @@ def metrics() -> dict:
 
 def weather() -> dict:
     """Aktuelles Wetter + 5-Tage-Vorschau via Open-Meteo (kein API-Key)."""
+    cfg = load_settings()
+    place = cfg["place"]
     params = {
-        "latitude": WEATHER_LAT,
-        "longitude": WEATHER_LON,
+        "latitude": cfg["lat"],
+        "longitude": cfg["lon"],
         "current": "temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m",
         "daily": "temperature_2m_max,temperature_2m_min,weather_code",
         "timezone": "Europe/Berlin",
@@ -165,7 +217,7 @@ def weather() -> dict:
             })
         return {
             "ok": True,
-            "place": WEATHER_PLACE,
+            "place": place,
             "temp": round(cur.get("temperature_2m", 0)),
             "text": WMO.get(cur.get("weather_code"), "?"),
             "humidity": round(cur.get("relative_humidity_2m", 0)),
@@ -173,13 +225,14 @@ def weather() -> dict:
             "days": days,
         }
     except Exception as exc:  # offline / blockiert
-        return {"ok": False, "place": WEATHER_PLACE, "error": str(exc)}
+        return {"ok": False, "place": place, "error": str(exc)}
 
 
 def news() -> dict:
-    """Schlagzeilen aus dem Tagesschau-RSS."""
+    """Schlagzeilen aus dem konfigurierten RSS-Feed."""
+    cfg = load_settings()
     try:
-        req = urllib.request.Request(NEWS_RSS, headers={"User-Agent": "JarvisHUD/1.0"})
+        req = urllib.request.Request(cfg["news_rss"], headers={"User-Agent": "JarvisHUD/1.0"})
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
             root = ET.fromstring(r.read())
         items = []
@@ -187,9 +240,9 @@ def news() -> dict:
             title = item.findtext("title", "").strip()
             if title:
                 items.append(title)
-            if len(items) >= NEWS_MAX:
+            if len(items) >= cfg["news_max"]:
                 break
-        return {"ok": True, "source": "tagesschau.de", "items": items}
+        return {"ok": True, "source": cfg["news_rss"], "items": items}
     except Exception as exc:
         return {"ok": False, "error": str(exc), "items": []}
 
@@ -254,10 +307,26 @@ class Handler(BaseHTTPRequestHandler):
                            else {"ok": False, "output": "Keine Frage uebergeben."})
             elif path == "/api/logs":
                 self._json({"log": tail_log()})
+            elif path == "/api/settings":
+                self._json(load_settings())
             else:
                 self._send(b"404", "text/plain", 404)
         except Exception as exc:  # nichts soll den Server killen
             log_event("hud.error", {"path": path, "error": str(exc)})
+            self._json({"ok": False, "error": str(exc)})
+
+    def do_POST(self):
+        parsed = urlparse(self.path)
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length) if length else b"{}"
+            payload = json.loads(raw.decode("utf-8") or "{}")
+            if parsed.path == "/api/settings":
+                self._json({"ok": True, "settings": save_settings(payload)})
+            else:
+                self._send(b"404", "text/plain", 404)
+        except Exception as exc:
+            log_event("hud.error", {"path": parsed.path, "error": str(exc)})
             self._json({"ok": False, "error": str(exc)})
 
 

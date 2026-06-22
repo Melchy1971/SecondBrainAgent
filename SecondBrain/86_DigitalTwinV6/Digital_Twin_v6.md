@@ -4,11 +4,11 @@ Aktualisiert: 2026-06-22
 
 ## Prioritätssignale
 
-- projekt: 532
-- risiko: 320
+- projekt: 521
+- risiko: 325
 - prozess: 290
-- entscheidung: 264
-- automatisierung: 157
+- entscheidung: 259
+- automatisierung: 159
 - gesundheit: 42
 - lernen: 22
 - lokal: 12

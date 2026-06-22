@@ -139,6 +139,32 @@
   .corner.tr{top:8px; right:8px; border-left:0; border-bottom:0}
   .corner.bl{bottom:8px; left:8px; border-right:0; border-top:0}
   .corner.br{bottom:8px; right:8px; border-left:0; border-top:0}
+
+  /* Einstellungen-Modal */
+  .overlay{position:fixed; inset:0; z-index:10; display:none; align-items:center;
+    justify-content:center; background:rgba(2,6,11,.78); backdrop-filter:blur(4px)}
+  .overlay.open{display:flex}
+  .modal{width:440px; max-width:92vw; max-height:88vh; overflow:auto;
+    background:linear-gradient(160deg, rgba(10,28,38,.96), rgba(4,12,18,.96));
+    border:1px solid var(--cyan); border-radius:14px; padding:22px 24px;
+    box-shadow:0 0 40px rgba(47,230,255,.25), inset 0 0 30px rgba(47,230,255,.06)}
+  .modal h2{font-size:14px; color:var(--cyan); text-shadow:var(--glow);
+    border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:16px;
+    display:flex; justify-content:space-between; align-items:center}
+  .modal .close{cursor:pointer; color:var(--muted); font-size:18px; line-height:1}
+  .modal .close:hover{color:#eafcff}
+  .field{margin-bottom:14px}
+  .field label{display:block; font-size:10px; color:var(--muted); letter-spacing:.14em;
+    text-transform:uppercase; margin-bottom:5px}
+  .field input{width:100%; background:rgba(0,8,12,.6); border:1px solid var(--line);
+    border-radius:8px; color:#eafcff; padding:9px 11px; font-family:inherit; font-size:12px}
+  .field input:focus{outline:none; box-shadow:var(--glow)}
+  .field input[type=color]{height:38px; padding:3px; cursor:pointer}
+  .field .row{display:flex; gap:10px}
+  .field .row > div{flex:1}
+  .modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:8px}
+  .modal .hint{font-size:10px; color:var(--muted); margin:-8px 0 16px}
+  .modal .saved{color:var(--good); font-size:11px}
 </style>
 </head>
 <body>
@@ -253,6 +279,7 @@
       <button class="btn warn" data-run="release_gate_v9.py">Release Gate</button>
       <button class="btn warn" data-run="run_regression_tests_v9.py">Regression</button>
       <button class="btn" id="btn-logs">Logs</button>
+      <button class="btn" id="btn-settings">⚙ Einstellungen</button>
     </div>
   </div>
 
@@ -292,6 +319,44 @@
     <pre id="out">Bereit. review-first · keine Löschaktionen.</pre>
   </div>
 
+</div>
+
+<!-- ===================== EINSTELLUNGEN ===================== -->
+<div class="overlay" id="settings-overlay">
+  <div class="modal">
+    <h2>⚙ Einstellungen <span class="close" id="settings-close">✕</span></h2>
+    <div class="field">
+      <label>Ort (Anzeige)</label>
+      <input id="set-place" placeholder="Bonn">
+    </div>
+    <div class="field">
+      <div class="row">
+        <div><label>Breitengrad</label><input id="set-lat" type="number" step="0.0001"></div>
+        <div><label>Längengrad</label><input id="set-lon" type="number" step="0.0001"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>News-Feed (RSS-URL)</label>
+      <input id="set-rss" placeholder="https://www.tagesschau.de/index~rss2.xml">
+    </div>
+    <div class="field">
+      <div class="row">
+        <div><label>News-Anzahl (1–20)</label><input id="set-newsmax" type="number" min="1" max="20"></div>
+        <div><label>Wetter-Intervall (min)</label><input id="set-wmin" type="number" min="1" max="720"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Akzentfarbe</label>
+      <input id="set-accent" type="color">
+    </div>
+    <p class="hint">Standort speist Wetter (Open-Meteo). Werte werden serverseitig in
+      config/hud_settings.json gespeichert.</p>
+    <div class="modal-actions">
+      <span class="saved" id="set-status"></span>
+      <button class="btn" id="settings-cancel">Abbrechen</button>
+      <button class="btn go" id="settings-save">Speichern</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -374,7 +439,12 @@ async function loadWeather(){
       `<div>${d.label}<div class="t">${d.max}° / ${d.min}°</div>${d.text}</div>`).join("");
   }catch(e){ $("w-text").textContent="Fehler"; }
 }
-loadWeather(); setInterval(loadWeather, 15*60*1000);
+let weatherTimer = null;
+function scheduleWeather(min){
+  if(weatherTimer) clearInterval(weatherTimer);
+  weatherTimer = setInterval(loadWeather, Math.max(1, min||15) * 60 * 1000);
+}
+loadWeather(); scheduleWeather(15);
 
 // --- News ---
 async function loadNews(){
@@ -428,6 +498,66 @@ $("rag-q").addEventListener("keydown", e=>{ if(e.key==="Enter") askRag(); });
 
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>(
   {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+
+// --- Einstellungen ---
+let SETTINGS = {};
+function applyAccent(color){
+  if(color) document.documentElement.style.setProperty("--cyan", color);
+}
+async function loadSettings(applyTimers){
+  try{
+    SETTINGS = await (await fetch("/api/settings")).json();
+    applyAccent(SETTINGS.accent);
+    if(applyTimers) scheduleWeather(SETTINGS.weather_min);
+  }catch(e){ SETTINGS = {}; }
+  return SETTINGS;
+}
+function fillSettingsForm(s){
+  $("set-place").value   = s.place ?? "";
+  $("set-lat").value     = s.lat ?? "";
+  $("set-lon").value     = s.lon ?? "";
+  $("set-rss").value     = s.news_rss ?? "";
+  $("set-newsmax").value = s.news_max ?? 8;
+  $("set-wmin").value    = s.weather_min ?? 15;
+  $("set-accent").value  = s.accent ?? "#2fe6ff";
+}
+function openSettings(){
+  fillSettingsForm(SETTINGS);
+  $("set-status").textContent = "";
+  $("settings-overlay").classList.add("open");
+}
+function closeSettings(){ $("settings-overlay").classList.remove("open"); }
+$("btn-settings").addEventListener("click", async ()=>{ await loadSettings(false); openSettings(); });
+$("settings-close").addEventListener("click", closeSettings);
+$("settings-cancel").addEventListener("click", closeSettings);
+$("settings-overlay").addEventListener("click", e=>{ if(e.target.id==="settings-overlay") closeSettings(); });
+$("settings-save").addEventListener("click", async ()=>{
+  const body = {
+    place: $("set-place").value.trim(),
+    lat: parseFloat($("set-lat").value),
+    lon: parseFloat($("set-lon").value),
+    news_rss: $("set-rss").value.trim(),
+    news_max: parseInt($("set-newsmax").value, 10),
+    weather_min: parseInt($("set-wmin").value, 10),
+    accent: $("set-accent").value,
+  };
+  $("set-status").textContent = "speichere…";
+  try{
+    const r = await (await fetch("/api/settings", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
+    })).json();
+    if(r.ok){
+      SETTINGS = r.settings;
+      applyAccent(SETTINGS.accent);
+      scheduleWeather(SETTINGS.weather_min);
+      loadWeather(); loadNews();
+      $("set-status").textContent = "gespeichert ✓";
+      setTimeout(closeSettings, 700);
+    }else{ $("set-status").textContent = "Fehler: "+(r.error||"?"); }
+  }catch(e){ $("set-status").textContent = "Fehler: "+e; }
+});
+// Akzent + Intervall beim Start aus den Settings setzen.
+loadSettings(true);
 </script>
 </body>
 </html>

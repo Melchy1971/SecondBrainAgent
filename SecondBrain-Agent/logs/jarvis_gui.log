@@ -12,3 +12,9 @@
 {"time": "2026-06-22 15:20:59", "type": "script.run", "payload": {"script": "rag_answer.py", "ok": true}}
 {"time": "2026-06-22 15:39:58", "type": "script.run", "payload": {"script": "build_vector_rag.py", "ok": true}}
 {"time": "2026-06-22 15:40:07", "type": "script.run", "payload": {"script": "import_ai_exports.py", "ok": true}}
+{"time": "2026-06-22 16:07:10", "type": "gui.start", "payload": {"host": "127.0.0.1", "port": 8850}}
+{"time": "2026-06-22 16:07:33", "type": "script.run", "payload": {"script": "build_vector_rag.py", "ok": true}}
+{"time": "2026-06-22 16:07:37", "type": "script.run", "payload": {"script": "release_gate_v9.py", "ok": true}}
+{"time": "2026-06-22 16:07:47", "type": "script.run", "payload": {"script": "run_regression_tests_v9.py", "ok": false}}
+{"time": "2026-06-22 16:07:55", "type": "script.run", "payload": {"script": "production_ready_gate_v96.py", "ok": true}}
+{"time": "2026-06-22 16:23:24", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
