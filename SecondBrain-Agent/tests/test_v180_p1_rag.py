@@ -50,7 +50,7 @@ def test_p1_gate_writes_report(tmp_path, capsys):
     rc = main(["--project-root", str(tmp_path), "p1-gate", "--write-report"])
     captured = capsys.readouterr().out
     assert rc == 0
-    assert '"schema": "secondbrain.p1_gate.v3"' in captured
+    assert '"schema": "secondbrain.p1_gate.v4"' in captured
     report = tmp_path / "runtime" / "reports" / "p1_gate_latest.json"
     assert report.exists()
     assert json.loads(report.read_text(encoding="utf-8"))["status"] == "pass"

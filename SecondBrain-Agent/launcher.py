@@ -138,7 +138,7 @@ def _local_status(argv: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
-    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-gate"}:
+    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
         parser.add_argument("--profile", default=None)
@@ -158,6 +158,20 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
         elif cmd == "p1-rag-search":
             payload = rt.search(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-vector-search":
+            payload = rt.vector_search(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-hybrid-search":
+            payload = rt.hybrid_search(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-reindex":
+            payload = rt.reindex_vectors(write_report=args.write_report)
+        elif cmd == "p1-embedding-status":
+            payload = rt.embedding_status()
+        elif cmd == "p1-retrieval-benchmark":
+            payload = rt.retrieval_benchmark(write_report=args.write_report)
+        elif cmd == "p1-retrieval-metrics":
+            payload = rt.retrieval_metrics(write_report=args.write_report)
+        elif cmd == "p1-production":
+            payload = rt.production_gate(write_report=args.write_report)
         elif cmd == "p1-rag-answer":
             payload = rt.answer(" ".join(args.args), args.limit)
         elif cmd == "p1-rag-sources":

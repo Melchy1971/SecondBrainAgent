@@ -34,7 +34,7 @@ DEFAULT_MODULES: tuple[ModuleDescriptor, ...] = (
         "SecondBrainLauncherV126",
         "core126_status",
         ("core-", "status", "health", "p1-"),
-        ("core-status", "status", "health", "modules", "module-status", "module-health", "p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit", "p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-gate", "command-index"),
+        ("core-status", "status", "health", "modules", "module-status", "module-health", "p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit", "p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-production", "p1-gate", "command-index"),
         True,
     ),
     ModuleDescriptor(

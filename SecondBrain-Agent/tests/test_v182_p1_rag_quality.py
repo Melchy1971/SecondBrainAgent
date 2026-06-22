@@ -35,7 +35,7 @@ def test_p1_launcher_validation_quality_and_gate_v3(tmp_path, capsys):
     assert '"schema": "secondbrain.p1_rag.quality.v1"' in captured
     assert main(["--project-root", str(tmp_path), "p1-gate", "--write-report"]) == 0
     captured = capsys.readouterr().out
-    assert '"schema": "secondbrain.p1_gate.v3"' in captured
+    assert '"schema": "secondbrain.p1_gate.v4"' in captured
     report = tmp_path / "runtime" / "reports" / "p1_gate_latest.json"
     assert json.loads(report.read_text(encoding="utf-8"))["quality"]["ok"] is True
 

@@ -46,9 +46,9 @@ def test_p1_launcher_sources_explain_and_gate_v2(tmp_path, capsys):
     rc = main(["--project-root", str(tmp_path), "p1-gate", "--write-report"])
     captured = capsys.readouterr().out
     assert rc == 0
-    assert '"schema": "secondbrain.p1_gate.v3"' in captured
+    assert '"schema": "secondbrain.p1_gate.v4"' in captured
     report = tmp_path / "runtime" / "reports" / "p1_gate_latest.json"
-    assert json.loads(report.read_text(encoding="utf-8"))["schema"] == "secondbrain.p1_gate.v3"
+    assert json.loads(report.read_text(encoding="utf-8"))["schema"] == "secondbrain.p1_gate.v4"
 
 
 def test_p1_new_commands_registered():
