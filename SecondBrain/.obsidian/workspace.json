@@ -11,10 +11,14 @@
             "id": "3f5a0d5b72b23ec9",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph-Ansicht"
+              "type": "markdown",
+              "state": {
+                "file": "88_VectorRAG/2026-06-22_152059_rag_answer.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-06-22_152059_rag_answer"
             }
           }
         ]
@@ -193,6 +197,7 @@
   },
   "active": "3f5a0d5b72b23ec9",
   "lastOpenFiles": [
+    "88_VectorRAG/2026-06-22_152059_rag_answer.md",
     "Obsidian.md",
     "131_DashboardAPI/Dashboard_Catalog.md",
     "99_System/release_gates/2026-06-22_093726_release_gate_v9.md",
@@ -218,7 +223,6 @@
     "93_RealtimeEventBus/2026-06-22_event-bus.md",
     "84_MonitoringTelemetry/2026-06-22_monitoring.md",
     "79_SimulationEngineV2/2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist.md",
-    "78_LearningEngine/2026-06-22_learning-plan.md",
     "87_ControlCenter",
     "86_DigitalTwinV6",
     "85_PluginEcosystem",
