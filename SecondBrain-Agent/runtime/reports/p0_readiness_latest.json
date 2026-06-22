@@ -1,0 +1,247 @@
+{
+  "schema": "secondbrain.p0_readiness.v1",
+  "generated_at": "2026-06-22T09:39:49.095001+00:00",
+  "status": "pass",
+  "ok": true,
+  "blockers": 0,
+  "warnings": 2,
+  "checks": [
+    {
+      "name": "database_readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "mode": "local_sqlite_probe",
+        "blockers": 0,
+        "warnings": 1
+      }
+    },
+    {
+      "name": "event_bus_readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "event_id": "evt_878e004fc1b2"
+      }
+    },
+    {
+      "name": "required_config_files",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "missing": [],
+        "required": [
+          "settings.yaml",
+          "runtime.yaml",
+          "production.yaml",
+          "security.yaml",
+          "connectors.yaml"
+        ]
+      }
+    },
+    {
+      "name": "runtime_state_readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0
+      }
+    },
+    {
+      "name": "secrets_readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0,
+        "warnings": 1
+      }
+    }
+  ],
+  "config": {
+    "project_root": "/mnt/data/sba_work/SecondBrain-Agent",
+    "profile": "default",
+    "runtime_dir": "/mnt/data/sba_work/SecondBrain-Agent/runtime",
+    "config_files": {
+      "settings.yaml": true,
+      "runtime.yaml": true,
+      "production.yaml": true,
+      "security.yaml": true,
+      "connectors.yaml": true
+    },
+    "settings_keys": [
+      "app_name",
+      "data_model",
+      "default_language",
+      "destructive_actions_allowed",
+      "dictation_import_enabled",
+      "email_send_allowed",
+      "external_research_allowed",
+      "inbox_path",
+      "platform_mode",
+      "safe_mode_default",
+      "speech_to_text_provider",
+      "system_path",
+      "text_to_speech_provider",
+      "v103_enabled",
+      "vault_path",
+      "version",
+      "voice_command_router_enabled",
+      "voice_layer_enabled"
+    ],
+    "production_keys": [
+      "production"
+    ]
+  },
+  "secrets": {
+    "ok": true,
+    "status": "pass",
+    "warnings": 1,
+    "blockers": 0,
+    "live_file_exists": false,
+    "live_secret_key_count": 0,
+    "checks": [
+      {
+        "name": "secret_encryption_declared",
+        "ok": false,
+        "severity": "warning",
+        "detail": {
+          "mode": "none"
+        }
+      },
+      {
+        "name": "live_secrets_file_absent_or_non_placeholder",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "placeholder_keys": [],
+          "live_file_exists": false
+        }
+      },
+      {
+        "name": "secrets_template_exists",
+        "ok": true,
+        "severity": "warning",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/config/secrets.template.yaml"
+        }
+      }
+    ]
+  },
+  "database": {
+    "ok": true,
+    "status": "pass",
+    "mode": "local_sqlite_probe",
+    "blockers": 0,
+    "warnings": 1,
+    "checks": [
+      {
+        "name": "production_database_url_declared",
+        "ok": false,
+        "severity": "warning",
+        "detail": {
+          "expected": "DATABASE_URL or production.database.url"
+        }
+      },
+      {
+        "name": "local_sqlite_probe",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/p0_readiness.sqlite3"
+        }
+      }
+    ]
+  },
+  "event_bus": {
+    "ok": true,
+    "status": "pass",
+    "blockers": 0,
+    "checks": [
+      {
+        "name": "event_bus_component_v121",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "component": "event_bus_v121"
+        }
+      },
+      {
+        "name": "event_bus_publish",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "event_id": "evt_878e004fc1b2"
+        }
+      },
+      {
+        "name": "event_bus_status_healthy",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "component": "event_bus_v121",
+          "events": 25,
+          "dead_letters": 0,
+          "runtime_handlers": 0,
+          "persistent_subscriptions": 0,
+          "healthy": true
+        }
+      }
+    ],
+    "event_id": "evt_878e004fc1b2"
+  },
+  "state": {
+    "ok": true,
+    "status": "pass",
+    "blockers": 0,
+    "checks": [
+      {
+        "name": "runtime_recovery_file",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/state/runtime_recovery.json"
+        }
+      },
+      {
+        "name": "writable:events_v121",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/events_v121",
+          "error": null
+        }
+      },
+      {
+        "name": "writable:reports",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports",
+          "error": null
+        }
+      },
+      {
+        "name": "writable:runtime",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime",
+          "error": null
+        }
+      },
+      {
+        "name": "writable:state",
+        "ok": true,
+        "severity": "blocker",
+        "detail": {
+          "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/state",
+          "error": null
+        }
+      }
+    ]
+  }
+}

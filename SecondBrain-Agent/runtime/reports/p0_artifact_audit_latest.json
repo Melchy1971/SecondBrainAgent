@@ -1,0 +1,137 @@
+{
+  "schema": "secondbrain.p0_artifact_audit.v1",
+  "generated_at": "2026-06-22T09:39:49.096842+00:00",
+  "status": "pass",
+  "ok": true,
+  "blockers": 0,
+  "warnings": 0,
+  "checks": [
+    {
+      "name": "event_log_non_empty",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "lines": 25
+      }
+    },
+    {
+      "name": "event_log_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/events_v121/events.jsonl"
+      }
+    },
+    {
+      "name": "launcher_file_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/launcher.py"
+      }
+    },
+    {
+      "name": "p0_integration_tests_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/tests/test_v170_p0_integration.py"
+      }
+    },
+    {
+      "name": "p0_runtime_module_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/secondbrain/p0_runtime.py"
+      }
+    },
+    {
+      "name": "report_json_valid:contract",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "schema": "secondbrain.p0_contract.v1"
+      }
+    },
+    {
+      "name": "report_json_valid:gate",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "schema": "secondbrain.p0_gate.v1"
+      }
+    },
+    {
+      "name": "report_json_valid:readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "schema": "secondbrain.p0_readiness.v1"
+      }
+    },
+    {
+      "name": "report_json_valid:smoke",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "schema": "secondbrain.p0_smoke.v1"
+      }
+    },
+    {
+      "name": "reports_dir_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports"
+      }
+    },
+    {
+      "name": "runtime_recovery_present",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/state/runtime_recovery.json"
+      }
+    },
+    {
+      "name": "report_present:contract",
+      "ok": true,
+      "severity": "warning",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_contract_latest.json"
+      }
+    },
+    {
+      "name": "report_present:gate",
+      "ok": true,
+      "severity": "warning",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_gate_latest.json"
+      }
+    },
+    {
+      "name": "report_present:readiness",
+      "ok": true,
+      "severity": "warning",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_readiness_latest.json"
+      }
+    },
+    {
+      "name": "report_present:smoke",
+      "ok": true,
+      "severity": "warning",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_smoke_latest.json"
+      }
+    }
+  ],
+  "artifacts": {
+    "gate": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_gate_latest.json",
+    "readiness": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_readiness_latest.json",
+    "smoke": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_smoke_latest.json",
+    "contract": "/mnt/data/sba_work/SecondBrain-Agent/runtime/reports/p0_contract_latest.json"
+  },
+  "runtime_dir": "/mnt/data/sba_work/SecondBrain-Agent/runtime"
+}

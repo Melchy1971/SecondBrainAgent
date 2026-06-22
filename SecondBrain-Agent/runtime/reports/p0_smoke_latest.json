@@ -1,0 +1,105 @@
+{
+  "schema": "secondbrain.p0_smoke.v1",
+  "generated_at": "2026-06-22T09:39:49.095449+00:00",
+  "status": "pass",
+  "ok": true,
+  "blockers": 0,
+  "checks": [
+    {
+      "name": "command_resolution_core",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "command": "health"
+      }
+    },
+    {
+      "name": "command_resolution_desktop",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "command": "desktop-status"
+      }
+    },
+    {
+      "name": "command_resolution_mobile",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "command": "mobile16-status"
+      }
+    },
+    {
+      "name": "contract_passes",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0
+      }
+    },
+    {
+      "name": "critical_modules_declared",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "critical_modules": [
+          "core",
+          "desktop"
+        ]
+      }
+    },
+    {
+      "name": "event_bus_publish",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "event_id": "evt_2e580495f599",
+        "status": {
+          "component": "event_bus_v121",
+          "events": 25,
+          "dead_letters": 0,
+          "runtime_handlers": 0,
+          "persistent_subscriptions": 0,
+          "healthy": true
+        }
+      }
+    },
+    {
+      "name": "gate_passes",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "score": 100.0,
+        "blockers": 0
+      }
+    },
+    {
+      "name": "readiness_passes",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0,
+        "warnings": 2
+      }
+    }
+  ],
+  "gate": {
+    "status": "pass",
+    "score": 100.0,
+    "blockers": 0,
+    "warnings": 0
+  },
+  "contract": {
+    "status": "pass",
+    "blockers": 0
+  },
+  "readiness": {
+    "status": "pass",
+    "blockers": 0,
+    "warnings": 2
+  },
+  "event_id": "evt_2e580495f599"
+}

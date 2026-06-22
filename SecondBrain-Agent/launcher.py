@@ -1,67 +1,220 @@
+from __future__ import annotations
+
 import argparse
 import json
-from secondbrain.long_term_memory import LongTermMemoryRuntime
+import sys
+from pathlib import Path
+from typing import Any
+
+from secondbrain.module_registry import ModuleRegistry
+from secondbrain.p0_runtime import load_runtime_snapshot, p0_artifact_audit, p0_bootstrap, p0_contract, p0_doctor, p0_gate, p0_production_gate, p0_readiness, p0_report, p0_smoke
+from secondbrain.p1_rag_runtime import P1RagRuntime
 
 
-def out(obj):
-    print(json.dumps(obj, indent=2, ensure_ascii=False))
+def out(obj: Any) -> None:
+    print(json.dumps(obj, indent=2, ensure_ascii=False, default=str))
 
 
-def main():
-    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain OS v16.6 Long-Term Memory launcher")
+def _first_command(argv: list[str]) -> str | None:
+    skip_next = False
+    for item in argv:
+        if skip_next:
+            skip_next = False
+            continue
+        if item in {"--project-root", "--profile", "--db-path"}:
+            skip_next = True
+            continue
+        if item.startswith("--"):
+            continue
+        return item
+    return None
+
+
+def _strip_unhandled_global_options(argv: list[str], allowed: set[str]) -> list[str]:
+    cleaned: list[str] = []
+    i = 0
+    while i < len(argv):
+        item = argv[i]
+        if item in {"--project-root", "--profile", "--db-path"} and item not in allowed:
+            i += 2
+            continue
+        cleaned.append(item)
+        i += 1
+    return cleaned
+
+
+def _mobile_main(argv: list[str] | None = None) -> int:
+    from secondbrain.mobile_companion import MobileCompanionRuntime
+
+    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain Mobile Companion launcher")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--db-path", default=None)
     sub = parser.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("mobile16-migrate")
+    sub.add_parser("mobile16-status")
+    sub.add_parser("mobile16-manifest")
+    p = sub.add_parser("mobile16-pair-request"); p.add_argument("device_name"); p.add_argument("platform")
+    p = sub.add_parser("mobile16-pair-approve"); p.add_argument("request_id")
+    sub.add_parser("mobile16-pairing-requests")
+    sub.add_parser("mobile16-devices")
+    p = sub.add_parser("mobile16-capture"); p.add_argument("kind"); p.add_argument("payload_json"); p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-voice-note"); p.add_argument("text"); p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-camera-ocr"); p.add_argument("image_ref"); p.add_argument("--device-id", default=None)
+    sub.add_parser("mobile16-offline-queue")
+    sub.add_parser("mobile16-offline-replay")
+    p = sub.add_parser("mobile16-push"); p.add_argument("title"); p.add_argument("body"); p.add_argument("--device-id", default=None); p.add_argument("--priority", default="normal")
+    sub.add_parser("mobile16-push-outbox")
+    sub.add_parser("mobile16-push-deliver")
+    sub.add_parser("mobile16-widgets")
+    p = sub.add_parser("mobile16-widget-enable"); p.add_argument("widget_id"); p.add_argument("enabled", choices=["true", "false"])
+    p = sub.add_parser("mobile16-sync"); p.add_argument("--device-id", default=None)
+    sub.add_parser("mobile16-sync-runs")
+    p = sub.add_parser("mobile16-session-create"); p.add_argument("title"); p.add_argument("--device-id", default=None)
+    sub.add_parser("mobile16-sessions")
 
-    sub.add_parser("mem16-migrate")
-    sub.add_parser("mem16-status")
-    sub.add_parser("mem16-seed")
-    p = sub.add_parser("mem16-episode-add")
-    p.add_argument("title")
-    p.add_argument("what")
-    p.add_argument("--outcome", default="")
-    p.add_argument("--importance", type=float, default=0.5)
-    p.add_argument("--emotion", type=float, default=0.0)
-    p = sub.add_parser("mem16-fact-add")
-    p.add_argument("entity")
-    p.add_argument("attribute")
-    p.add_argument("value")
-    p.add_argument("--confidence", type=float, default=0.6)
-    p = sub.add_parser("mem16-procedure-add")
-    p.add_argument("name")
-    p.add_argument("steps_json")
-    p = sub.add_parser("mem16-procedure-result")
-    p.add_argument("procedure_id")
-    p.add_argument("--success", choices=["true", "false"], default="true")
-    p = sub.add_parser("mem16-recall")
-    p.add_argument("query")
-    p.add_argument("--type", default="all")
-    p = sub.add_parser("mem16-link")
-    p.add_argument("source_type")
-    p.add_argument("source_id")
-    p.add_argument("target_type")
-    p.add_argument("target_id")
-    p.add_argument("relation")
-    sub.add_parser("mem16-consolidate")
-    sub.add_parser("mem16-importance")
-    sub.add_parser("mem16-graph-export")
+    args = parser.parse_args(argv)
+    rt = MobileCompanionRuntime(args.project_root, args.db_path)
+    if args.cmd == "mobile16-migrate": out(rt.migrate())
+    elif args.cmd == "mobile16-status": out(rt.status())
+    elif args.cmd == "mobile16-manifest": out(rt.app_manifest())
+    elif args.cmd == "mobile16-pair-request": out(rt.pair_request(args.device_name, args.platform))
+    elif args.cmd == "mobile16-pair-approve": out(rt.approve_pairing(args.request_id))
+    elif args.cmd == "mobile16-pairing-requests": out(rt.pairing_requests())
+    elif args.cmd == "mobile16-devices": out(rt.devices())
+    elif args.cmd == "mobile16-capture": out(rt.capture(args.kind, json.loads(args.payload_json), args.device_id))
+    elif args.cmd == "mobile16-voice-note": out(rt.voice_note(args.text, args.device_id))
+    elif args.cmd == "mobile16-camera-ocr": out(rt.camera_ocr(args.image_ref, args.device_id))
+    elif args.cmd == "mobile16-offline-queue": out(rt.offline_queue())
+    elif args.cmd == "mobile16-offline-replay": out(rt.replay_offline())
+    elif args.cmd == "mobile16-push": out(rt.push(args.title, args.body, args.device_id, args.priority))
+    elif args.cmd == "mobile16-push-outbox": out(rt.push_outbox())
+    elif args.cmd == "mobile16-push-deliver": out(rt.deliver_push())
+    elif args.cmd == "mobile16-widgets": out(rt.widgets())
+    elif args.cmd == "mobile16-widget-enable": out(rt.widget_enable(args.widget_id, args.enabled == "true"))
+    elif args.cmd == "mobile16-sync": out(rt.sync(args.device_id))
+    elif args.cmd == "mobile16-sync-runs": out(rt.sync_runs())
+    elif args.cmd == "mobile16-session-create": out(rt.session_create(args.title, args.device_id))
+    elif args.cmd == "mobile16-sessions": out(rt.sessions())
+    else: return 2
+    return 0
 
-    args = parser.parse_args()
-    rt = LongTermMemoryRuntime(args.project_root, args.db_path)
 
-    if args.cmd == "mem16-migrate": out(rt.migrate())
-    elif args.cmd == "mem16-status": out(rt.status())
-    elif args.cmd == "mem16-seed": out(rt.seed_demo())
-    elif args.cmd == "mem16-episode-add": out(rt.add_episode(args.title, args.what, outcome=args.outcome, importance=args.importance, emotion_weight=args.emotion))
-    elif args.cmd == "mem16-fact-add": out(rt.add_fact(args.entity, args.attribute, args.value, args.confidence))
-    elif args.cmd == "mem16-procedure-add": out(rt.add_procedure(args.name, json.loads(args.steps_json)))
-    elif args.cmd == "mem16-procedure-result": out(rt.record_procedure_result(args.procedure_id, args.success == "true"))
-    elif args.cmd == "mem16-recall": out(rt.recall(args.query, args.type))
-    elif args.cmd == "mem16-link": out(rt.link(args.source_type, args.source_id, args.target_type, args.target_id, args.relation))
-    elif args.cmd == "mem16-consolidate": out(rt.consolidate())
-    elif args.cmd == "mem16-importance": out(rt.importance_report())
-    elif args.cmd == "mem16-graph-export": out(rt.graph_export())
+def _local_status(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("--profile", default=None)
+    parser.add_argument("cmd", nargs="?")
+    parser.add_argument("module", nargs="?")
+    parser.add_argument("--runtime", action="store_true", help="execute lightweight runtime status checks")
+    args, _ = parser.parse_known_args(argv)
+    registry = ModuleRegistry()
+    project_root = Path(args.project_root).resolve()
+    import_health = registry.import_health()
+    runtime_health = registry.runtime_health(project_root, args.profile) if args.runtime or args.cmd in {"health", "module-health"} else None
+    selected = None
+    if args.module:
+        try:
+            selected = registry.get(args.module).to_dict()
+        except KeyError:
+            out({"status": "error", "error": f"unknown module: {args.module}", "known_modules": registry.keys()})
+            return 2
+    effective_ok = import_health["ok"] and (runtime_health is None or runtime_health["ok"])
+    payload = {
+        "status": "ok" if effective_ok else "degraded",
+        "project_root": str(project_root),
+        "profile": args.profile or "default",
+        "command_index": registry.command_index(),
+        "config": load_runtime_snapshot(project_root, args.profile).to_dict(),
+        "registry": registry.list(),
+        "selected_module": selected,
+        "import_health": import_health,
+    }
+    if runtime_health is not None:
+        payload["runtime_health"] = runtime_health
+    out(payload)
+    return 0 if effective_ok else 1
+
+
+def main(argv: list[str] | None = None) -> int:
+    raw = list(sys.argv[1:] if argv is None else argv)
+    cmd = _first_command(raw)
+    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-gate"}:
+        parser = argparse.ArgumentParser(prog="secondbrain")
+        parser.add_argument("--project-root", default=str(Path.cwd()))
+        parser.add_argument("--profile", default=None)
+        parser.add_argument("cmd")
+        parser.add_argument("args", nargs="*")
+        parser.add_argument("--source", default="manual")
+        parser.add_argument("--title", default=None)
+        parser.add_argument("--limit", type=int, default=5)
+        parser.add_argument("--write-report", action="store_true")
+        args, _ = parser.parse_known_args(raw)
+        rt = P1RagRuntime(args.project_root, args.profile)
+        if cmd == "p1-rag-status":
+            payload = rt.status()
+        elif cmd == "p1-rag-ingest-text":
+            payload = rt.ingest_text(" ".join(args.args), args.source, args.title)
+        elif cmd == "p1-rag-ingest-file":
+            payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
+        elif cmd == "p1-rag-search":
+            payload = rt.search(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-answer":
+            payload = rt.answer(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-sources":
+            payload = rt.sources()
+        elif cmd == "p1-rag-explain":
+            payload = rt.explain(" ".join(args.args), args.limit)
+        elif cmd == "p1-rag-validate":
+            payload = rt.validate_index(write_report=args.write_report)
+        elif cmd == "p1-rag-quality":
+            payload = rt.quality_report(" ".join(args.args) or "Jarvis RAG Quellen", args.limit, write_report=args.write_report)
+        else:
+            payload = rt.gate(write_report=args.write_report)
+        out(payload)
+        return 0 if payload.get("ok") else 1
+    if cmd in {"p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit"}:
+        parser = argparse.ArgumentParser(prog="secondbrain")
+        parser.add_argument("--project-root", default=str(Path.cwd()))
+        parser.add_argument("--profile", default=None)
+        parser.add_argument("cmd")
+        parser.add_argument("--write-report", action="store_true")
+        args, _ = parser.parse_known_args(raw)
+        if cmd == "p0-gate":
+            payload = p0_gate(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-report":
+            payload = p0_report(args.project_root, args.profile)
+        elif cmd == "p0-smoke":
+            payload = p0_smoke(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-contract":
+            payload = p0_contract(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-readiness":
+            payload = p0_readiness(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-bootstrap":
+            payload = p0_bootstrap(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-production":
+            payload = p0_production_gate(args.project_root, args.profile, write_report=args.write_report)
+        elif cmd == "p0-audit":
+            payload = p0_artifact_audit(args.project_root, args.profile, write_report=args.write_report)
+        else:
+            payload = p0_doctor(args.project_root, args.profile)
+        out(payload)
+        return 0 if payload.get("ok") else 1
+    if cmd == "command-index":
+        out(ModuleRegistry().command_index())
+        return 0
+    if cmd in {None, "status", "health", "module-status", "module-health", "modules"}:
+        return _local_status(raw)
+    if cmd.startswith("mobile16-"):
+        return _mobile_main(raw)
+    try:
+        from secondbrain.launcher_runtime_v126 import main as runtime_main
+        return runtime_main(_strip_unhandled_global_options(raw, {"--project-root", "--profile"}))
+    except SystemExit as exc:
+        return int(exc.code or 0)
+    except Exception as exc:
+        out({"status": "error", "command": cmd, "error": str(exc)})
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

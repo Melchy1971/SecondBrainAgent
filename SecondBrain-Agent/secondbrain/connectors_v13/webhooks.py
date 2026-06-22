@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -17,8 +19,13 @@ class WebhookInbox:
         }
         return self.store.append("webhooks", item)
 
-    def list(self, limit: int = 50) -> list[dict]:
+    def list_items(self, limit: int = 50) -> list[dict]:
         return self.store.load("webhooks", [])[-limit:]
+
+    def list(self, limit: int = 50) -> list[dict]:
+        # Backward-compatible public API. The annotations are postponed so this
+        # method name no longer shadows the built-in list during class creation.
+        return self.list_items(limit)
 
     def drain(self) -> list[dict]:
         items = self.store.load("webhooks", [])

@@ -170,3 +170,17 @@ python launcher.py graph-ingest-text "Jarvis nutzt Gmail am 2026-06-19"
 python launcher.py graph-search Jarvis
 python launcher.py graph-neighbors Jarvis
 ```
+
+## P0 Runtime Gate v17.3
+
+```bash
+python launcher.py p0-gate
+python launcher.py p0-doctor
+python launcher.py health
+python launcher.py command-index
+```
+
+`p0-gate` ist das strikte maschinenlesbare P0-Gate. Exit-Code `0` bedeutet PASS. Exit-Code `1` bedeutet BLOCKED.
+
+Geprüft werden Python-Version, Projektwurzel, Pflichtkonfiguration, Runtime-Schreibbarkeit, kritische Imports, kritische Runtime-Health und kritische Command-Registrierung.
+

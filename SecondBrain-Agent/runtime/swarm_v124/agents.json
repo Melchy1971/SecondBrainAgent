@@ -7,7 +7,7 @@
     ],
     "enabled": true,
     "name": "supervisor",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 1,
     "role": "Task analysis, delegation, escalation"
   },
@@ -19,7 +19,7 @@
     ],
     "enabled": true,
     "name": "planner",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 1,
     "role": "Task decomposition and dependency planning"
   },
@@ -31,7 +31,7 @@
     ],
     "enabled": true,
     "name": "researcher",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 1,
     "role": "Knowledge lookup and source assessment"
   },
@@ -43,7 +43,7 @@
     ],
     "enabled": true,
     "name": "executor",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 2,
     "role": "Safe tool and workflow execution"
   },
@@ -55,7 +55,7 @@
     ],
     "enabled": true,
     "name": "reviewer",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 1,
     "role": "Quality control and verification"
   },
@@ -67,7 +67,7 @@
     ],
     "enabled": true,
     "name": "memory_curator",
-    "registered_at": "2026-06-19T10:10:50Z",
+    "registered_at": "2026-06-22T09:16:30Z",
     "risk_level": 1,
     "role": "Memory consolidation and graph update"
   }

@@ -1,0 +1,331 @@
+{
+  "schema": "secondbrain.p0_gate.v1",
+  "generated_at": "2026-06-22T09:39:49.091419+00:00",
+  "status": "pass",
+  "ok": true,
+  "score": 100.0,
+  "blockers": 0,
+  "warnings": 0,
+  "checks": [
+    {
+      "name": "command_index_unique",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "conflicts": []
+      }
+    },
+    {
+      "name": "critical_command_index",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "missing": [],
+        "available": [
+          "command-index",
+          "core-status",
+          "desktop-activity",
+          "desktop-command",
+          "desktop-commands",
+          "desktop-dashboard",
+          "desktop-notifications",
+          "desktop-notify",
+          "desktop-open",
+          "desktop-search-command",
+          "desktop-session",
+          "desktop-status",
+          "desktop-widget-enable",
+          "desktop-widgets",
+          "graph-contradictions",
+          "graph-export",
+          "graph-ingest-file",
+          "graph-ingest-text",
+          "graph-neighbors",
+          "graph-search",
+          "graph-status",
+          "graph-timeline",
+          "health",
+          "mobile16-camera-ocr",
+          "mobile16-capture",
+          "mobile16-devices",
+          "mobile16-manifest",
+          "mobile16-migrate",
+          "mobile16-offline-queue",
+          "mobile16-offline-replay",
+          "mobile16-pair-approve",
+          "mobile16-pair-request",
+          "mobile16-pairing-requests",
+          "mobile16-push",
+          "mobile16-push-deliver",
+          "mobile16-push-outbox",
+          "mobile16-session-create",
+          "mobile16-sessions",
+          "mobile16-status",
+          "mobile16-sync",
+          "mobile16-sync-runs",
+          "mobile16-voice-note",
+          "mobile16-widget-enable",
+          "mobile16-widgets",
+          "module-health",
+          "module-status",
+          "modules",
+          "p0-audit",
+          "p0-bootstrap",
+          "p0-contract",
+          "p0-doctor",
+          "p0-gate",
+          "p0-production",
+          "p0-readiness",
+          "p0-report",
+          "p0-smoke",
+          "p1-gate",
+          "p1-rag-answer",
+          "p1-rag-ingest-file",
+          "p1-rag-ingest-text",
+          "p1-rag-search",
+          "p1-rag-status",
+          "status",
+          "voice-events",
+          "voice-handle2",
+          "voice-interrupt",
+          "voice-memory",
+          "voice-parse2",
+          "voice-session2",
+          "voice-sessions2",
+          "voice-speak2",
+          "voice-status2",
+          "voice-transcribe",
+          "voice-wake"
+        ]
+      }
+    },
+    {
+      "name": "critical_import_health",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "ok": true,
+        "modules": [
+          {
+            "key": "core",
+            "title": "Core Runtime",
+            "critical": true,
+            "status": "ok",
+            "error": null
+          },
+          {
+            "key": "desktop",
+            "title": "Desktop OS",
+            "critical": true,
+            "status": "ok",
+            "error": null
+          },
+          {
+            "key": "voice",
+            "title": "Realtime Voice",
+            "critical": false,
+            "status": "ok",
+            "error": null
+          },
+          {
+            "key": "graph",
+            "title": "Knowledge Graph",
+            "critical": false,
+            "status": "ok",
+            "error": null
+          },
+          {
+            "key": "mobile",
+            "title": "Mobile Companion",
+            "critical": false,
+            "status": "ok",
+            "error": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "critical_runtime_health",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "ok": true,
+        "modules": [
+          {
+            "key": "core",
+            "title": "Core Runtime",
+            "critical": true,
+            "status": "ok",
+            "summary": {
+              "version": "12.6"
+            }
+          },
+          {
+            "key": "desktop",
+            "title": "Desktop OS",
+            "critical": true,
+            "status": "ok",
+            "summary": {
+              "widgets": {
+                "component": "widget_registry_v125",
+                "widgets": 6,
+                "enabled": 6,
+                "healthy": true
+              }
+            }
+          },
+          {
+            "key": "voice",
+            "title": "Realtime Voice",
+            "critical": false,
+            "status": "ok",
+            "summary": {
+              "sessions": 0
+            }
+          },
+          {
+            "key": "graph",
+            "title": "Knowledge Graph",
+            "critical": false,
+            "status": "ok",
+            "summary": {
+              "version": "12.3"
+            }
+          },
+          {
+            "key": "mobile",
+            "title": "Mobile Companion",
+            "critical": false,
+            "status": "ok",
+            "summary": {
+              "version": "16.9"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "p0_launcher_contract",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0
+      }
+    },
+    {
+      "name": "p0_runtime_readiness",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "status": "pass",
+        "blockers": 0,
+        "warnings": 2
+      }
+    },
+    {
+      "name": "project_root_exists",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent"
+      }
+    },
+    {
+      "name": "python_version",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "version": "3.13.5",
+        "minimum": "3.11"
+      }
+    },
+    {
+      "name": "required_config_files",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "missing": [],
+        "required": [
+          "settings.yaml",
+          "runtime.yaml",
+          "production.yaml",
+          "security.yaml",
+          "connectors.yaml"
+        ]
+      }
+    },
+    {
+      "name": "runtime_dir_writable",
+      "ok": true,
+      "severity": "blocker",
+      "detail": {
+        "path": "/mnt/data/sba_work/SecondBrain-Agent/runtime",
+        "error": null
+      }
+    }
+  ],
+  "config": {
+    "project_root": "/mnt/data/sba_work/SecondBrain-Agent",
+    "profile": "default",
+    "runtime_dir": "/mnt/data/sba_work/SecondBrain-Agent/runtime",
+    "config_files": {
+      "settings.yaml": true,
+      "runtime.yaml": true,
+      "production.yaml": true,
+      "security.yaml": true,
+      "connectors.yaml": true
+    },
+    "settings_keys": [
+      "app_name",
+      "data_model",
+      "default_language",
+      "destructive_actions_allowed",
+      "dictation_import_enabled",
+      "email_send_allowed",
+      "external_research_allowed",
+      "inbox_path",
+      "platform_mode",
+      "safe_mode_default",
+      "speech_to_text_provider",
+      "system_path",
+      "text_to_speech_provider",
+      "v103_enabled",
+      "vault_path",
+      "version",
+      "voice_command_router_enabled",
+      "voice_layer_enabled"
+    ],
+    "production_keys": [
+      "production"
+    ]
+  },
+  "registry": {
+    "modules": [
+      "core",
+      "desktop",
+      "voice",
+      "graph",
+      "mobile"
+    ],
+    "critical_modules": [
+      "core",
+      "desktop"
+    ],
+    "commands": 74,
+    "command_conflicts": []
+  },
+  "contract": {
+    "status": "pass",
+    "blockers": 0
+  },
+  "readiness": {
+    "status": "pass",
+    "blockers": 0,
+    "warnings": 2
+  },
+  "environment": {
+    "cwd": "/mnt/data/sba_work/SecondBrain-Agent",
+    "executable": "/opt/pyvenv/bin/python"
+  }
+}
