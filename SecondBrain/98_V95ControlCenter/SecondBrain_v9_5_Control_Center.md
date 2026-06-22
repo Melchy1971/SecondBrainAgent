@@ -1,6 +1,6 @@
 # SecondBrain OS v9.5 Control Center
 
-Aktualisiert: 2026-06-19 10:09
+Aktualisiert: 2026-06-22 09:37
 
 | Modul | Status |
 |---|---|

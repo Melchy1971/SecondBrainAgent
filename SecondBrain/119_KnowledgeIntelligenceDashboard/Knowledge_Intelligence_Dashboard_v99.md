@@ -1,95 +1,95 @@
 # Knowledge Intelligence Dashboard v9.9
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## 113_EntityExtraction
 
 # Entity Extraction v9.9
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## Häufigste Entitäten
 
-- **2026-06-19** (date): 111
-- **Obsidian** (technology): 74
-- **2026-06-18** (date): 72
-- **Analyse** (project_or_topic): 44
-- **Tool** (project_or_topic): 42
-- **Aktualisiert** (project_or_topic): 41
-- **Benutzerhandbuch** (project_or_topic): 39
-- **Einsteiger** (project_or_topic): 39
-- **Einsteigerhandbuch** (project_or_topic): 38
-- **Aufgaben** (project_or_topic): 37
-- **Projekt** (project_or_topic): 37
-- **Meeting** (project_or_topic): 33
-- **Risiken** (project_or_topic): 32
-- **Aktualisiert** (person_or_topic): 32
-- **Score** (project_or_topic): 32
+- **Obsidian** (technology): 88
+- **2026-06-18** (date): 83
+- **2026-06-19** (date): 83
+- **Benutzerhandbuch** (project_or_topic): 54
+- **Einsteiger** (project_or_topic): 54
+- **2026-06-22** (date): 54
+- **Analyse** (project_or_topic): 53
+- **Einsteigerhandbuch** (project_or_topic): 51
+- **Tool** (project_or_topic): 50
+- **Aufgaben** (project_or_topic): 46
+- **Risiken** (project_or_topic): 46
+- **Score** (project_or_topic): 45
+- **Projekt** (project_or_topic): 44
+- **Aktualisiert** (project_or_topic): 42
+- **Meeting** (project_or_topic): 41
+- **Entscheidungen** (project_or_topic): 38
+- **Aktualisiert** (person_or_topic): 33
+- **Risiko** (project_or_topic): 32
+- **Projekte** (project_or_topic): 31
+- **Aufgabe** (project_or_topic): 31
 - **Gemini** (technology): 31
-- **Aufgabe** (project_or_topic): 27
-- **Entscheidungen** (project_or_topic): 25
+- **Agent** (organization): 27
 - **Index** (project_or_topic): 25
-- **Projekte** (project_or_topic): 22
-- **Risiko** (project_or_topic): 22
-- **Agent** (organization): 20
-- **Wissen** (project_or_topic): 20
-- **Risiken** (person_or_topic): 19
-- **Process** (project_or_topic): 19
-- **Aufgaben** (person_or_topic): 18
-- **Decision** (project_or_topic): 18
-- **Schritte** (project_or_topic): 17
+- **Inbox** (project_or_topic): 22
+- **Process** (project_or_topic): 22
+- **Wissen** (project_or_topic): 21
+- **Fragen** (organization): 20
+- **Risiken** (person_or_topic): 20
+- **Entscheidung** (project_or_topic): 20
+- **Simulation** (project_or_topic): 20
+- **Was** (person_or_topic): 19
+- **Python** (technology): 19
+- **Aufgaben** (person_or_topic): 19
+- **Decision** (project_or_topic): 19
+- **Schritte** (project_or_topic): 18
+- **Anforderungen** (project_or_topic): 18
+- **Beispiel** (project_or_topic): 18
+- **Journal** (project_or_topic): 18
+- **Notizen** (project_or_topic): 18
+- **Empfehlung** (project_or_topic): 18
+- **Notiz** (project_or_topic): 18
 - **Import** (project_or_topic): 17
-- **Simulation** (project_or_topic): 17
-- **Inbox** (project_or_topic): 16
-- **Anforderungen** (project_or_topic): 16
-- **Goal** (project_or_topic): 16
-- **Notiz** (project_or_topic): 16
+- **Ergebnis** (project_or_topic): 17
+- **Agent Masterplan** (organization): 17
 - **Markdown** (project_or_topic): 15
-- **Fragen** (organization): 15
-- **Beispiel** (project_or_topic): 15
-- **Journal** (project_or_topic): 15
-- **Entscheidung** (project_or_topic): 15
+- **Testgrundlage** (organization): 15
+- **Beispieldaten** (project_or_topic): 15
+- **Concept** (project_or_topic): 15
+- **Proof** (project_or_topic): 15
+- **Daily Digest** (project_or_topic): 15
+- **Watcher** (project_or_topic): 15
+- **Goal** (project_or_topic): 15
+- **Quellen** (project_or_topic): 15
+- **Lernen** (project_or_topic): 15
 - **Return** (person_or_topic): 15
-- **Daily Digest** (project_or_topic): 14
-- **Quellen** (project_or_topic): 14
-- **Testgrundlage** (organization): 13
-- **Beispieldaten** (project_or_topic): 13
-- **Concept** (project_or_topic): 13
-- **Proof** (project_or_topic): 13
-- **Python** (technology): 13
-- **Watcher** (project_or_topic): 13
-- **Notizen** (project_or_topic): 13
-- **Agent Masterplan** (organization): 13
-- **Empfehlung** (project_or_topic): 13
-- **Was** (person_or_topic): 12
-- **Claude** (technology): 12
-- **Fokus** (project_or_topic): 12
-- **Ergebnis** (project_or_topic): 12
-- **Signale** (project_or_topic): 12
-- **Dateien** (project_or_topic): 11
-- **SAP** (technology): 11
-- **Tags** (organization): 11
-- **Dokumentation** (project_or_topic): 11
-- **Prioritäten** (project_or_topic): 11
-- **Entscheidungen** (person_or_topic): 10
-- **Quellen** (person_or_topic): 10
-- **Blocker** (project_or_topic): 10
-- **Arbeitsmuster** (project_or_topic): 10
-- **Event** (proj
+- **Tags** (organization): 14
+- **Prioritäten** (project_or_topic): 14
+- **Signale** (project_or_topic): 14
+- **Claude** (technology): 13
+- **Dokumentation** (project_or_topic): 13
+- **Fokus** (project_or_topic): 13
+- **Event** (project_or_topic): 13
+- **Dateien** (project_or_topic): 12
+- **SAP** (technology): 12
+- **Arbeitsmuster** (project_or_topic): 12
+- **Entscheidungen** (person_or_top
 
 ## 114_RelationshipEngine
 
 # Relationship Engine v9.9
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 | Beziehung | Anzahl |
 |---|---:|
-| blocks | 11066 |
-| mentions | 513 |
-| decides | 348 |
-| tagged_as | 209 |
-| references | 156 |
+| blocks | 4580 |
+| mentions | 805 |
+| decides | 640 |
+| tagged_as | 225 |
+| references | 215 |
 | creates_task | 10 |
 | influences | 5 |
 
@@ -101,12 +101,13 @@ Aktualisiert: 2026-06-19
 
 # Temporal Knowledge Graph v9.9
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 | Datum | Notizen |
 |---|---:|
 | 2026-06-18 | 18 |
-| 2026-06-19 | 202 |
+| 2026-06-19 | 179 |
+| 2026-06-22 | 65 |
 | owner: | 2 |
 | participan | 1 |
 | source: | 3 |
@@ -117,7 +118,7 @@ Aktualisiert: 2026-06-19
 
 # Contradiction Detection v9.9
 
-Datum: 2026-06-19
+Datum: 2026-06-22
 
 ## Direkte Mischsignale
 
@@ -132,7 +133,6 @@ Datum: 2026-06-19
 - [[2026-06-19_context-map]] enthält erledigt/offen-Signale
 - [[2026-06-18_context-map]] enthält erledigt/offen-Signale
 - [[2026-06-19_memory-replay]] enthält erledigt/offen-Signale
-- [[Memory_Profile]] enthält erledigt/offen-Signale
 - [[2026-06-18_memory-replay]] enthält erledigt/offen-Signale
 - [[Temporal_Graph]] enthält erledigt/offen-Signale
 - [[2026-06-19_semantic-deduplication]] enthält erledigt/offen-Signale
@@ -148,25 +148,28 @@ Datum: 2026-06-19
 - [[2026-06-19_process-design-backlog]] enthält erledigt/offen-Signale
 - [[2026-06-18_process-design-backlog]] enthält erledigt/offen-Signale
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] enthält erledigt/offen-Signale
+- [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] enthält erledigt/offen-Signale
 - [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
 - [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
+- [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
 - [[Project_Memory]] enthält erledigt/offen-Signale
 - [[Process_Memory]] enthält erledigt/offen-Signale
 - [[Executive_Memory]] enthält erledigt/offen-Signale
-- [[2026-06-18_personal-kpis]] enthält erledigt/offen-Signale
-- [[2026-06-19_personal-kpis]] enthält erledigt/offen-Signale
-- [[2026-06-18_project-intelligence]] enthält erledigt/offen-Signa
+- [[2026-06-18_personal-kpis]] enthält e
 
 ## 117_KnowledgeQuality
 
 # Knowledge Quality v9.9
 
-Datum: 2026-06-19
+Datum: 2026-06-22
 
 | Score | Notiz | Fehlend |
 |---:|---|---|
 | 0 | [[2026-06-18_event-summary]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[2026-06-19_event-summary]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[2026-06-19_notifications]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[2026-06-19_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[2026-06-22_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Calendar_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Email_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Federation_Index]] | Frontmatter, Inhalt, Tags, Links, Struktur |
@@ -188,20 +191,16 @@ Datum: 2026-06-19
 | 20 | [[2026-06-19_090426_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-19_090431_settings-report]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-19_090433_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_calendar-intelligence]] | Frontmatter, Inhalt, Tags, Links |
-| 20 | [[2026-06-19_cross-source-intelligence]] | Frontmatter, Inhalt, Tags, Links |
-| 20 | [[2026-06-19_evening-review]] | Frontmatter, Inhalt, Tags, Links |
-| 20 | [[2026-06-19_event-bus]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_knowledge-gaps]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_personal-kpis]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_software-factory]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[Agent_Swarm_Status]] | Frontmatter, Tags, Links, Struk
+| 20 | [[2026-06-19_101106_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
+| 20 | [[2026-06-19_102623_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
+| 20 | [[2026-06-19_102747_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
+| 20 | [[2026-06-19_103237_production-ready-gate-v96]] | Frontmatter, Tags,
 
 ## 118_CrossSourceIntelligence
 
 # Cross Source Intelligence v9.9
 
-Datum: 2026-06-19
+Datum: 2026-06-22
 
 ## Quellen
 
@@ -210,7 +209,7 @@ Datum: 2026-06-19
 | <page url> | 1 |
 | gemini | 2 |
 | tags: | 3 |
-| vault | 230 |
+| vault | 272 |
 
 ## Quellenübergreifende Tags
 

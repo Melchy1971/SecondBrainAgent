@@ -1,50 +1,50 @@
 # Digital Twin v6
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## Prioritätssignale
 
-- projekt: 748
-- prozess: 312
-- entscheidung: 178
-- risiko: 170
-- automatisierung: 86
-- gesundheit: 47
-- lernen: 11
-- lokal: 10
+- projekt: 532
+- risiko: 320
+- prozess: 290
+- entscheidung: 264
+- automatisierung: 157
+- gesundheit: 42
+- lernen: 22
+- lokal: 12
 
 ## Wissensschwerpunkte
 
-- #obsidian: 17
-- #email: 16
-- #pdf: 16
-- #secondbrain: 14
-- #decision: 14
-- #meeting: 13
-- #process: 13
-- #knowledge-gap: 13
+- #obsidian: 18
+- #email: 17
+- #pdf: 17
+- #secondbrain: 15
+- #decision: 15
+- #meeting: 14
+- #process: 14
+- #knowledge-gap: 14
+- #briefing: 13
 - #gemini: 13
-- #briefing: 12
 - #ki: 12
 - #import: 11
+- #Entscheidungen: 9
+- #Prioritäten: 9
+- #Risiken: 9
 - #copilot-conversation: 8
-- #Entscheidungen: 7
-- #Prioritäten: 7
-- #Risiken: 7
-- #Arbeitsmuster: 6
-- #evergreen: 5
-- #projects: 5
-- #travel: 5
+- #Arbeitsmuster: 8
+- #evergreen: 6
+- #projects: 6
+- #travel: 6
 - #konfigurieren: 4
-- #Empfehlungen: 3
-- #Aktivität: 3
-- #Alternativen: 3
-- #Annahmen: 3
-- #Aufgaben: 3
-- #Beschreibung: 3
-- #Dokumente: 3
-- #lesen: 2
-- #schreiben: 2
+- #Empfehlungen: 4
+- #Aktivität: 4
+- #Alternativen: 4
+- #Annahmen: 4
+- #Aufgaben: 4
+- #Beschreibung: 4
+- #Dokumente: 4
+- #Fokuszeiten: 4
+- #Meeting-Vorbereitung: 4
 
 ## Kernfragen
 

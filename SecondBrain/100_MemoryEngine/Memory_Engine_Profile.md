@@ -1,6 +1,6 @@
 # Memory Engine Profile v9.7
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## Kurzzeitgedächtnis
 
@@ -16,17 +16,17 @@ Aktualisiert: 2026-06-19
 - [[Digital_Twin_v6]]
 - [[Calendar_Connector_Status]]
 - [[Autonomous_Agents_Status]]
-- [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
-- [[2026-06-19_recommendations]]
-- [[2026-06-19_monitoring]]
-- [[2026-06-19_learning-plan]]
-- [[2026-06-19_event-bus]]
+- [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
+- [[2026-06-22_monitoring]]
+- [[2026-06-22_learning-plan]]
+- [[2026-06-22_event-bus]]
 - [[facts_tasks]]
 - [[facts_tags]]
 - [[facts_projects]]
 - [[facts_documents]]
 - [[facts_decisions]]
 - [[Workflow_Catalog]]
+- [[Semantic_Index]]
 - [[SecondBrain_OS_Dashboard]]
 - [[Research_Agent_Memory_v2]]
 - [[Project_Agent_Memory_v2]]
@@ -37,34 +37,34 @@ Aktualisiert: 2026-06-19
 
 ## Langzeit-Signale
 
-- project: 716
-- risk: 673
-- meeting: 456
-- decision: 176
-- learning: 11
+- risk: 572
+- project: 500
+- meeting: 282
+- decision: 262
+- learning: 22
 
 ## Häufige Tags
 
-- #email: 15
-- #obsidian: 15
-- #pdf: 15
-- #decision: 13
-- #secondbrain: 13
-- #knowledge-gap: 12
-- #meeting: 12
-- #process: 12
-- #briefing: 11
+- #email: 16
+- #obsidian: 16
+- #pdf: 16
+- #decision: 14
+- #secondbrain: 14
+- #knowledge-gap: 13
+- #meeting: 13
+- #process: 13
+- #briefing: 12
 - #gemini: 10
 - #ki: 10
 - #import: 9
 - #copilot-conversation: 7
-- #evergreen: 5
-- #projects: 5
-- #travel: 5
-- #Arbeitsmuster: 4
-- #Entscheidungen: 4
-- #Prioritäten: 4
-- #Risiken: 4
+- #evergreen: 6
+- #projects: 6
+- #travel: 6
+- #Arbeitsmuster: 5
+- #Entscheidungen: 5
+- #Prioritäten: 5
+- #Risiken: 5
 - #konfigurieren: 3
 - #projekt: 2
 - #sap: 2
@@ -78,37 +78,37 @@ Aktualisiert: 2026-06-19
 
 ## Häufige Verknüpfungen
 
-- [[weighted_edges]]: 381
-- [[2026-06-19_quality-scores]]: 283
-- [[2026-06-19_refactoring-proposals]]: 269
-- [[2026-06-19_knowledge-quality]]: 217
-- [[2026-06-19_chief-of-staff-v98]]: 177
-- [[Temporal_Graph]]: 150
-- [[2026-06-19_semantic-deduplication]]: 150
-- [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 150
-- [[2026-06-19_reasoning-map]]: 144
-- [[2026-06-18_context-map]]: 140
-- [[2026-06-19_memory-replay]]: 137
-- [[2026-06-19_project-intelligence]]: 137
-- [[2026-06-19_project-agent]]: 136
-- [[2026-06-19_self-improvement-plan]]: 132
-- [[2026-06-18_self-improvement-plan]]: 124
-- [[2026-06-19_process-design-backlog]]: 124
-- [[Memory_Profile]]: 123
-- [[2026-06-18_semantic-deduplication]]: 122
-- [[2026-06-18_quality-scores]]: 121
-- [[2026-06-19_context-map]]: 121
-- [[2026-06-18_memory-replay]]: 119
-- [[2026-06-18_https-obsidian-md]]: 116
-- [[Memory_Engine_Profile]]: 112
-- [[2026-06-18_prediction-report]]: 109
-- [[2026-06-18_refactoring-proposals]]: 107
-- [[2026-06-18_daily-briefing]]: 106
-- [[2026-06-19_decision-agent]]: 104
-- [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]: 103
-- [[2026-06-18_project-intelligence]]: 102
-- [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 101
+- [[weighted_edges]]: 176
+- [[Temporal_Graph]]: 119
+- [[Memory_Profile]]: 118
+- [[2026-06-18_context-map]]: 117
+- [[2026-06-18_semantic-deduplication]]: 96
+- [[2026-06-18_https-obsidian-md]]: 92
+- [[2026-06-19_chief-of-staff-v98]]: 92
+- [[2026-06-18_prediction-report]]: 87
+- [[2026-06-18_daily-briefing]]: 81
+- [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 81
+- [[2026-06-18_projekt-secondbrain-agent-v0-3]]: 80
+- [[PDF-Analyse-Tool]]: 77
+- [[facts_tasks]]: 77
+- [[2026-06-19_task-agent]]: 70
+- [[2026-06-18_prozesslandkarte]]: 70
+- [[Executive_Dashboard]]: 70
+- [[Verein_Index]]: 55
+- [[2026-06-18_recommendations]]: 54
+- [[SecondBrain OS v9.1 – Einsteigerhandbuch]]: 53
+- [[2026-06-18_process-mining]]: 53
+- [[SecondBrain OS – Benutzerhandbuch für Einsteiger]]: 53
+- [[Digital_Twin_Profile]]: 49
+- [[2026-06-19_reasoning-map]]: 49
+- [[Knowledge_Intelligence_Dashboard_v99]]: 48
+- [[2026-06-18_decision-intelligence]]: 47
+- [[2026-06-19_daily-briefing]]: 47
+- [[SecondBrain-Agent Masterplan v1.0]]: 46
+- [[2026-06-18_knowledge-gaps]]: 42
+- [[2026-06-18]]: 42
+- [[2026-06-19_project-agent]]: 42
 
 ## Offene Aufgaben
 
-- Gesamt: 18
+- Gesamt: 26

@@ -1,0 +1,10 @@
+{"time": "2026-06-22 09:11:35", "type": "gui.start", "payload": {"host": "127.0.0.1", "port": 8850}}
+{"time": "2026-06-22 09:12:03", "type": "script.run", "payload": {"script": "build_vector_rag.py", "ok": true}}
+{"time": "2026-06-22 09:36:01", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
+{"time": "2026-06-22 09:37:09", "type": "script.run", "payload": {"script": "run_v10_cycle.py", "ok": false}}
+{"time": "2026-06-22 09:37:17", "type": "script.run", "payload": {"script": "run_v101_cycle.py", "ok": true}}
+{"time": "2026-06-22 09:37:18", "type": "script.run", "payload": {"script": "import_ai_exports.py", "ok": true}}
+{"time": "2026-06-22 09:37:18", "type": "script.run", "payload": {"script": "build_vector_rag.py", "ok": true}}
+{"time": "2026-06-22 09:37:24", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-22 09:37:26", "type": "script.run", "payload": {"script": "release_gate_v9.py", "ok": true}}
+{"time": "2026-06-22 09:37:29", "type": "script.run", "payload": {"script": "run_regression_tests_v9.py", "ok": false}}

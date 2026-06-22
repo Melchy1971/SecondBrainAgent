@@ -1,14 +1,17 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## Relevante Notizen
 
-- [[2026-06-19_knowledge-quality]] — Score 139
+- [[2026-06-22_knowledge-quality]] — Score 156
+- [[2026-06-19_knowledge-quality]] — Score 140
+- [[2026-06-22_research-backlog-agent]] — Score 121
 - [[2026-06-19_research-backlog-agent]] — Score 121
+- [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 36
+- [[Knowledge_Intelligence_Dashboard_v99]] — Score 33
 - [[2026-06-19_knowledge-compression]] — Score 14
 - [[2026-06-18_knowledge-compression]] — Score 9
 - [[2026-06-18_https-obsidian-md]] — Score 7
@@ -17,9 +20,11 @@ Aktualisiert: 2026-06-19
 - [[Import aus Chat Gpt]] — Score 4
 - [[Entity_Index]] — Score 4
 - [[2026-06-19_research-backlog]] — Score 4
+- [[2026-06-22_cross-source-intelligence]] — Score 3
 - [[2026-06-19_cross-source-intelligence]] — Score 3
 - [[2026-06-18_research-backlog]] — Score 3
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 2
+- [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 2
 - [[Knowledge_Gap]] — Score 2
 - [[Enterprise_RAG_Status]] — Score 2
 - [[Claude_MCP_Arbeitsanweisung]] — Score 2
@@ -49,11 +54,6 @@ Aktualisiert: 2026-06-19
 - [[Decision_Register]] — Score 1
 - [[Decision_Journal]] — Score 1
 - [[Decision_Intelligence_v2]] — Score 1
-- [[Decision]] — Score 1
-- [[Browser_Source]] — Score 1
-- [[Agent_Collaboration_Protocol]] — Score 1
-- [[2026-06-19_task-agent]] — Score 1
-- [[2026-06-19_self-healing-report]] — Score 1
 
 ## Gelernte Tags
 

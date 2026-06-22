@@ -1,6 +1,6 @@
 # MCP Ecosystem Status
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 | MCP | Status | Priorität |
 |---|---|---|

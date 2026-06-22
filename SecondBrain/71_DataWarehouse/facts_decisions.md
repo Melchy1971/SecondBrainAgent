@@ -2,6 +2,6 @@
 
 | Entscheidung | Quelle |
 |---|---|
-| 39 | [[Personal_CRM_Index]] |
-| 170 | [[Digital_Twin_v6]] |
-| 170 | [[Digital_Twin_v5]] |
+| 45 | [[Personal_CRM_Index]] |
+| 202 | [[Digital_Twin_v6]] |
+| 199 | [[Digital_Twin_v5]] |

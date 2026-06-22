@@ -1,6 +1,6 @@
 # Lernen ERP Index
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 | Objekt | Aufgaben | Risiken | Entscheidungen |
 |---|---:|---:|---:|

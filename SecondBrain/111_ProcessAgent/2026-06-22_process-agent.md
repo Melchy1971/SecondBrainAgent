@@ -1,0 +1,75 @@
+# Process Agent v9.8
+
+Datum: 2026-06-22
+
+| Score | Prozess | Bottleneck | Risiken | Empfehlung |
+|---:|---|---:|---:|---|
+| 207 | [[weighted_edges]] | 37 | 37 | Automatisierung prüfen |
+| 165 | [[2026-06-22_project-agent]] | 5 | 74 | Automatisierung prüfen |
+| 141 | [[2026-06-19_project-agent]] | 4 | 63 | Automatisierung prüfen |
+| 108 | [[2026-06-22_chief-of-staff-v98]] | 8 | 41 | Automatisierung prüfen |
+| 108 | [[2026-06-19_chief-of-staff-v98]] | 7 | 42 | Automatisierung prüfen |
+| 99 | [[2026-06-19_process-design-backlog]] | 4 | 4 | Automatisierung prüfen |
+| 78 | [[2026-06-18_prediction-report]] | 13 | 19 | Automatisierung prüfen |
+| 58 | [[2026-06-22_process-agent]] | 5 | 5 | Automatisierung prüfen |
+| 48 | [[2026-06-19_process-agent]] | 4 | 4 | Automatisierung prüfen |
+| 32 | [[2026-06-18_semantic-deduplication]] | 6 | 6 | Automatisierung prüfen |
+| 31 | [[2026-06-18_process-design-backlog]] | 1 | 1 | Automatisierung prüfen |
+| 30 | [[2026-06-22_project-intelligence]] | 5 | 6 | Automatisierung prüfen |
+| 29 | [[Knowledge_Intelligence_Dashboard_v99]] | 5 | 6 | Automatisierung prüfen |
+| 28 | [[2026-06-22_reasoning-map]] | 5 | 6 | Automatisierung prüfen |
+| 28 | [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 5 | 5 | Automatisierung prüfen |
+| 27 | [[2026-06-22_contradictions]] | 5 | 5 | Automatisierung prüfen |
+| 27 | [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | 5 | 5 | Automatisierung prüfen |
+| 25 | [[2026-06-19_project-intelligence]] | 4 | 5 | Automatisierung prüfen |
+| 24 | [[2026-06-19_reasoning-map]] | 4 | 5 | Automatisierung prüfen |
+| 23 | [[2026-06-19_refactoring-proposals]] | 4 | 4 | Automatisierung prüfen |
+| 23 | [[2026-06-19_quality-scores]] | 4 | 4 | Automatisierung prüfen |
+| 23 | [[2026-06-19_knowledge-quality]] | 4 | 4 | Automatisierung prüfen |
+| 22 | [[2026-06-19_memory-replay]] | 4 | 4 | Automatisierung prüfen |
+| 22 | [[2026-06-19_contradictions]] | 4 | 4 | Automatisierung prüfen |
+| 18 | [[Process_Memory]] | 3 | 3 | Automatisierung prüfen |
+| 17 | [[Process_Agent_Memory_v2]] | 3 | 3 | Automatisierung prüfen |
+| 14 | [[2026-06-19_prozesslandkarte]] | 1 | 1 | Automatisierung prüfen |
+| 12 | [[Temporal_Graph]] | 2 | 2 | Automatisierung prüfen |
+| 12 | [[Memory_Engine_Profile]] | 2 | 2 | Automatisierung prüfen |
+| 12 | [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | 2 | 2 | Automatisierung prüfen |
+| 11 | [[2026-06-19_daily-briefing]] | 2 | 2 | Automatisierung prüfen |
+| 11 | [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 2 | 2 | Automatisierung prüfen |
+| 9 | [[SecondBrain OS v9.1 – Einsteigerhandbuch]] | 2 | 0 | Automatisierung prüfen |
+| 9 | [[2026-06-18_prozesslandkarte]] | 1 | 1 | Automatisierung prüfen |
+| 8 | [[2026-06-18_project-intelligence]] | 1 | 2 | Automatisierung prüfen |
+| 6 | [[Process_Copilot_Commands]] | 0 | 0 | Prozessmodell ergänzen |
+| 6 | [[2026-06-18_refactoring-proposals]] | 1 | 1 | Automatisierung prüfen |
+| 6 | [[2026-06-18_quality-scores]] | 1 | 1 | Automatisierung prüfen |
+| 6 | [[2026-06-18_memory-replay]] | 1 | 1 | Automatisierung prüfen |
+| 6 | [[2026-06-18_daily-briefing]] | 1 | 1 | Automatisierung prüfen |
+| 6 | [[2026-06-18_context-map]] | 1 | 1 | Automatisierung prüfen |
+| 4 | [[Personal_CRM_Index]] | 0 | 1 | Prozessmodell ergänzen |
+| 4 | [[Memory_Profile]] | 0 | 1 | Prozessmodell ergänzen |
+| 4 | [[2026-06-22_knowledge-quality]] | 0 | 0 | Prozessmodell ergänzen |
+| 3 | [[Digital_Twin_v6]] | 0 | 1 | Prozessmodell ergänzen |
+| 3 | [[Digital_Twin_v5]] | 0 | 1 | Prozessmodell ergänzen |
+| 2 | [[Workflow_Catalog]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[Process]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[Digital_Twin_Profile]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[Digital_Twin_Profile]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[2026-06-22_recommendations]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[2026-06-19_workflow-generic]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[2026-06-19_recommendations]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[2026-06-19_process-mining]] | 0 | 0 | Prozessmodell ergänzen |
+| 2 | [[2026-06-18_process-mining]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[SecondBrain_OS_Control_Center]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[Process_Twin]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[Process_Mining]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[PDF-Analyse-Tool]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[Ontology_Index]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[Business_OS_Modules]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[Agent_Collaboration_Protocol]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-22_self-improvement-plan]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-19_self-improvement-plan]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-19_090550_rag_answer]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-19_090431_settings-report]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-19_090418_settings-report]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-18_recommendations]] | 0 | 0 | Prozessmodell ergänzen |
+| 1 | [[2026-06-18_https-obsidian-md]] | 0 | 0 | Prozessmodell ergänzen |

@@ -1,59 +1,59 @@
 # Personal CRM
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-06-22
 
 ## E-Mail-Kontakte
 
 
 ## Namenssignale
 
-- Score: 629
-- Frontmatter: 218
-- Tags: 212
-- Links: 205
-- Risiken: 163
-- Aufgaben: 138
-- Zusammenfassung: 137
-- Risiko: 134
-- Titel: 132
-- Signale: 130
-- Ergebnis: 124
-- Schritt: 87
+- Score: 652
+- Tags: 341
+- Links: 333
+- Risiken: 284
+- Frontmatter: 275
+- Risiko: 259
+- Signale: 246
+- Ergebnis: 213
+- Aufgaben: 202
+- Zusammenfassung: 199
+- Titel: 195
+- Review: 127
+- Blocker: 125
+- Agent: 122
+- Datum: 115
+- Annahmen: 114
+- Schritt: 113
+- Alternativen: 112
+- Nachbereitung: 110
+- Inhalt: 107
+- Recherchefrage: 104
+- Notizen: 103
+- Quellenbedarf: 103
+- Wirkung: 95
+- Status: 92
+- Struktur: 91
+- Analyse: 86
+- Automatisierung: 86
+- Aktualisiert: 86
 - Prozessdokumentation: 85
-- Datum: 84
-- Aktualisiert: 84
 - Testfälle: 84
-- Notizen: 80
-- Analyse: 75
-- Agent: 72
-- Review: 72
-- Blocker: 71
-- Status: 70
-- Tool: 69
+- Tool: 79
+- Entscheidungen: 78
+- Aufgabe: 72
+- Projekte: 71
+- Benutzerhandbuch: 69
+- Einsteiger: 69
+- Protokoll: 67
 - Wissensnotiz: 66
-- Wichtigste Notizen: 63
-- Aufgabe: 61
-- Inhalt: 59
-- Annahmen: 58
-- Nachbereitung: 57
-- Alternativen: 56
-- Recherchefrage: 53
-- Quellenbedarf: 53
-- Entscheidungen: 52
-- Projekt: 51
-- Quellen: 48
-- Obsidian: 46
-- Wirkung: 46
-- Struktur: 44
-- Automatisierung: 44
-- Entscheidung: 43
-- Keine: 43
-- Anforderungen: 40
-- Meeting: 39
-- Benutzerhandbuch: 39
-- Einsteiger: 39
-- Index: 38
-- Einsteigerhandbuch: 38
-- Schritte: 36
-- Daily Digest: 35
-- Agenda: 35
+- Projekt: 63
+- Agent Masterplan: 60
+- Entscheidung: 57
+- Meeting: 52
+- Agenda: 52
+- Obsidian: 51
+- Einsteigerhandbuch: 51
+- Prozessmodell: 50
+- Quellen: 49
+- Anforderungen: 47
+- Wichtigste Notizen: 46

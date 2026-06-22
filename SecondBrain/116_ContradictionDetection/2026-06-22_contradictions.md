@@ -1,0 +1,82 @@
+# Contradiction Detection v9.9
+
+Datum: 2026-06-22
+
+## Direkte Mischsignale
+
+- [[2026-06-19_daily-briefing]] enthält erledigt/offen-Signale
+- [[2026-06-18_daily-briefing]] enthält erledigt/offen-Signale
+- [[2026-06-19_evening-review]] enthält erledigt/offen-Signale
+- [[2026-06-18_evening-review]] enthält erledigt/offen-Signale
+- [[2026-06-19_prozesslandkarte]] enthält erledigt/offen-Signale
+- [[2026-06-18_prozesslandkarte]] enthält erledigt/offen-Signale
+- [[2026-06-19_knowledge-gaps]] enthält erledigt/offen-Signale
+- [[2026-06-18_knowledge-gaps]] enthält erledigt/offen-Signale
+- [[2026-06-19_context-map]] enthält erledigt/offen-Signale
+- [[2026-06-18_context-map]] enthält erledigt/offen-Signale
+- [[2026-06-19_memory-replay]] enthält erledigt/offen-Signale
+- [[2026-06-18_memory-replay]] enthält erledigt/offen-Signale
+- [[Temporal_Graph]] enthält erledigt/offen-Signale
+- [[2026-06-19_semantic-deduplication]] enthält erledigt/offen-Signale
+- [[2026-06-18_semantic-deduplication]] enthält erledigt/offen-Signale
+- [[2026-06-19_prediction-report]] enthält erledigt/offen-Signale
+- [[2026-06-18_prediction-report]] enthält erledigt/offen-Signale
+- [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
+- [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
+- [[2026-06-19_quality-scores]] enthält erledigt/offen-Signale
+- [[2026-06-18_quality-scores]] enthält erledigt/offen-Signale
+- [[2026-06-19_refactoring-proposals]] enthält erledigt/offen-Signale
+- [[2026-06-18_refactoring-proposals]] enthält erledigt/offen-Signale
+- [[2026-06-19_process-design-backlog]] enthält erledigt/offen-Signale
+- [[2026-06-18_process-design-backlog]] enthält erledigt/offen-Signale
+- [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] enthält erledigt/offen-Signale
+- [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] enthält erledigt/offen-Signale
+- [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
+- [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
+- [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
+- [[Project_Memory]] enthält erledigt/offen-Signale
+- [[Process_Memory]] enthält erledigt/offen-Signale
+- [[Executive_Memory]] enthält erledigt/offen-Signale
+- [[2026-06-18_personal-kpis]] enthält erledigt/offen-Signale
+- [[2026-06-19_personal-kpis]] enthält erledigt/offen-Signale
+- [[2026-06-18_project-intelligence]] enthält erledigt/offen-Signale
+- [[2026-06-19_project-intelligence]] enthält erledigt/offen-Signale
+- [[2026-06-22_project-intelligence]] enthält erledigt/offen-Signale
+- [[Memory_Engine_Profile]] enthält erledigt/offen-Signale
+- [[2026-06-19_self-reflection]] enthält erledigt/offen-Signale
+- [[2026-06-22_self-reflection]] enthält erledigt/offen-Signale
+- [[2026-06-19_reasoning-map]] enthält erledigt/offen-Signale
+- [[2026-06-22_reasoning-map]] enthält erledigt/offen-Signale
+- [[2026-06-19_project-agent]] enthält erledigt/offen-Signale
+- [[2026-06-22_project-agent]] enthält erledigt/offen-Signale
+- [[2026-06-19_decision-agent]] enthält erledigt/offen-Signale
+- [[2026-06-22_decision-agent]] enthält erledigt/offen-Signale
+- [[2026-06-19_process-agent]] enthält erledigt/offen-Signale
+- [[2026-06-22_process-agent]] enthält erledigt/offen-Signale
+- [[2026-06-19_chief-of-staff-v98]] enthält erledigt/offen-Signale
+- [[2026-06-22_chief-of-staff-v98]] enthält erledigt/offen-Signale
+- [[2026-06-19_contradictions]] enthält erledigt/offen-Signale
+- [[2026-06-22_contradictions]] enthält erledigt/offen-Signale
+- [[2026-06-19_knowledge-quality]] enthält erledigt/offen-Signale
+- [[Knowledge_Intelligence_Dashboard_v99]] enthält erledigt/offen-Signale
+- [[Life_Dashboard_v10]] enthält erledigt/offen-Signale
+- [[2026-06-19_weekly-os]] enthält erledigt/offen-Signale
+- [[2026-06-22_weekly-os]] enthält erledigt/offen-Signale
+- [[2026-06-19_personal-kpis]] enthält erledigt/offen-Signale
+- [[2026-06-22_personal-kpis]] enthält erledigt/offen-Signale
+- [[2026-06-19_090426_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_090433_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_101106_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_102623_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_102747_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_103237_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[2026-06-19_103241_production-ready-gate-v96]] enthält erledigt/offen-Signale
+- [[Project_Agent_Memory_v2]] enthält erledigt/offen-Signale
+- [[Calendar_Agent_Memory_v2]] enthält erledigt/offen-Signale
+- [[Process_Agent_Memory_v2]] enthält erledigt/offen-Signale
+- [[Executive_Agent_Memory_v2]] enthält erledigt/offen-Signale
+- [[weighted_edges]] enthält erledigt/offen-Signale
+
+## Themen-Widersprüche
+
+- Keine starken Widersprüche erkannt.
