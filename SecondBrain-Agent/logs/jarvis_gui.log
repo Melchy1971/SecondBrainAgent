@@ -44,3 +44,4 @@
 {"time": "2026-06-23 13:52:52", "type": "hud.run_blocked", "payload": {"script": "rm_all.py"}}
 {"time": "2026-06-23 13:52:52", "type": "hud.settings_saved", "payload": {"place": "Bonn", "lat": 50.7374, "lon": 7.0982, "news_rss": "https://www.tagesschau.de/index~rss2.xml", "news_max": 5, "weather_min": 15, "accent": "#2fe6ff"}}
 {"time": "2026-06-23 13:52:53", "type": "hud.rag", "payload": {"query": "telekom prozess", "hits": 5}}
+{"time": "2026-06-23 16:19:25", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851}}
