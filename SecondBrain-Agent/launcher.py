@@ -9,6 +9,8 @@ from typing import Any
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p0_runtime import load_runtime_snapshot, p0_artifact_audit, p0_bootstrap, p0_contract, p0_doctor, p0_gate, p0_production_gate, p0_readiness, p0_report, p0_smoke
 from secondbrain.p1_rag_runtime import P1RagRuntime
+from secondbrain.release.dependency_inventory import build_dependency_inventory
+from secondbrain.release.repo_doctor import run_repo_doctor
 
 
 def out(obj: Any) -> None:
@@ -41,6 +43,35 @@ def _strip_unhandled_global_options(argv: list[str], allowed: set[str]) -> list[
         cleaned.append(item)
         i += 1
     return cleaned
+
+
+def _repo_doctor_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain repository doctor")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("--execute-runtime-checks", action="store_true", help="execute lightweight launcher checks")
+    parser.add_argument("--timeout", type=int, default=15, help="timeout per runtime command in seconds")
+    parser.add_argument("--write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    payload = run_repo_doctor(
+        args.project_root,
+        execute_runtime_checks=args.execute_runtime_checks,
+        timeout_seconds=args.timeout,
+        write_report=args.write_report,
+    ).to_dict()
+    out(payload)
+    return 0 if payload.get("ok") else 1
+
+
+def _dependency_inventory_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain dependency inventory")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("--write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    payload = build_dependency_inventory(args.project_root, write_report=args.write_report).to_dict()
+    out(payload)
+    return 0 if payload.get("ok") else 1
 
 
 def _mobile_main(argv: list[str] | None = None) -> int:
@@ -138,6 +169,10 @@ def _local_status(argv: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
+    if cmd == "repo-doctor":
+        return _repo_doctor_main(raw)
+    if cmd == "dependency-inventory":
+        return _dependency_inventory_main(raw)
     if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
