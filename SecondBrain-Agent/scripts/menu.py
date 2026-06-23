@@ -18,7 +18,7 @@ def main():
         print("5 = Diktat importieren")
         print("6 = Voice Command prüfen")
         print("7 = Voice Command ausführen")
-        print("8 = Jarvis GUI starten")
+        print("8 = Jarvis HUD starten (Port 8851)")
         print("9 = RAG Antwort mit Ollama")
         print("10 = Path Check v9")
         print("0 = Beenden")
@@ -45,7 +45,7 @@ def main():
             cmd = input("Befehl: ").strip()
             run("voice_command_v103.py", cmd, "--execute")
         elif choice == "8":
-            run("start_gui.py")
+            run("start_hud.py")
         elif choice == "9":
             q = input("Frage: ").strip()
             run("rag_answer.py", q)

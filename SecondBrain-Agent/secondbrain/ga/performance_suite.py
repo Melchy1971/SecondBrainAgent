@@ -7,4 +7,4 @@ class PerformanceSuite:
             "operations": operations,
             "duration_seconds": duration_seconds,
             "throughput": round(throughput, 2),
-        }\n
+        }

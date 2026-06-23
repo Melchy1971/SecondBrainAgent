@@ -33,8 +33,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 
-# Funktionen der bestehenden GUI wiederverwenden (DRY, kein Doppelcode).
-from secondbrain.gui_backend_v102 import (  # noqa: E402
+# Geteilte, GUI-neutrale Logik aus dem Kernmodul (Phase 2).
+from secondbrain.hud_core import (  # noqa: E402
     LOG_DIR,
     ROOT,
     dashboard_links,

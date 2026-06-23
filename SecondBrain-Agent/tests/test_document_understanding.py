@@ -34,3 +34,22 @@ def test_answer_stub(tmp_path):
     rt.ingest_text("RAG", "SecondBrain nutzt RAG mit Zitaten.")
     answer = rt.answer_stub("RAG")
     assert answer["matches"] >= 1
+
+
+def test_ingest_file_pdf_extracts_text(tmp_path):
+    import fitz
+
+    pdf = tmp_path / "sample.pdf"
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_text((72, 72), "SecondBrain PDF Extraktion funktioniert")
+    doc.save(pdf)
+    doc.close()
+
+    rt = DocumentUnderstandingRuntime(tmp_path)
+    result = rt.ingest_file(pdf)
+
+    assert result["ok"] is True
+    assert result["chunks"] >= 1
+    assert result["reader_metadata"]["reader"] in {"pymupdf", "pypdf"}
+    assert rt.search("Extraktion")

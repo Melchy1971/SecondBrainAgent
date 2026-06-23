@@ -13,4 +13,4 @@ def test_chaos():
 
 
 def test_release_report():
-    assert build_release_report()["version"] == "1.0.0-RC1"\n
+    assert build_release_report()["version"] == "1.0.0-RC1"

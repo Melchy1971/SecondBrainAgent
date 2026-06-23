@@ -5,4 +5,4 @@ class DeploymentManager:
         return {"status": "DEPLOYED", "version": version}
 
     def rollback(self, version: str):
-        return {"status": "ROLLED_BACK", "version": version}\n
+        return {"status": "ROLLED_BACK", "version": version}

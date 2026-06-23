@@ -111,7 +111,7 @@ class DocumentUnderstandingRuntime:
         if suffix == ".pptx":
             return self._read_pptx(p)
         if suffix == ".pdf":
-            return self._read_pdf_stub(p)
+            return self._read_pdf(p)
         return "", {"reader": "unsupported", "warning": "file_type_not_supported"}
 
     def _read_docx(self, path):
@@ -149,12 +149,56 @@ class DocumentUnderstandingRuntime:
         except Exception as exc:
             return "", {"reader": "pptx_xml", "error": str(exc)}
 
+    def _read_pdf(self, path):
+        path = Path(path)
+
+        # Primary reader: PyMuPDF. It is fast, preserves page boundaries,
+        # and is already compatible with many scanned/structured PDFs.
+        try:
+            import fitz  # type: ignore
+
+            texts = []
+            with fitz.open(path) as doc:
+                for page_index, page in enumerate(doc):
+                    page_text = page.get_text("text") or ""
+                    if page_text.strip():
+                        texts.append(f"[page {page_index + 1}]\n{page_text.strip()}")
+            return "\n\n".join(texts), {
+                "reader": "pymupdf",
+                "pages": len(texts),
+                "path": str(path),
+            }
+        except Exception as primary_exc:
+            primary_error = str(primary_exc)
+
+        # Fallback reader: pypdf. This keeps the ingestion path usable in
+        # lightweight installations where PyMuPDF is not available.
+        try:
+            from pypdf import PdfReader  # type: ignore
+
+            reader = PdfReader(str(path))
+            texts = []
+            for page_index, page in enumerate(reader.pages):
+                page_text = page.extract_text() or ""
+                if page_text.strip():
+                    texts.append(f"[page {page_index + 1}]\n{page_text.strip()}")
+            return "\n\n".join(texts), {
+                "reader": "pypdf",
+                "pages": len(texts),
+                "path": str(path),
+                "primary_error": primary_error,
+            }
+        except Exception as fallback_exc:
+            return "", {
+                "reader": "pdf_extraction_failed",
+                "error": str(fallback_exc),
+                "primary_error": primary_error,
+                "path": str(path),
+            }
+
     def _read_pdf_stub(self, path):
-        return "", {
-            "reader": "pdf_stub",
-            "warning": "Install PyMuPDF or pypdf for real PDF extraction",
-            "path": str(path),
-        }
+        # Backward-compatible alias for older callers/tests.
+        return self._read_pdf(path)
 
     def chunk_text(self, text, size=900, overlap=120):
         text = re.sub(r"\s+", " ", text or "").strip()

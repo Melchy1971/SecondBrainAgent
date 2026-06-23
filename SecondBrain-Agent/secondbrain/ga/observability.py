@@ -15,4 +15,4 @@ class ObservabilityCenter:
         })
 
     def events(self):
-        return list(self._events)\n
+        return list(self._events)

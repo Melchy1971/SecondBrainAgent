@@ -6,4 +6,4 @@ def build_release_report():
         "version": "1.0.0-RC1",
         "maturity": "SYSTEM_RELEASE_CANDIDATE",
         "next_phase": "GA_1_0",
-    }\n
+    }

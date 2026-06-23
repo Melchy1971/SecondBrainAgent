@@ -18,3 +18,6 @@
 {"time": "2026-06-22 16:07:47", "type": "script.run", "payload": {"script": "run_regression_tests_v9.py", "ok": false}}
 {"time": "2026-06-22 16:07:55", "type": "script.run", "payload": {"script": "production_ready_gate_v96.py", "ok": true}}
 {"time": "2026-06-22 16:23:24", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
+{"time": "2026-06-23 07:57:57", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": false}}
+{"time": "2026-06-23 09:07:54", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
+{"time": "2026-06-23 10:18:08", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}

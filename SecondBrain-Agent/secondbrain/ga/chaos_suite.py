@@ -5,4 +5,4 @@ class ChaosSuite:
         return {
             "component": component,
             "status": "RECOVERED",
-        }\n
+        }

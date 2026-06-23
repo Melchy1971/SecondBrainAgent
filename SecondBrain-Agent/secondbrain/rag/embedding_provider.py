@@ -1,8 +1,5 @@
-"""P1 v18.5 - Embedding Provider Interface"""
+"""Backward-compatible RAG embedding provider import path."""
 
-from abc import ABC, abstractmethod
+from secondbrain.rag.providers.base import EmbeddingProvider
 
-class EmbeddingProvider(ABC):
-    @abstractmethod
-    def embed(self, texts: list[str]) -> list[list[float]]:
-        raise NotImplementedError
+__all__ = ["EmbeddingProvider"]

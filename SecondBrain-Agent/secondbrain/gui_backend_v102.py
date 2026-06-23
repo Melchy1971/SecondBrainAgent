@@ -1,71 +1,25 @@
+"""Alte Control-Center-GUI (v10.2) - nur noch Praesentationsschicht.
+
+Seit Phase 2 liegt die GUI-neutrale Logik (Pfade, Logging, Skript-Runner,
+Status, Dashboard-Links) in secondbrain.hud_core. Diese Datei haelt nur noch
+die HTML-Darstellung und den Server auf Port 8850. Sie wird nicht mehr als
+Standard-GUI gestartet (start_gui.py leitet auf das HUD um), bleibt aber als
+Fallback lauffaehig. Single Source of Truth fuer die Logik ist hud_core.
+"""
 from __future__ import annotations
 
-from pathlib import Path
-from datetime import datetime
 import json
-import subprocess
-import sys
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import parse_qs, urlparse, quote
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs, urlparse
 
-ROOT = Path(r"H:\SecondBrainAgent\SecondBrain-Agent")
-VAULT = Path(r"H:\SecondBrainAgent\SecondBrain")
-INBOX = Path(r"H:\SecondBrainAgent\SecondBrain-Inbox")
-LOG_DIR = ROOT / "logs"
+from secondbrain.hud_core import (
+    LOG_DIR,
+    dashboard_links,
+    log_event,
+    run_script,
+    system_status,
+)
 
-def now():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-def run_script(script: str, *args: str) -> dict:
-    p = ROOT / "scripts" / script
-    if not p.exists():
-        return {"ok": False, "script": script, "output": f"Script nicht gefunden: {p}"}
-    result = subprocess.run(
-        [sys.executable, str(p), *args],
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        timeout=900,
-    )
-    output = (result.stdout + "\n" + result.stderr)[-12000:]
-    log_event("script.run", {"script": script, "ok": result.returncode == 0})
-    return {"ok": result.returncode == 0, "script": script, "output": output}
-
-def log_event(event_type: str, payload: dict) -> None:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-    row = {"time": now(), "type": event_type, "payload": payload}
-    with (LOG_DIR / "jarvis_gui.log").open("a", encoding="utf-8") as f:
-        f.write(json.dumps(row, ensure_ascii=False) + "\n")
-
-def system_status() -> dict:
-    return {
-        "time": now(),
-        "root": str(ROOT),
-        "vault": str(VAULT),
-        "inbox": str(INBOX),
-        "root_exists": ROOT.exists(),
-        "vault_exists": VAULT.exists(),
-        "inbox_exists": INBOX.exists(),
-        "python": sys.version,
-        "markdown_files": len(list(VAULT.rglob("*.md"))) if VAULT.exists() else 0,
-        "log_exists": (LOG_DIR / "jarvis_gui.log").exists(),
-    }
-
-def latest_file(folder: Path) -> str:
-    if not folder.exists():
-        return ""
-    files = sorted(folder.glob("*.md"), key=lambda x: x.stat().st_mtime, reverse=True)
-    return str(files[0]) if files else ""
-
-def dashboard_links() -> dict:
-    return {
-        "Command Center v10": str(VAULT / "126_CommandCenter" / "SecondBrain_Command_Center_v10.md"),
-        "Jarvis Copilot": latest_file(VAULT / "125_JarvisCopilot"),
-        "Life Dashboard": str(VAULT / "120_LifeDashboard" / "Life_Dashboard_v10.md"),
-        "Knowledge Intelligence": str(VAULT / "119_KnowledgeIntelligenceDashboard" / "Knowledge_Intelligence_Dashboard_v99.md"),
-        "v9.5 Control Center": str(VAULT / "98_V95ControlCenter" / "SecondBrain_v9_5_Control_Center.md"),
-        "Release Gates": str(VAULT / "95_Operations" / "ReleaseGates"),
-    }
 
 def html_page(body: str, title: str = "Jarvis Control Center") -> bytes:
     html = f"""<!doctype html>
@@ -94,6 +48,7 @@ input{{padding:10px; border-radius:8px; border:1px solid #475569; width:70%;}}
 <main>{body}</main>
 </body></html>"""
     return html.encode("utf-8")
+
 
 def render_home(output: str = "") -> bytes:
     status = system_status()
@@ -127,6 +82,7 @@ def render_home(output: str = "") -> bytes:
         body.append(f"<div class='card'><h2>Ausgabe</h2><pre>{output}</pre></div>")
     body.append("<div class='card'><h2>Logs</h2><a class='button' href='/logs'>jarvis_gui.log öffnen</a></div>")
     return html_page("\n".join(body))
+
 
 class Handler(BaseHTTPRequestHandler):
     def send_html(self, data: bytes):
@@ -166,6 +122,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
+
 
 def start(host: str = "127.0.0.1", port: int = 8850):
     log_event("gui.start", {"host": host, "port": port})

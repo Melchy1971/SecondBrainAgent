@@ -1,3 +1,8 @@
+
+# Compatibility shim: allow this legacy module file to also behave like a package
+# so imports such as secondbrain.rag.<module> resolve to secondbrain/rag/.
+from pathlib import Path as _SecondBrainPath
+__path__ = [str(_SecondBrainPath(__file__).with_suffix(''))]
 from pathlib import Path
 import json
 from collections import Counter

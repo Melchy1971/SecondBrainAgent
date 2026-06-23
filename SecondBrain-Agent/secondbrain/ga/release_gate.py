@@ -21,4 +21,4 @@ class GlobalReleaseGate:
         return {
             "status": "PASS" if all(checks.values()) else "FAIL",
             "checks": checks,
-        }\n
+        }

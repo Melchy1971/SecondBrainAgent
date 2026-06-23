@@ -1,10 +1,75 @@
 # Jarvis HUD GUI (Iron-Man / Stark Look)
 
-Eigenstaendige HUD-Oberflaeche im Stil der Rainmeter-Iron-Man-Desktops.
-Laeuft parallel zur bestehenden GUI (`gui_backend_v102`, Port 8850), ohne sie zu
-veraendern. Wiederverwendung von deren Skript-Runner und Status-Funktionen.
+HUD-Oberflaeche im Stil der Rainmeter-Iron-Man-Desktops. **Einzige GUI** des
+Systems (Konsolidierung 2026-06-23). Die alte Control-Center-GUI auf Port 8850
+wird nicht mehr als Oberflaeche gestartet.
 
-## Start
+- `scripts/start_gui.py` leitet auf das HUD um (Rueckwaerts-Kompatibilitaet).
+- `scripts/menu.py` Punkt 8 startet das HUD (Port 8851).
+- `secondbrain/hud_core.py` ist seit Phase 2 das **neutrale Kernmodul** mit der
+  GUI-unabhaengigen Logik (`run_script`, `system_status`, `dashboard_links`,
+  `log_event`, Pfade). Sowohl das HUD als auch die alte GUI importieren von hier.
+- `secondbrain/gui_backend_v102.py` ist nur noch Praesentationsschicht (HTML +
+  Server 8850) und importiert die Logik aus `hud_core`. Kein Frontend haengt mehr
+  an einem anderen Frontend; Single Source of Truth ist `hud_core`.
+
+## Start / Stop (Befehle Jarvis / Jarvis-stop)
+
+```text
+Jarvis        startet das HUD im Hintergrund und oeffnet den Browser
+Jarvis-stop   stoppt das HUD
+```
+
+- `Jarvis.bat` startet `pythonw scripts\start_hud.py` ohne Konsolenfenster,
+  prueft per PID-Datei ob schon eine Instanz laeuft und oeffnet `http://127.0.0.1:8851`.
+- `Jarvis-stop.bat` beendet den Prozess ueber `runtime\jarvis_hud.pid`,
+  mit Fallback ueber den Port 8851.
+
+Damit die Befehle von ueberall funktionieren, den Projektordner einmalig zur
+PATH-Variable hinzufuegen (PowerShell, dauerhaft fuer den Nutzer):
+
+```powershell
+[Environment]::SetEnvironmentVariable("Path",
+  $env:Path + ";H:\SecondBrainAgent\SecondBrain-Agent", "User")
+```
+
+Danach neue Konsole oeffnen. Ohne PATH-Eintrag aus dem Ordner heraus aufrufen:
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+.\Jarvis.bat
+.\Jarvis-stop.bat
+```
+
+## Desktop-Verknuepfung + Autostart
+
+Einmalig einrichten (legt Desktop-Icon und Login-Autostart an):
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+powershell -ExecutionPolicy Bypass -File install_jarvis.ps1
+```
+
+Ergebnis:
+
+- Desktop: "Jarvis HUD" - Doppelklick startet das HUD und oeffnet den Browser.
+- Autostart (Login): startet das HUD im Hintergrund ohne Browser (`/quiet`).
+  Liegt im Ordner `shell:startup` des Nutzers.
+
+Wieder entfernen:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File uninstall_jarvis.ps1
+```
+
+Hinweise:
+
+- `Jarvis /quiet` startet nur den Server (kein Browser) - genau das nutzt der Autostart.
+- Icon der Verknuepfung: in `install_jarvis.ps1` ueber `IconLocation` aenderbar.
+- Der Autostart oeffnet bewusst keinen Browser; das HUD ist nach dem Login direkt
+  unter `http://127.0.0.1:8851` erreichbar.
+
+## Manueller Start (Konsole bleibt offen)
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
@@ -28,6 +93,7 @@ den Hinweis "psutil fehlt".
 
 ## Dateien
 
+- `secondbrain/hud_core.py` - neutrales Kernmodul (geteilte Logik)
 - `secondbrain/jarvis_hud_server.py` - HTTP-Server (Port 8851) + JSON-API
 - `web/jarvis_hud/index.html` - Single-File-Frontend (HTML/CSS/JS, keine Build-Tools)
 - `scripts/start_hud.py` - Starter
