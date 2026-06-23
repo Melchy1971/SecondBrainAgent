@@ -37,7 +37,9 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from secondbrain.hud_core import (  # noqa: E402
     LOG_DIR,
     ROOT,
+    VAULT,
     dashboard_links,
+    now,
     log_event,
     run_script,
     system_status,
@@ -271,70 +273,196 @@ class Handler(BaseHTTPRequestHandler):
         self._send(json.dumps(data, ensure_ascii=False).encode("utf-8"),
                    "application/json; charset=utf-8")
 
+
+    # --- HTML / statische Auslieferung ------------------------------------
+    def _html(self, path: Path):
+        try:
+            body = path.read_text(encoding="utf-8").encode("utf-8")
+        except Exception as exc:
+            self._send(f"HUD-Seite nicht gefunden: {exc}".encode("utf-8"),
+                       "text/plain; charset=utf-8", code=500)
+            return
+        self._send(body, "text/html; charset=utf-8")
+
+    def _read_body(self) -> dict:
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (TypeError, ValueError):
+            length = 0
+        if length <= 0:
+            return {}
+        raw = self.rfile.read(length)
+        try:
+            data = json.loads(raw.decode("utf-8"))
+            return data if isinstance(data, dict) else {}
+        except Exception:
+            return {}
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
         qs = parse_qs(parsed.query)
-        try:
-            if path in ("/", "/index.html"):
-                if HUD_HTML.exists():
-                    self._send(HUD_HTML.read_bytes(), "text/html; charset=utf-8")
-                else:
-                    self._send(b"index.html fehlt: web/jarvis_hud/index.html",
-                               "text/plain; charset=utf-8", 404)
-            elif path == "/api/metrics":
-                self._json(metrics())
-            elif path == "/api/clock":
-                self._json({"time": datetime.now().strftime("%H:%M:%S"),
-                            "date": datetime.now().strftime("%Y-%m-%d")})
-            elif path == "/api/weather":
-                self._json(weather())
-            elif path == "/api/news":
-                self._json(news())
-            elif path == "/api/status":
-                self._json(system_status())
-            elif path == "/api/dashboards":
-                self._json(dashboard_links())
-            elif path == "/api/run":
-                script = qs.get("script", [""])[0]
-                if not script:
-                    self._json({"ok": False, "output": "Kein Skript angegeben."})
-                else:
-                    self._json(run_script(script))
-            elif path == "/api/rag":
-                q = qs.get("q", [""])[0]
-                self._json(run_script("rag_answer.py", q) if q
-                           else {"ok": False, "output": "Keine Frage uebergeben."})
-            elif path == "/api/logs":
-                self._json({"log": tail_log()})
-            elif path == "/api/settings":
-                self._json(load_settings())
-            else:
-                self._send(b"404", "text/plain", 404)
-        except Exception as exc:  # nichts soll den Server killen
-            log_event("hud.error", {"path": path, "error": str(exc)})
-            self._json({"ok": False, "error": str(exc)})
+
+        if path in ("/", "/index.html"):
+            self._html(HUD_HTML)
+        elif path == "/api/metrics":
+            self._json(metrics())
+        elif path == "/api/clock":
+            self._json({"ok": True, "time": now(),
+                        "iso": datetime.now().isoformat(timespec="seconds")})
+        elif path == "/api/weather":
+            self._json(weather())
+        elif path == "/api/news":
+            self._json(news())
+        elif path == "/api/status":
+            self._json(system_status())
+        elif path == "/api/dashboards":
+            self._json({"ok": True, "links": dashboard_links()})
+        elif path == "/api/settings":
+            self._json({"ok": True, "settings": load_settings()})
+        elif path == "/api/logs":
+            self._json({"ok": True, "log": tail_log()})
+        elif path == "/api/run":
+            script = (qs.get("script", [""])[0] or "").strip()
+            self._json(run_allowed_script(script))
+        elif path == "/api/rag":
+            query = (qs.get("q", [""])[0] or "").strip()
+            self._json(rag_answer(query))
+        else:
+            self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        path = parsed.path
+        body = self._read_body()
+
+        if path == "/api/settings":
+            saved = save_settings(body)
+            self._json({"ok": True, "settings": saved})
+        elif path == "/api/rag":
+            query = str(body.get("q", "")).strip()
+            self._json(rag_answer(query))
+        elif path == "/api/run":
+            script = str(body.get("script", "")).strip()
+            self._json(run_allowed_script(script))
+        else:
+            self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
+
+
+# --- Skript-Runner (Allowlist, review-first) ---------------------------------
+# Nur explizit freigegebene Skripte. Keine Loeschaktionen, keine freie Eingabe.
+ALLOWED_SCRIPTS = {
+    "run_v10_cycle.py",
+    "run_v101_cycle.py",
+    "import_ai_exports.py",
+    "build_vector_rag.py",
+    "check_paths_v9.py",
+    "release_gate_v9.py",
+    "run_regression_tests_v9.py",
+}
+
+
+def run_allowed_script(script: str) -> dict:
+    """Fuehrt nur Skripte aus der Allowlist aus (review-first, keine Loeschungen)."""
+    if not script:
+        return {"ok": False, "script": script, "output": "Kein Skript angegeben."}
+    if script not in ALLOWED_SCRIPTS:
+        log_event("hud.run_blocked", {"script": script})
+        return {"ok": False, "script": script,
+                "output": f"Nicht freigegeben: {script}. Erlaubt: {sorted(ALLOWED_SCRIPTS)}"}
+    return run_script(script)
+
+
+# --- RAG ueber das Vault -----------------------------------------------------
+# Robust und dependency-frei: Keyword-Retrieval ueber die echten Vault-Notizen.
+_STOPWORDS = {
+    "der", "die", "das", "und", "oder", "ein", "eine", "ist", "im", "in", "am",
+    "an", "auf", "fuer", "fur", "mit", "von", "zu", "den", "dem", "des", "wie",
+    "was", "wer", "wo", "wann", "warum", "welche", "welcher", "welches", "the",
+    "and", "or", "a", "an", "is", "of", "to", "for", "in", "on", "with", "what",
+}
+
+
+def _tokenize(text: str) -> list:
+    out, word = [], []
+    for ch in text.lower():
+        if ch.isalnum() or ch in "äöüß":
+            word.append(ch)
+        elif word:
+            out.append("".join(word))
+            word = []
+    if word:
+        out.append("".join(word))
+    return out
+
+
+def rag_answer(query: str, limit: int = 5) -> dict:
+    """Beantwortet eine Vault-Frage. Liefert beste Treffer + kurze Synthese."""
+    query = (query or "").strip()
+    if not query:
+        return {"ok": False, "query": query, "answer": "Keine Frage angegeben.", "hits": []}
+
+    terms = [t for t in _tokenize(query) if t not in _STOPWORDS and len(t) > 1]
+    if not terms:
+        terms = _tokenize(query)
+    if not VAULT.exists():
+        return {"ok": False, "query": query,
+                "answer": f"Vault nicht gefunden: {VAULT}", "hits": []}
+
+    scored = []
+    term_set = set(terms)
+    for note in VAULT.rglob("*.md"):
+        if "99_System" in note.parts:
+            continue
         try:
-            length = int(self.headers.get("Content-Length", 0))
-            raw = self.rfile.read(length) if length else b"{}"
-            payload = json.loads(raw.decode("utf-8") or "{}")
-            if parsed.path == "/api/settings":
-                self._json({"ok": True, "settings": save_settings(payload)})
-            else:
-                self._send(b"404", "text/plain", 404)
-        except Exception as exc:
-            log_event("hud.error", {"path": parsed.path, "error": str(exc)})
-            self._json({"ok": False, "error": str(exc)})
+            text = note.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        low = text.lower()
+        score = sum(low.count(t) for t in term_set)
+        score += sum(3 for t in term_set if t in note.stem.lower())
+        if score > 0:
+            idx = min((low.find(t) for t in term_set if t in low), default=0)
+            start = max(0, idx - 120)
+            preview = text[start:start + 320].replace("\n", " ").strip()
+            scored.append((score, note, preview))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    top = scored[:limit]
+    hits = [{
+        "note": str(note.relative_to(VAULT)),
+        "score": score,
+        "preview": preview,
+    } for score, note, preview in top]
+
+    if not hits:
+        answer = f"Keine Treffer im Vault fuer: {query}"
+    else:
+        names = ", ".join(h["note"] for h in hits[:3])
+        answer = f"{len(hits)} relevante Notiz(en) gefunden. Top-Treffer: {names}."
+    log_event("hud.rag", {"query": query, "hits": len(hits)})
+    return {"ok": bool(hits), "query": query, "answer": answer, "hits": hits}
 
 
-def start(host: str = "127.0.0.1", port: int = 8851):
-    log_event("hud.start", {"host": host, "port": port, "psutil": _HAS_PSUTIL})
-    print(f"Jarvis HUD: http://{host}:{port}  (psutil={_HAS_PSUTIL})")
-    HTTPServer((host, port), Handler).serve_forever()
+# --- Server-Bootstrap --------------------------------------------------------
+def run(host: str = "127.0.0.1", port: int = 8851) -> None:
+    port = int(os.environ.get("HUD_PORT", port))
+    host = os.environ.get("HUD_HOST", host)
+    server = HTTPServer((host, port), Handler)
+    log_event("hud.start", {"host": host, "port": port})
+    print(f"Jarvis HUD laeuft: http://{host}:{port}")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nHUD gestoppt.")
+    finally:
+        server.server_close()
+        log_event("hud.stop", {"host": host, "port": port})
+
+
+# Kompatibler Alias fuer Aufrufer (z. B. scripts/start_hud.py).
+start = run
 
 
 if __name__ == "__main__":
-    start()
+    run()

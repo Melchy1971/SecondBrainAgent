@@ -1,0 +1,9 @@
+{
+  "place": "Bonn",
+  "lat": 50.7374,
+  "lon": 7.0982,
+  "news_rss": "https://www.tagesschau.de/index~rss2.xml",
+  "news_max": 5,
+  "weather_min": 15,
+  "accent": "#2fe6ff"
+}
