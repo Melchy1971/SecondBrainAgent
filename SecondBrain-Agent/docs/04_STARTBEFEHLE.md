@@ -1,9 +1,46 @@
 # Startbefehle
 
+## Voraussetzung
+
+Alle Befehle aus dem Projektordner ausführen:
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+```
+
+Abhängigkeiten:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Smoke Check:
+
+```powershell
+python launcher.py health
+```
+
+## Lokale Oberflächen
+
+Jarvis HUD:
+
+```powershell
+python scripts\start_hud.py
+```
+
+Browser: `http://127.0.0.1:8851`
+
+Einfaches Web-Dashboard:
+
+```powershell
+python scripts\web_dashboard.py
+```
+
+Browser: `http://localhost:8765`
+
 ## v16.0 Desktop
 
 ```powershell
-pip install -r requirements.txt
 python launcher.py desktop16-gui
 python launcher.py desktop16-status
 python launcher.py desktop16-seed

@@ -1,5 +1,9 @@
 # v10.2 Jarvis Control Center GUI
 
+Hinweis: `scripts\start_gui.py` ist aus Kompatibilitätsgründen erhalten,
+leitet aber auf das aktuelle Jarvis HUD um. Die aktive Oberfläche läuft auf
+Port `8851`, nicht mehr auf `8850`.
+
 ## Start
 
 ```powershell
@@ -10,7 +14,7 @@ python scripts\start_gui.py
 Browser öffnen:
 
 ```text
-http://127.0.0.1:8850
+http://127.0.0.1:8851
 ```
 
 ## Funktionen
@@ -36,5 +40,5 @@ python scripts\menu.py
 Option:
 
 ```text
-4 = Jarvis GUI starten
+8 = Jarvis HUD starten (Port 8851)
 ```

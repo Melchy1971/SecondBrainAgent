@@ -25,6 +25,42 @@ cd H:\SecondBrainAgent\SecondBrain-Agent
 python scripts\menu.py
 ```
 
+Wichtig: Alle Befehle in dieser README gehen davon aus, dass die PowerShell im
+Projektordner `H:\SecondBrainAgent\SecondBrain-Agent` steht. Wenn Befehle aus
+`H:\SecondBrainAgent` gestartet werden, findet Python `requirements.txt` und
+`launcher.py` nicht.
+
+## Schnellstart
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+python -m pip install -r requirements.txt
+python launcher.py health
+python scripts\menu.py
+```
+
+## Web-UI / HUD
+
+Das aktuelle Jarvis HUD ist die primäre lokale Oberfläche:
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+python scripts\start_hud.py
+```
+
+Browser: `http://127.0.0.1:8851`
+
+Alternativ startet `.\Jarvis.bat` das HUD im Hintergrund und öffnet den
+Browser. Stoppen: `.\Jarvis-stop.bat`.
+
+Das einfache lokale Dashboard bleibt für schnelle Aktionen verfügbar:
+
+```powershell
+python scripts\web_dashboard.py
+```
+
+Browser: `http://localhost:8765`
+
 ## Wichtigster Lauf
 
 ```powershell
@@ -183,4 +219,3 @@ python launcher.py command-index
 `p0-gate` ist das strikte maschinenlesbare P0-Gate. Exit-Code `0` bedeutet PASS. Exit-Code `1` bedeutet BLOCKED.
 
 Geprüft werden Python-Version, Projektwurzel, Pflichtkonfiguration, Runtime-Schreibbarkeit, kritische Imports, kritische Runtime-Health und kritische Command-Registrierung.
-

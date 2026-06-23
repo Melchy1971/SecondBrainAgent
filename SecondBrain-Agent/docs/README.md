@@ -20,3 +20,41 @@ SecondBrain OS entwickelt sich zu einem persönlichen Betriebssystem für Wissen
 
 ## Wichtig
 Die Releases v16.0 bis v16.9 sind als modulare Codepakete entstanden. Für ein produktives Gesamtsystem müssen sie in einen gemeinsamen Hauptbranch integriert werden.
+
+## Aktueller Startpunkt
+
+Alle lokalen Befehle aus dem Projektordner starten:
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+```
+
+Basisprüfung:
+
+```powershell
+python launcher.py health
+```
+
+Menü:
+
+```powershell
+python scripts\menu.py
+```
+
+Jarvis HUD:
+
+```powershell
+python scripts\start_hud.py
+```
+
+Browser: `http://127.0.0.1:8851`
+
+Einfaches Web-Dashboard:
+
+```powershell
+python scripts\web_dashboard.py
+```
+
+Browser: `http://localhost:8765`
+
+Weitere Startbefehle: `docs\04_STARTBEFEHLE.md`.
