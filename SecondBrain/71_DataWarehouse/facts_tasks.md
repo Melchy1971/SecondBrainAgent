@@ -21,11 +21,17 @@
 | - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-22_task-agent]] |
 | - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-22_task-agent]] |
 | - [ ] Aufgabe | offene Aufgaben | | [[2026-06-22_task-agent]] |
+| - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-06-23_task-agent]] |
+| - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-23_task-agent]] |
+| - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-23_task-agent]] |
+| - [ ] Aufgabe | offene Aufgaben | | [[2026-06-23_task-agent]] |
 | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Aufgabe | offene Aufgaben | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-06-22_chief-of-staff-v98]] |
 | - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-22_chief-of-staff-v98]] |
-| - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-22_chief-of-staff-v98]] |
-| - [ ] Aufgabe | of | [[2026-06-22_chief-of-staff-v98]] |
+| - [ ] Status prüfen<br>- [ ] nächs | [[2026-06-22_chief-of-staff-v98]] |
+| - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-06-23_chief-of-staff-v98]] |
+| - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-23_chief-of-staff-v98]] |
+| - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-23_chief-of-staff-v98]] |

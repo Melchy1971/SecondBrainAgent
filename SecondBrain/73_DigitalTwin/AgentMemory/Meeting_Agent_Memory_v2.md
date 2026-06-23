@@ -1,20 +1,25 @@
 # Meeting Agent Memory v2
 
-Aktualisiert: 2026-06-22
+Aktualisiert: 2026-06-23
 
 ## Relevante Notizen
 
+- [[2026-06-23_meeting-agent]] — Score 52
 - [[2026-06-22_meeting-agent]] — Score 48
 - [[2026-06-19_meeting-agent]] — Score 39
+- [[2026-06-23_meeting-intelligence]] — Score 38
 - [[2026-06-22_meeting-intelligence]] — Score 38
 - [[2026-06-19_meeting-intelligence]] — Score 34
 - [[2026-06-18_meeting-intelligence]] — Score 12
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 9
 - [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 9
 - [[Meeting_Agent_Memory_v2]] — Score 9
+- [[2026-06-23_knowledge-quality]] — Score 9
+- [[2026-06-23_decision-agent]] — Score 8
 - [[2026-06-22_knowledge-quality]] — Score 7
 - [[weighted_edges]] — Score 6
 - [[Decision_Agent_Memory_v2]] — Score 6
+- [[2026-06-23_reasoning-map]] — Score 6
 - [[2026-06-22_decision-agent]] — Score 6
 - [[2026-06-19_semantic-deduplication]] — Score 6
 - [[2026-06-19_quality-scores]] — Score 6
@@ -37,6 +42,9 @@ Aktualisiert: 2026-06-22
 - [[Knowledge_Intelligence_Dashboard_v99]] — Score 2
 - [[Digital_Twin_v6]] — Score 2
 - [[Calendar_Agent_Memory_v2]] — Score 2
+- [[2026-06-23_research-backlog-agent]] — Score 2
+- [[2026-06-23_recommendations]] — Score 2
+- [[2026-06-23_chief-of-staff-v98]] — Score 2
 - [[2026-06-22_research-backlog-agent]] — Score 2
 - [[2026-06-22_recommendations]] — Score 2
 - [[2026-06-22_chief-of-staff-v98]] — Score 2
@@ -46,14 +54,6 @@ Aktualisiert: 2026-06-22
 - [[facts_tasks]] — Score 1
 - [[facts_tasks]] — Score 1
 - [[facts_tags]] — Score 1
-- [[facts_documents]] — Score 1
-- [[facts_documents]] — Score 1
-- [[Weekly_Plan]] — Score 1
-- [[SecondBrain_v9_5_Control_Center]] — Score 1
-- [[SecondBrain_OS_Dashboard]] — Score 1
-- [[Quarterly_Plan]] — Score 1
-- [[Plugin_Ecosystem]] — Score 1
-- [[Monthly_Plan]] — Score 1
 
 ## Gelernte Tags
 

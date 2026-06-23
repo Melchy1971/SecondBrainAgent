@@ -1,25 +1,29 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-06-22
+Aktualisiert: 2026-06-23
 
 ## Relevante Notizen
 
 - [[2026-06-22_knowledge-quality]] — Score 156
+- [[2026-06-23_knowledge-quality]] — Score 152
 - [[2026-06-19_knowledge-quality]] — Score 140
+- [[2026-06-23_research-backlog-agent]] — Score 121
 - [[2026-06-22_research-backlog-agent]] — Score 121
 - [[2026-06-19_research-backlog-agent]] — Score 121
+- [[2026-06-23_self-improvement-plan]] — Score 100
 - [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 35
+- [[Knowledge_Intelligence_Dashboard_v99]] — Score 33
 - [[2026-06-19_knowledge-compression]] — Score 14
 - [[2026-06-18_knowledge-compression]] — Score 9
 - [[2026-06-18_https-obsidian-md]] — Score 7
 - [[SecondBrain OS v9.1 – Einsteigerhandbuch]] — Score 5
-- [[Personal_CRM_Index]] — Score 4
 - [[Import aus Chat Gpt]] — Score 4
 - [[Entity_Index]] — Score 4
 - [[2026-06-19_research-backlog]] — Score 4
+- [[Personal_CRM_Index]] — Score 3
+- [[2026-06-23_cross-source-intelligence]] — Score 3
 - [[2026-06-22_cross-source-intelligence]] — Score 3
 - [[2026-06-19_cross-source-intelligence]] — Score 3
 - [[2026-06-18_research-backlog]] — Score 3
@@ -50,10 +54,6 @@ Aktualisiert: 2026-06-22
 - [[Gesundheit_Index]] — Score 1
 - [[Finanzen_Index]] — Score 1
 - [[Executive_Dashboard_v9]] — Score 1
-- [[Executive_Dashboard]] — Score 1
-- [[Decision_Register]] — Score 1
-- [[Decision_Journal]] — Score 1
-- [[Decision_Intelligence_v2]] — Score 1
 
 ## Gelernte Tags
 

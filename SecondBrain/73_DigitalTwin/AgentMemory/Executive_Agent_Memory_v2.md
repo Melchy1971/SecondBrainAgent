@@ -1,15 +1,19 @@
 # Executive Agent Memory v2
 
-Aktualisiert: 2026-06-22
+Aktualisiert: 2026-06-23
 
 ## Relevante Notizen
 
+- [[2026-06-23_project-agent]] — Score 74
 - [[2026-06-22_project-agent]] — Score 74
 - [[2026-06-19_project-agent]] — Score 65
+- [[2026-06-23_chief-of-staff-v98]] — Score 47
 - [[2026-06-22_chief-of-staff-v98]] — Score 47
 - [[2026-06-19_chief-of-staff-v98]] — Score 47
 - [[2026-06-19_self-reflection]] — Score 23
-- [[2026-06-22_self-reflection]] — Score 22
+- [[2026-06-23_self-reflection]] — Score 21
+- [[2026-06-22_self-reflection]] — Score 21
+- [[2026-06-23_knowledge-quality]] — Score 20
 - [[2026-06-19_refactoring-proposals]] — Score 20
 - [[2026-06-19_prediction-report]] — Score 20
 - [[weighted_edges]] — Score 19
@@ -18,12 +22,15 @@ Aktualisiert: 2026-06-22
 - [[2026-06-19_knowledge-quality]] — Score 17
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 12
 - [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 12
+- [[2026-06-23_self-improvement-plan]] — Score 12
 - [[2026-06-22_self-improvement-plan]] — Score 11
 - [[SecondBrain OS v9.1 – Einsteigerhandbuch]] — Score 10
 - [[Memory_Engine_Profile]] — Score 10
+- [[2026-06-23_task-agent]] — Score 10
 - [[2026-06-22_task-agent]] — Score 10
 - [[2026-06-19_self-improvement-plan]] — Score 10
 - [[2026-06-19_self-healing-report]] — Score 10
+- [[2026-06-23_project-intelligence]] — Score 9
 - [[2026-06-22_project-intelligence]] — Score 9
 - [[2026-06-22_decision-agent]] — Score 8
 - [[2026-06-19_project-intelligence]] — Score 8
@@ -31,6 +38,8 @@ Aktualisiert: 2026-06-22
 - [[2026-06-18_self-healing-report]] — Score 8
 - [[Memory_Profile]] — Score 7
 - [[Knowledge_Intelligence_Dashboard_v99]] — Score 7
+- [[2026-06-23_meeting-intelligence]] — Score 7
+- [[2026-06-23_decision-agent]] — Score 7
 - [[2026-06-22_meeting-intelligence]] — Score 7
 - [[2026-06-19_meeting-intelligence]] — Score 7
 - [[2026-06-19_decision-agent]] — Score 7
@@ -45,15 +54,6 @@ Aktualisiert: 2026-06-22
 - [[2026-06-19_memory-replay]] — Score 6
 - [[2026-06-19_meeting-agent]] — Score 6
 - [[2026-06-19_event-bus]] — Score 6
-- [[2026-06-19_daily-assistant]] — Score 6
-- [[facts_tasks]] — Score 5
-- [[Life_Dashboard_v10]] — Score 5
-- [[ChiefOfStaff_Memory]] — Score 5
-- [[2026-06-22_daily-os]] — Score 5
-- [[2026-06-22_daily-assistant]] — Score 5
-- [[2026-06-19_daily-os]] — Score 5
-- [[2026-06-18_quality-scores]] — Score 5
-- [[Temporal_Graph]] — Score 4
 
 ## Gelernte Tags
 

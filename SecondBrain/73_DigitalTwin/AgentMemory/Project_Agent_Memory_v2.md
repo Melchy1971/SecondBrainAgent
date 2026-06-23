@@ -1,17 +1,21 @@
 # Project Agent Memory v2
 
-Aktualisiert: 2026-06-22
+Aktualisiert: 2026-06-23
 
 ## Relevante Notizen
 
 - [[weighted_edges]] — Score 96
+- [[2026-06-23_project-agent]] — Score 95
 - [[2026-06-22_project-agent]] — Score 92
 - [[2026-06-19_project-agent]] — Score 90
 - [[2026-06-19_prediction-report]] — Score 66
-- [[2026-06-22_chief-of-staff-v98]] — Score 65
 - [[2026-06-19_chief-of-staff-v98]] — Score 64
+- [[2026-06-22_chief-of-staff-v98]] — Score 63
+- [[2026-06-23_chief-of-staff-v98]] — Score 61
+- [[2026-06-23_self-reflection]] — Score 29
 - [[2026-06-22_self-reflection]] — Score 27
 - [[2026-06-19_self-reflection]] — Score 27
+- [[2026-06-23_daily-os]] — Score 26
 - [[2026-06-22_daily-os]] — Score 25
 - [[2026-06-19_daily-os]] — Score 25
 - [[2026-06-19_semantic-deduplication]] — Score 22
@@ -19,19 +23,25 @@ Aktualisiert: 2026-06-22
 - [[2026-06-18_prediction-report]] — Score 20
 - [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 18
 - [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 18
+- [[2026-06-23_project-intelligence]] — Score 17
 - [[2026-06-22_project-intelligence]] — Score 17
 - [[2026-06-19_self-healing-report]] — Score 17
+- [[Knowledge_Intelligence_Dashboard_v99]] — Score 16
+- [[2026-06-23_reasoning-map]] — Score 15
 - [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] — Score 15
 - [[2026-06-19_project-intelligence]] — Score 15
 - [[facts_tasks]] — Score 14
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 14
+- [[2026-06-23_decision-agent]] — Score 14
 - [[2026-06-22_reasoning-map]] — Score 14
 - [[2026-06-19_quality-scores]] — Score 14
+- [[2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] — Score 13
 - [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] — Score 13
 - [[2026-06-19_knowledge-quality]] — Score 13
+- [[2026-06-23_contradictions]] — Score 12
 - [[2026-06-19_reasoning-map]] — Score 12
 - [[2026-06-19_daily-briefing]] — Score 12
 - [[Project_Memory]] — Score 11
+- [[2026-06-23_task-agent]] — Score 11
 - [[2026-06-22_task-agent]] — Score 11
 - [[2026-06-22_decision-agent]] — Score 11
 - [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] — Score 11
@@ -42,18 +52,8 @@ Aktualisiert: 2026-06-22
 - [[Project_Agent_Memory_v2]] — Score 10
 - [[2026-06-22_contradictions]] — Score 10
 - [[SecondBrain OS v9.1 – Einsteigerhandbuch]] — Score 9
-- [[Memory_Engine_Profile]] — Score 9
 - [[2026-06-19_090550_rag_answer]] — Score 9
 - [[Weekly_Plan]] — Score 8
-- [[Quarterly_Plan]] — Score 8
-- [[Monthly_Plan]] — Score 8
-- [[Memory_Profile]] — Score 8
-- [[Calendar_Agent_Memory_v2]] — Score 8
-- [[2026-06-22_process-agent]] — Score 8
-- [[2026-06-22_daily-assistant]] — Score 8
-- [[2026-06-19_task-agent]] — Score 8
-- [[2026-06-19_process-design-backlog]] — Score 8
-- [[2026-06-19_process-agent]] — Score 8
 
 ## Gelernte Tags
 

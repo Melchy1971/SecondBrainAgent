@@ -21,3 +21,9 @@
 {"time": "2026-06-23 07:57:57", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": false}}
 {"time": "2026-06-23 09:07:54", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
 {"time": "2026-06-23 10:18:08", "type": "hud.start", "payload": {"host": "127.0.0.1", "port": 8851, "psutil": true}}
+{"time": "2026-06-23 13:40:59", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-23 13:41:25", "type": "script.run", "payload": {"script": "run_v10_cycle.py", "ok": false}}
+{"time": "2026-06-23 13:41:35", "type": "script.run", "payload": {"script": "run_v101_cycle.py", "ok": true}}
+{"time": "2026-06-23 13:41:35", "type": "script.run", "payload": {"script": "build_vector_rag.py", "ok": true}}
+{"time": "2026-06-23 13:41:55", "type": "script.run", "payload": {"script": "release_gate_v9.py", "ok": true}}
+{"time": "2026-06-23 13:42:08", "type": "script.run", "payload": {"script": "run_regression_tests_v9.py", "ok": false}}
