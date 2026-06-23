@@ -1,221 +1,308 @@
-# SecondBrain-Agent v8.0
+# SecondBrain-Agent v18.x
 
-SecondBrain OS Ausbau auf Basis v6.4.1.
+Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, Desktop/HUD, Mobile Companion, Voice, Knowledge Graph, P0/P1-Gates und Release-Hygiene-Werkzeugen.
 
-## Neu in v8.0
+## Projektwurzel
 
-- Semantic Search Engine
-- Hybrid Search Index
-- Full Knowledge Graph
-- Agent Memory v2
-- Project Intelligence
-- Decision Intelligence v2
-- Meeting Intelligence v2
-- Calendar Intelligence
-- Personal Data Warehouse v2
-- MCP Ecosystem Registry
-- Digital Twin v5
-- Self-Improving Knowledge System
-- SecondBrain OS Dashboard
-
-## Start
+Alle Befehle in dieser README laufen aus dem Projektordner:
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
-python scripts\menu.py
 ```
 
-Wichtig: Alle Befehle in dieser README gehen davon aus, dass die PowerShell im
-Projektordner `H:\SecondBrainAgent\SecondBrain-Agent` steht. Wenn Befehle aus
-`H:\SecondBrainAgent` gestartet werden, findet Python `requirements.txt` und
-`launcher.py` nicht.
+Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini` und `requirements.txt` nicht zuverlässig.
 
 ## Schnellstart
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+python launcher.py repo-doctor
+python launcher.py dependency-inventory
 python launcher.py health
-python scripts\menu.py
+python launcher.py command-index
 ```
 
-## Web-UI / HUD
-
-Das aktuelle Jarvis HUD ist die primäre lokale Oberfläche:
+Minimal ohne Dev-Datei:
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+python -m pip install -r requirements.txt
+python launcher.py health
+```
+
+## Primäre lokale Oberfläche
+
+### Jarvis HUD
+
+```powershell
 python scripts\start_hud.py
 ```
 
-Browser: `http://127.0.0.1:8851`
+Browser:
 
-Alternativ startet `.\Jarvis.bat` das HUD im Hintergrund und öffnet den
-Browser. Stoppen: `.\Jarvis-stop.bat`.
+```text
+http://127.0.0.1:8851
+```
 
-Das einfache lokale Dashboard bleibt für schnelle Aktionen verfügbar:
+Alternativ:
+
+```powershell
+.\Jarvis.bat
+```
+
+Stoppen:
+
+```powershell
+.\Jarvis-stop.bat
+```
+
+### Einfaches lokales Dashboard
 
 ```powershell
 python scripts\web_dashboard.py
 ```
 
-Browser: `http://localhost:8765`
+Browser:
 
-## Wichtigster Lauf
+```text
+http://localhost:8765
+```
+
+## Release-Gate-Reihenfolge
+
+Vor Featureentwicklung oder Merge:
 
 ```powershell
-python scripts\run_secondbrain_os_cycle.py
+python launcher.py repo-doctor
+python launcher.py dependency-inventory
+python launcher.py p0-gate
+python launcher.py p1-gate
+pytest -q
 ```
 
-## Sicherheitsmodell
+Logische Reihenfolge:
 
-- keine destruktiven Änderungen
-- keine externen Aktionen ohne Aktivierung
-- alle Ergebnisse als Markdown
-- Markdown bleibt Source of Truth
-
-## v10.4/v10.5 Foundation
-
-Neu ergänzt in diesem Paket:
-
-- `secondbrain/runtime_events_v104.py`
-- `secondbrain/normalizer_v104.py`
-- `secondbrain/connector_runtime_v104.py`
-- `secondbrain/ai_runtime_v105.py`
-- `scripts/run_v104_connector_sync.py`
-- `scripts/run_v105_ai_runtime.py`
-- `docs/CONNECTOR_RUNTIME_v10.4.md`
-- `docs/AI_RUNTIME_v10.5.md`
-
-Validierung:
-
-```bash
-pytest -q tests/unit/test_runtime_v104_v105.py tests/test_smoke.py
-python scripts/run_v104_connector_sync.py
-python scripts/run_v105_ai_runtime.py
+```text
+repo-doctor
+  ↓
+dependency-inventory
+  ↓
+p0-gate
+  ↓
+p1-gate
+  ↓
+feature-specific tests
+  ↓
+release report
 ```
 
+## Hygiene-Gates
 
-## v10.7 Security & Governance
-Siehe `README_v10.7_DELTA.md` und `docs/SECURITY_V10_7.md`.
+### Repo Doctor
 
-## v10.8 Unified Launcher
+Prüft Repository-Struktur, Pflichtdateien, pytest-Konfiguration, README-Basis und optionale Launcher-Smokes.
 
-Startpunkt:
+```powershell
+python launcher.py repo-doctor
+python launcher.py repo-doctor --execute-runtime-checks
+python launcher.py repo-doctor --write-report
+```
 
-```bash
+Report:
+
+```text
+release/repo_doctor_latest.json
+```
+
+Doku:
+
+```text
+docs/REPO_DOCTOR_v18_7.md
+```
+
+### Dependency Inventory
+
+Erzeugt ein statisches Import-Inventar und trennt Standardbibliothek, interne Module, externe Pakete und optionale Provider.
+
+```powershell
+python launcher.py dependency-inventory
+python launcher.py dependency-inventory --write-report
+```
+
+Report:
+
+```text
+release/dependency_inventory_latest.json
+```
+
+Doku:
+
+```text
+docs/DEPENDENCY_INVENTORY_v18_8.md
+```
+
+## Core-Kommandos
+
+```powershell
 python launcher.py health
-python launcher.py init
-python launcher.py start
-```
-
-Dokumentation: `docs/LAUNCHER_v10.8.md`
-
-
-## v11.0 Autonomous Agent Runtime
-
-Start:
-
-```bash
-python launcher.py agent-status
-python launcher.py agent-run "Analysiere den aktuellen Stand"
-```
-
-
-## v11.1 Persistent Runtime
-
-Start:
-
-```powershell
-python launcher.py up
 python launcher.py status
-python launcher.py gui --snapshot
-```
-
-
-## v11.2 Workflow & Specialist Agents
-
-```powershell
-python launcher.py workflow-status
-python launcher.py workflow-run daily "Tagesbriefing erstellen"
-python launcher.py research-agent "Jarvis Entwicklungsstand zusammenfassen"
-python launcher.py docs-agent "Doku aktualisieren"
-```
-
-
-## v11.4 Voice Assistant 2.0
-
-```powershell
-python launcher.py voice-status
-python launcher.py voice-parse "Jarvis status"
-python launcher.py voice-handle "Jarvis notiz Neuer Gedanke"
-```
-
-
-## v11.5 Mobile Bridge
-
-```powershell
-python launcher.py mobile-status
-python launcher.py mobile-register "iPhone Markus" ios --trusted
-python launcher.py mobile-devices
-```
-
-
-## v11.6 API Bridge
-
-Start: `python launcher.py api-serve`
-
-Manifest: `python launcher.py api-manifest`
-
-Token: `python launcher.py api-token-create "Local Dashboard" --scopes read:status,read:metrics`
-
-
-## v11.7 Automation
-
-Start: `python launcher.py automation-status`
-
-
-
-## v11.8 Self Improvement
-
-```powershell
-python launcher.py improve-status
-python launcher.py improve-feedback user command launcher -2 --text "launcher failed"
-python launcher.py improve-analyze
-python launcher.py improve-recommend
-```
-
-
-## v12.1 Core Runtime
-
-Startstatus:
-
-```powershell
+python launcher.py module-status
+python launcher.py module-health
+python launcher.py command-index
 python launcher.py core-status
-python launcher.py runtime-start
-python launcher.py bus-status
-python launcher.py tools
 ```
 
+## P0 Runtime Gate
 
-## v12.3 Knowledge Graph
+```powershell
+python launcher.py p0-doctor
+python launcher.py p0-gate
+python launcher.py p0-smoke
+python launcher.py p0-contract
+python launcher.py p0-readiness
+python launcher.py p0-production
+python launcher.py p0-audit
+```
+
+`p0-gate` ist das strikte maschinenlesbare P0-Gate. Exit-Code `0` bedeutet PASS. Exit-Code `1` bedeutet BLOCKED.
+
+## P1 RAG Runtime
+
+```powershell
+python launcher.py p1-rag-status
+python launcher.py p1-rag-ingest-text "Beispielinhalt" --source manual --title "Test"
+python launcher.py p1-rag-search "Suchbegriff"
+python launcher.py p1-rag-vector-search "Suchbegriff"
+python launcher.py p1-rag-hybrid-search "Suchbegriff"
+python launcher.py p1-rag-answer "Frage"
+python launcher.py p1-rag-sources
+python launcher.py p1-rag-validate
+python launcher.py p1-rag-quality "Qualitätsfrage"
+python launcher.py p1-rag-reindex
+python launcher.py p1-embedding-status
+python launcher.py p1-retrieval-benchmark
+python launcher.py p1-retrieval-metrics
+python launcher.py p1-production
+python launcher.py p1-gate
+```
+
+## Desktop OS
+
+```powershell
+python launcher.py desktop-status
+python launcher.py desktop-open
+python launcher.py desktop-dashboard
+python launcher.py desktop-activity
+python launcher.py desktop-widgets
+python launcher.py desktop-commands
+python launcher.py desktop-notifications
+python launcher.py desktop-session
+python launcher.py desktop-notify "Test" --body "Nachricht" --level info
+```
+
+## Voice Runtime
+
+```powershell
+python launcher.py voice-status2
+python launcher.py voice-session2
+python launcher.py voice-sessions2
+python launcher.py voice-wake "Jarvis status"
+python launcher.py voice-parse2 "Jarvis notiz Neuer Gedanke"
+python launcher.py voice-handle2 "Jarvis status"
+python launcher.py voice-speak2 "Hallo"
+python launcher.py voice-events
+python launcher.py voice-memory
+```
+
+## Knowledge Graph
 
 ```powershell
 python launcher.py graph-status
 python launcher.py graph-ingest-text "Jarvis nutzt Gmail am 2026-06-19"
 python launcher.py graph-search Jarvis
 python launcher.py graph-neighbors Jarvis
+python launcher.py graph-timeline
+python launcher.py graph-contradictions
+python launcher.py graph-export
 ```
 
-## P0 Runtime Gate v17.3
+## Mobile Companion
 
-```bash
+```powershell
+python launcher.py mobile16-migrate
+python launcher.py mobile16-status
+python launcher.py mobile16-manifest
+python launcher.py mobile16-pair-request "iPhone Markus" ios
+python launcher.py mobile16-pairing-requests
+python launcher.py mobile16-devices
+python launcher.py mobile16-widgets
+python launcher.py mobile16-sync
+python launcher.py mobile16-sync-runs
+python launcher.py mobile16-sessions
+```
+
+## Tests
+
+Gezielte Hygiene-Tests:
+
+```powershell
+pytest -q tests/test_repo_doctor_v18_7.py
+pytest -q tests/test_dependency_inventory_v18_8.py
+```
+
+Gesamttestlauf:
+
+```powershell
+pytest -q
+```
+
+## Requirements
+
+| Datei | Zweck |
+|---|---|
+| `requirements.txt` | historischer Minimalpfad |
+| `requirements-dev.txt` | Test-/Entwicklungsinstallation |
+| `requirements-runtime.txt` | kuratierte Runtime-Abhängigkeiten |
+
+`dependency-inventory` erzeugt Vorschläge, aber befüllt Requirements nicht automatisch. Provider-Abhängigkeiten dürfen nicht ungeprüft Pflichtabhängigkeiten werden.
+
+## Source of Truth
+
+| Bereich | Quelle |
+|---|---|
+| Launcher-Befehle | `python launcher.py command-index` |
+| Modulzuordnung | `secondbrain/module_registry.py` |
+| Repository-Hygiene | `python launcher.py repo-doctor` |
+| Dependency-Inventar | `python launcher.py dependency-inventory` |
+| P0 Releasefähigkeit | `python launcher.py p0-gate` |
+| P1 RAG-Fähigkeit | `python launcher.py p1-gate` |
+| Paketverlauf | `CHANGELOG_*.md` |
+| technische Doku | `docs/` |
+
+## Sicherheitsmodell
+
+- keine destruktiven Aktionen ohne explizite Aktivierung
+- keine externen Aktionen ohne konfigurierte Provider/Connectoren
+- lokale Artefakte in `runtime/`, `logs/`, `release/` nicht als Produktcode behandeln
+- Markdown und maschinenlesbare Reports bleiben auditierbare Artefakte
+
+## Aktuelle technische Risiken
+
+| Risiko | Wirkung | Gegenmaßnahme |
+|---|---|---|
+| `requirements.txt` historisch minimal | neue Installationen können brechen | `dependency-inventory` ausführen und `requirements-runtime.txt` kuratieren |
+| Runtime-/Cache-Dateien im Repository | Merge-Noise, falsche Deltas | `.gitignore` pflegen, Artefakte entfernen |
+| alte v10/v11/v12 Doku-Fragmente | Bedienfehler | README als aktuelle Betriebsquelle nutzen |
+| optionale Provider-Abhängigkeiten | unnötige Pflichtinstallationen | Provider separat klassifizieren |
+
+## Empfohlener Entwicklungsablauf
+
+```powershell
+git status
+python launcher.py repo-doctor
+python launcher.py dependency-inventory
 python launcher.py p0-gate
-python launcher.py p0-doctor
-python launcher.py health
-python launcher.py command-index
+python launcher.py p1-gate
+pytest -q
 ```
 
-`p0-gate` ist das strikte maschinenlesbare P0-Gate. Exit-Code `0` bedeutet PASS. Exit-Code `1` bedeutet BLOCKED.
-
-Geprüft werden Python-Version, Projektwurzel, Pflichtkonfiguration, Runtime-Schreibbarkeit, kritische Imports, kritische Runtime-Health und kritische Command-Registrierung.
+Erst danach Featurepaket starten.
