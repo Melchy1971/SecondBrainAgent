@@ -32,6 +32,29 @@ class GuiApp:
             error_boundary=error_boundary,
         )
 
+    @classmethod
+    def create_live(cls, root=None) -> "GuiApp":
+        """App mit Live-Daten-Bindung: reale Modul-Factories + reale Startup-Checks."""
+        from .startup_checks import StartupChecks
+
+        state = GuiState()
+        registry = ModuleRegistry.live(root)
+        error_boundary = ErrorBoundary()
+        lifecycle = LifecycleManager(
+            state,
+            startup_checks=StartupChecks.live(root),
+            error_boundary=error_boundary,
+        )
+        return cls(
+            state=state,
+            registry=registry,
+            router=GuiRouter(registry, state),
+            shell=GuiShell(registry, state),
+            lifecycle=lifecycle,
+            shutdown_manager=ShutdownManager(state),
+            error_boundary=error_boundary,
+        )
+
     def start(self) -> LifecycleResult:
         return self.lifecycle.start()
 
@@ -40,6 +63,23 @@ class GuiApp:
 
     def render_shell(self) -> ShellModel:
         return self.shell.model()
+
+    def render_active_live(self) -> dict:
+        """Live-View-Model des aktiven Moduls (gekapselt, wirft nie)."""
+        return self.render_module_live(self.state.active_module)
+
+    def render_module_live(self, module_id: str) -> dict:
+        """Live-View-Model eines Moduls ueber seine gebundene Factory."""
+        try:
+            module = self.registry.get(module_id)
+        except KeyError:
+            return {"module": module_id, "error": "unknown module"}
+        factory = module.factory
+        if factory is None:
+            return {"module": module_id, "live": False}
+        return self.error_boundary.guard(
+            module_id, factory, {"module": module_id, "error": "render failed"}
+        )
 
     def shutdown(self) -> ShutdownResult:
         return self.shutdown_manager.shutdown()

@@ -29,17 +29,16 @@ if exist "%PIDFILE%" (
 REM --- pythonw bevorzugen (kein Konsolenfenster), sonst python ---
 set "PY=pythonw"
 where pythonw >nul 2>nul || set "PY=python"
-
 if not defined QUIET echo Starte Jarvis HUD ...
-pushd "%ROOT%"
-start "Jarvis HUD" %PY% "scripts\start_hud.py"
-popd
 
-REM --- Browser nur im normalen Modus ---
+REM --- HUD im Hintergrund starten (start_hud.py schreibt die PID-Datei) ---
+start "" /b %PY% "%ROOT%scripts\start_hud.py"
+
+REM --- kurz warten, dann Browser oeffnen (sofern nicht /quiet) ---
 if not defined QUIET (
-  timeout /t 2 /nobreak >nul
+  >nul ping -n 2 127.0.0.1
   start "" "%URL%"
-  echo Jarvis HUD laeuft: %URL%   (stoppen mit: Jarvis-stop)
+  echo Jarvis HUD gestartet: %URL%
 )
 
 :end

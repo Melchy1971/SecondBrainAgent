@@ -29,6 +29,28 @@ class StartupChecks:
             StartupCheck("dashboard", True),
         ]
 
+    @classmethod
+    def live(cls, root=None) -> "StartupChecks":
+        """Checks, die an reale Pfade/Daten gebunden sind (Zielumgebung)."""
+        from pathlib import Path
+        from .data_providers import LiveDataService
+
+        service = LiveDataService(Path(root)) if root else LiveDataService()
+
+        def _settings_ok() -> bool:
+            return (service.config_dir.exists()
+                    or (service.data_dir / "desktop_app" / "settings.json").exists())
+
+        return cls([
+            StartupCheck("settings", True, _settings_ok),
+            StartupCheck("workspace", True, lambda: service.vault.exists()),
+            StartupCheck("database", False, lambda: service.runtime_dir.exists()),
+            StartupCheck("rag", False, lambda: bool(service._vault_markdown())),
+            StartupCheck("connectors", False, lambda: any(c["enabled"] for c in service._connector_list())),
+            StartupCheck("background_jobs", True, lambda: service.root.exists()),
+            StartupCheck("dashboard", True, lambda: service.vault.exists()),
+        ])
+
     def run(self) -> list[StartupCheckResult]:
         results: list[StartupCheckResult] = []
         for check in self.checks:

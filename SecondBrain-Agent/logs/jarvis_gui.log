@@ -34,3 +34,13 @@
 {"time": "2026-06-23 13:36:02", "type": "hud.rag", "payload": {"query": "telekom prozess", "hits": 5}}
 {"time": "2026-06-23 13:36:57", "type": "hud.rag", "payload": {"query": "command center vault", "hits": 5}}
 {"time": "2026-06-23 13:36:58", "type": "hud.rag", "payload": {"query": "telekom", "hits": 0}}
+{"time": "2026-06-23 13:37:09", "type": "hud.rag", "payload": {"query": "command center vault", "hits": 5}}
+{"time": "2026-06-23 13:37:14", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-23 13:37:14", "type": "hud.run_blocked", "payload": {"script": "rm_all.py"}}
+{"time": "2026-06-23 13:37:14", "type": "hud.settings_saved", "payload": {"place": "Bonn", "lat": 50.7374, "lon": 7.0982, "news_rss": "https://www.tagesschau.de/index~rss2.xml", "news_max": 5, "weather_min": 15, "accent": "#2fe6ff"}}
+{"time": "2026-06-23 13:37:16", "type": "hud.rag", "payload": {"query": "telekom prozess", "hits": 5}}
+{"time": "2026-06-23 13:52:47", "type": "hud.rag", "payload": {"query": "command center vault", "hits": 5}}
+{"time": "2026-06-23 13:52:52", "type": "script.run", "payload": {"script": "check_paths_v9.py", "ok": false}}
+{"time": "2026-06-23 13:52:52", "type": "hud.run_blocked", "payload": {"script": "rm_all.py"}}
+{"time": "2026-06-23 13:52:52", "type": "hud.settings_saved", "payload": {"place": "Bonn", "lat": 50.7374, "lon": 7.0982, "news_rss": "https://www.tagesschau.de/index~rss2.xml", "news_max": 5, "weather_min": 15, "accent": "#2fe6ff"}}
+{"time": "2026-06-23 13:52:53", "type": "hud.rag", "payload": {"query": "telekom prozess", "hits": 5}}

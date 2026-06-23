@@ -387,15 +387,26 @@ function tick(){
 }
 setInterval(tick, 1000); tick();
 
+// --- Helper ---
+async function getJSON(url, opts){
+  const r = await fetch(url, opts);
+  return r.json();
+}
+function setConn(online){
+  if(online){ $("dot").classList.add("on"); $("conn").lastChild.textContent="HUD ONLINE"; }
+  else { $("dot").classList.remove("on"); $("conn").lastChild.textContent="HUD OFFLINE"; }
+}
+
 // --- Metriken ---
 async function loadMetrics(){
   try{
-    const m = await (await fetch("/api/metrics")).json();
-    $("dot").classList.add("on"); $("conn").lastChild.textContent="HUD ONLINE";
+    const m = await getJSON("/api/metrics");
+    setConn(true);
     if(!m.psutil){ $("m-src").textContent="psutil fehlt"; return; }
-    ring("r-cpu","t-cpu",m.cpu);   ringColor("r-cpu",m.cpu);
-    ring("r-ram","t-ram",m.ram);   ringColor("r-ram",m.ram);
-    ring("r-swap","t-swap",m.swap);ringColor("r-swap",m.swap);
+    $("m-src").textContent="psutil";
+    ring("r-cpu","t-cpu",m.cpu);        ringColor("r-cpu",m.cpu);
+    ring("r-ram","t-ram",m.ram);        ringColor("r-ram",m.ram);
+    ring("r-swap","t-swap",m.swap);     ringColor("r-swap",m.swap);
     ring("r-disk","t-disk",m.disk_pct); ringColor("r-disk",m.disk_pct);
     $("cpu-big").textContent = Math.round(m.cpu)+"%";
     $("d-total").textContent = m.disk_total+" GB";
@@ -406,158 +417,189 @@ async function loadMetrics(){
     $("s-down").textContent  = (m.net?.down??0)+" KB/s";
     $("s-up").textContent    = (m.net?.up??0)+" KB/s";
   }catch(e){
-    $("dot").classList.remove("on"); $("conn").lastChild.textContent="HUD OFFLINE";
+    setConn(false);
   }
 }
-loadMetrics(); setInterval(loadMetrics, 2000);
 
-// --- Status (Vault/Inbox) ---
+// --- Systemstatus (Vault / Inbox / Markdown-Anzahl) ---
 async function loadStatus(){
   try{
-    const s = await (await fetch("/api/status")).json();
-    $("s-md").textContent = s.markdown_files;
-    set("s-vault", s.vault_exists); set("s-inbox", s.inbox_exists);
+    const s = await getJSON("/api/status");
+    $("s-md").textContent = s.markdown_files ?? "—";
+    const v = $("s-vault"), i = $("s-inbox");
+    v.textContent = s.vault_exists ? "OK" : "fehlt";
+    v.className = s.vault_exists ? "ok" : "no";
+    i.textContent = s.inbox_exists ? "OK" : "fehlt";
+    i.className = s.inbox_exists ? "ok" : "no";
   }catch(e){}
-  function set(id, ok){
-    const el=$(id); el.textContent = ok? "OK":"fehlt";
-    el.className = ok? "ok":"no";
-  }
 }
-loadStatus(); setInterval(loadStatus, 30000);
 
 // --- Wetter ---
 async function loadWeather(){
   try{
-    const w = await (await fetch("/api/weather")).json();
-    $("w-place").textContent = w.place || "";
-    if(!w.ok){ $("w-text").textContent="offline"; return; }
-    $("w-temp").textContent = w.temp+"°";
-    $("w-text").textContent = w.text;
-    $("w-hum").textContent  = w.humidity+"%";
-    $("w-wind").textContent = w.wind+" km/h";
-    $("w-fc").innerHTML = (w.days||[]).map(d=>
-      `<div>${d.label}<div class="t">${d.max}° / ${d.min}°</div>${d.text}</div>`).join("");
-  }catch(e){ $("w-text").textContent="Fehler"; }
+    const w = await getJSON("/api/weather");
+    $("w-place").textContent = w.place || "—";
+    if(!w.ok){ $("w-text").textContent = "offline"; return; }
+    $("w-temp").textContent = (w.temp ?? "—")+"°";
+    $("w-text").textContent = w.text || "—";
+    $("w-hum").textContent  = (w.humidity ?? "—")+"%";
+    $("w-wind").textContent = (w.wind ?? "—")+" km/h";
+    const fc = $("w-fc"); fc.innerHTML = "";
+    (w.days||[]).forEach(d=>{
+      const el = document.createElement("div");
+      el.innerHTML = `<div>${d.label}</div>`+
+                     `<div class="t">${d.max}° / ${d.min}°</div>`+
+                     `<div>${d.text}</div>`;
+      fc.appendChild(el);
+    });
+  }catch(e){ $("w-text").textContent = "Fehler"; }
 }
-let weatherTimer = null;
-function scheduleWeather(min){
-  if(weatherTimer) clearInterval(weatherTimer);
-  weatherTimer = setInterval(loadWeather, Math.max(1, min||15) * 60 * 1000);
-}
-loadWeather(); scheduleWeather(15);
 
 // --- News ---
 async function loadNews(){
   try{
-    const n = await (await fetch("/api/news")).json();
-    const list = (n.items&&n.items.length)? n.items : ["keine Nachrichten"];
-    $("news-list").innerHTML = list.map(t=>`<li>${esc(t)}</li>`).join("");
-  }catch(e){ $("news-list").innerHTML="<li>offline</li>"; }
+    const n = await getJSON("/api/news");
+    const ul = $("news-list"); ul.innerHTML = "";
+    if(!n.ok || !(n.items||[]).length){
+      ul.innerHTML = "<li>Keine News.</li>"; return;
+    }
+    n.items.forEach(t=>{
+      const li = document.createElement("li");
+      li.textContent = t; ul.appendChild(li);
+    });
+  }catch(e){ $("news-list").innerHTML = "<li>Fehler.</li>"; }
 }
-loadNews(); setInterval(loadNews, 10*60*1000);
 
 // --- Dashboards ---
-async function loadDash(){
+async function loadDashboards(){
   try{
-    const d = await (await fetch("/api/dashboards")).json();
-    $("dash-list").innerHTML = Object.entries(d).map(([k,v])=>
-      `<a title="${esc(v)}">${esc(k)}<code>${esc(v)}</code></a>`).join("");
-  }catch(e){}
+    const r = await getJSON("/api/dashboards");
+    const box = $("dash-list"); box.innerHTML = "";
+    const links = r.links || {};
+    const keys = Object.keys(links);
+    if(!keys.length){ box.innerHTML = "<a>Keine Dashboards.</a>"; return; }
+    keys.forEach(name=>{
+      const a = document.createElement("a");
+      a.textContent = name;
+      a.title = links[name];
+      box.appendChild(a);
+    });
+  }catch(e){ $("dash-list").innerHTML = "<a>Fehler.</a>"; }
 }
-loadDash();
 
-// --- Aktionen / RAG ---
-function busy(on){ $("busy").textContent = on? "LÄUFT…" : ""; }
-async function run(script){
-  busy(true); $("out").textContent = "› "+script+" …";
-  try{
-    const r = await (await fetch("/api/run?script="+encodeURIComponent(script))).json();
-    $("out").textContent = (r.ok?"[OK] ":"[FEHLER] ")+script+"\n\n"+(r.output||"");
-  }catch(e){ $("out").textContent = "Fehler: "+e; }
-  busy(false); $("out").scrollTop=0;
+// --- Konsole / Skript-Runner ---
+function setBusy(on, label){
+  $("busy").textContent = on ? (label||"läuft…") : "";
 }
-document.querySelectorAll("[data-run]").forEach(b=>
-  b.addEventListener("click", ()=>run(b.dataset.run)));
-$("btn-logs").addEventListener("click", async ()=>{
-  busy(true);
-  try{ const r=await(await fetch("/api/logs")).json(); $("out").textContent=r.log||""; }
-  catch(e){ $("out").textContent="Fehler: "+e; }
-  busy(false);
-});
+function printOut(text){ $("out").textContent = text; }
+
+async function runScript(script){
+  setBusy(true, script+" …");
+  printOut("> "+script+"\n");
+  try{
+    const r = await getJSON("/api/run?script="+encodeURIComponent(script));
+    printOut("> "+script+(r.ok?"  [OK]":"  [FEHLER]")+"\n\n"+(r.output||""));
+  }catch(e){
+    printOut("Fehler beim Ausführen: "+e);
+  }finally{ setBusy(false); }
+}
+
+async function loadLogs(){
+  setBusy(true, "Logs …");
+  try{
+    const r = await getJSON("/api/logs");
+    printOut(r.log || "Keine Logs.");
+  }catch(e){ printOut("Fehler beim Laden der Logs."); }
+  finally{ setBusy(false); }
+}
+
 async function askRag(){
-  const q=$("rag-q").value.trim(); if(!q) return;
-  busy(true); $("out").textContent="› Frage: "+q+" …";
+  const q = $("rag-q").value.trim();
+  if(!q){ $("rag-q").focus(); return; }
+  setBusy(true, "RAG …");
+  printOut("? "+q+"\n");
   try{
-    const r=await(await fetch("/api/rag?q="+encodeURIComponent(q))).json();
-    $("out").textContent=(r.output||"keine Antwort");
-  }catch(e){ $("out").textContent="Fehler: "+e; }
-  busy(false);
+    const r = await getJSON("/api/rag?q="+encodeURIComponent(q));
+    let out = (r.answer||"")+"\n";
+    (r.hits||[]).forEach((h,i)=>{
+      out += `\n[${i+1}] ${h.note}  (Score ${h.score})\n    ${(h.preview||"").slice(0,200)}\n`;
+    });
+    printOut(out);
+  }catch(e){ printOut("RAG-Fehler: "+e); }
+  finally{ setBusy(false); }
 }
-$("rag-go").addEventListener("click", askRag);
-$("rag-q").addEventListener("keydown", e=>{ if(e.key==="Enter") askRag(); });
-
-function esc(s){ return String(s).replace(/[&<>"]/g, c=>(
-  {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
 // --- Einstellungen ---
-let SETTINGS = {};
-function applyAccent(color){
-  if(color) document.documentElement.style.setProperty("--cyan", color);
+function applyAccent(hex){
+  if(!hex) return;
+  document.documentElement.style.setProperty("--cyan", hex);
 }
-async function loadSettings(applyTimers){
+async function openSettings(){
   try{
-    SETTINGS = await (await fetch("/api/settings")).json();
-    applyAccent(SETTINGS.accent);
-    if(applyTimers) scheduleWeather(SETTINGS.weather_min);
-  }catch(e){ SETTINGS = {}; }
-  return SETTINGS;
-}
-function fillSettingsForm(s){
-  $("set-place").value   = s.place ?? "";
-  $("set-lat").value     = s.lat ?? "";
-  $("set-lon").value     = s.lon ?? "";
-  $("set-rss").value     = s.news_rss ?? "";
-  $("set-newsmax").value = s.news_max ?? 8;
-  $("set-wmin").value    = s.weather_min ?? 15;
-  $("set-accent").value  = s.accent ?? "#2fe6ff";
-}
-function openSettings(){
-  fillSettingsForm(SETTINGS);
-  $("set-status").textContent = "";
+    const r = await getJSON("/api/settings");
+    const s = r.settings || {};
+    $("set-place").value   = s.place ?? "";
+    $("set-lat").value     = s.lat ?? "";
+    $("set-lon").value     = s.lon ?? "";
+    $("set-rss").value     = s.news_rss ?? "";
+    $("set-newsmax").value = s.news_max ?? "";
+    $("set-wmin").value    = s.weather_min ?? "";
+    $("set-accent").value  = s.accent ?? "#2fe6ff";
+    $("set-status").textContent = "";
+  }catch(e){}
   $("settings-overlay").classList.add("open");
 }
 function closeSettings(){ $("settings-overlay").classList.remove("open"); }
-$("btn-settings").addEventListener("click", async ()=>{ await loadSettings(false); openSettings(); });
+
+async function saveSettings(){
+  const payload = {
+    place:     $("set-place").value,
+    lat:       parseFloat($("set-lat").value),
+    lon:       parseFloat($("set-lon").value),
+    news_rss:  $("set-rss").value,
+    news_max:  parseInt($("set-newsmax").value, 10),
+    weather_min: parseInt($("set-wmin").value, 10),
+    accent:    $("set-accent").value,
+  };
+  $("set-status").textContent = "Speichere …";
+  try{
+    const r = await getJSON("/api/settings", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
+    });
+    const s = r.settings || {};
+    applyAccent(s.accent);
+    $("set-status").textContent = "Gespeichert.";
+    loadWeather(); loadNews();
+    setTimeout(closeSettings, 600);
+  }catch(e){ $("set-status").textContent = "Fehler."; }
+}
+
+// --- Verdrahtung ---
+document.querySelectorAll("[data-run]").forEach(btn=>{
+  btn.addEventListener("click", ()=> runScript(btn.getAttribute("data-run")));
+});
+$("btn-logs").addEventListener("click", loadLogs);
+$("btn-settings").addEventListener("click", openSettings);
 $("settings-close").addEventListener("click", closeSettings);
 $("settings-cancel").addEventListener("click", closeSettings);
+$("settings-save").addEventListener("click", saveSettings);
+$("set-accent").addEventListener("input", e=> applyAccent(e.target.value));
+$("rag-go").addEventListener("click", askRag);
+$("rag-q").addEventListener("keydown", e=>{ if(e.key==="Enter") askRag(); });
 $("settings-overlay").addEventListener("click", e=>{ if(e.target.id==="settings-overlay") closeSettings(); });
-$("settings-save").addEventListener("click", async ()=>{
-  const body = {
-    place: $("set-place").value.trim(),
-    lat: parseFloat($("set-lat").value),
-    lon: parseFloat($("set-lon").value),
-    news_rss: $("set-rss").value.trim(),
-    news_max: parseInt($("set-newsmax").value, 10),
-    weather_min: parseInt($("set-wmin").value, 10),
-    accent: $("set-accent").value,
-  };
-  $("set-status").textContent = "speichere…";
-  try{
-    const r = await (await fetch("/api/settings", {
-      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
-    })).json();
-    if(r.ok){
-      SETTINGS = r.settings;
-      applyAccent(SETTINGS.accent);
-      scheduleWeather(SETTINGS.weather_min);
-      loadWeather(); loadNews();
-      $("set-status").textContent = "gespeichert ✓";
-      setTimeout(closeSettings, 700);
-    }else{ $("set-status").textContent = "Fehler: "+(r.error||"?"); }
-  }catch(e){ $("set-status").textContent = "Fehler: "+e; }
-});
-// Akzent + Intervall beim Start aus den Settings setzen.
-loadSettings(true);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSettings(); });
+
+// --- Initiale Akzentfarbe aus Settings ---
+(async()=>{ try{ const r=await getJSON("/api/settings"); applyAccent((r.settings||{}).accent); }catch(e){} })();
+
+// --- Poll-Schleifen ---
+loadMetrics(); setInterval(loadMetrics, 2000);
+loadStatus();  setInterval(loadStatus, 15000);
+loadWeather(); setInterval(loadWeather, 15*60*1000);
+loadNews();    setInterval(loadNews, 15*60*1000);
+loadDashboards();
 </script>
 </body>
 </html>
