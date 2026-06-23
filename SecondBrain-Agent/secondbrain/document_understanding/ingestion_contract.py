@@ -48,7 +48,7 @@ class ParsedDocumentIngestionService:
 
     def ingest_file(self, path: str | Path) -> ParsedIngestionResult:
         parsed = self.registry.parse(path)
-        if parsed.status in {ParseStatus.UNSUPPORTED, ParseStatus.FAILED, ParseStatus.EMPTY}:
+        if parsed.status in {ParseStatus.UNSUPPORTED, ParseStatus.FAILED, ParseStatus.EMPTY, ParseStatus.OCR_REQUIRED}:
             return ParsedIngestionResult(parsed=parsed, ingested=False, result={"ok": False, "reason": parsed.status.value})
         payload = parsed.to_ingestion_payload()
         result = self.runtime.ingest_text(

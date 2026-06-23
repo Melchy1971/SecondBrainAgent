@@ -11,14 +11,10 @@
             "id": "3f5a0d5b72b23ec9",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "00_Handbuch/Install.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Install"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph-Ansicht"
             }
           }
         ]
@@ -197,9 +193,15 @@
   },
   "active": "3f5a0d5b72b23ec9",
   "lastOpenFiles": [
+    "copilot/copilot-conversations/Tischtennisspiele_und_-Regeln@20260618_153730.md",
+    "55_EnterpriseRAG/Enterprise_RAG_Status.md",
+    "Obsidian.md",
+    "RELEASE_NOTES.md",
+    "18_AgentOps/2026-06-19_chief-of-staff.md",
+    "18_AgentOps/2026-06-18_chief-of-staff.md",
+    "19_RAG/2026-06-18_rag_exit.md",
     "00_Handbuch/Install.md",
     "88_VectorRAG/2026-06-22_152059_rag_answer.md",
-    "RELEASE_NOTES.md",
     "tests/test_v260_p8_foundation.py",
     "tests",
     "secondbrain/cli/p8_status.py",
@@ -215,7 +217,6 @@
     "99_System/release_gates/2026-06-22_160737_release_gate_v9.md",
     "133_VoiceLayer/Voice_Layer_Status_v103.md",
     "132_JarvisControlCenterGUI/Jarvis_Control_Center_GUI.md",
-    "Obsidian.md",
     "131_DashboardAPI/Dashboard_Catalog.md",
     "99_System/release_gates/2026-06-22_093726_release_gate_v9.md",
     "130_DocumentIngestion/Document_Ingestion_Status.md",
@@ -227,11 +228,6 @@
     "117_KnowledgeQuality/2026-06-22_knowledge-quality.md",
     "116_ContradictionDetection/2026-06-22_contradictions.md",
     "112_ChiefOfStaff/2026-06-22_chief-of-staff-v98.md",
-    "111_ProcessAgent/2026-06-22_process-agent.md",
-    "110_DecisionAgent/2026-06-22_decision-agent.md",
-    "109_ProjectAgent/2026-06-22_project-agent.md",
-    "108_MeetingAgent/2026-06-22_meeting-agent.md",
-    "107_ResearchAgent/2026-06-22_research-backlog-agent.md",
-    "106_TaskAgent/2026-06-22_task-agent.md"
+    "111_ProcessAgent/2026-06-22_process-agent.md"
   ]
 }

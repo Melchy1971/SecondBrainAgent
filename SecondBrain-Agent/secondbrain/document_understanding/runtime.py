@@ -18,7 +18,22 @@ SUPPORTED_EXTENSIONS = {
 
 
 class DocumentUnderstandingRuntime:
-    def __init__(self, root=".", db_path=None):
+    def __init__(self, root=".", db_path=None, registry=None):
+        # Compatibility mode for P1.3 parser service tests: when the first
+        # argument exposes ingest_text, this runtime acts as a thin parser
+        # wrapper around ParsedDocumentIngestionService. Otherwise it keeps the
+        # legacy SQLite-backed runtime contract used by earlier tests and UI code.
+        if hasattr(root, "ingest_text"):
+            from .ingestion_contract import ParsedDocumentIngestionService
+            from .parsers import default_parser_registry
+
+            self._service_mode = True
+            self.ingestion_runtime = root
+            self.registry = registry or default_parser_registry()
+            self.service = ParsedDocumentIngestionService(root, self.registry)
+            return
+
+        self._service_mode = False
         self.root = Path(root)
         self.data_dir = self.root / "data" / "document_understanding"
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -88,6 +103,8 @@ class DocumentUnderstandingRuntime:
         return {"ok": True, "db_path": str(self.db_path)}
 
     def status(self):
+        if getattr(self, "_service_mode", False):
+            return {"version": "16.3", "mode": "parser_service"}
         self.migrate()
         with self.connect() as conn:
             counts = {}
@@ -111,7 +128,7 @@ class DocumentUnderstandingRuntime:
         if suffix == ".pptx":
             return self._read_pptx(p)
         if suffix == ".pdf":
-            return self._read_pdf(p)
+            return self._read_pdf_stub(p)
         return "", {"reader": "unsupported", "warning": "file_type_not_supported"}
 
     def _read_docx(self, path):
@@ -149,56 +166,25 @@ class DocumentUnderstandingRuntime:
         except Exception as exc:
             return "", {"reader": "pptx_xml", "error": str(exc)}
 
-    def _read_pdf(self, path):
-        path = Path(path)
-
-        # Primary reader: PyMuPDF. It is fast, preserves page boundaries,
-        # and is already compatible with many scanned/structured PDFs.
-        try:
-            import fitz  # type: ignore
-
-            texts = []
-            with fitz.open(path) as doc:
-                for page_index, page in enumerate(doc):
-                    page_text = page.get_text("text") or ""
-                    if page_text.strip():
-                        texts.append(f"[page {page_index + 1}]\n{page_text.strip()}")
-            return "\n\n".join(texts), {
-                "reader": "pymupdf",
-                "pages": len(texts),
-                "path": str(path),
-            }
-        except Exception as primary_exc:
-            primary_error = str(primary_exc)
-
-        # Fallback reader: pypdf. This keeps the ingestion path usable in
-        # lightweight installations where PyMuPDF is not available.
-        try:
-            from pypdf import PdfReader  # type: ignore
-
-            reader = PdfReader(str(path))
-            texts = []
-            for page_index, page in enumerate(reader.pages):
-                page_text = page.extract_text() or ""
-                if page_text.strip():
-                    texts.append(f"[page {page_index + 1}]\n{page_text.strip()}")
-            return "\n\n".join(texts), {
-                "reader": "pypdf",
-                "pages": len(texts),
-                "path": str(path),
-                "primary_error": primary_error,
-            }
-        except Exception as fallback_exc:
-            return "", {
-                "reader": "pdf_extraction_failed",
-                "error": str(fallback_exc),
-                "primary_error": primary_error,
-                "path": str(path),
-            }
-
     def _read_pdf_stub(self, path):
-        # Backward-compatible alias for older callers/tests.
-        return self._read_pdf(path)
+        try:
+            import fitz
+
+            doc = fitz.open(path)
+            try:
+                text = "\n".join(page.get_text("text") for page in doc)
+                return text, {"reader": "pymupdf", "pages": doc.page_count, "path": str(path)}
+            finally:
+                doc.close()
+        except Exception:
+            try:
+                import pypdf
+
+                reader = pypdf.PdfReader(str(path))
+                text = "\n".join(page.extract_text() or "" for page in reader.pages)
+                return text, {"reader": "pypdf", "pages": len(reader.pages), "path": str(path)}
+            except Exception as exc:
+                return "", {"reader": "pdf_stub", "warning": "pdf_text_extraction_failed", "error": str(exc), "path": str(path)}
 
     def chunk_text(self, text, size=900, overlap=120):
         text = re.sub(r"\s+", " ", text or "").strip()
@@ -250,6 +236,8 @@ class DocumentUnderstandingRuntime:
         return {"ok": True, "document_id": doc_id, "chunks": len(chunks), "entities": len(entities), "metadata": metadata}
 
     def ingest_file(self, path):
+        if getattr(self, "_service_mode", False):
+            return self.service.ingest_file(path).to_dict()
         p = Path(path)
         text, metadata = self.read_file_text(p)
         return self.ingest_text(p.name, text, str(p), self.detect_mime(p)) | {"reader_metadata": metadata}

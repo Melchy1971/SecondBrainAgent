@@ -20,6 +20,7 @@ class ParseStatus(str, Enum):
     EMPTY = "empty"
     UNSUPPORTED = "unsupported"
     FAILED = "failed"
+    OCR_REQUIRED = "ocr_required"
 
 
 @dataclass(frozen=True, slots=True)
