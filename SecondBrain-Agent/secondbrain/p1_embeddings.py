@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import math
 import os
@@ -29,6 +30,12 @@ def _normalize(vector: list[float]) -> list[float]:
     if norm <= 0:
         return vector
     return [round(v / norm, 8) for v in vector]
+
+
+def _coerce_vector(raw: Any, *, error_code: str) -> list[float]:
+    if not isinstance(raw, list) or not raw:
+        raise RuntimeError(error_code)
+    return _normalize([float(v) for v in raw])
 
 
 def deterministic_embedding(text: str, dimensions: int = DEFAULT_DIMENSIONS) -> list[float]:
@@ -86,10 +93,7 @@ class OllamaEmbeddingProvider:
         req = request.Request(f"{self.base_url.rstrip('/')}/api/embeddings", data=payload, headers={"Content-Type": "application/json"})
         with request.urlopen(req, timeout=self.timeout_seconds) as response:  # nosec - local/user configured endpoint
             data = json.loads(response.read().decode("utf-8"))
-        vector = data.get("embedding")
-        if not isinstance(vector, list) or not vector:
-            raise RuntimeError("ollama_embedding_missing")
-        return _normalize([float(v) for v in vector])
+        return _coerce_vector(data.get("embedding"), error_code="ollama_embedding_missing")
 
     def embed(self, text: str) -> list[float]:
         try:
@@ -138,43 +142,91 @@ class OpenAIEmbeddingProvider:
     fallback: LocalEmbeddingProvider = LocalEmbeddingProvider()
     name: str = "openai"
 
+    def _api_key(self) -> str:
+        return os.getenv(self.api_key_env, "").strip()
+
+    def _client(self) -> Any:
+        api_key = self._api_key()
+        if not api_key:
+            raise RuntimeError("openai_api_key_missing")
+        try:
+            module = importlib.import_module("openai")
+        except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+            raise RuntimeError("openai_sdk_missing") from exc
+        client_cls = getattr(module, "OpenAI", None)
+        if client_cls is None:
+            raise RuntimeError("openai_client_class_missing")
+        return client_cls(api_key=api_key)
+
+    def _request_embedding(self, text: str) -> list[float]:
+        client = self._client()
+        response = client.embeddings.create(model=self.model, input=text or " ")
+        try:
+            raw_vector = response.data[0].embedding
+        except Exception as exc:  # noqa: BLE001 - SDK response boundary
+            raise RuntimeError("openai_embedding_missing") from exc
+        return _coerce_vector(raw_vector, error_code="openai_embedding_missing")
+
     def embed(self, text: str) -> list[float]:
-        # Offline-safe boundary until the official OpenAI client is wired in Sprint 2.x.
-        # Production gates must not treat this fallback as a real semantic provider.
-        return self.fallback.embed(text)
+        try:
+            return self._request_embedding(text)
+        except Exception:
+            return self.fallback.embed(text)
 
     def status(self) -> dict[str, Any]:
-        api_key_configured = bool(os.getenv(self.api_key_env))
-        return {
-            "ok": False,
-            "provider": self.name,
-            "model": self.model,
-            "api_key_configured": api_key_configured,
-            "dimensions": self.dimensions,
-            "fallback": self.fallback.name,
-            "fallback_used": True,
-            "network": True,
-            "semantic": True,
-            "production_ready": False,
-            "error": "openai_embedding_client_not_implemented",
-            "reason": "OpenAI provider currently falls back to local deterministic embeddings until official client integration is implemented",
-        }
+        api_key_configured = bool(self._api_key())
+        try:
+            vector = self._request_embedding("secondbrain health probe")
+            return {
+                "ok": True,
+                "provider": self.name,
+                "model": self.model,
+                "api_key_configured": api_key_configured,
+                "dimensions": len(vector),
+                "configured_dimensions": self.dimensions,
+                "fallback": self.fallback.name,
+                "fallback_used": False,
+                "network": True,
+                "semantic": True,
+                "production_ready": True,
+            }
+        except Exception as exc:  # noqa: BLE001 - provider health boundary
+            return {
+                "ok": False,
+                "provider": self.name,
+                "model": self.model,
+                "api_key_configured": api_key_configured,
+                "dimensions": self.dimensions,
+                "fallback": self.fallback.name,
+                "fallback_used": True,
+                "network": True,
+                "semantic": True,
+                "production_ready": False,
+                "error": str(exc),
+                "reason": "OpenAI embeddings require openai SDK, API key and a successful embeddings health probe",
+            }
 
 
 def provider_from_profile(project_root: str | Path, profile: str | None = None) -> EmbeddingProvider:
     root = Path(project_root)
     config_path = root / "config" / "vector_rag.yaml"
     provider = os.getenv("SECONDBRAIN_EMBEDDING_PROVIDER", "local").strip().lower()
+    model = os.getenv("SECONDBRAIN_EMBEDDING_MODEL", "").strip()
     if config_path.exists():
         text = config_path.read_text(encoding="utf-8", errors="ignore").lower()
         if "embedding_provider: ollama" in text or "provider: ollama" in text:
             provider = "ollama"
         elif "embedding_provider: openai" in text or "provider: openai" in text:
             provider = "openai"
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if line.startswith("embedding_model:") or line.startswith("model:"):
+                model = line.split(":", 1)[1].strip().strip('"\'')
+                break
     if provider == "ollama":
-        return OllamaEmbeddingProvider()
+        return OllamaEmbeddingProvider(model=model or "nomic-embed-text")
     if provider == "openai":
-        return OpenAIEmbeddingProvider()
+        return OpenAIEmbeddingProvider(model=model or "text-embedding-3-small")
     return LocalEmbeddingProvider()
 
 

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
+from secondbrain.p1_vector_provider_guard import audit_vector_provider
 
 PRODUCTION_GOLDEN_SCHEMA = "secondbrain.p1_production.golden.v1"
 
@@ -30,6 +31,7 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
     """
     base = runtime.production_gate(write_report=False)
     golden = evaluate_golden_retrieval(runtime, project_root, write_report=write_report)
+    provider_guard = audit_vector_provider(runtime, write_report=write_report)
     checks = list(base.get("checks", []))
     checks.append(
         {
@@ -47,6 +49,23 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
             },
         }
     )
+    checks.append(
+        {
+            "name": "vector_provider_audit_passes",
+            "ok": bool(provider_guard.get("ok")),
+            "severity": "blocker",
+            "detail": {
+                "schema": provider_guard.get("schema"),
+                "current_provider": provider_guard.get("current_provider"),
+                "vectors": provider_guard.get("vectors", 0),
+                "stale_vectors": provider_guard.get("stale_vectors", 0),
+                "missing_vectors": provider_guard.get("missing_vectors", 0),
+                "providers": provider_guard.get("providers", []),
+                "blockers": provider_guard.get("blockers", []),
+                "remediation": provider_guard.get("remediation"),
+            },
+        }
+    )
     blockers = sum(1 for check in checks if not check.get("ok") and check.get("severity") == "blocker")
     payload = {
         "schema": PRODUCTION_GOLDEN_SCHEMA,
@@ -57,6 +76,7 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
         "checks": checks,
         "base_production": base,
         "golden_retrieval": golden,
+        "vector_provider_guard": provider_guard,
     }
     if write_report:
         reports_dir = Path(project_root).resolve() / "runtime" / "reports"
