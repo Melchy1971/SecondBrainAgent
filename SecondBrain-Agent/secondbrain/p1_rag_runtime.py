@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from secondbrain.document_understanding.parser_contract import ParseStatus
+from secondbrain.document_understanding.parsers import default_parser_registry
 from secondbrain.p1_embeddings import cosine_similarity, provider_from_profile
 from secondbrain.p1_retrieval import evaluate_ranked_hits, production_decision, reciprocal_rank_fusion
 
@@ -115,6 +117,7 @@ class P1RagRuntime:
         self.runtime_dir.mkdir(parents=True, exist_ok=True)
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         self.embedding_provider = provider_from_profile(self.root, self.profile)
+        self.parser_registry = default_parser_registry()
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
@@ -225,8 +228,32 @@ class P1RagRuntime:
         path = Path(file_path)
         if not path.exists():
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "file_not_found", "path": str(path)}
-        text = path.read_text(encoding="utf-8", errors="replace")
-        return self.ingest_text(text, source or str(path), title or path.name, {"path": str(path)})
+        if not path.is_file():
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "not_a_file", "path": str(path)}
+
+        parsed = self.parser_registry.parse(path)
+        payload = parsed.to_ingestion_payload()
+        metadata = {
+            "path": str(path),
+            "ingest_mode": "parser_registry",
+            "mime_type": payload["mime_type"],
+            **payload["metadata"],
+        }
+        if payload["errors"]:
+            metadata["parse_errors"] = payload["errors"]
+
+        if parsed.status == ParseStatus.OCR_REQUIRED:
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "ocr_required", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+        if parsed.status == ParseStatus.UNSUPPORTED:
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "unsupported_file_type", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+        if parsed.status == ParseStatus.FAILED:
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "parse_failed", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+        if parsed.status == ParseStatus.EMPTY or not payload["text"].strip():
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "empty_text", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+
+        result = self.ingest_text(payload["text"], source or payload["source_path"] or str(path), title or payload["title"], metadata)
+        result["parse"] = {"status": parsed.status.value, "mime_type": parsed.mime_type, "pages": parsed.page_count, "chars": parsed.char_count, "errors": payload["errors"]}
+        return result
 
     def _all_chunks(self) -> list[sqlite3.Row]:
         with self._connect() as conn:
@@ -234,17 +261,10 @@ class P1RagRuntime:
                 "select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id"
             ).fetchall()
 
-
     def embedding_status(self) -> dict[str, Any]:
         with self._connect() as conn:
             rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider").fetchall()
-        return {
-            "schema": "secondbrain.p1_embeddings.status.v1",
-            "ok": True,
-            "status": "pass",
-            "provider": self.embedding_provider.status(),
-            "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows],
-        }
+        return {"schema": "secondbrain.p1_embeddings.status.v1", "ok": True, "status": "pass", "provider": self.embedding_provider.status(), "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows]}
 
     def reindex_vectors(self, write_report: bool = False) -> dict[str, Any]:
         now = utc_now()
@@ -252,10 +272,7 @@ class P1RagRuntime:
             chunks = conn.execute("select id, text from chunks order by document_id, ordinal").fetchall()
             for row in chunks:
                 vector = self.embedding_provider.embed(row["text"])
-                conn.execute(
-                    "insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)",
-                    (row["id"], self.embedding_provider.name, len(vector), json.dumps(vector), now),
-                )
+                conn.execute("insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)", (row["id"], self.embedding_provider.name, len(vector), json.dumps(vector), now))
             conn.commit()
         payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": True, "status": "pass", "chunks": len(chunks), "provider": self.embedding_provider.name}
         if write_report:
@@ -270,10 +287,7 @@ class P1RagRuntime:
             return {"schema": "secondbrain.p1_vectors.search.v1", "ok": False, "status": "blocked", "error": "empty_query", "hits": []}
         q_vector = self.embedding_provider.embed(query)
         with self._connect() as conn:
-            rows = conn.execute(
-                "select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider "
-                "from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id"
-            ).fetchall()
+            rows = conn.execute("select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id").fetchall()
         hits = []
         for row in rows:
             try:
@@ -283,18 +297,7 @@ class P1RagRuntime:
             score = cosine_similarity(q_vector, vector)
             if score <= 0:
                 continue
-            hits.append({
-                "chunk_id": row["chunk_id"],
-                "document_id": row["document_id"],
-                "source": row["source"],
-                "title": row["title"],
-                "score": round(float(score), 4),
-                "text": row["text"],
-                "snippet": summarize_text(row["text"], 260),
-                "char_start": int(row["char_start"]),
-                "char_end": int(row["char_end"]),
-                "provider": row["provider"],
-            })
+            hits.append({"chunk_id": row["chunk_id"], "document_id": row["document_id"], "source": row["source"], "title": row["title"], "score": round(float(score), 4), "text": row["text"], "snippet": summarize_text(row["text"], 260), "char_start": int(row["char_start"]), "char_end": int(row["char_end"]), "provider": row["provider"]})
         hits.sort(key=lambda h: (-h["score"], h["title"], h["chunk_id"]))
         return {"schema": "secondbrain.p1_vectors.search.v1", "ok": True, "status": "pass", "query": query, "limit": limit, "hit_count": len(hits[: max(1, int(limit))]), "hits": hits[: max(1, int(limit))]}
 
@@ -312,23 +315,10 @@ class P1RagRuntime:
             hit["vector_score"] = round(vector_score, 4)
             hit["hybrid_score"] = round(float(hit.get("rrf_score", 0.0)), 6)
             hit["score"] = hit["hybrid_score"]
-        return {
-            "schema": "secondbrain.p1_hybrid.search.v1",
-            "ok": bool(keyword.get("ok")) and bool(vector.get("ok")),
-            "status": "pass",
-            "query": query,
-            "limit": limit,
-            "hit_count": len(hits),
-            "hits": hits,
-            "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"},
-        }
+        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"}}
 
     def retrieval_metrics(self, write_report: bool = False) -> dict[str, Any]:
-        probes = [
-            {"query": "Jarvis RAG Quellen", "expected_terms": ["jarvis", "rag", "quellen"]},
-            {"query": "Memory Evidenz", "expected_terms": ["memory", "evidenz"]},
-            {"query": "lokale Quellen", "expected_terms": ["lokale", "quellen"]},
-        ]
+        probes = [{"query": "Jarvis RAG Quellen", "expected_terms": ["jarvis", "rag", "quellen"]}, {"query": "Memory Evidenz", "expected_terms": ["memory", "evidenz"]}, {"query": "lokale Quellen", "expected_terms": ["lokale", "quellen"]}]
         rows = []
         for probe in probes:
             result = self.hybrid_search(probe["query"], 10)
@@ -336,19 +326,7 @@ class P1RagRuntime:
             answer = self.answer(probe["query"], 4)
             rows.append({"query": probe["query"], "hit_count": result.get("hit_count", 0), "confidence": answer.get("confidence", 0.0), **metrics})
         n = max(1, len(rows))
-        payload = {
-            "schema": "secondbrain.p1_retrieval.metrics.v1",
-            "generated_at": utc_now(),
-            "ok": True,
-            "status": "pass",
-            "probes": len(rows),
-            "hit_rate": round(sum(1 for row in rows if row["hit_count"] > 0) / n, 4),
-            "avg_recall_at_k": round(sum(float(row["recall_at_k"]) for row in rows) / n, 4),
-            "avg_mrr": round(sum(float(row["mrr"]) for row in rows) / n, 4),
-            "avg_ndcg": round(sum(float(row["ndcg"]) for row in rows) / n, 4),
-            "avg_confidence": round(sum(float(row["confidence"]) for row in rows) / n, 4),
-            "results": rows,
-        }
+        payload = {"schema": "secondbrain.p1_retrieval.metrics.v1", "generated_at": utc_now(), "ok": True, "status": "pass", "probes": len(rows), "hit_rate": round(sum(1 for row in rows if row["hit_count"] > 0) / n, 4), "avg_recall_at_k": round(sum(float(row["recall_at_k"]) for row in rows) / n, 4), "avg_mrr": round(sum(float(row["mrr"]) for row in rows) / n, 4), "avg_ndcg": round(sum(float(row["ndcg"]) for row in rows) / n, 4), "avg_confidence": round(sum(float(row["confidence"]) for row in rows) / n, 4), "results": rows}
         if write_report:
             path = self.reports_dir / "p1_retrieval_metrics_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -357,18 +335,7 @@ class P1RagRuntime:
 
     def retrieval_benchmark(self, write_report: bool = False) -> dict[str, Any]:
         metrics = self.retrieval_metrics(write_report=False)
-        payload = {
-            "schema": "secondbrain.p1_retrieval.benchmark.v1",
-            "generated_at": utc_now(),
-            "ok": metrics["ok"],
-            "status": metrics["status"],
-            "probes": metrics["probes"],
-            "hit_rate": metrics["hit_rate"],
-            "avg_recall_at_k": metrics["avg_recall_at_k"],
-            "avg_mrr": metrics["avg_mrr"],
-            "avg_ndcg": metrics["avg_ndcg"],
-            "results": [{"query": r["query"], "hit_count": r["hit_count"], "recall_at_k": r["recall_at_k"], "mrr": r["mrr"], "ndcg": r["ndcg"]} for r in metrics["results"]],
-        }
+        payload = {"schema": "secondbrain.p1_retrieval.benchmark.v1", "generated_at": utc_now(), "ok": metrics["ok"], "status": metrics["status"], "probes": metrics["probes"], "hit_rate": metrics["hit_rate"], "avg_recall_at_k": metrics["avg_recall_at_k"], "avg_mrr": metrics["avg_mrr"], "avg_ndcg": metrics["avg_ndcg"], "results": [{"query": r["query"], "hit_count": r["hit_count"], "recall_at_k": r["recall_at_k"], "mrr": r["mrr"], "ndcg": r["ndcg"]} for r in metrics["results"]]}
         if write_report:
             path = self.reports_dir / "p1_retrieval_benchmark_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -382,11 +349,8 @@ class P1RagRuntime:
         q_counts = Counter(query_tokens)
         rows = self._all_chunks()
         doc_freq: Counter[str] = Counter()
-        token_sets: dict[str, set[str]] = {}
         for row in rows:
-            terms = set(json.loads(row["token_json"]))
-            token_sets[row["chunk_id"]] = terms
-            for term in terms:
+            for term in set(json.loads(row["token_json"])):
                 doc_freq[term] += 1
         total_chunks = max(1, len(rows))
         hits: list[SearchHit] = []
@@ -428,50 +392,17 @@ class P1RagRuntime:
 
     def sources(self) -> dict[str, Any]:
         with self._connect() as conn:
-            rows = conn.execute(
-                "select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks, coalesce(sum(c.token_count), 0) as tokens "
-                "from documents d left join chunks c on c.document_id = d.id group by d.id order by d.created_at desc, d.title"
-            ).fetchall()
+            rows = conn.execute("select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks, coalesce(sum(c.token_count), 0) as tokens from documents d left join chunks c on c.document_id = d.id group by d.id order by d.created_at desc, d.title").fetchall()
         items = []
         for row in rows:
-            items.append({
-                "document_id": row["id"],
-                "source": row["source"],
-                "title": row["title"],
-                "content_hash": row["content_hash"],
-                "created_at": row["created_at"],
-                "chunks": int(row["chunks"]),
-                "tokens": int(row["tokens"]),
-                "metadata": json.loads(row["metadata_json"] or "{}"),
-            })
+            items.append({"document_id": row["id"], "source": row["source"], "title": row["title"], "content_hash": row["content_hash"], "created_at": row["created_at"], "chunks": int(row["chunks"]), "tokens": int(row["tokens"]), "metadata": json.loads(row["metadata_json"] or "{}")})
         return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "documents": len(items), "sources": items}
 
     def explain(self, query: str, limit: int = 5) -> dict[str, Any]:
         result = self.search(query, limit)
         if not result.get("ok"):
             return result
-        return {
-            "schema": "secondbrain.p1_rag.explain.v1",
-            "ok": True,
-            "status": "pass",
-            "query": query,
-            "tokenized_query": tokenize(query),
-            "ranking_model": "deterministic_tfidf_logtf_length_norm_v1",
-            "hit_count": result["hit_count"],
-            "hits": [
-                {
-                    "rank": idx,
-                    "chunk_id": hit["chunk_id"],
-                    "document_id": hit["document_id"],
-                    "title": hit["title"],
-                    "score": hit["score"],
-                    "matched_terms": hit["terms"],
-                    "char_range": [hit["char_start"], hit["char_end"]],
-                    "snippet": hit["snippet"],
-                }
-                for idx, hit in enumerate(result["hits"], 1)
-            ],
-        }
+        return {"schema": "secondbrain.p1_rag.explain.v1", "ok": True, "status": "pass", "query": query, "tokenized_query": tokenize(query), "ranking_model": "deterministic_tfidf_logtf_length_norm_v1", "hit_count": result["hit_count"], "hits": [{"rank": idx, "chunk_id": hit["chunk_id"], "document_id": hit["document_id"], "title": hit["title"], "score": hit["score"], "matched_terms": hit["terms"], "char_range": [hit["char_start"], hit["char_end"]], "snippet": hit["snippet"]} for idx, hit in enumerate(result["hits"], 1)]}
 
     def status(self) -> dict[str, Any]:
         with self._connect() as conn:
@@ -480,20 +411,7 @@ class P1RagRuntime:
             tokens = conn.execute("select coalesce(sum(token_count), 0) from chunks").fetchone()[0]
             avg_tokens = conn.execute("select coalesce(avg(token_count), 0) from chunks").fetchone()[0]
             schema_cols = [row[1] for row in conn.execute("pragma table_info(chunks)").fetchall()]
-        return {
-            "schema": SCHEMA_VERSION,
-            "ok": True,
-            "status": "pass",
-            "profile": self.profile,
-            "db_path": str(self.db_path),
-            "documents": docs,
-            "chunks": chunks,
-            "tokens": tokens,
-            "avg_tokens_per_chunk": round(float(avg_tokens), 2),
-            "chunk_schema_columns": schema_cols,
-            "embedding_provider": self.embedding_provider.status(),
-            "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"],
-        }
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
 
     def validate_index(self, write_report: bool = False) -> dict[str, Any]:
         with self._connect() as conn:
@@ -544,18 +462,7 @@ class P1RagRuntime:
             findings.append({"severity": "warning", "code": "duplicate_content_hash", "content_hash": row["content_hash"], "count": int(row["n"])})
         blockers = sum(1 for f in findings if f["severity"] == "blocker")
         warnings = sum(1 for f in findings if f["severity"] == "warning")
-        payload = {
-            "schema": "secondbrain.p1_rag.validation.v1",
-            "generated_at": utc_now(),
-            "ok": blockers == 0,
-            "status": "pass" if blockers == 0 else "blocked",
-            "documents": len(docs),
-            "chunks": len(chunks),
-            "embeddings": len(embeddings),
-            "blockers": blockers,
-            "warnings": warnings,
-            "findings": findings,
-        }
+        payload = {"schema": "secondbrain.p1_rag.validation.v1", "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "documents": len(docs), "chunks": len(chunks), "embeddings": len(embeddings), "blockers": blockers, "warnings": warnings, "findings": findings}
         if write_report:
             path = self.reports_dir / "p1_rag_validation_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -577,17 +484,7 @@ class P1RagRuntime:
         ]
         blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
         warnings = sum(1 for c in checks if not c["ok"] and c["severity"] == "warning")
-        payload = {
-            "schema": "secondbrain.p1_rag.quality.v1",
-            "generated_at": utc_now(),
-            "ok": blockers == 0,
-            "status": "pass" if blockers == 0 else "blocked",
-            "query": query,
-            "blockers": blockers,
-            "warnings": warnings,
-            "checks": checks,
-            "rag_status": status,
-        }
+        payload = {"schema": "secondbrain.p1_rag.quality.v1", "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "query": query, "blockers": blockers, "warnings": warnings, "checks": checks, "rag_status": status}
         if write_report:
             path = self.reports_dir / "p1_rag_quality_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -630,16 +527,7 @@ class P1RagRuntime:
             {"name": "source_lineage_available", "ok": self.sources().get("ok") and self.status().get("documents", 0) >= 0, "severity": "blocker", "detail": {"documents": self.status().get("documents", 0)}},
         ]
         blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
-        payload = {
-            "schema": P1_PRODUCTION_SCHEMA,
-            "generated_at": utc_now(),
-            "ok": blockers == 0,
-            "status": "pass" if blockers == 0 else "blocked",
-            "blockers": blockers,
-            "checks": checks,
-            "gate": gate,
-            "metrics": metrics,
-        }
+        payload = {"schema": P1_PRODUCTION_SCHEMA, "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "blockers": blockers, "checks": checks, "gate": gate, "metrics": metrics}
         if write_report:
             path = self.reports_dir / "p1_production_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
