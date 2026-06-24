@@ -1,7 +1,7 @@
 {
-  "version": "18.11",
-  "status": "P0_REPRODUCIBILITY_IN_PROGRESS",
-  "product_maturity_estimate": "65-75% technical foundation, 45-55% end-user product",
+  "version": "18.12",
+  "status": "P1_RAG_PRODUCTION_IN_PROGRESS",
+  "product_maturity_estimate": "67-77% technical foundation, 48-58% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
@@ -9,47 +9,47 @@
     "desktop_app": "foundation",
     "database": "sqlite_foundation",
     "connectors": "foundation_only",
-    "document_understanding": "foundation",
+    "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
     "knowledge_graph": "foundation",
     "long_term_memory": "foundation",
-    "hybrid_rag": "foundation",
+    "hybrid_rag": "parser_integrated_foundation",
     "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation"
   },
   "current_sprint": {
-    "id": "sprint1",
-    "name": "P0 Build Reproducibility",
-    "branch": "sprint1-p0-reproducibility",
-    "status": "implemented_pending_local_validation",
+    "id": "sprint2",
+    "name": "P1 Real RAG Production Path",
+    "branch": "sprint2-p1-rag-production",
+    "status": "parser_ingest_implemented_pending_local_validation",
     "added": [
-      "pyproject.toml",
-      "editable install path",
-      "package entry point secondbrain",
-      "optional dependency extras",
-      "hardened repo-doctor",
-      "root GitHub Actions workflow",
-      "README source-of-truth correction",
-      "release workflow update"
+      "P1RagRuntime parser registry integration",
+      "p1-rag-ingest-file no longer uses blind read_text",
+      "unsupported file type blocks cleanly",
+      "invalid parser state blocks cleanly",
+      "OCR_REQUIRED maps to ocr_required",
+      "parser metadata flows into RAG source metadata",
+      "targeted parser-ingest tests"
     ]
   },
   "release_blockers": [
-    "full local gate run pending",
+    "local sprint2 validation pending",
+    "real semantic embedding provider integration still soft-fallback",
+    "golden retrieval dataset missing",
+    "P1 production gate needs stricter provider quality checks",
     "real PostgreSQL/pgvector missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
-    "cross-module GUI missing",
-    "real semantic embedding provider integration still soft-fallback"
+    "cross-module GUI missing"
   ],
-  "next_release": "Sprint 2: P1 real RAG production path - parser-integrated ingest, hard provider health, golden retrieval dataset",
+  "next_release": "Sprint 2 continuation: hard embedding provider health, golden retrieval dataset, stricter P1 production gate",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pip install -e \".[dev]\"",
-      "python launcher.py repo-doctor --execute-runtime-checks",
-      "python launcher.py dependency-inventory",
-      "pytest -q tests/test_repo_doctor_v18_7.py",
-      "pytest -q tests/test_dependency_inventory_v18_8.py"
+      "pytest -q tests/test_v180_p1_rag.py",
+      "python launcher.py p1-rag-ingest-file README.md --source local --title README",
+      "python launcher.py p1-rag-search \"SecondBrain\"",
+      "python launcher.py p1-gate --write-report"
     ]
   }
 }

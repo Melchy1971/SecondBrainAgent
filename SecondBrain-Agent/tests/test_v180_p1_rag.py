@@ -30,6 +30,48 @@ def test_p1_rag_ingest_search_answer(tmp_path):
     assert answer["confidence"] > 0
 
 
+def test_p1_rag_ingest_file_uses_parser_registry_for_markdown(tmp_path: Path):
+    doc = tmp_path / "note.md"
+    doc.write_text("---\ntitle: Ignored\n---\n# Jarvis\n\nRAG Parser Integration mit Metadaten.", encoding="utf-8")
+    rt = P1RagRuntime(tmp_path)
+
+    ingest = rt.ingest_file(doc)
+
+    assert ingest["ok"] is True
+    assert ingest["parse"]["status"] == "parsed"
+    assert ingest["metadata"]["ingest_mode"] == "parser_registry"
+    assert ingest["metadata"]["parser_detail"] == "markdown"
+    search = rt.search("Parser Integration")
+    assert search["hit_count"] >= 1
+
+
+def test_p1_rag_ingest_file_blocks_unsupported_type(tmp_path: Path):
+    binary = tmp_path / "image.bin"
+    binary.write_bytes(b"\x00\x01\x02")
+    rt = P1RagRuntime(tmp_path)
+
+    ingest = rt.ingest_file(binary)
+
+    assert ingest["ok"] is False
+    assert ingest["status"] == "blocked"
+    assert ingest["error"] == "unsupported_file_type"
+    assert ingest["metadata"]["parse_status"] == "unsupported"
+
+
+def test_p1_rag_ingest_file_blocks_invalid_json(tmp_path: Path):
+    bad = tmp_path / "broken.json"
+    bad.write_text('{"broken": ', encoding="utf-8")
+    rt = P1RagRuntime(tmp_path)
+
+    ingest = rt.ingest_file(bad)
+
+    assert ingest["ok"] is False
+    assert ingest["status"] == "blocked"
+    assert ingest["error"] == "parse_failed"
+    assert ingest["errors"]
+    assert ingest["metadata"]["parse_status"] == "failed"
+
+
 def test_p1_launcher_commands_roundtrip(tmp_path, capsys):
     rc = main(["--project-root", str(tmp_path), "p1-rag-ingest-text", "Jarvis Memory RAG produktiv", "--source", "test", "--title", "Smoke"])
     captured = capsys.readouterr().out
