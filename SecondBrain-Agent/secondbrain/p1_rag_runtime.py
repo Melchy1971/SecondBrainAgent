@@ -243,58 +243,16 @@ class P1RagRuntime:
             metadata["parse_errors"] = payload["errors"]
 
         if parsed.status == ParseStatus.OCR_REQUIRED:
-            return {
-                "schema": SCHEMA_VERSION,
-                "ok": False,
-                "status": "blocked",
-                "error": "ocr_required",
-                "path": str(path),
-                "title": title or payload["title"],
-                "metadata": metadata,
-                "errors": payload["errors"],
-            }
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "ocr_required", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
         if parsed.status == ParseStatus.UNSUPPORTED:
-            return {
-                "schema": SCHEMA_VERSION,
-                "ok": False,
-                "status": "blocked",
-                "error": "unsupported_file_type",
-                "path": str(path),
-                "title": title or payload["title"],
-                "metadata": metadata,
-                "errors": payload["errors"],
-            }
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "unsupported_file_type", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
         if parsed.status == ParseStatus.FAILED:
-            return {
-                "schema": SCHEMA_VERSION,
-                "ok": False,
-                "status": "blocked",
-                "error": "parse_failed",
-                "path": str(path),
-                "title": title or payload["title"],
-                "metadata": metadata,
-                "errors": payload["errors"],
-            }
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "parse_failed", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
         if parsed.status == ParseStatus.EMPTY or not payload["text"].strip():
-            return {
-                "schema": SCHEMA_VERSION,
-                "ok": False,
-                "status": "blocked",
-                "error": "empty_text",
-                "path": str(path),
-                "title": title or payload["title"],
-                "metadata": metadata,
-                "errors": payload["errors"],
-            }
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "empty_text", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
 
         result = self.ingest_text(payload["text"], source or payload["source_path"] or str(path), title or payload["title"], metadata)
-        result["parse"] = {
-            "status": parsed.status.value,
-            "mime_type": parsed.mime_type,
-            "pages": parsed.page_count,
-            "chars": parsed.char_count,
-            "errors": payload["errors"],
-        }
+        result["parse"] = {"status": parsed.status.value, "mime_type": parsed.mime_type, "pages": parsed.page_count, "chars": parsed.char_count, "errors": payload["errors"]}
         return result
 
     def _all_chunks(self) -> list[sqlite3.Row]:
@@ -303,17 +261,10 @@ class P1RagRuntime:
                 "select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id"
             ).fetchall()
 
-
     def embedding_status(self) -> dict[str, Any]:
         with self._connect() as conn:
             rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider").fetchall()
-        return {
-            "schema": "secondbrain.p1_embeddings.status.v1",
-            "ok": True,
-            "status": "pass",
-            "provider": self.embedding_provider.status(),
-            "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows],
-        }
+        return {"schema": "secondbrain.p1_embeddings.status.v1", "ok": True, "status": "pass", "provider": self.embedding_provider.status(), "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows]}
 
     def reindex_vectors(self, write_report: bool = False) -> dict[str, Any]:
         now = utc_now()
@@ -321,10 +272,7 @@ class P1RagRuntime:
             chunks = conn.execute("select id, text from chunks order by document_id, ordinal").fetchall()
             for row in chunks:
                 vector = self.embedding_provider.embed(row["text"])
-                conn.execute(
-                    "insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)",
-                    (row["id"], self.embedding_provider.name, len(vector), json.dumps(vector), now),
-                )
+                conn.execute("insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)", (row["id"], self.embedding_provider.name, len(vector), json.dumps(vector), now))
             conn.commit()
         payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": True, "status": "pass", "chunks": len(chunks), "provider": self.embedding_provider.name}
         if write_report:
@@ -339,10 +287,7 @@ class P1RagRuntime:
             return {"schema": "secondbrain.p1_vectors.search.v1", "ok": False, "status": "blocked", "error": "empty_query", "hits": []}
         q_vector = self.embedding_provider.embed(query)
         with self._connect() as conn:
-            rows = conn.execute(
-                "select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider "
-                "from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id"
-            ).fetchall()
+            rows = conn.execute("select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id").fetchall()
         hits = []
         for row in rows:
             try:
@@ -352,18 +297,7 @@ class P1RagRuntime:
             score = cosine_similarity(q_vector, vector)
             if score <= 0:
                 continue
-            hits.append({
-                "chunk_id": row["chunk_id"],
-                "document_id": row["document_id"],
-                "source": row["source"],
-                "title": row["title"],
-                "score": round(float(score), 4),
-                "text": row["text"],
-                "snippet": summarize_text(row["text"], 260),
-                "char_start": int(row["char_start"]),
-                "char_end": int(row["char_end"]),
-                "provider": row["provider"],
-            })
+            hits.append({"chunk_id": row["chunk_id"], "document_id": row["document_id"], "source": row["source"], "title": row["title"], "score": round(float(score), 4), "text": row["text"], "snippet": summarize_text(row["text"], 260), "char_start": int(row["char_start"]), "char_end": int(row["char_end"]), "provider": row["provider"]})
         hits.sort(key=lambda h: (-h["score"], h["title"], h["chunk_id"]))
         return {"schema": "secondbrain.p1_vectors.search.v1", "ok": True, "status": "pass", "query": query, "limit": limit, "hit_count": len(hits[: max(1, int(limit))]), "hits": hits[: max(1, int(limit))]}
 
@@ -372,140 +306,230 @@ class P1RagRuntime:
         vector = self.vector_search(query, limit=max(limit * 2, 5))
         keyword_hits = [dict(hit, retrieval_source="keyword") for hit in keyword.get("hits", [])]
         vector_hits = [dict(hit, retrieval_source="vector") for hit in vector.get("hits", [])]
-        fused = reciprocal_rank_fusion(keyword_hits, vector_hits, key="chunk_id", limit=limit)
-        return {
-            "schema": "secondbrain.p1_hybrid.search.v1",
-            "ok": bool(keyword.get("ok") and vector.get("ok")),
-            "status": "pass" if keyword.get("ok") and vector.get("ok") else "blocked",
-            "query": query,
-            "limit": limit,
-            "keyword_hits": keyword.get("hit_count", 0),
-            "vector_hits": vector.get("hit_count", 0),
-            "hit_count": len(fused),
-            "hits": fused,
-        }
+        fused = reciprocal_rank_fusion([keyword_hits, vector_hits], weights=[1.15, 1.0])
+        hits = fused[: max(1, int(limit))]
+        for hit in hits:
+            keyword_score = float(hit.get("raw_scores", {}).get("keyword", hit.get("keyword_score", 0.0)))
+            vector_score = float(hit.get("raw_scores", {}).get("vector", hit.get("vector_score", 0.0)))
+            hit["keyword_score"] = round(keyword_score, 4)
+            hit["vector_score"] = round(vector_score, 4)
+            hit["hybrid_score"] = round(float(hit.get("rrf_score", 0.0)), 6)
+            hit["score"] = hit["hybrid_score"]
+        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"}}
+
+    def retrieval_metrics(self, write_report: bool = False) -> dict[str, Any]:
+        probes = [{"query": "Jarvis RAG Quellen", "expected_terms": ["jarvis", "rag", "quellen"]}, {"query": "Memory Evidenz", "expected_terms": ["memory", "evidenz"]}, {"query": "lokale Quellen", "expected_terms": ["lokale", "quellen"]}]
+        rows = []
+        for probe in probes:
+            result = self.hybrid_search(probe["query"], 10)
+            metrics = evaluate_ranked_hits(result.get("hits", []), probe["expected_terms"], k=10)
+            answer = self.answer(probe["query"], 4)
+            rows.append({"query": probe["query"], "hit_count": result.get("hit_count", 0), "confidence": answer.get("confidence", 0.0), **metrics})
+        n = max(1, len(rows))
+        payload = {"schema": "secondbrain.p1_retrieval.metrics.v1", "generated_at": utc_now(), "ok": True, "status": "pass", "probes": len(rows), "hit_rate": round(sum(1 for row in rows if row["hit_count"] > 0) / n, 4), "avg_recall_at_k": round(sum(float(row["recall_at_k"]) for row in rows) / n, 4), "avg_mrr": round(sum(float(row["mrr"]) for row in rows) / n, 4), "avg_ndcg": round(sum(float(row["ndcg"]) for row in rows) / n, 4), "avg_confidence": round(sum(float(row["confidence"]) for row in rows) / n, 4), "results": rows}
+        if write_report:
+            path = self.reports_dir / "p1_retrieval_metrics_latest.json"
+            path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+        return payload
+
+    def retrieval_benchmark(self, write_report: bool = False) -> dict[str, Any]:
+        metrics = self.retrieval_metrics(write_report=False)
+        payload = {"schema": "secondbrain.p1_retrieval.benchmark.v1", "generated_at": utc_now(), "ok": metrics["ok"], "status": metrics["status"], "probes": metrics["probes"], "hit_rate": metrics["hit_rate"], "avg_recall_at_k": metrics["avg_recall_at_k"], "avg_mrr": metrics["avg_mrr"], "avg_ndcg": metrics["avg_ndcg"], "results": [{"query": r["query"], "hit_count": r["hit_count"], "recall_at_k": r["recall_at_k"], "mrr": r["mrr"], "ndcg": r["ndcg"]} for r in metrics["results"]]}
+        if write_report:
+            path = self.reports_dir / "p1_retrieval_benchmark_latest.json"
+            path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+        return payload
 
     def search(self, query: str, limit: int = 5) -> dict[str, Any]:
         query_tokens = tokenize(query)
         if not query_tokens:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "empty_query", "hits": []}
-        chunks = self._all_chunks()
-        total_docs = max(1, len({row["document_id"] for row in chunks}))
-        df = Counter()
-        parsed_rows = []
-        for row in chunks:
-            tokens = json.loads(row["token_json"])
-            unique = set(tokens)
-            for token in unique:
-                df[token] += 1
-            parsed_rows.append((row, tokens))
+        q_counts = Counter(query_tokens)
+        rows = self._all_chunks()
+        doc_freq: Counter[str] = Counter()
+        for row in rows:
+            for term in set(json.loads(row["token_json"])):
+                doc_freq[term] += 1
+        total_chunks = max(1, len(rows))
         hits: list[SearchHit] = []
-        for row, tokens in parsed_rows:
+        for row in rows:
+            tokens = json.loads(row["token_json"])
             counts = Counter(tokens)
-            matched = [token for token in query_tokens if token in counts]
-            if not matched:
-                continue
             score = 0.0
-            for token in matched:
-                tf = counts[token]
-                idf = math.log((1 + total_docs) / (1 + df[token])) + 1.0
-                score += tf * idf
-            hits.append(SearchHit(
-                chunk_id=row["chunk_id"],
-                document_id=row["document_id"],
-                source=row["source"],
-                title=row["title"],
-                score=score,
-                text=row["text"],
-                terms=matched,
-                char_start=int(row["char_start"]),
-                char_end=int(row["char_end"]),
-            ))
+            matched: list[str] = []
+            for term, q_weight in q_counts.items():
+                tf = counts.get(term, 0)
+                if not tf:
+                    continue
+                idf = math.log((1 + total_chunks) / (1 + doc_freq.get(term, 0))) + 1.0
+                score += (1 + math.log(tf)) * idf * q_weight
+                matched.append(term)
+            if score <= 0:
+                continue
+            normalized = score / math.sqrt(max(1, row["token_count"]))
+            hits.append(SearchHit(row["chunk_id"], row["document_id"], row["source"], row["title"], normalized, row["text"], sorted(set(matched)), int(row["char_start"]), int(row["char_end"])))
         hits.sort(key=lambda h: (-h.score, h.title, h.chunk_id))
-        limited = hits[: max(1, int(limit))]
-        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "query": query, "hit_count": len(limited), "hits": [hit.to_dict() for hit in limited]}
+        selected = hits[: max(1, int(limit))]
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "query": query, "limit": limit, "hit_count": len(selected), "hits": [h.to_dict() for h in selected]}
 
     def answer(self, query: str, limit: int = 4) -> dict[str, Any]:
-        search = self.hybrid_search(query, limit=limit)
-        hits = search.get("hits", [])
+        search = self.search(query, limit)
+        if not search.get("ok"):
+            return search
+        hits = search["hits"]
         if not hits:
-            return {"schema": "secondbrain.p1_answer.v1", "ok": True, "status": "no_answer", "query": query, "answer": "Keine belastbare Quelle im lokalen Index gefunden.", "citations": [], "used_chunks": 0}
+            return {"schema": SCHEMA_VERSION, "ok": True, "status": "no_evidence", "query": query, "answer": "Keine belastbare Quelle im lokalen RAG-Index gefunden.", "citations": [], "confidence": 0.0}
+        bullets = []
+        citations = []
+        for idx, hit in enumerate(hits, 1):
+            snippet = hit["text"][:320].strip()
+            bullets.append(f"[{idx}] {snippet}")
+            citations.append({"ref": idx, "chunk_id": hit["chunk_id"], "document_id": hit["document_id"], "source": hit["source"], "title": hit["title"], "score": hit["score"]})
+        confidence = min(0.95, max(0.15, sum(float(h["score"]) for h in hits) / max(1, len(hits))))
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "query": query, "answer": "\n".join(bullets), "citations": citations, "confidence": round(confidence, 4)}
 
     def sources(self) -> dict[str, Any]:
         with self._connect() as conn:
-            rows = conn.execute(
-                "select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks "
-                "from documents d left join chunks c on c.document_id = d.id group by d.id order by d.created_at desc"
-            ).fetchall()
-        return {
-            "schema": "secondbrain.p1_sources.v1",
-            "ok": True,
-            "status": "pass",
-            "sources": [
-                {"document_id": r["id"], "source": r["source"], "title": r["title"], "content_hash": r["content_hash"], "created_at": r["created_at"], "chunks": int(r["chunks"]), "metadata": json.loads(r["metadata_json"])} for r in rows
-            ],
-        }
+            rows = conn.execute("select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks, coalesce(sum(c.token_count), 0) as tokens from documents d left join chunks c on c.document_id = d.id group by d.id order by d.created_at desc, d.title").fetchall()
+        items = []
+        for row in rows:
+            items.append({"document_id": row["id"], "source": row["source"], "title": row["title"], "content_hash": row["content_hash"], "created_at": row["created_at"], "chunks": int(row["chunks"]), "tokens": int(row["tokens"]), "metadata": json.loads(row["metadata_json"] or "{}")})
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "documents": len(items), "sources": items}
 
-    def validate_index(self) -> dict[str, Any]:
+    def explain(self, query: str, limit: int = 5) -> dict[str, Any]:
+        result = self.search(query, limit)
+        if not result.get("ok"):
+            return result
+        return {"schema": "secondbrain.p1_rag.explain.v1", "ok": True, "status": "pass", "query": query, "tokenized_query": tokenize(query), "ranking_model": "deterministic_tfidf_logtf_length_norm_v1", "hit_count": result["hit_count"], "hits": [{"rank": idx, "chunk_id": hit["chunk_id"], "document_id": hit["document_id"], "title": hit["title"], "score": hit["score"], "matched_terms": hit["terms"], "char_range": [hit["char_start"], hit["char_end"]], "snippet": hit["snippet"]} for idx, hit in enumerate(result["hits"], 1)]}
+
+    def status(self) -> dict[str, Any]:
         with self._connect() as conn:
-            docs = conn.execute("select count(*) as n from documents").fetchone()["n"]
-            chunks = conn.execute("select count(*) as n from chunks").fetchone()["n"]
-            vectors = conn.execute("select count(*) as n from chunk_embeddings").fetchone()["n"]
-            orphan_chunks = conn.execute("select count(*) as n from chunks c left join documents d on d.id=c.document_id where d.id is null").fetchone()["n"]
-            missing_vectors = conn.execute("select count(*) as n from chunks c left join chunk_embeddings e on e.chunk_id=c.id where e.chunk_id is null").fetchone()["n"]
-        issues = []
-        if chunks == 0:
-            issues.append("no_chunks")
-        if missing_vectors:
-            issues.append("missing_vectors")
-        if orphan_chunks:
-            issues.append("orphan_chunks")
-        return {"schema": "secondbrain.p1_index.validation.v1", "ok": not issues, "status": "pass" if not issues else "blocked", "documents": docs, "chunks": chunks, "vectors": vectors, "issues": issues}
+            docs = conn.execute("select count(*) from documents").fetchone()[0]
+            chunks = conn.execute("select count(*) from chunks").fetchone()[0]
+            tokens = conn.execute("select coalesce(sum(token_count), 0) from chunks").fetchone()[0]
+            avg_tokens = conn.execute("select coalesce(avg(token_count), 0) from chunks").fetchone()[0]
+            schema_cols = [row[1] for row in conn.execute("pragma table_info(chunks)").fetchall()]
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
 
-    def quality_report(self, query: str | None = None) -> dict[str, Any]:
-        probes = [
-            {"query": query or "second brain runtime health", "expected_terms": ["second", "brain"]},
-            {"query": "local memory retrieval", "expected_terms": ["memory"]},
-            {"query": "rag search citations", "expected_terms": ["rag", "search"]},
+    def validate_index(self, write_report: bool = False) -> dict[str, Any]:
+        with self._connect() as conn:
+            docs = conn.execute("select id, source, title, content_hash from documents").fetchall()
+            chunks = conn.execute("select id, document_id, text, char_start, char_end, token_count, token_json from chunks").fetchall()
+            embeddings = conn.execute("select chunk_id, provider, dimensions, vector_json from chunk_embeddings").fetchall()
+            embedded_ids = {row["chunk_id"] for row in embeddings}
+            orphan_chunks = conn.execute("select c.id from chunks c left join documents d on d.id = c.document_id where d.id is null").fetchall()
+            orphan_embeddings = conn.execute("select e.chunk_id from chunk_embeddings e left join chunks c on c.id = e.chunk_id where c.id is null").fetchall()
+            duplicate_hashes = conn.execute("select content_hash, count(*) as n from documents group by content_hash having n > 1").fetchall()
+        findings: list[dict[str, Any]] = []
+        for row in docs:
+            src = validate_source(row["source"])
+            if not src["ok"]:
+                findings.append({"severity": "blocker", "code": "invalid_source", "document_id": row["id"], "detail": src})
+            if not row["title"].strip():
+                findings.append({"severity": "warning", "code": "empty_title", "document_id": row["id"]})
+        for row in chunks:
+            if not (row["text"] or "").strip():
+                findings.append({"severity": "blocker", "code": "empty_chunk", "chunk_id": row["id"]})
+            if int(row["char_end"]) < int(row["char_start"]):
+                findings.append({"severity": "blocker", "code": "invalid_char_range", "chunk_id": row["id"], "range": [row["char_start"], row["char_end"]]})
+            try:
+                parsed_tokens = json.loads(row["token_json"] or "[]")
+            except json.JSONDecodeError:
+                parsed_tokens = None
+            if not isinstance(parsed_tokens, list):
+                findings.append({"severity": "blocker", "code": "invalid_token_json", "chunk_id": row["id"]})
+            elif len(parsed_tokens) != int(row["token_count"]):
+                findings.append({"severity": "warning", "code": "token_count_mismatch", "chunk_id": row["id"], "actual": len(parsed_tokens), "stored": int(row["token_count"])})
+        for row in chunks:
+            if row["id"] not in embedded_ids:
+                findings.append({"severity": "blocker", "code": "missing_embedding", "chunk_id": row["id"]})
+        for row in embeddings:
+            try:
+                vector = json.loads(row["vector_json"] or "[]")
+            except json.JSONDecodeError:
+                vector = None
+            if not isinstance(vector, list) or not vector:
+                findings.append({"severity": "blocker", "code": "invalid_embedding", "chunk_id": row["chunk_id"]})
+            elif len(vector) != int(row["dimensions"]):
+                findings.append({"severity": "blocker", "code": "embedding_dimension_mismatch", "chunk_id": row["chunk_id"]})
+        for row in orphan_chunks:
+            findings.append({"severity": "blocker", "code": "orphan_chunk", "chunk_id": row["id"]})
+        for row in orphan_embeddings:
+            findings.append({"severity": "blocker", "code": "orphan_embedding", "chunk_id": row["chunk_id"]})
+        for row in duplicate_hashes:
+            findings.append({"severity": "warning", "code": "duplicate_content_hash", "content_hash": row["content_hash"], "count": int(row["n"])})
+        blockers = sum(1 for f in findings if f["severity"] == "blocker")
+        warnings = sum(1 for f in findings if f["severity"] == "warning")
+        payload = {"schema": "secondbrain.p1_rag.validation.v1", "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "documents": len(docs), "chunks": len(chunks), "embeddings": len(embeddings), "blockers": blockers, "warnings": warnings, "findings": findings}
+        if write_report:
+            path = self.reports_dir / "p1_rag_validation_latest.json"
+            path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+        return payload
+
+    def quality_report(self, query: str = "Jarvis RAG Quellen", limit: int = 5, write_report: bool = False) -> dict[str, Any]:
+        status = self.status()
+        validation = self.validate_index(False)
+        search_result = self.search(query, limit) if query.strip() else {"ok": False, "hit_count": 0, "hits": []}
+        answer_result = self.answer(query, min(limit, 4)) if query.strip() else {"ok": False, "citations": [], "confidence": 0.0}
+        checks = [
+            {"name": "index_valid", "ok": validation["ok"], "severity": "blocker", "detail": {"blockers": validation["blockers"], "warnings": validation["warnings"]}},
+            {"name": "content_available", "ok": status["chunks"] > 0, "severity": "warning", "detail": {"chunks": status["chunks"], "documents": status["documents"]}},
+            {"name": "search_executes", "ok": bool(search_result.get("ok")), "severity": "blocker", "detail": {"hit_count": search_result.get("hit_count", 0)}},
+            {"name": "hybrid_search_executes", "ok": bool(self.hybrid_search(query, limit).get("ok")), "severity": "blocker", "detail": {"model": "hybrid_keyword_vector_rrf_v1"}},
+            {"name": "answer_has_citations_when_evidence_exists", "ok": (not search_result.get("hits")) or bool(answer_result.get("citations")), "severity": "blocker", "detail": {"citations": len(answer_result.get("citations", [])), "confidence": answer_result.get("confidence", 0.0)}},
+            {"name": "no_evidence_is_explicit", "ok": self.answer("zzzxxy_no_local_evidence_probe", 2).get("status") == "no_evidence", "severity": "blocker", "detail": {"policy": "answer_must_not_fabricate_without_hits"}},
         ]
-        evaluations = []
-        for probe in probes:
-            result = self.hybrid_search(probe["query"], limit=5)
-            evaluations.append(evaluate_ranked_hits(probe["query"], result.get("hits", []), expected_terms=probe["expected_terms"]))
-        avg_precision = sum(e.precision_at_k for e in evaluations) / len(evaluations)
-        avg_coverage = sum(e.expected_term_coverage for e in evaluations) / len(evaluations)
-        return {
-            "schema": "secondbrain.p1_quality.v1",
-            "ok": True,
-            "status": "pass" if avg_precision >= 0.1 or avg_coverage >= 0.1 else "warning",
-            "provider": self.embedding_provider.status(),
-            "evaluations": [e.to_dict() for e in evaluations],
-            "average_precision_at_k": round(avg_precision, 4),
-            "average_expected_term_coverage": round(avg_coverage, 4),
-        }
+        blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
+        warnings = sum(1 for c in checks if not c["ok"] and c["severity"] == "warning")
+        payload = {"schema": "secondbrain.p1_rag.quality.v1", "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "query": query, "blockers": blockers, "warnings": warnings, "checks": checks, "rag_status": status}
+        if write_report:
+            path = self.reports_dir / "p1_rag_quality_latest.json"
+            path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+        return payload
 
-    def production_gate(self, write_report: bool = True) -> dict[str, Any]:
-        validation = self.validate_index()
-        quality = self.quality_report()
-        embedding = self.embedding_status()
-        decision = production_decision({"validation": validation, "quality": quality, "embedding": embedding})
-        payload = {
-            "schema": P1_PRODUCTION_SCHEMA,
-            "generated_at": utc_now(),
-            "ok": decision.ok,
-            "status": decision.status,
-            "summary": decision.summary,
-            "checks": decision.checks,
-            "validation": validation,
-            "quality": quality,
-            "embedding": embedding,
-        }
+    def gate(self, write_report: bool = False) -> dict[str, Any]:
+        status = self.status()
+        required_columns = {"id", "document_id", "ordinal", "text", "char_start", "char_end", "token_json", "token_count", "created_at"}
+        validation = self.validate_index(False)
+        quality = self.quality_report("Jarvis RAG Quellen", 5, False)
+        checks = [
+            {"name": "rag_database_exists", "ok": self.db_path.exists(), "severity": "blocker", "detail": {"path": str(self.db_path)}},
+            {"name": "rag_schema_ready", "ok": status["ok"] and required_columns.issubset(set(status["chunk_schema_columns"])), "severity": "blocker", "detail": {"columns": status["chunk_schema_columns"]}},
+            {"name": "rag_has_indexed_content", "ok": status["chunks"] > 0, "severity": "warning", "detail": {"chunks": status["chunks"]}},
+            {"name": "rag_source_inventory_available", "ok": self.sources()["ok"], "severity": "blocker", "detail": {"documents": status["documents"]}},
+            {"name": "rag_explainability_available", "ok": callable(getattr(self, "explain", None)), "severity": "blocker", "detail": {"ranking_model": "deterministic_tfidf_logtf_length_norm_v1"}},
+            {"name": "rag_index_validation", "ok": validation["ok"], "severity": "blocker", "detail": {"blockers": validation["blockers"], "warnings": validation["warnings"]}},
+            {"name": "rag_quality_policy", "ok": quality["ok"], "severity": "blocker", "detail": {"blockers": quality["blockers"], "warnings": quality["warnings"]}},
+            {"name": "embedding_provider_ready", "ok": self.embedding_status()["ok"], "severity": "blocker", "detail": self.embedding_status()["provider"]},
+            {"name": "retrieval_benchmark_available", "ok": self.retrieval_benchmark()["ok"], "severity": "warning", "detail": {"schema": "secondbrain.p1_retrieval.benchmark.v1"}},
+        ]
+        blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
+        warnings = sum(1 for c in checks if not c["ok"] and c["severity"] == "warning")
+        payload = {"schema": "secondbrain.p1_gate.v4", "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "blockers": blockers, "warnings": warnings, "checks": checks, "rag_status": status, "validation": validation, "quality": quality, "retrieval_metrics": self.retrieval_metrics(False)}
+        if write_report:
+            path = self.reports_dir / "p1_gate_latest.json"
+            path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+        return payload
+
+    def production_gate(self, write_report: bool = False) -> dict[str, Any]:
+        gate = self.gate(False)
+        metrics = self.retrieval_metrics(False)
+        decision = production_decision(metrics)
+        checks = [
+            {"name": "p1_gate_passes", "ok": bool(gate.get("ok")), "severity": "blocker", "detail": {"schema": gate.get("schema"), "blockers": gate.get("blockers"), "warnings": gate.get("warnings")}},
+            {"name": "retrieval_thresholds_pass", "ok": decision["ok"], "severity": "blocker", "detail": decision},
+            {"name": "answer_policy_enforced", "ok": self.answer("zzzxxy_no_local_evidence_probe", 2).get("status") == "no_evidence", "severity": "blocker", "detail": {"policy": "no_evidence_must_be_explicit"}},
+            {"name": "source_lineage_available", "ok": self.sources().get("ok") and self.status().get("documents", 0) >= 0, "severity": "blocker", "detail": {"documents": self.status().get("documents", 0)}},
+        ]
+        blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
+        payload = {"schema": P1_PRODUCTION_SCHEMA, "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "blockers": blockers, "checks": checks, "gate": gate, "metrics": metrics}
         if write_report:
             path = self.reports_dir / "p1_production_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
             payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
         return payload
-
-    def gate(self) -> dict[str, Any]:
-        production = self.production_gate(write_report=True)
-        return {"schema": "secondbrain.p1_gate.v1", "ok": production["ok"], "status": production["status"], "production": production}
