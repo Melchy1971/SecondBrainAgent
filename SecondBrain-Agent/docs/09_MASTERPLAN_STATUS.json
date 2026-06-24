@@ -1,17 +1,18 @@
 {
-  "version": "19.5",
-  "status": "P3_P1_STORE_BACKED_INGEST_IMPLEMENTED",
-  "product_maturity_estimate": "78-88% technical foundation, 60-70% end-user product",
+  "version": "19.6",
+  "status": "P3_PGVECTOR_LIVE_STORE_IMPLEMENTED",
+  "product_maturity_estimate": "79-89% technical foundation, 61-71% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_store_backed_p1_ingest",
+    "database": "sqlite_foundation_with_pgvector_live_store",
     "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
-    "rag_store_interface": "sqlite_write_pgvector_sql_preview_implemented",
+    "rag_store_interface": "sqlite_write_pgvector_live_execution_implemented",
     "p1_store_bridge": "export_and_mirror_bridge_implemented",
     "p1_store_backed_ingest": "implemented_for_sqlite_store",
+    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -28,37 +29,41 @@
   "current_sprint": {
     "id": "sprint3",
     "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-p1-store-backed-ingest",
-    "status": "p1_store_backed_ingest_implemented_pending_local_validation",
+    "branch": "sprint3-pgvector-live-store",
+    "status": "pgvector_live_store_implemented_pending_local_and_vps_validation",
     "added": [
-      "P1RagRuntime.rag_store initialized as SQLiteRagStore",
-      "P1RagRuntime.ingest_text writes RagDocumentRecord through store",
-      "P1RagRuntime.ingest_text writes RagChunkRecord through store",
-      "P1RagRuntime.ingest_text writes RagVectorRecord through store",
-      "P1RagRuntime.reindex_vectors writes through store",
-      "ingest result includes store backend and write_path",
-      "P1 status includes store status",
-      "store-backed ingest tests"
+      "PgVectorRagStore live psycopg boundary",
+      "PgVectorRagStore live status counts",
+      "PgVectorRagStore live sources",
+      "PgVectorRagStore live upsert_document",
+      "PgVectorRagStore live upsert_chunks",
+      "PgVectorRagStore live upsert_vectors",
+      "PgVectorRagStore live vector_search using pgvector cosine distance",
+      "redacted DSN in live store results",
+      "fake-psycopg live store tests"
     ]
   },
   "release_blockers": [
     "local sprint3 validation pending",
     "real live PostgreSQL validation pending on user machine",
-    "pgvector live write execution missing",
-    "SQLite to PostgreSQL migration missing",
+    "P1RagRuntime still uses SQLiteRagStore for default ingest",
+    "SQLite to PostgreSQL migration runner missing",
     "P1RagRuntime search/sources/validation not yet fully store-backed",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: P1RagRuntime vector_search and sources store-backed",
+  "next_release": "Sprint 3 continuation: SQLite to PostgreSQL migration runner or P1RagRuntime pgvector-selected ingest",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v193_p1_store_backed_ingest.py",
-      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen\" --source unit --title StoreBacked",
-      "python launcher.py p1-rag-search \"Jarvis\"",
-      "python launcher.py p1-rag-reindex --write-report"
+      "pytest -q tests/test_v191_p3_rag_store.py",
+      "pip install psycopg[binary]",
+      "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
+      "$env:DATABASE_URL=\"postgresql://appuser:***@85.215.131.200:5432/secondbrain_prod\"",
+      "python launcher.py p3-pgvector-readiness --live --write-report",
+      "python launcher.py p3-pgvector-readiness --apply --write-report",
+      "python launcher.py p3-rag-store-status"
     ]
   }
 }
