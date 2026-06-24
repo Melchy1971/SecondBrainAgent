@@ -58,7 +58,18 @@ class LocalEmbeddingProvider:
         return deterministic_embedding(text, self.dimensions)
 
     def status(self) -> dict[str, Any]:
-        return {"ok": True, "provider": self.name, "dimensions": self.dimensions, "network": False, "mode": "fallback"}
+        return {
+            "ok": True,
+            "provider": self.name,
+            "dimensions": self.dimensions,
+            "network": False,
+            "mode": "local_test_double",
+            "semantic": False,
+            "fallback": None,
+            "fallback_used": False,
+            "production_ready": False,
+            "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+        }
 
 
 @dataclass(frozen=True)
@@ -70,21 +81,53 @@ class OllamaEmbeddingProvider:
     fallback: LocalEmbeddingProvider = LocalEmbeddingProvider()
     name: str = "ollama"
 
-    def embed(self, text: str) -> list[float]:
+    def _request_embedding(self, text: str) -> list[float]:
         payload = json.dumps({"model": self.model, "prompt": text}).encode("utf-8")
         req = request.Request(f"{self.base_url.rstrip('/')}/api/embeddings", data=payload, headers={"Content-Type": "application/json"})
+        with request.urlopen(req, timeout=self.timeout_seconds) as response:  # nosec - local/user configured endpoint
+            data = json.loads(response.read().decode("utf-8"))
+        vector = data.get("embedding")
+        if not isinstance(vector, list) or not vector:
+            raise RuntimeError("ollama_embedding_missing")
+        return _normalize([float(v) for v in vector])
+
+    def embed(self, text: str) -> list[float]:
         try:
-            with request.urlopen(req, timeout=self.timeout_seconds) as response:  # nosec - local/user configured endpoint
-                data = json.loads(response.read().decode("utf-8"))
-            vector = data.get("embedding")
-            if isinstance(vector, list) and vector:
-                return _normalize([float(v) for v in vector])
+            return self._request_embedding(text)
         except Exception:
-            pass
-        return self.fallback.embed(text)
+            return self.fallback.embed(text)
 
     def status(self) -> dict[str, Any]:
-        return {"ok": True, "provider": self.name, "model": self.model, "base_url": self.base_url, "dimensions": self.dimensions, "fallback": self.fallback.name, "network": True}
+        try:
+            vector = self._request_embedding("secondbrain health probe")
+            return {
+                "ok": True,
+                "provider": self.name,
+                "model": self.model,
+                "base_url": self.base_url,
+                "dimensions": len(vector),
+                "configured_dimensions": self.dimensions,
+                "fallback": self.fallback.name,
+                "fallback_used": False,
+                "network": True,
+                "semantic": True,
+                "production_ready": True,
+            }
+        except Exception as exc:  # noqa: BLE001 - provider health boundary
+            return {
+                "ok": False,
+                "provider": self.name,
+                "model": self.model,
+                "base_url": self.base_url,
+                "dimensions": self.dimensions,
+                "fallback": self.fallback.name,
+                "fallback_used": True,
+                "network": True,
+                "semantic": True,
+                "production_ready": False,
+                "error": str(exc),
+                "reason": "ollama embedding endpoint unavailable or returned invalid vector",
+            }
 
 
 @dataclass(frozen=True)
@@ -96,13 +139,26 @@ class OpenAIEmbeddingProvider:
     name: str = "openai"
 
     def embed(self, text: str) -> list[float]:
-        # Offline-safe boundary: no dependency on external SDK and no network call in tests.
-        # Runtime integration can replace this method with the official client while keeping
-        # the same interface and VectorStore contract.
+        # Offline-safe boundary until the official OpenAI client is wired in Sprint 2.x.
+        # Production gates must not treat this fallback as a real semantic provider.
         return self.fallback.embed(text)
 
     def status(self) -> dict[str, Any]:
-        return {"ok": True, "provider": self.name, "model": self.model, "api_key_configured": bool(os.getenv(self.api_key_env)), "dimensions": self.dimensions, "fallback": self.fallback.name, "network": True}
+        api_key_configured = bool(os.getenv(self.api_key_env))
+        return {
+            "ok": False,
+            "provider": self.name,
+            "model": self.model,
+            "api_key_configured": api_key_configured,
+            "dimensions": self.dimensions,
+            "fallback": self.fallback.name,
+            "fallback_used": True,
+            "network": True,
+            "semantic": True,
+            "production_ready": False,
+            "error": "openai_embedding_client_not_implemented",
+            "reason": "OpenAI provider currently falls back to local deterministic embeddings until official client integration is implemented",
+        }
 
 
 def provider_from_profile(project_root: str | Path, profile: str | None = None) -> EmbeddingProvider:
