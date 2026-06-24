@@ -8,6 +8,8 @@ from typing import Any
 
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p0_runtime import load_runtime_snapshot, p0_artifact_audit, p0_bootstrap, p0_contract, p0_doctor, p0_gate, p0_production_gate, p0_readiness, p0_report, p0_smoke
+from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
+from secondbrain.p1_production_gate import production_gate_with_golden
 from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
@@ -173,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
         return _dependency_inventory_main(raw)
-    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-production", "p1-gate"}:
+    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
         parser.add_argument("--profile", default=None)
@@ -205,8 +207,10 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.retrieval_benchmark(write_report=args.write_report)
         elif cmd == "p1-retrieval-metrics":
             payload = rt.retrieval_metrics(write_report=args.write_report)
+        elif cmd == "p1-golden-eval":
+            payload = evaluate_golden_retrieval(rt, args.project_root, write_report=args.write_report)
         elif cmd == "p1-production":
-            payload = rt.production_gate(write_report=args.write_report)
+            payload = production_gate_with_golden(rt, args.project_root, write_report=args.write_report)
         elif cmd == "p1-rag-answer":
             payload = rt.answer(" ".join(args.args), args.limit)
         elif cmd == "p1-rag-sources":
@@ -260,9 +264,6 @@ def main(argv: list[str] | None = None) -> int:
         return runtime_main(_strip_unhandled_global_options(raw, {"--project-root", "--profile"}))
     except SystemExit as exc:
         return int(exc.code or 0)
-    except Exception as exc:
-        out({"status": "error", "command": cmd, "error": str(exc)})
-        return 1
 
 
 if __name__ == "__main__":
