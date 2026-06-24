@@ -1,8 +1,8 @@
-# Repo Doctor v18.7
+# Repo Doctor v18.11
 
 ## Ziel
 
-Repo Doctor ist ein vorgelagertes Hygiene-Gate vor P0/P1-Featureentwicklung.
+Repo Doctor ist das vorgelagerte Hygiene- und Reproduzierbarkeits-Gate vor P0/P1-Featureentwicklung.
 
 Es prüft nicht die fachliche Produktreife, sondern ob das Repository selbst in einem belastbaren Zustand ist.
 
@@ -37,17 +37,48 @@ release/repo_doctor_latest.json
 |---|---:|---|
 | Projektwurzel existiert | blocking | Fehler blockiert Gate |
 | `launcher.py` existiert | blocking | Fehler blockiert Gate |
+| `pyproject.toml` existiert | blocking | Fehler blockiert Gate |
 | `pytest.ini` existiert | blocking | Fehler blockiert Gate |
 | `requirements.txt` existiert | blocking | Fehler blockiert Gate |
+| `requirements-dev.txt` existiert | blocking | Fehler blockiert Gate |
+| `requirements-runtime.txt` existiert | blocking | Fehler blockiert Gate |
+| `README.md` existiert | blocking | Fehler blockiert Gate |
 | `secondbrain/module_registry.py` existiert | blocking | Fehler blockiert Gate |
 | `secondbrain/launcher_runtime_v126.py` existiert | blocking | Fehler blockiert Gate |
 | `secondbrain/p0_runtime.py` existiert | blocking | Fehler blockiert Gate |
 | `secondbrain/p1_rag_runtime.py` existiert | blocking | Fehler blockiert Gate |
+| `secondbrain/release/dependency_inventory.py` existiert | blocking | Fehler blockiert Gate |
+| `docs/RELEASE_WORKFLOW_v18_9.md` existiert | blocking | Fehler blockiert Gate |
 | `pytest.ini` enthält `testpaths = tests` | blocking | Fehler blockiert Gate |
 | `pytest.ini` enthält `pythonpath = .` | blocking | Fehler blockiert Gate |
-| Runtime Dependencies sind explizit | release-risk | Warnung, kein Blocker |
+| `pyproject.toml` enthält Build-System | blocking | Fehler blockiert Gate |
+| `pyproject.toml` enthält Package-Metadaten | blocking | Fehler blockiert Gate |
+| `pyproject.toml` enthält `secondbrain` Entry Point | blocking | Fehler blockiert Gate |
+| `pyproject.toml` enthält Package-Find-Konfiguration | blocking | Fehler blockiert Gate |
+| `requirements-runtime.txt` enthält Runtime-Policy | blocking | Fehler blockiert Gate |
 | README enthält Health-Befehl | documentation | Warnung, kein Blocker |
+| README enthält editable install | documentation | Warnung, kein Blocker |
+| README verweist nicht auf gelöschte `CHANGELOG_*.md` | blocking | Fehler blockiert Gate |
+| keine Root-Dateien mit `PATCH_`, `CHANGELOG_`, `VALIDATION_` | blocking | Fehler blockiert Gate |
+| keine Runtime-/Cache-Artefakte im Arbeitsbaum | blocking | Fehler blockiert Gate |
 | optionale Launcher-Smokes | blocking | Fehler blockiert Gate bei Aktivierung |
+
+## Verbotene Artefakte
+
+Repo Doctor blockiert:
+
+```text
+PATCH_*.md
+CHANGELOG_*.md
+VALIDATION_*.md
+runtime/*
+logs/*
+__pycache__/*
+.pytest_cache/*
+*.pid
+*.log
+*.pyc
+```
 
 ## Exit Codes
 
@@ -78,7 +109,9 @@ Repo Doctor läuft davor.
 ## Empfohlene Gate-Reihenfolge
 
 ```text
-repo-doctor
+repo-doctor --execute-runtime-checks
+  ↓
+dependency-inventory
   ↓
 p0-gate
   ↓
