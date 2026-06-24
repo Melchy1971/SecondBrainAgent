@@ -34,7 +34,7 @@ DEFAULT_MODULES: tuple[ModuleDescriptor, ...] = (
         "SecondBrainLauncherV126",
         "core126_status",
         ("core-", "status", "health", "p1-", "repo-", "dependency-"),
-        ("core-status", "status", "health", "modules", "module-status", "module-health", "repo-doctor", "dependency-inventory", "p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit", "p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-production", "p1-gate", "command-index"),
+        ("core-status", "status", "health", "modules", "module-status", "module-health", "repo-doctor", "dependency-inventory", "p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit", "p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate", "command-index"),
         True,
     ),
     ModuleDescriptor(
@@ -218,19 +218,14 @@ class ModuleRegistry:
                     runtime = cls(project_root)
                 else:
                     runtime = cls(project_root, profile)
-                status_obj = getattr(runtime, module.status_method)()
-                checks.append({"key": module.key, "title": module.title, "critical": module.critical, "status": "ok", "summary": _summarize_status(status_obj)})
-            except Exception as exc:  # pragma: no cover - integration boundary
-                checks.append({"key": module.key, "title": module.title, "critical": module.critical, "status": "error", "error": str(exc)})
+                method = getattr(runtime, module.status_method)
+                result = method()
+                degraded = result.get("status") in {"error", "degraded", "blocked"} or result.get("ok") is False
+                if module.critical and degraded:
+                    ok = False
+                checks.append({"key": module.key, "status": result.get("status", "ok"), "critical": module.critical, "result": result})
+            except Exception as exc:  # pragma: no cover - defensive boundary
                 if module.critical:
                     ok = False
+                checks.append({"key": module.key, "status": "error", "critical": module.critical, "error": str(exc)})
         return {"ok": ok, "modules": checks}
-
-
-def _summarize_status(value: Any) -> Any:
-    if isinstance(value, dict):
-        keep = {k: v for k, v in value.items() if k in {"status", "version", "runtime_dir", "services", "widgets", "sessions", "devices", "events", "state"}}
-        return keep or {"keys": sorted(value.keys())[:12]}
-    if isinstance(value, list):
-        return {"count": len(value)}
-    return value
