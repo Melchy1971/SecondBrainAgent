@@ -1,11 +1,14 @@
 {
-  "version": "16.9",
-  "status": "CONDITIONAL_PASS",
-  "product_maturity_estimate": "82-86%",
+  "version": "18.11",
+  "status": "P0_REPRODUCIBILITY_IN_PROGRESS",
+  "product_maturity_estimate": "65-75% technical foundation, 45-55% end-user product",
   "modules": {
+    "packaging": "foundation_added",
+    "repo_doctor": "hardened",
+    "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "foundation",
-    "connectors": "foundation",
+    "database": "sqlite_foundation",
+    "connectors": "foundation_only",
     "document_understanding": "foundation",
     "multi_agent": "foundation",
     "knowledge_graph": "foundation",
@@ -14,39 +17,39 @@
     "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation"
   },
-  "next_release": "P1 Production Integration: Config/Secrets, PostgreSQL/pgvector, Repository Layer, Connector Runtime",
+  "current_sprint": {
+    "id": "sprint1",
+    "name": "P0 Build Reproducibility",
+    "branch": "sprint1-p0-reproducibility",
+    "status": "implemented_pending_local_validation",
+    "added": [
+      "pyproject.toml",
+      "editable install path",
+      "package entry point secondbrain",
+      "optional dependency extras",
+      "hardened repo-doctor",
+      "root GitHub Actions workflow",
+      "README source-of-truth correction",
+      "release workflow update"
+    ]
+  },
   "release_blockers": [
-    "unified runtime missing",
+    "full local gate run pending",
     "real PostgreSQL/pgvector missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
-    "cross-module GUI missing"
+    "cross-module GUI missing",
+    "real semantic embedding provider integration still soft-fallback"
   ],
-  "current_version": "v17.9",
-  "p0_status": "IN_PROGRESS",
-  "last_increment": {
-    "version": "v17.2",
-    "name": "P0 Runtime Doctor",
-    "tests": "234 passed",
-    "added": [
-      "p0-doctor",
-      "command-index",
-      "runtime config snapshot",
-      "event bus probe",
-      "unknown module guard"
-    ],
-    "remaining_p0": [
-      "runtime lifecycle orchestration",
-      "unified logging",
-      "database production default",
-      "secret encryption",
-      "approval gate"
-    ]
-  },
-  "last_p0_status": "PASS",
+  "next_release": "Sprint 2: P1 real RAG production path - parser-integrated ingest, hard provider health, golden retrieval dataset",
   "last_validation": {
-    "p0_production": "PASS",
-    "p0_audit": "PASS",
-    "pytest": "249 passed"
+    "status": "pending_user_local_run",
+    "required_commands": [
+      "pip install -e \".[dev]\"",
+      "python launcher.py repo-doctor --execute-runtime-checks",
+      "python launcher.py dependency-inventory",
+      "pytest -q tests/test_repo_doctor_v18_7.py",
+      "pytest -q tests/test_dependency_inventory_v18_8.py"
+    ]
   }
 }

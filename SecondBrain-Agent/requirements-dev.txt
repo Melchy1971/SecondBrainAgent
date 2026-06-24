@@ -1,4 +1,7 @@
 -r requirements.txt
 
-# Test runner
+# Development and test runner
 pytest>=8.0.0
+
+# Editable install is preferred for local development:
+#   pip install -e ".[dev]"

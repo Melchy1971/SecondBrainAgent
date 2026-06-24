@@ -10,12 +10,18 @@ from typing import Any, Iterable
 
 REQUIRED_PATHS: tuple[str, ...] = (
     "launcher.py",
+    "pyproject.toml",
     "pytest.ini",
     "requirements.txt",
+    "requirements-dev.txt",
+    "requirements-runtime.txt",
+    "README.md",
     "secondbrain/module_registry.py",
     "secondbrain/launcher_runtime_v126.py",
     "secondbrain/p0_runtime.py",
     "secondbrain/p1_rag_runtime.py",
+    "secondbrain/release/dependency_inventory.py",
+    "docs/RELEASE_WORKFLOW_v18_9.md",
 )
 
 EXPECTED_PYTEST_LINES: tuple[str, ...] = (
@@ -23,9 +29,41 @@ EXPECTED_PYTEST_LINES: tuple[str, ...] = (
     "pythonpath = .",
 )
 
+EXPECTED_PYPROJECT_LINES: tuple[str, ...] = (
+    "[build-system]",
+    "[project]",
+    "name = \"secondbrain-agent\"",
+    "requires-python = \">=3.11\"",
+    "[project.optional-dependencies]",
+    "[project.scripts]",
+    "secondbrain = \"launcher:main\"",
+    "[tool.setuptools.packages.find]",
+)
+
+FORBIDDEN_ROOT_PREFIXES: tuple[str, ...] = (
+    "PATCH_",
+    "CHANGELOG_",
+    "VALIDATION_",
+)
+
+FORBIDDEN_CACHE_PARTS: tuple[str, ...] = (
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+)
+
+FORBIDDEN_FILE_SUFFIXES: tuple[str, ...] = (
+    ".pyc",
+    ".pyo",
+    ".pid",
+    ".log",
+)
+
 LIGHTWEIGHT_COMMANDS: tuple[tuple[str, ...], ...] = (
     ("health",),
     ("command-index",),
+    ("dependency-inventory",),
 )
 
 
@@ -93,40 +131,78 @@ def _check_pytest_ini(root: Path) -> list[DoctorCheck]:
     return checks
 
 
-def _check_requirements(root: Path) -> list[DoctorCheck]:
-    path = root / "requirements.txt"
+def _check_pyproject(root: Path) -> list[DoctorCheck]:
+    path = root / "pyproject.toml"
     if not path.exists():
-        return [DoctorCheck("requirements.txt", "error", "blocking", "requirements.txt missing")]
-    lines = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and not line.strip().startswith("#")]
-    checks = [DoctorCheck("requirements.txt:readable", "ok", "blocking", "requirements file readable", {"entries": len(lines)})]
-    if len(lines) <= 1:
-        checks.append(
-            DoctorCheck(
-                "requirements.txt:runtime-dependencies",
-                "warning",
-                "release-risk",
-                "only minimal dependencies are declared; runtime reproducibility is weak",
-                {"entries": lines},
-            )
-        )
+        return [DoctorCheck("pyproject.toml", "error", "blocking", "pyproject.toml missing")]
+    content = path.read_text(encoding="utf-8")
+    checks: list[DoctorCheck] = []
+    for expected in EXPECTED_PYPROJECT_LINES:
+        if expected in content:
+            checks.append(DoctorCheck(f"pyproject.toml:{expected}", "ok", "blocking", "expected pyproject setting present"))
+        else:
+            checks.append(DoctorCheck(f"pyproject.toml:{expected}", "error", "blocking", "expected pyproject setting missing"))
+    return checks
+
+
+def _check_requirements(root: Path) -> list[DoctorCheck]:
+    checks: list[DoctorCheck] = []
+    for name in ("requirements.txt", "requirements-dev.txt", "requirements-runtime.txt"):
+        path = root / name
+        if not path.exists():
+            checks.append(DoctorCheck(name, "error", "blocking", f"{name} missing"))
+            continue
+        content = path.read_text(encoding="utf-8")
+        entries = [line.strip() for line in content.splitlines() if line.strip() and not line.strip().startswith("#")]
+        checks.append(DoctorCheck(f"{name}:readable", "ok", "blocking", "requirements file readable", {"entries": len(entries)}))
+    runtime_policy = (root / "requirements-runtime.txt").read_text(encoding="utf-8") if (root / "requirements-runtime.txt").exists() else ""
+    if "optional feature dependencies are declared in pyproject.toml extras" in runtime_policy.lower():
+        checks.append(DoctorCheck("requirements-runtime.txt:policy", "ok", "blocking", "runtime dependency policy is explicit"))
     else:
-        checks.append(DoctorCheck("requirements.txt:runtime-dependencies", "ok", "release-risk", "runtime dependency list is populated"))
+        checks.append(DoctorCheck("requirements-runtime.txt:policy", "error", "blocking", "runtime dependency policy missing"))
     return checks
 
 
 def _check_readme(root: Path) -> list[DoctorCheck]:
     path = root / "README.md"
     if not path.exists():
-        return [DoctorCheck("README.md", "warning", "documentation", "README.md missing")]
+        return [DoctorCheck("README.md", "error", "blocking", "README.md missing")]
     content = path.read_text(encoding="utf-8")
     checks: list[DoctorCheck] = [DoctorCheck("README.md:present", "ok", "documentation", "README is present")]
-    if "v12.6" not in content and "v18" not in content:
+    if "v18" in content:
+        checks.append(DoctorCheck("README.md:current-runtime", "ok", "documentation", "README exposes current runtime version"))
+    else:
         checks.append(DoctorCheck("README.md:current-runtime", "warning", "documentation", "README does not expose current runtime version"))
     if "python launcher.py health" in content:
         checks.append(DoctorCheck("README.md:health-command", "ok", "documentation", "health command documented"))
     else:
         checks.append(DoctorCheck("README.md:health-command", "warning", "documentation", "health command not documented"))
+    if "CHANGELOG_*.md" in content:
+        checks.append(DoctorCheck("README.md:deleted-changelog-reference", "error", "blocking", "README references deleted CHANGELOG_*.md source of truth"))
+    else:
+        checks.append(DoctorCheck("README.md:deleted-changelog-reference", "ok", "blocking", "README does not reference deleted CHANGELOG_*.md files"))
+    if "pip install -e \".[dev]\"" in content:
+        checks.append(DoctorCheck("README.md:editable-install", "ok", "documentation", "editable install documented"))
+    else:
+        checks.append(DoctorCheck("README.md:editable-install", "warning", "documentation", "editable install not documented"))
     return checks
+
+
+def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
+    findings: list[str] = []
+    for path in root.rglob("*"):
+        if ".git" in path.parts:
+            continue
+        rel = path.relative_to(root).as_posix()
+        if path.is_file() and path.parent == root and path.name.startswith(FORBIDDEN_ROOT_PREFIXES):
+            findings.append(rel)
+        if any(part in FORBIDDEN_CACHE_PARTS for part in path.parts):
+            findings.append(rel)
+        if path.is_file() and path.suffix in FORBIDDEN_FILE_SUFFIXES:
+            findings.append(rel)
+    if findings:
+        return [DoctorCheck("repo:forbidden-artifacts", "error", "blocking", "forbidden cache/log/pid/obsolete artifacts found", {"files": sorted(set(findings))[:200], "count": len(set(findings))})]
+    return [DoctorCheck("repo:forbidden-artifacts", "ok", "blocking", "no forbidden cache/log/pid/obsolete artifacts found")]
 
 
 def _run_command(root: Path, args: tuple[str, ...], timeout_seconds: int) -> DoctorCheck:
@@ -174,8 +250,10 @@ def run_repo_doctor(
         checks.append(DoctorCheck("project-root", "ok", "blocking", "project root exists", {"path": str(root)}))
         checks.extend(_check_required_paths(root))
         checks.extend(_check_pytest_ini(root))
+        checks.extend(_check_pyproject(root))
         checks.extend(_check_requirements(root))
         checks.extend(_check_readme(root))
+        checks.extend(_check_forbidden_artifacts(root))
         if execute_runtime_checks:
             for args in LIGHTWEIGHT_COMMANDS:
                 checks.append(_run_command(root, args, timeout_seconds))
