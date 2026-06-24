@@ -1,16 +1,17 @@
 {
-  "version": "19.4",
-  "status": "P3_P1_STORE_BRIDGE_IMPLEMENTED",
-  "product_maturity_estimate": "77-87% technical foundation, 59-69% end-user product",
+  "version": "19.5",
+  "status": "P3_P1_STORE_BACKED_INGEST_IMPLEMENTED",
+  "product_maturity_estimate": "78-88% technical foundation, 60-70% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_pgvector_store_bridge",
+    "database": "sqlite_foundation_with_store_backed_p1_ingest",
     "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
     "rag_store_interface": "sqlite_write_pgvector_sql_preview_implemented",
     "p1_store_bridge": "export_and_mirror_bridge_implemented",
+    "p1_store_backed_ingest": "implemented_for_sqlite_store",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -27,18 +28,17 @@
   "current_sprint": {
     "id": "sprint3",
     "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-p1-store-bridge",
-    "status": "p1_store_bridge_implemented_pending_local_validation",
+    "branch": "sprint3-p1-store-backed-ingest",
+    "status": "p1_store_backed_ingest_implemented_pending_local_validation",
     "added": [
-      "export_p1_sqlite_records",
-      "mirror_p1_sqlite_to_store",
-      "mirror_project_p1_to_selected_store",
-      "p3-p1-store-bridge command",
-      "p3_p1_store_bridge_latest.json report",
-      "P1 SQLite rows converted to RagDocumentRecord",
-      "P1 SQLite rows converted to RagChunkRecord",
-      "P1 SQLite embeddings converted to RagVectorRecord",
-      "safe noop when selected store is the existing P1 SQLite DB"
+      "P1RagRuntime.rag_store initialized as SQLiteRagStore",
+      "P1RagRuntime.ingest_text writes RagDocumentRecord through store",
+      "P1RagRuntime.ingest_text writes RagChunkRecord through store",
+      "P1RagRuntime.ingest_text writes RagVectorRecord through store",
+      "P1RagRuntime.reindex_vectors writes through store",
+      "ingest result includes store backend and write_path",
+      "P1 status includes store status",
+      "store-backed ingest tests"
     ]
   },
   "release_blockers": [
@@ -46,18 +46,19 @@
     "real live PostgreSQL validation pending on user machine",
     "pgvector live write execution missing",
     "SQLite to PostgreSQL migration missing",
-    "P1RagRuntime not yet fully internally store-backed",
+    "P1RagRuntime search/sources/validation not yet fully store-backed",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: P1RagRuntime ingest path store-backed or pgvector live upsert execution",
+  "next_release": "Sprint 3 continuation: P1RagRuntime vector_search and sources store-backed",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v192_p3_p1_store_bridge.py",
-      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen\" --source unit --title Bridge",
-      "python launcher.py p3-p1-store-bridge --write-report"
+      "pytest -q tests/test_v193_p1_store_backed_ingest.py",
+      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen\" --source unit --title StoreBacked",
+      "python launcher.py p1-rag-search \"Jarvis\"",
+      "python launcher.py p1-rag-reindex --write-report"
     ]
   }
 }
