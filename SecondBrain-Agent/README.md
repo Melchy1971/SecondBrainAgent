@@ -6,29 +6,54 @@ Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, Desktop/HUD, Mobile Com
 
 ## Projektwurzel
 
-Alle Befehle in dieser README laufen aus dem Projektordner:
+Alle Befehle laufen aus dem Projektordner:
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
-Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini` und `requirements.txt` nicht zuverlässig.
+Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und `requirements.txt` nicht zuverlässig.
+
+## Installation
+
+Empfohlen für Entwicklung und lokale Ausführung:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+```
+
+Minimaler Legacy-Pfad:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
+Optionale Feature-Sets:
+
+```powershell
+pip install -e ".[pdf]"
+pip install -e ".[connectors]"
+pip install -e ".[openai]"
+pip install -e ".[all]"
+```
 
 ## Schnellstart
 
 ```powershell
-python -m pip install -r requirements-dev.txt
 python launcher.py repo-doctor
 python launcher.py dependency-inventory
 python launcher.py health
 python launcher.py command-index
 ```
 
-Minimal ohne Dev-Datei:
+Nach editable install zusätzlich:
 
 ```powershell
-python -m pip install -r requirements.txt
-python launcher.py health
+secondbrain health
+secondbrain command-index
 ```
 
 ## Primäre lokale Oberfläche
@@ -74,7 +99,7 @@ http://localhost:8765
 Vor Featureentwicklung oder Merge:
 
 ```powershell
-python launcher.py repo-doctor
+python launcher.py repo-doctor --execute-runtime-checks
 python launcher.py dependency-inventory
 python launcher.py p0-gate
 python launcher.py p1-gate
@@ -101,7 +126,7 @@ release report
 
 ### Repo Doctor
 
-Prüft Repository-Struktur, Pflichtdateien, pytest-Konfiguration, README-Basis und optionale Launcher-Smokes.
+Prüft Repository-Struktur, Packaging, pytest-Konfiguration, Requirements-Policy, README-Basis, verbotene Runtime-/Cache-Artefakte und optionale Launcher-Smokes.
 
 ```powershell
 python launcher.py repo-doctor
@@ -172,6 +197,7 @@ python launcher.py p0-audit
 ```powershell
 python launcher.py p1-rag-status
 python launcher.py p1-rag-ingest-text "Beispielinhalt" --source manual --title "Test"
+python launcher.py p1-rag-ingest-file .\README.md --source manual --title "README"
 python launcher.py p1-rag-search "Suchbegriff"
 python launcher.py p1-rag-vector-search "Suchbegriff"
 python launcher.py p1-rag-hybrid-search "Suchbegriff"
@@ -219,7 +245,7 @@ python launcher.py voice-memory
 
 ```powershell
 python launcher.py graph-status
-python launcher.py graph-ingest-text "Jarvis nutzt Gmail am 2026-06-19"
+python launcher.py graph-ingest-text "Jarvis nutzt lokale Quellen"
 python launcher.py graph-search Jarvis
 python launcher.py graph-neighbors Jarvis
 python launcher.py graph-timeline
@@ -257,13 +283,14 @@ Gesamttestlauf:
 pytest -q
 ```
 
-## Requirements
+## Requirements und Packaging
 
 | Datei | Zweck |
 |---|---|
-| `requirements.txt` | historischer Minimalpfad |
-| `requirements-dev.txt` | Test-/Entwicklungsinstallation |
-| `requirements-runtime.txt` | kuratierte Runtime-Abhängigkeiten |
+| `pyproject.toml` | Package-Metadaten, Entry Point, Extras, pytest-Konfiguration |
+| `requirements.txt` | Legacy-Minimalpfad; Core bleibt aktuell Standardbibliothek-only |
+| `requirements-dev.txt` | Legacy-Dev/Test-Installationspfad |
+| `requirements-runtime.txt` | kuratierte Runtime-Policy; optionale Dependencies liegen in Extras |
 
 `dependency-inventory` erzeugt Vorschläge, aber befüllt Requirements nicht automatisch. Provider-Abhängigkeiten dürfen nicht ungeprüft Pflichtabhängigkeiten werden.
 
@@ -275,32 +302,34 @@ pytest -q
 | Modulzuordnung | `secondbrain/module_registry.py` |
 | Repository-Hygiene | `python launcher.py repo-doctor` |
 | Dependency-Inventar | `python launcher.py dependency-inventory` |
+| Packaging | `pyproject.toml` |
 | P0 Releasefähigkeit | `python launcher.py p0-gate` |
 | P1 RAG-Fähigkeit | `python launcher.py p1-gate` |
-| Paketverlauf | `CHANGELOG_*.md` |
-| technische Doku | `docs/` |
+| Release-/Entwicklungsablauf | `docs/RELEASE_WORKFLOW_v18_9.md` |
+| technische Detaildoku | `docs/` |
 
 ## Sicherheitsmodell
 
 - keine destruktiven Aktionen ohne explizite Aktivierung
 - keine externen Aktionen ohne konfigurierte Provider/Connectoren
 - lokale Artefakte in `runtime/`, `logs/`, `release/` nicht als Produktcode behandeln
-- Markdown und maschinenlesbare Reports bleiben auditierbare Artefakte
+- maschinenlesbare Reports bleiben lokale Audit-Artefakte
 
 ## Aktuelle technische Risiken
 
 | Risiko | Wirkung | Gegenmaßnahme |
 |---|---|---|
-| `requirements.txt` historisch minimal | neue Installationen können brechen | `dependency-inventory` ausführen und `requirements-runtime.txt` kuratieren |
-| Runtime-/Cache-Dateien im Repository | Merge-Noise, falsche Deltas | `.gitignore` pflegen, Artefakte entfernen |
-| alte v10/v11/v12 Doku-Fragmente | Bedienfehler | README als aktuelle Betriebsquelle nutzen |
+| Core ist standard-library-only, optionale Features brauchen Extras | optionale Parser/Provider fehlen ohne Extra-Install | `pip install -e ".[all]"` oder gezielte Extras |
+| Runtime-/Cache-Dateien im Repository | Merge-Noise, falsche Deltas | RepoDoctor blockiert Root-Patch/Changelog/Validation, Logs, PID, pycache |
+| PostgreSQL/pgvector fehlt | keine produktive skalierbare Persistenz | Sprint 3 |
+| echte Connectoren fehlen | kein automatischer SecondBrain-Datenfluss | Sprint 4 |
 | optionale Provider-Abhängigkeiten | unnötige Pflichtinstallationen | Provider separat klassifizieren |
 
 ## Empfohlener Entwicklungsablauf
 
 ```powershell
 git status
-python launcher.py repo-doctor
+python launcher.py repo-doctor --execute-runtime-checks
 python launcher.py dependency-inventory
 python launcher.py p0-gate
 python launcher.py p1-gate

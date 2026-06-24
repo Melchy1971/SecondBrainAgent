@@ -1,8 +1,10 @@
-# Release Workflow v18.9
+# Release Workflow v18.11
 
 ## Ziel
 
 Diese Datei definiert den verbindlichen lokalen Release- und Entwicklungsablauf für SecondBrain-Agent v18.x.
+
+Sprint 1 verschärft den Ablauf auf reproduzierbare Installation und Packaging.
 
 ## Arbeitsverzeichnis
 
@@ -10,10 +12,19 @@ Diese Datei definiert den verbindlichen lokalen Release- und Entwicklungsablauf 
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
+## Installation vor Gate-Lauf
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
+```
+
 ## Gate-Kette
 
 ```powershell
-python launcher.py repo-doctor
+python launcher.py repo-doctor --execute-runtime-checks
 python launcher.py dependency-inventory
 python launcher.py p0-gate
 python launcher.py p1-gate
@@ -24,7 +35,7 @@ pytest -q
 
 | Gate | Zweck | Blockiert bei |
 |---|---|---|
-| `repo-doctor` | Repository-Struktur und Hygiene | fehlenden Pflichtdateien, kaputter pytest-Konfiguration |
+| `repo-doctor` | Repository-Struktur, Packaging, Requirements-Policy, Artefakthygiene | fehlenden Pflichtdateien, fehlendem `pyproject.toml`, kaputter pytest-Konfiguration, veralteten Root-Artefakten |
 | `dependency-inventory` | statisches Import-/Dependency-Inventar | unbekannten Imports, fehlender Projektwurzel |
 | `p0-gate` | Runtime-Basisfähigkeit | blockierenden P0-Problemen |
 | `p1-gate` | RAG-/Retrieval-Fähigkeit | blockierenden P1-Problemen |
@@ -51,12 +62,14 @@ Diese `*_latest.json` Dateien sind lokale Laufzeitartefakte und werden über `.g
 | Thema | Quelle |
 |---|---|
 | aktuelle Bedienung | `README.md` |
+| Packaging / Entry Point / Extras | `pyproject.toml` |
 | Befehlskatalog | `python launcher.py command-index` |
 | Modul-/Command-Zuordnung | `secondbrain/module_registry.py` |
 | Repo-Hygiene | `secondbrain/release/repo_doctor.py` |
 | Dependency-Inventar | `secondbrain/release/dependency_inventory.py` |
-| Paketverlauf | `CHANGELOG_*.md` |
+| Release-/Entwicklungsablauf | `docs/RELEASE_WORKFLOW_v18_9.md` |
 | Detaildoku | `docs/` |
+| Paketverlauf | Git-History und `docs/releases/` |
 
 ## Merge-Regel
 
@@ -64,9 +77,9 @@ Vor Merge in `main`:
 
 1. Branch gegen aktuellen `main` prüfen.
 2. Laufzeit-/Cache-Dateien nicht mergen.
-3. Gate-Kette ausführen.
-4. Changelog aktualisieren.
-5. README nur ändern, wenn sich Bedienung oder Gate-Reihenfolge ändert.
+3. Editable install prüfen.
+4. Gate-Kette ausführen.
+5. README nur ändern, wenn sich Bedienung, Packaging oder Gate-Reihenfolge ändert.
 
 ## Nicht ins Repository committen
 
@@ -78,17 +91,27 @@ __pycache__/
 release/*_latest.json
 *.pid
 *.log
+PATCH_*.md
+CHANGELOG_*.md
+VALIDATION_*.md
 ```
 
-## Bekannte aktuelle Repo-Hygiene-Lücke
+## CI Smoke
 
-Im `main`-Zweig befinden sich Laufzeit-/Cache-Artefakte. Diese erzeugen Merge-Noise und sollten separat entfernt werden:
+GitHub Actions Workflow:
 
 ```text
-SecondBrain-Agent/logs/jarvis_gui.log
-SecondBrain-Agent/runtime/jarvis_hud.pid
-SecondBrain-Agent/secondbrain/__pycache__/*.pyc
-SecondBrain-Agent/tests/__pycache__/*.pyc
+.github/workflows/p0-reproducibility.yml
+```
+
+Prüft Python 3.11 und 3.12:
+
+```powershell
+pip install -e ".[dev]"
+python launcher.py repo-doctor --execute-runtime-checks
+python launcher.py dependency-inventory
+pytest -q tests/test_repo_doctor_v18_7.py
+pytest -q tests/test_dependency_inventory_v18_8.py
 ```
 
 ## Entwicklungsregel für neue Pakete
@@ -97,10 +120,10 @@ Jedes Paket muss liefern:
 
 - Codeänderung
 - Testabdeckung oder begründete Testgrenze
-- Doku/Changelog
+- Dokuänderung, wenn Bedienung/Gates/Architektur betroffen sind
 - lokale Validierungsbefehle
 - bekannte Risiken
 
 ## Entscheidung
 
-v18.9 macht die README zur aktuellen Betriebsquelle. Historische Versionsblöcke aus v8 bis v12 werden nicht mehr als Startpunkt geführt, sondern über Changelogs und Detaildokumente nachvollziehbar gehalten.
+Ab Sprint 1 ist `pyproject.toml` die Packaging-Quelle. Historische Root-Dateien `PATCH_*`, `CHANGELOG_*` und `VALIDATION_*` sind keine Source of Truth mehr und werden durch RepoDoctor blockiert.

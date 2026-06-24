@@ -1,1 +1,5 @@
-pytest>=8.0.0
+# Core runtime currently uses the Python standard library only.
+# Install optional feature sets through pyproject extras, for example:
+#   pip install -e ".[dev]"
+#   pip install -e ".[pdf]"
+#   pip install -e ".[all]"
