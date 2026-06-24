@@ -1,0 +1,8 @@
+# Voice Control v20 - optionale Audio-Abhaengigkeiten.
+# Ohne diese laeuft nur der --text-Modus; Logik/Tests sind unabhaengig davon.
+faster-whisper>=1.0     # bevorzugte STT (CPU/GPU, int8)
+# openai-whisper>=20231117  # Alternative STT (zieht torch)
+sounddevice>=0.4        # Mikrofonaufnahme
+numpy>=1.24             # Audio-Arrays
+pyttsx3>=2.90           # TTS (nutzt unter Windows SAPI5)
+# webrtcvad-wheels>=2.0   # optional: praezisere VAD

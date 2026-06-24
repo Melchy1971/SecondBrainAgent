@@ -24,3 +24,10 @@ def write_voice_assistant_status(vault: Path) -> Path:
     ]
     target.write_text("\n".join(lines), encoding="utf-8")
     return target
+
+# === DEPRECATED (Voice Control v20) =============================
+# Dieses Modul ist abgeloest durch das konsolidierte Paket secondbrain.voice.
+# Nutze: from secondbrain.voice import VoiceController, VoiceConfig
+# Belassen, weil noch von Launchern/Skripten referenziert. Nicht erweitern.
+# Siehe docs/VOICE_CONTROL_v20.md
+# ===============================================================
