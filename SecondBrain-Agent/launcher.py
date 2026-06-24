@@ -9,6 +9,7 @@ from typing import Any
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p0_runtime import load_runtime_snapshot, p0_artifact_audit, p0_bootstrap, p0_contract, p0_doctor, p0_gate, p0_production_gate, p0_readiness, p0_report, p0_smoke
 from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
+from secondbrain.p1_production_gate import production_gate_with_golden
 from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
@@ -209,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd == "p1-golden-eval":
             payload = evaluate_golden_retrieval(rt, args.project_root, write_report=args.write_report)
         elif cmd == "p1-production":
-            payload = rt.production_gate(write_report=args.write_report)
+            payload = production_gate_with_golden(rt, args.project_root, write_report=args.write_report)
         elif cmd == "p1-rag-answer":
             payload = rt.answer(" ".join(args.args), args.limit)
         elif cmd == "p1-rag-sources":
