@@ -1,11 +1,36 @@
 from __future__ import annotations
 
 import json
+import sys
+import types
 
 from launcher import main
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p1_embeddings import LocalEmbeddingProvider, OpenAIEmbeddingProvider, cosine_similarity
 from secondbrain.p1_rag_runtime import P1RagRuntime
+
+
+class _FakeEmbedding:
+    def __init__(self, values):
+        self.embedding = values
+
+
+class _FakeDataResponse:
+    def __init__(self, values):
+        self.data = [_FakeEmbedding(values)]
+
+
+class _FakeEmbeddingsApi:
+    def create(self, *, model, input):
+        assert model
+        assert input
+        return _FakeDataResponse([1.0, 2.0, 3.0, 4.0])
+
+
+class _FakeOpenAIClient:
+    def __init__(self, *, api_key):
+        assert api_key == "test-key"
+        self.embeddings = _FakeEmbeddingsApi()
 
 
 def test_local_embedding_provider_is_deterministic_but_not_production_ready():
@@ -24,14 +49,70 @@ def test_local_embedding_provider_is_deterministic_but_not_production_ready():
     assert status["semantic"] is False
 
 
-def test_openai_embedding_provider_is_not_green_until_real_client_is_implemented():
+def test_openai_embedding_provider_requires_api_key(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     provider = OpenAIEmbeddingProvider()
+
     status = provider.status()
 
     assert status["ok"] is False
     assert status["production_ready"] is False
     assert status["fallback_used"] is True
-    assert status["error"] == "openai_embedding_client_not_implemented"
+    assert status["error"] == "openai_api_key_missing"
+
+
+def test_openai_embedding_provider_reports_missing_sdk(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setitem(sys.modules, "openai", None)
+    provider = OpenAIEmbeddingProvider()
+
+    status = provider.status()
+
+    assert status["ok"] is False
+    assert status["production_ready"] is False
+    assert status["fallback_used"] is True
+    assert status["error"] == "openai_sdk_missing"
+
+
+def test_openai_embedding_provider_uses_sdk_when_available(monkeypatch):
+    fake_module = types.SimpleNamespace(OpenAI=_FakeOpenAIClient)
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setitem(sys.modules, "openai", fake_module)
+    provider = OpenAIEmbeddingProvider(model="fake-embedding-model")
+
+    vector = provider.embed("Jarvis semantic retrieval")
+    status = provider.status()
+
+    assert len(vector) == 4
+    assert status["ok"] is True
+    assert status["provider"] == "openai"
+    assert status["model"] == "fake-embedding-model"
+    assert status["production_ready"] is True
+    assert status["fallback_used"] is False
+    assert status["dimensions"] == 4
+
+
+def test_openai_embedding_provider_falls_back_on_sdk_failure(monkeypatch):
+    class BrokenEmbeddingsApi:
+        def create(self, *, model, input):
+            raise RuntimeError("boom")
+
+    class BrokenClient:
+        def __init__(self, *, api_key):
+            self.embeddings = BrokenEmbeddingsApi()
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=BrokenClient))
+    provider = OpenAIEmbeddingProvider(dimensions=16)
+
+    vector = provider.embed("fallback path")
+    status = provider.status()
+
+    assert len(vector) == 16
+    assert status["ok"] is False
+    assert status["production_ready"] is False
+    assert status["fallback_used"] is True
+    assert "boom" in status["error"]
 
 
 def test_p1_ingest_creates_vectors_and_hybrid_search(tmp_path):
