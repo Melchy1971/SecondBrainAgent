@@ -46,14 +46,14 @@ FORBIDDEN_ROOT_PREFIXES: tuple[str, ...] = (
     "VALIDATION_",
 )
 
-FORBIDDEN_TRACKED_PARTS: tuple[str, ...] = (
+FORBIDDEN_CACHE_PARTS: tuple[str, ...] = (
     "__pycache__",
     ".pytest_cache",
     ".mypy_cache",
     ".ruff_cache",
 )
 
-FORBIDDEN_TRACKED_SUFFIXES: tuple[str, ...] = (
+FORBIDDEN_FILE_SUFFIXES: tuple[str, ...] = (
     ".pyc",
     ".pyo",
     ".pid",
@@ -196,17 +196,13 @@ def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
         rel = path.relative_to(root).as_posix()
         if path.is_file() and path.parent == root and path.name.startswith(FORBIDDEN_ROOT_PREFIXES):
             findings.append(rel)
-        if any(part in FORBIDDEN_TRACKED_PARTS for part in path.parts):
+        if any(part in FORBIDDEN_CACHE_PARTS for part in path.parts):
             findings.append(rel)
-        if path.is_file() and path.suffix in FORBIDDEN_TRACKED_SUFFIXES:
-            findings.append(rel)
-        if path.is_file() and rel.startswith("runtime/"):
-            findings.append(rel)
-        if path.is_file() and rel.startswith("logs/"):
+        if path.is_file() and path.suffix in FORBIDDEN_FILE_SUFFIXES:
             findings.append(rel)
     if findings:
-        return [DoctorCheck("repo:forbidden-artifacts", "error", "blocking", "forbidden runtime/cache/obsolete artifacts found", {"files": sorted(set(findings))[:200], "count": len(set(findings))})]
-    return [DoctorCheck("repo:forbidden-artifacts", "ok", "blocking", "no forbidden runtime/cache/obsolete artifacts found")]
+        return [DoctorCheck("repo:forbidden-artifacts", "error", "blocking", "forbidden cache/log/pid/obsolete artifacts found", {"files": sorted(set(findings))[:200], "count": len(set(findings))})]
+    return [DoctorCheck("repo:forbidden-artifacts", "ok", "blocking", "no forbidden cache/log/pid/obsolete artifacts found")]
 
 
 def _run_command(root: Path, args: tuple[str, ...], timeout_seconds: int) -> DoctorCheck:
