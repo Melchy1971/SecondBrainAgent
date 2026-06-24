@@ -60,7 +60,7 @@ release/repo_doctor_latest.json
 | README enthält editable install | documentation | Warnung, kein Blocker |
 | README verweist nicht auf gelöschte `CHANGELOG_*.md` | blocking | Fehler blockiert Gate |
 | keine Root-Dateien mit `PATCH_`, `CHANGELOG_`, `VALIDATION_` | blocking | Fehler blockiert Gate |
-| keine Runtime-/Cache-Artefakte im Arbeitsbaum | blocking | Fehler blockiert Gate |
+| keine Cache-/Log-/PID-Artefakte im Arbeitsbaum | blocking | Fehler blockiert Gate |
 | optionale Launcher-Smokes | blocking | Fehler blockiert Gate bei Aktivierung |
 
 ## Verbotene Artefakte
@@ -71,14 +71,14 @@ Repo Doctor blockiert:
 PATCH_*.md
 CHANGELOG_*.md
 VALIDATION_*.md
-runtime/*
-logs/*
 __pycache__/*
 .pytest_cache/*
 *.pid
 *.log
 *.pyc
 ```
+
+Nicht pauschal blockiert werden lokal erzeugte `runtime/`-Datenbanken oder Reports, weil normale RAG-/P1-Läufe diese lokal erzeugen können. Diese Dateien bleiben über `.gitignore` vom Repository ausgeschlossen.
 
 ## Exit Codes
 
