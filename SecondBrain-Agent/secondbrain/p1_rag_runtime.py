@@ -212,17 +212,7 @@ class P1RagRuntime:
                     (chunk_id, self.embedding_provider.name, len(vector), json.dumps(vector), now),
                 )
             conn.commit()
-        return {
-            "schema": SCHEMA_VERSION,
-            "ok": True,
-            "status": "pass",
-            "document_id": document_id,
-            "source": source_check["source"],
-            "title": title_value,
-            "chunks": len(chunks),
-            "content_hash": content_hash,
-            "metadata": metadata or {},
-        }
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "document_id": document_id, "source": source_check["source"], "title": title_value, "chunks": len(chunks), "content_hash": content_hash, "metadata": metadata or {}}
 
     def ingest_file(self, file_path: str | Path, source: str | None = None, title: str | None = None) -> dict[str, Any]:
         path = Path(file_path)
@@ -230,18 +220,11 @@ class P1RagRuntime:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "file_not_found", "path": str(path)}
         if not path.is_file():
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "not_a_file", "path": str(path)}
-
         parsed = self.parser_registry.parse(path)
         payload = parsed.to_ingestion_payload()
-        metadata = {
-            "path": str(path),
-            "ingest_mode": "parser_registry",
-            "mime_type": payload["mime_type"],
-            **payload["metadata"],
-        }
+        metadata = {"path": str(path), "ingest_mode": "parser_registry", "mime_type": payload["mime_type"], **payload["metadata"]}
         if payload["errors"]:
             metadata["parse_errors"] = payload["errors"]
-
         if parsed.status == ParseStatus.OCR_REQUIRED:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "ocr_required", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
         if parsed.status == ParseStatus.UNSUPPORTED:
@@ -250,16 +233,13 @@ class P1RagRuntime:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "parse_failed", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
         if parsed.status == ParseStatus.EMPTY or not payload["text"].strip():
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "empty_text", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
-
         result = self.ingest_text(payload["text"], source or payload["source_path"] or str(path), title or payload["title"], metadata)
         result["parse"] = {"status": parsed.status.value, "mime_type": parsed.mime_type, "pages": parsed.page_count, "chars": parsed.char_count, "errors": payload["errors"]}
         return result
 
     def _all_chunks(self) -> list[sqlite3.Row]:
         with self._connect() as conn:
-            return conn.execute(
-                "select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id"
-            ).fetchall()
+            return conn.execute("select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id").fetchall()
 
     def embedding_status(self) -> dict[str, Any]:
         with self._connect() as conn:
@@ -496,6 +476,7 @@ class P1RagRuntime:
         required_columns = {"id", "document_id", "ordinal", "text", "char_start", "char_end", "token_json", "token_count", "created_at"}
         validation = self.validate_index(False)
         quality = self.quality_report("Jarvis RAG Quellen", 5, False)
+        embedding = self.embedding_status()
         checks = [
             {"name": "rag_database_exists", "ok": self.db_path.exists(), "severity": "blocker", "detail": {"path": str(self.db_path)}},
             {"name": "rag_schema_ready", "ok": status["ok"] and required_columns.issubset(set(status["chunk_schema_columns"])), "severity": "blocker", "detail": {"columns": status["chunk_schema_columns"]}},
@@ -504,7 +485,7 @@ class P1RagRuntime:
             {"name": "rag_explainability_available", "ok": callable(getattr(self, "explain", None)), "severity": "blocker", "detail": {"ranking_model": "deterministic_tfidf_logtf_length_norm_v1"}},
             {"name": "rag_index_validation", "ok": validation["ok"], "severity": "blocker", "detail": {"blockers": validation["blockers"], "warnings": validation["warnings"]}},
             {"name": "rag_quality_policy", "ok": quality["ok"], "severity": "blocker", "detail": {"blockers": quality["blockers"], "warnings": quality["warnings"]}},
-            {"name": "embedding_provider_ready", "ok": self.embedding_status()["ok"], "severity": "blocker", "detail": self.embedding_status()["provider"]},
+            {"name": "embedding_provider_ready", "ok": embedding["provider"].get("ok", False), "severity": "blocker", "detail": embedding["provider"]},
             {"name": "retrieval_benchmark_available", "ok": self.retrieval_benchmark()["ok"], "severity": "warning", "detail": {"schema": "secondbrain.p1_retrieval.benchmark.v1"}},
         ]
         blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
@@ -519,9 +500,11 @@ class P1RagRuntime:
     def production_gate(self, write_report: bool = False) -> dict[str, Any]:
         gate = self.gate(False)
         metrics = self.retrieval_metrics(False)
+        embedding = self.embedding_status()["provider"]
         decision = production_decision(metrics)
         checks = [
             {"name": "p1_gate_passes", "ok": bool(gate.get("ok")), "severity": "blocker", "detail": {"schema": gate.get("schema"), "blockers": gate.get("blockers"), "warnings": gate.get("warnings")}},
+            {"name": "embedding_provider_production_ready", "ok": bool(embedding.get("production_ready")) and not bool(embedding.get("fallback_used")), "severity": "blocker", "detail": embedding},
             {"name": "retrieval_thresholds_pass", "ok": decision["ok"], "severity": "blocker", "detail": decision},
             {"name": "answer_policy_enforced", "ok": self.answer("zzzxxy_no_local_evidence_probe", 2).get("status") == "no_evidence", "severity": "blocker", "detail": {"policy": "no_evidence_must_be_explicit"}},
             {"name": "source_lineage_available", "ok": self.sources().get("ok") and self.status().get("documents", 0) >= 0, "severity": "blocker", "detail": {"documents": self.status().get("documents", 0)}},
