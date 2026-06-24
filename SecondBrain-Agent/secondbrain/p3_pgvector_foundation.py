@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import importlib
+import json
 import os
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-PGVECTOR_SCHEMA = "secondbrain.p3_pgvector_foundation.v1"
+PGVECTOR_SCHEMA = "secondbrain.p3_pgvector_foundation.v2"
 DEFAULT_VECTOR_DIMENSIONS = 1536
 
 
@@ -31,7 +33,6 @@ class PgVectorConfig:
 def redact_dsn(dsn: str | None) -> str | None:
     if not dsn:
         return None
-    # postgresql://user:password@host:5432/db -> postgresql://user:***@host:5432/db
     return re.sub(r"(postgres(?:ql)?://[^:/@]+:)([^@]+)(@)", r"\1***\3", dsn)
 
 
@@ -135,15 +136,78 @@ def _safe_identifier(value: str, *, fallback: str) -> str:
     return cleaned.lower()
 
 
-def pgvector_readiness(project_root: str | Path, *, write_report: bool = False) -> dict[str, Any]:
+def _psycopg_module() -> Any:
+    try:
+        return importlib.import_module("psycopg")
+    except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+        raise RuntimeError("psycopg_missing") from exc
+
+
+def pgvector_live_check(config: PgVectorConfig) -> dict[str, Any]:
+    if not config.enabled:
+        return {"ok": True, "status": "skipped", "reason": "pgvector disabled"}
+    if not config.dsn:
+        return {"ok": False, "status": "blocked", "error": "dsn_missing"}
+    try:
+        psycopg = _psycopg_module()
+        with psycopg.connect(config.dsn, connect_timeout=5) as conn:
+            with conn.cursor() as cur:
+                cur.execute("select version()")
+                postgres_version = cur.fetchone()[0]
+                cur.execute("select extversion from pg_extension where extname = 'vector'")
+                row = cur.fetchone()
+                vector_extension_installed = row is not None
+                vector_extension_version = row[0] if row else None
+        return {
+            "ok": True,
+            "status": "pass",
+            "postgres_version": postgres_version,
+            "vector_extension_installed": vector_extension_installed,
+            "vector_extension_version": vector_extension_version,
+            "dsn": config.redacted_dsn(),
+        }
+    except Exception as exc:  # noqa: BLE001 - live readiness boundary
+        return {"ok": False, "status": "blocked", "error": str(exc), "dsn": config.redacted_dsn()}
+
+
+def apply_pgvector_schema(config: PgVectorConfig, *, dry_run: bool = True) -> dict[str, Any]:
+    sql = build_pgvector_schema_sql(config)
+    if dry_run:
+        return {"ok": True, "status": "dry_run", "applied": False, "sql": sql, "dsn": config.redacted_dsn()}
+    if not config.enabled:
+        return {"ok": False, "status": "blocked", "applied": False, "error": "pgvector_disabled"}
+    if not config.dsn:
+        return {"ok": False, "status": "blocked", "applied": False, "error": "dsn_missing"}
+    try:
+        psycopg = _psycopg_module()
+        with psycopg.connect(config.dsn, connect_timeout=5) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+            conn.commit()
+        return {"ok": True, "status": "pass", "applied": True, "dsn": config.redacted_dsn()}
+    except Exception as exc:  # noqa: BLE001 - migration boundary
+        return {"ok": False, "status": "blocked", "applied": False, "error": str(exc), "dsn": config.redacted_dsn()}
+
+
+def pgvector_readiness(project_root: str | Path, *, write_report: bool = False, live: bool = False, apply: bool = False) -> dict[str, Any]:
     root = Path(project_root).resolve()
     config = load_pgvector_config(root)
+    sql = build_pgvector_schema_sql(config)
     checks: list[dict[str, Any]] = []
     checks.append({"name": "pgvector_config_loaded", "ok": True, "severity": "info", "detail": config.to_dict()})
     checks.append({"name": "pgvector_enabled", "ok": bool(config.enabled), "severity": "warning", "detail": {"enabled": config.enabled}})
     checks.append({"name": "pgvector_dsn_configured", "ok": bool(config.dsn), "severity": "blocker" if config.enabled else "warning", "detail": {"dsn": config.redacted_dsn()}})
     checks.append({"name": "pgvector_dimensions_valid", "ok": config.vector_dimensions > 0, "severity": "blocker", "detail": {"dimensions": config.vector_dimensions}})
-    checks.append({"name": "pgvector_schema_sql_builds", "ok": bool(build_pgvector_schema_sql(config).strip()), "severity": "blocker", "detail": {"schema_name": config.schema_name, "table_prefix": config.table_prefix}})
+    checks.append({"name": "pgvector_schema_sql_builds", "ok": bool(sql.strip()), "severity": "blocker", "detail": {"schema_name": config.schema_name, "table_prefix": config.table_prefix}})
+
+    live_result: dict[str, Any] | None = None
+    migration_result: dict[str, Any] | None = None
+    if live or apply:
+        live_result = pgvector_live_check(config)
+        checks.append({"name": "pgvector_live_connection", "ok": bool(live_result.get("ok")), "severity": "blocker", "detail": live_result})
+    if apply:
+        migration_result = apply_pgvector_schema(config, dry_run=False)
+        checks.append({"name": "pgvector_schema_apply", "ok": bool(migration_result.get("ok")), "severity": "blocker", "detail": migration_result})
 
     blockers = sum(1 for check in checks if not check["ok"] and check["severity"] == "blocker")
     warnings = sum(1 for check in checks if not check["ok"] and check["severity"] == "warning")
@@ -154,13 +218,15 @@ def pgvector_readiness(project_root: str | Path, *, write_report: bool = False) 
         "blockers": blockers,
         "warnings": warnings,
         "config": config.to_dict(),
-        "sql_preview": build_pgvector_schema_sql(config),
+        "sql_preview": sql,
+        "live": live_result,
+        "migration": migration_result,
         "checks": checks,
     }
     if write_report:
         reports_dir = root / "runtime" / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
         target = reports_dir / "p3_pgvector_readiness_latest.json"
-        target.write_text(__import__("json").dumps(payload, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+        target.write_text(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
         payload["report"] = {"path": str(target), "bytes": target.stat().st_size}
     return payload
