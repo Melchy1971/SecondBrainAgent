@@ -1,14 +1,15 @@
 {
-  "version": "19.1",
-  "status": "P3_PGVECTOR_LIVE_READINESS_IMPLEMENTED",
-  "product_maturity_estimate": "74-84% technical foundation, 56-66% end-user product",
+  "version": "19.2",
+  "status": "P3_RAG_STORE_INTERFACE_IMPLEMENTED",
+  "product_maturity_estimate": "75-85% technical foundation, 57-67% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_pgvector_live_readiness",
+    "database": "sqlite_foundation_with_pgvector_store_interface",
     "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
+    "rag_store_interface": "sqlite_readonly_pgvector_foundation_adapter_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -25,41 +26,42 @@
   "current_sprint": {
     "id": "sprint3",
     "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-pgvector-live-readiness",
-    "status": "pgvector_live_readiness_implemented_pending_local_validation",
+    "branch": "sprint3-rag-store-interface",
+    "status": "rag_store_interface_implemented_pending_local_validation",
     "added": [
-      "psycopg optional import boundary",
-      "pgvector live connection check",
-      "PostgreSQL version probe",
-      "pgvector extension probe",
-      "explicit --live flag",
-      "explicit --apply migration flag",
-      "schema apply runner",
-      "offline fake-psycopg tests",
-      "p3_pgvector_readiness_latest.json v2 report"
+      "RagStore protocol",
+      "RagDocumentRecord dataclass",
+      "RagChunkRecord dataclass",
+      "RagVectorHit dataclass",
+      "SQLiteRagStore read-only adapter",
+      "PgVectorRagStore foundation adapter",
+      "create_rag_store factory",
+      "p3-rag-store-status command",
+      "SQLite vector_search adapter",
+      "pgvector not-implemented boundaries are explicit"
     ]
   },
   "release_blockers": [
     "local sprint3 validation pending",
     "real live PostgreSQL validation pending on user machine",
+    "pgvector write interface missing",
     "real pgvector similarity search not yet wired",
     "SQLite to PostgreSQL migration missing",
-    "Store interface SQLite vs PostgreSQL missing",
+    "P1RagRuntime not yet fully store-backed",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: Store interface SQLite vs PostgreSQL and pgvector similarity search",
+  "next_release": "Sprint 3 continuation: Store write interface and real pgvector similarity search",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v190_p3_pgvector_foundation.py",
-      "python launcher.py p3-pgvector-readiness --write-report",
-      "pip install psycopg[binary]",
+      "pytest -q tests/test_v191_p3_rag_store.py",
+      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen\" --source unit --title Store",
+      "python launcher.py p3-rag-store-status",
       "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
-      "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://appuser:password@localhost:5432/secondbrain\"",
-      "python launcher.py p3-pgvector-readiness --live --write-report",
-      "python launcher.py p3-pgvector-readiness --apply --write-report"
+      "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://user:password@localhost:5432/secondbrain\"",
+      "python launcher.py p3-rag-store-status"
     ]
   }
 }
