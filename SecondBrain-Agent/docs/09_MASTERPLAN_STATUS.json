@@ -1,15 +1,16 @@
 {
-  "version": "19.3",
-  "status": "P3_RAG_STORE_WRITE_CONTRACT_IMPLEMENTED",
-  "product_maturity_estimate": "76-86% technical foundation, 58-68% end-user product",
+  "version": "19.4",
+  "status": "P3_P1_STORE_BRIDGE_IMPLEMENTED",
+  "product_maturity_estimate": "77-87% technical foundation, 59-69% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_pgvector_store_write_contract",
+    "database": "sqlite_foundation_with_pgvector_store_bridge",
     "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
     "rag_store_interface": "sqlite_write_pgvector_sql_preview_implemented",
+    "p1_store_bridge": "export_and_mirror_bridge_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -26,18 +27,18 @@
   "current_sprint": {
     "id": "sprint3",
     "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-rag-store-write",
-    "status": "rag_store_write_contract_implemented_pending_local_validation",
+    "branch": "sprint3-p1-store-bridge",
+    "status": "p1_store_bridge_implemented_pending_local_validation",
     "added": [
-      "RagVectorRecord dataclass",
-      "RagStore write protocol methods",
-      "SQLiteRagStore schema initialization",
-      "SQLiteRagStore upsert_document",
-      "SQLiteRagStore upsert_chunks",
-      "SQLiteRagStore upsert_vectors",
-      "PgVectorRagStore upsert SQL preview",
-      "PgVectorRagStore vector search SQL preview using cosine distance operator",
-      "SQLite write roundtrip tests"
+      "export_p1_sqlite_records",
+      "mirror_p1_sqlite_to_store",
+      "mirror_project_p1_to_selected_store",
+      "p3-p1-store-bridge command",
+      "p3_p1_store_bridge_latest.json report",
+      "P1 SQLite rows converted to RagDocumentRecord",
+      "P1 SQLite rows converted to RagChunkRecord",
+      "P1 SQLite embeddings converted to RagVectorRecord",
+      "safe noop when selected store is the existing P1 SQLite DB"
     ]
   },
   "release_blockers": [
@@ -45,20 +46,18 @@
     "real live PostgreSQL validation pending on user machine",
     "pgvector live write execution missing",
     "SQLite to PostgreSQL migration missing",
-    "P1RagRuntime not yet fully store-backed",
+    "P1RagRuntime not yet fully internally store-backed",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: Store-backed P1RagRuntime or pgvector live execution",
+  "next_release": "Sprint 3 continuation: P1RagRuntime ingest path store-backed or pgvector live upsert execution",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v191_p3_rag_store.py",
-      "python launcher.py p3-rag-store-status",
-      "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
-      "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://user:password@localhost:5432/secondbrain\"",
-      "python launcher.py p3-rag-store-status"
+      "pytest -q tests/test_v192_p3_p1_store_bridge.py",
+      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen\" --source unit --title Bridge",
+      "python launcher.py p3-p1-store-bridge --write-report"
     ]
   }
 }
