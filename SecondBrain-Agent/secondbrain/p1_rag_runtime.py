@@ -15,6 +15,7 @@ from secondbrain.document_understanding.parser_contract import ParseStatus
 from secondbrain.document_understanding.parsers import default_parser_registry
 from secondbrain.p1_embeddings import cosine_similarity, provider_from_profile
 from secondbrain.p1_retrieval import evaluate_ranked_hits, production_decision, reciprocal_rank_fusion
+from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, SQLiteRagStore
 
 SCHEMA_VERSION = "secondbrain.p1_rag.v2"
 P1_PRODUCTION_SCHEMA = "secondbrain.p1_production.v1"
@@ -69,10 +70,7 @@ def summarize_text(text: str, max_chars: int = 420) -> str:
 
 
 def validate_source(source: str | None) -> dict[str, Any]:
-    if source is None:
-        value = "manual"
-    else:
-        value = source.strip()
+    value = "manual" if source is None else source.strip()
     if not value:
         return {"ok": False, "error": "empty_source"}
     if len(value) > 500:
@@ -118,6 +116,7 @@ class P1RagRuntime:
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         self.embedding_provider = provider_from_profile(self.root, self.profile)
         self.parser_registry = default_parser_registry()
+        self.rag_store = SQLiteRagStore(self.db_path)
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
@@ -171,6 +170,14 @@ class P1RagRuntime:
             conn.execute("create index if not exists idx_chunk_embeddings_provider on chunk_embeddings(provider)")
             conn.commit()
 
+    def _delete_document_payload(self, document_id: str) -> None:
+        with self._connect() as conn:
+            chunk_ids = [row[0] for row in conn.execute("select id from chunks where document_id = ?", (document_id,)).fetchall()]
+            if chunk_ids:
+                conn.executemany("delete from chunk_embeddings where chunk_id = ?", [(chunk_id,) for chunk_id in chunk_ids])
+            conn.execute("delete from chunks where document_id = ?", (document_id,))
+            conn.commit()
+
     def ingest_text(self, text: str, source: str = "manual", title: str | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
         source_check = validate_source(source)
         if not source_check["ok"]:
@@ -182,37 +189,58 @@ class P1RagRuntime:
         document_id = "doc_" + content_hash[:16]
         title_value = title or source_check["source"] or document_id
         now = utc_now()
+        normalized_text = re.sub(r"\s+", " ", text or "").strip()
         spans: list[tuple[int, int]] = []
         cursor = 0
-        normalized_text = re.sub(r"\s+", " ", text or "").strip()
         for chunk in chunks:
             found = normalized_text.find(chunk, cursor)
             if found < 0:
                 found = cursor
             spans.append((found, found + len(chunk)))
             cursor = max(found + 1, found + len(chunk) - DEFAULT_OVERLAP)
-        with self._connect() as conn:
-            conn.execute(
-                "insert or replace into documents(id, source, title, content_hash, created_at, metadata_json) values (?, ?, ?, ?, ?, ?)",
-                (document_id, source_check["source"], title_value, content_hash, now, json.dumps(metadata or {}, ensure_ascii=False, sort_keys=True)),
-            )
-            conn.execute("delete from chunks where document_id = ?", (document_id,))
-            for idx, chunk in enumerate(chunks):
-                tokens = tokenize(chunk)
-                chunk_hash = fingerprint(f"{document_id}:{idx}:{chunk}")[:16]
-                chunk_id = f"chk_{chunk_hash}"
-                char_start, char_end = spans[idx]
-                conn.execute(
-                    "insert into chunks(id, document_id, ordinal, text, char_start, char_end, token_json, token_count, created_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (chunk_id, document_id, idx, chunk, char_start, char_end, json.dumps(tokens, ensure_ascii=False), len(tokens), now),
-                )
-                vector = self.embedding_provider.embed(chunk)
-                conn.execute(
-                    "insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)",
-                    (chunk_id, self.embedding_provider.name, len(vector), json.dumps(vector), now),
-                )
-            conn.commit()
-        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "document_id": document_id, "source": source_check["source"], "title": title_value, "chunks": len(chunks), "content_hash": content_hash, "metadata": metadata or {}}
+
+        document = RagDocumentRecord(
+            id=document_id,
+            source=source_check["source"],
+            title=title_value,
+            content_hash=content_hash,
+            created_at=now,
+            metadata=metadata or {},
+        )
+        chunk_records: list[RagChunkRecord] = []
+        vector_records: list[RagVectorRecord] = []
+        for idx, chunk in enumerate(chunks):
+            tokens = tokenize(chunk)
+            chunk_hash = fingerprint(f"{document_id}:{idx}:{chunk}")[:16]
+            chunk_id = f"chk_{chunk_hash}"
+            char_start, char_end = spans[idx]
+            vector = self.embedding_provider.embed(chunk)
+            chunk_records.append(RagChunkRecord(chunk_id, document_id, idx, chunk, char_start, char_end, tokens, len(tokens), now))
+            vector_records.append(RagVectorRecord(chunk_id, self.embedding_provider.name, len(vector), vector, now))
+
+        self._delete_document_payload(document_id)
+        doc_result = self.rag_store.upsert_document(document)
+        chunk_result = self.rag_store.upsert_chunks(chunk_records)
+        vector_result = self.rag_store.upsert_vectors(vector_records)
+        ok = bool(doc_result.get("ok")) and bool(chunk_result.get("ok")) and bool(vector_result.get("ok"))
+        return {
+            "schema": SCHEMA_VERSION,
+            "ok": ok,
+            "status": "pass" if ok else "blocked",
+            "document_id": document_id,
+            "source": source_check["source"],
+            "title": title_value,
+            "chunks": len(chunks),
+            "content_hash": content_hash,
+            "metadata": metadata or {},
+            "store": {
+                "backend": self.rag_store.backend,
+                "write_path": "rag_store",
+                "document": doc_result,
+                "chunks": chunk_result,
+                "vectors": vector_result,
+            },
+        }
 
     def ingest_file(self, file_path: str | Path, source: str | None = None, title: str | None = None) -> dict[str, Any]:
         path = Path(file_path)
@@ -248,13 +276,14 @@ class P1RagRuntime:
 
     def reindex_vectors(self, write_report: bool = False) -> dict[str, Any]:
         now = utc_now()
+        vector_records: list[RagVectorRecord] = []
         with self._connect() as conn:
             chunks = conn.execute("select id, text from chunks order by document_id, ordinal").fetchall()
-            for row in chunks:
-                vector = self.embedding_provider.embed(row["text"])
-                conn.execute("insert or replace into chunk_embeddings(chunk_id, provider, dimensions, vector_json, created_at) values (?, ?, ?, ?, ?)", (row["id"], self.embedding_provider.name, len(vector), json.dumps(vector), now))
-            conn.commit()
-        payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": True, "status": "pass", "chunks": len(chunks), "provider": self.embedding_provider.name}
+        for row in chunks:
+            vector = self.embedding_provider.embed(row["text"])
+            vector_records.append(RagVectorRecord(row["id"], self.embedding_provider.name, len(vector), vector, now))
+        result = self.rag_store.upsert_vectors(vector_records)
+        payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": bool(result.get("ok")), "status": "pass" if result.get("ok") else "blocked", "chunks": len(chunks), "provider": self.embedding_provider.name, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "vectors": result}}
         if write_report:
             path = self.reports_dir / "p1_vector_reindex_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -391,7 +420,7 @@ class P1RagRuntime:
             tokens = conn.execute("select coalesce(sum(token_count), 0) from chunks").fetchone()[0]
             avg_tokens = conn.execute("select coalesce(avg(token_count), 0) from chunks").fetchone()[0]
             schema_cols = [row[1] for row in conn.execute("pragma table_info(chunks)").fetchall()]
-        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "store": self.rag_store.status(), "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
 
     def validate_index(self, write_report: bool = False) -> dict[str, Any]:
         with self._connect() as conn:
