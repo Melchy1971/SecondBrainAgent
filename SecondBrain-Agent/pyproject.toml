@@ -40,8 +40,11 @@ all = [
 secondbrain = "launcher:main"
 
 [tool.setuptools]
-packages = ["secondbrain"]
 py-modules = ["launcher"]
+
+[tool.setuptools.packages.find]
+include = ["secondbrain", "secondbrain.*"]
+exclude = ["tests", "tests.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
