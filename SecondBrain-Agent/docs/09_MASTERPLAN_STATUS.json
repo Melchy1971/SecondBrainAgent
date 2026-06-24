@@ -1,7 +1,7 @@
 {
-  "version": "18.16",
-  "status": "P1_RAG_OPENAI_EMBEDDINGS_INTEGRATED",
-  "product_maturity_estimate": "71-81% technical foundation, 53-63% end-user product",
+  "version": "18.17",
+  "status": "P1_RAG_PROVIDER_CHANGE_GUARDED",
+  "product_maturity_estimate": "72-82% technical foundation, 54-64% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
@@ -16,6 +16,7 @@
     "hybrid_rag": "parser_integrated_foundation",
     "embedding_provider_health": "production_gate_hardened",
     "openai_embedding_provider": "sdk_boundary_integrated",
+    "vector_provider_guard": "provider_change_reindex_guard_implemented",
     "golden_retrieval_eval": "coupled_to_p1_production",
     "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation"
@@ -24,7 +25,7 @@
     "id": "sprint2",
     "name": "P1 Real RAG Production Path",
     "branch": "sprint2-p1-openai-embeddings",
-    "status": "openai_embedding_sdk_boundary_implemented_pending_local_validation",
+    "status": "provider_change_reindex_guard_implemented_pending_local_validation",
     "added": [
       "P1RagRuntime parser registry integration",
       "p1-rag-ingest-file no longer uses blind read_text",
@@ -35,28 +36,27 @@
       "OpenAIEmbeddingProvider uses lazy openai SDK import",
       "OpenAIEmbeddingProvider requires OPENAI_API_KEY",
       "OpenAIEmbeddingProvider health probe uses embeddings.create",
-      "OpenAIEmbeddingProvider remains non-production when SDK/API/health fails",
-      "offline tests use fake openai module"
+      "vector provider reindex guard",
+      "p1-vector-provider-audit command",
+      "p1-production now requires vector_provider_audit_passes"
     ]
   },
   "release_blockers": [
     "local sprint2 validation pending",
     "real OpenAI API-key validation pending on user machine",
-    "reindex on embedding provider change not yet enforced",
     "real PostgreSQL/pgvector missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 2 finalization: provider-change reindex guard or Sprint 3 PostgreSQL/pgvector",
+  "next_release": "Sprint 3 PostgreSQL/pgvector foundation",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
       "pytest -q tests/test_v184_p1_embeddings_vectorstore.py",
-      "pip install -e \".[openai]\"",
-      "$env:OPENAI_API_KEY=\"...\"",
-      "$env:SECONDBRAIN_EMBEDDING_PROVIDER=\"openai\"",
-      "python launcher.py p1-embedding-status",
+      "pytest -q tests/test_v187_p1_vector_provider_guard.py",
+      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen Memory Evidenz lokale Quellen\" --source unit --title ProviderGuard",
+      "python launcher.py p1-vector-provider-audit --write-report",
       "python launcher.py p1-rag-reindex --write-report",
       "python launcher.py p1-production --write-report"
     ]
