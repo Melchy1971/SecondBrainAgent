@@ -1,10 +1,65 @@
 from __future__ import annotations
 
 import json
+import sys
+import types
 
 from launcher import main
 from secondbrain.module_registry import ModuleRegistry
-from secondbrain.p3_pgvector_foundation import build_pgvector_schema_sql, load_pgvector_config, pgvector_readiness, redact_dsn
+from secondbrain.p3_pgvector_foundation import apply_pgvector_schema, build_pgvector_schema_sql, load_pgvector_config, pgvector_live_check, pgvector_readiness, redact_dsn
+
+
+class _FakeCursor:
+    def __init__(self):
+        self.queries: list[str] = []
+        self._last_query = ""
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def execute(self, sql):
+        self._last_query = str(sql)
+        self.queries.append(self._last_query)
+
+    def fetchone(self):
+        if "select version" in self._last_query:
+            return ["PostgreSQL 16 fake"]
+        if "pg_extension" in self._last_query:
+            return ["0.7.4"]
+        return [1]
+
+
+class _FakeConnection:
+    def __init__(self):
+        self.cursor_obj = _FakeCursor()
+        self.committed = False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def cursor(self):
+        return self.cursor_obj
+
+    def commit(self):
+        self.committed = True
+
+
+class _FakePsycopg:
+    def __init__(self):
+        self.connections: list[_FakeConnection] = []
+
+    def connect(self, dsn, connect_timeout=5):
+        assert dsn.startswith("postgresql://")
+        assert connect_timeout == 5
+        conn = _FakeConnection()
+        self.connections.append(conn)
+        return conn
 
 
 def test_redact_dsn_hides_password():
@@ -72,7 +127,7 @@ def test_pgvector_schema_sql_contains_required_objects(tmp_path):
 def test_pgvector_readiness_warns_when_disabled_without_dsn(tmp_path):
     payload = pgvector_readiness(tmp_path, write_report=True)
 
-    assert payload["schema"] == "secondbrain.p3_pgvector_foundation.v1"
+    assert payload["schema"] == "secondbrain.p3_pgvector_foundation.v2"
     assert payload["ok"] is True
     assert payload["warnings"] >= 1
     assert payload["config"]["enabled"] is False
@@ -91,14 +146,85 @@ def test_pgvector_readiness_blocks_when_enabled_without_dsn(tmp_path, monkeypatc
     assert any(check["name"] == "pgvector_dsn_configured" and check["ok"] is False for check in payload["checks"])
 
 
+def test_pgvector_live_check_uses_psycopg_when_enabled(tmp_path, monkeypatch):
+    fake = _FakePsycopg()
+    monkeypatch.setitem(sys.modules, "psycopg", fake)
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    config = load_pgvector_config(tmp_path)
+
+    live = pgvector_live_check(config)
+
+    assert live["ok"] is True
+    assert live["postgres_version"] == "PostgreSQL 16 fake"
+    assert live["vector_extension_installed"] is True
+    assert live["vector_extension_version"] == "0.7.4"
+    assert live["dsn"] == "postgresql://user:***@db:5432/app"
+
+
+def test_pgvector_live_check_blocks_when_psycopg_missing(tmp_path, monkeypatch):
+    monkeypatch.setitem(sys.modules, "psycopg", None)
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    config = load_pgvector_config(tmp_path)
+
+    live = pgvector_live_check(config)
+
+    assert live["ok"] is False
+    assert live["status"] == "blocked"
+    assert live["error"] == "psycopg_missing"
+
+
+def test_pgvector_apply_schema_dry_run_does_not_need_db(tmp_path, monkeypatch):
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    config = load_pgvector_config(tmp_path)
+
+    result = apply_pgvector_schema(config, dry_run=True)
+
+    assert result["ok"] is True
+    assert result["status"] == "dry_run"
+    assert result["applied"] is False
+    assert "create extension if not exists vector" in result["sql"]
+
+
+def test_pgvector_apply_schema_executes_with_fake_psycopg(tmp_path, monkeypatch):
+    fake = _FakePsycopg()
+    monkeypatch.setitem(sys.modules, "psycopg", fake)
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    config = load_pgvector_config(tmp_path)
+
+    result = apply_pgvector_schema(config, dry_run=False)
+
+    assert result["ok"] is True
+    assert result["applied"] is True
+    assert fake.connections[0].committed is True
+    assert any("create extension if not exists vector" in q for q in fake.connections[0].cursor_obj.queries)
+
+
 def test_pgvector_readiness_launcher_command(tmp_path, capsys):
     rc = main(["--project-root", str(tmp_path), "p3-pgvector-readiness", "--write-report"])
     captured = capsys.readouterr().out
 
     assert rc == 0
-    assert "secondbrain.p3_pgvector_foundation.v1" in captured
+    assert "secondbrain.p3_pgvector_foundation.v2" in captured
     assert "sql_preview" in captured
     assert (tmp_path / "runtime" / "reports" / "p3_pgvector_readiness_latest.json").exists()
+
+
+def test_pgvector_readiness_launcher_live_with_fake_psycopg(tmp_path, capsys, monkeypatch):
+    fake = _FakePsycopg()
+    monkeypatch.setitem(sys.modules, "psycopg", fake)
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+
+    rc = main(["--project-root", str(tmp_path), "p3-pgvector-readiness", "--live", "--write-report"])
+    captured = capsys.readouterr().out
+
+    assert rc == 0
+    assert "pgvector_live_connection" in captured
+    assert "PostgreSQL 16 fake" in captured
 
 
 def test_pgvector_command_index_registered():
