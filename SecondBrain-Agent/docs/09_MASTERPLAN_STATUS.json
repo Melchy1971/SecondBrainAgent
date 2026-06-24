@@ -1,7 +1,7 @@
 {
-  "version": "18.13",
+  "version": "18.14",
   "status": "P1_RAG_PRODUCTION_IN_PROGRESS",
-  "product_maturity_estimate": "68-78% technical foundation, 50-60% end-user product",
+  "product_maturity_estimate": "69-79% technical foundation, 51-61% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
@@ -15,31 +15,30 @@
     "long_term_memory": "foundation",
     "hybrid_rag": "parser_integrated_foundation",
     "embedding_provider_health": "production_gate_hardened",
+    "golden_retrieval_eval": "implemented_standalone_command",
     "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation"
   },
   "current_sprint": {
     "id": "sprint2",
     "name": "P1 Real RAG Production Path",
-    "branch": "sprint2-p1-rag-production-v2",
-    "status": "parser_ingest_and_embedding_health_implemented_pending_local_validation",
+    "branch": "sprint2-p1-golden-retrieval",
+    "status": "golden_retrieval_eval_implemented_pending_local_validation",
     "added": [
       "P1RagRuntime parser registry integration",
       "p1-rag-ingest-file no longer uses blind read_text",
-      "unsupported file type blocks cleanly",
-      "invalid parser state blocks cleanly",
-      "OCR_REQUIRED maps to ocr_required",
-      "parser metadata flows into RAG source metadata",
-      "targeted parser-ingest tests",
       "embedding provider status exposes production_ready",
-      "ollama status performs active embedding health probe",
-      "openai provider is blocked until real SDK integration",
-      "p1-production blocks local/fallback embeddings"
+      "p1-production blocks local/fallback embeddings",
+      "Golden Retrieval Dataset evaluator",
+      "builtin golden retrieval dataset",
+      "config/golden_retrieval.json support",
+      "p1-golden-eval launcher command",
+      "p1_golden_retrieval_latest.json report",
+      "targeted golden retrieval tests"
     ]
   },
   "release_blockers": [
     "local sprint2 validation pending",
-    "golden retrieval dataset missing",
     "P1 production gate not yet coupled to curated golden labels",
     "real OpenAI embedding SDK integration missing",
     "real PostgreSQL/pgvector missing",
@@ -47,15 +46,13 @@
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 2 continuation: Golden Retrieval Dataset and stricter label-based P1 production gate",
+  "next_release": "Sprint 2 continuation: couple P1 production gate to Golden Retrieval Eval",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v180_p1_rag.py",
-      "pytest -q tests/test_v184_p1_embeddings_vectorstore.py",
-      "python launcher.py p1-rag-ingest-file README.md --source local --title README",
-      "python launcher.py p1-gate --write-report",
-      "python launcher.py p1-production --write-report"
+      "pytest -q tests/test_v185_p1_golden_retrieval.py",
+      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen Memory Evidenz lokale Quellen\" --source unit --title Golden",
+      "python launcher.py p1-golden-eval --write-report"
     ]
   }
 }
