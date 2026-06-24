@@ -89,6 +89,30 @@ def test_repo_doctor_blocks_forbidden_root_artifacts(tmp_path: Path) -> None:
     assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "error" for check in payload["checks"])
 
 
+def test_repo_doctor_blocks_pycache_outside_virtualenv(tmp_path: Path) -> None:
+    _write_minimal_project(tmp_path)
+    cache = tmp_path / "secondbrain" / "__pycache__"
+    cache.mkdir()
+    (cache / "module.cpython-313.pyc").write_bytes(b"cache")
+
+    payload = run_repo_doctor(tmp_path).to_dict()
+
+    assert payload["ok"] is False
+    assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "error" for check in payload["checks"])
+
+
+def test_repo_doctor_ignores_virtualenv_cache_artifacts(tmp_path: Path) -> None:
+    _write_minimal_project(tmp_path)
+    cache = tmp_path / ".venv" / "Lib" / "site-packages" / "pkg" / "__pycache__"
+    cache.mkdir(parents=True)
+    (cache / "module.cpython-313.pyc").write_bytes(b"cache")
+
+    payload = run_repo_doctor(tmp_path).to_dict()
+
+    assert payload["ok"] is True
+    assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "ok" for check in payload["checks"])
+
+
 def test_repo_doctor_writes_report(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
 
