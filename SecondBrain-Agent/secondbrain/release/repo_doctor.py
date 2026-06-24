@@ -46,6 +46,17 @@ FORBIDDEN_ROOT_PREFIXES: tuple[str, ...] = (
     "VALIDATION_",
 )
 
+IGNORED_ARTIFACT_PARTS: tuple[str, ...] = (
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    ".env",
+    "build",
+    "dist",
+    ".eggs",
+)
+
 FORBIDDEN_CACHE_PARTS: tuple[str, ...] = (
     "__pycache__",
     ".pytest_cache",
@@ -191,7 +202,7 @@ def _check_readme(root: Path) -> list[DoctorCheck]:
 def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
     findings: list[str] = []
     for path in root.rglob("*"):
-        if ".git" in path.parts:
+        if any(part in IGNORED_ARTIFACT_PARTS for part in path.parts):
             continue
         rel = path.relative_to(root).as_posix()
         if path.is_file() and path.parent == root and path.name.startswith(FORBIDDEN_ROOT_PREFIXES):
