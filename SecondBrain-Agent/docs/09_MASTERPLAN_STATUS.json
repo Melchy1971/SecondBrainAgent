@@ -1,13 +1,14 @@
 {
-  "version": "18.17",
-  "status": "P1_RAG_PROVIDER_CHANGE_GUARDED",
-  "product_maturity_estimate": "72-82% technical foundation, 54-64% end-user product",
+  "version": "19.0",
+  "status": "P3_PGVECTOR_FOUNDATION_STARTED",
+  "product_maturity_estimate": "73-83% technical foundation, 55-65% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation",
+    "database": "sqlite_foundation_with_pgvector_foundation",
+    "pgvector_foundation": "config_readiness_sql_preview_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -22,43 +23,40 @@
     "mobile_companion": "backend_foundation"
   },
   "current_sprint": {
-    "id": "sprint2",
-    "name": "P1 Real RAG Production Path",
-    "branch": "sprint2-p1-openai-embeddings",
-    "status": "provider_change_reindex_guard_implemented_pending_local_validation",
+    "id": "sprint3",
+    "name": "PostgreSQL/pgvector Foundation",
+    "branch": "sprint3-pgvector-foundation",
+    "status": "pgvector_readiness_foundation_implemented_pending_local_validation",
     "added": [
-      "P1RagRuntime parser registry integration",
-      "p1-rag-ingest-file no longer uses blind read_text",
-      "embedding provider status exposes production_ready",
-      "p1-production blocks local/fallback embeddings",
-      "Golden Retrieval Dataset evaluator",
-      "p1-production now requires golden_retrieval_eval_passes",
-      "OpenAIEmbeddingProvider uses lazy openai SDK import",
-      "OpenAIEmbeddingProvider requires OPENAI_API_KEY",
-      "OpenAIEmbeddingProvider health probe uses embeddings.create",
-      "vector provider reindex guard",
-      "p1-vector-provider-audit command",
-      "p1-production now requires vector_provider_audit_passes"
+      "PgVectorConfig dataclass",
+      "SECONDBRAIN_PGVECTOR_* environment configuration",
+      "config/pgvector.yaml support",
+      "DSN redaction",
+      "pgvector schema SQL preview",
+      "p3-pgvector-readiness command",
+      "p3_pgvector_readiness_latest.json report",
+      "pgvector foundation tests"
     ]
   },
   "release_blockers": [
-    "local sprint2 validation pending",
-    "real OpenAI API-key validation pending on user machine",
-    "real PostgreSQL/pgvector missing",
+    "local sprint3 validation pending",
+    "live PostgreSQL connection runner missing",
+    "psycopg optional dependency not yet integrated",
+    "real pgvector similarity search not yet wired",
+    "SQLite to PostgreSQL migration missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 PostgreSQL/pgvector foundation",
+  "next_release": "Sprint 3 continuation: psycopg live readiness and migration runner",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v184_p1_embeddings_vectorstore.py",
-      "pytest -q tests/test_v187_p1_vector_provider_guard.py",
-      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen Memory Evidenz lokale Quellen\" --source unit --title ProviderGuard",
-      "python launcher.py p1-vector-provider-audit --write-report",
-      "python launcher.py p1-rag-reindex --write-report",
-      "python launcher.py p1-production --write-report"
+      "pytest -q tests/test_v190_p3_pgvector_foundation.py",
+      "python launcher.py p3-pgvector-readiness --write-report",
+      "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
+      "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://appuser:password@localhost:5432/secondbrain\"",
+      "python launcher.py p3-pgvector-readiness --write-report"
     ]
   }
 }
