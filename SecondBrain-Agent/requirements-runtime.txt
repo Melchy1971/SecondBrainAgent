@@ -1,3 +1,11 @@
-# Runtime dependencies for the current repo-doctor and launcher hygiene layer.
-# Keep this file explicit. Do not add test-only packages here.
-# Current v18.7 hygiene package uses Python standard library only.
+# Curated runtime dependencies.
+#
+# The current core runtime is standard-library only.
+# Optional feature dependencies are declared in pyproject.toml extras:
+#
+#   pip install -e ".[pdf]"        # PDF parsing via PyMuPDF/pypdf
+#   pip install -e ".[connectors]" # connector helpers
+#   pip install -e ".[openai]"     # OpenAI SDK integration boundary
+#   pip install -e ".[all]"        # all optional features
+#
+# Do not add test-only packages here.
