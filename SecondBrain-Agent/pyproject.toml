@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secondbrain-agent"
+version = "18.11.0"
+description = "Local modular SecondBrain/Jarvis runtime with RAG, desktop, mobile, voice and release gates."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "Markus Dickscheit" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+]
+pdf = [
+  "PyMuPDF>=1.24.0",
+  "pypdf>=5.0.0",
+]
+connectors = [
+  "requests>=2.31.0",
+  "python-dotenv>=1.0.0",
+]
+openai = [
+  "openai>=1.40.0",
+]
+all = [
+  "pytest>=8.0.0",
+  "PyMuPDF>=1.24.0",
+  "pypdf>=5.0.0",
+  "requests>=2.31.0",
+  "python-dotenv>=1.0.0",
+  "openai>=1.40.0",
+]
+
+[project.scripts]
+secondbrain = "launcher:main"
+
+[tool.setuptools]
+packages = ["secondbrain"]
+py-modules = ["launcher"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra"
