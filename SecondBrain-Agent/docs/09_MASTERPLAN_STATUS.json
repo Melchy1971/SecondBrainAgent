@@ -1,13 +1,14 @@
 {
-  "version": "18.15",
-  "status": "P1_RAG_PRODUCTION_GATE_HARDENED",
-  "product_maturity_estimate": "70-80% technical foundation, 52-62% end-user product",
+  "version": "19.1",
+  "status": "P3_PGVECTOR_LIVE_READINESS_IMPLEMENTED",
+  "product_maturity_estimate": "74-84% technical foundation, 56-66% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation",
+    "database": "sqlite_foundation_with_pgvector_live_readiness",
+    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -15,46 +16,50 @@
     "long_term_memory": "foundation",
     "hybrid_rag": "parser_integrated_foundation",
     "embedding_provider_health": "production_gate_hardened",
+    "openai_embedding_provider": "sdk_boundary_integrated",
+    "vector_provider_guard": "provider_change_reindex_guard_implemented",
     "golden_retrieval_eval": "coupled_to_p1_production",
     "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation"
   },
   "current_sprint": {
-    "id": "sprint2",
-    "name": "P1 Real RAG Production Path",
-    "branch": "sprint2-p1-production-golden-gate",
-    "status": "production_golden_gate_implemented_pending_local_validation",
+    "id": "sprint3",
+    "name": "PostgreSQL/pgvector Foundation",
+    "branch": "sprint3-pgvector-live-readiness",
+    "status": "pgvector_live_readiness_implemented_pending_local_validation",
     "added": [
-      "P1RagRuntime parser registry integration",
-      "p1-rag-ingest-file no longer uses blind read_text",
-      "embedding provider status exposes production_ready",
-      "p1-production blocks local/fallback embeddings",
-      "Golden Retrieval Dataset evaluator",
-      "builtin golden retrieval dataset",
-      "config/golden_retrieval.json support",
-      "p1-golden-eval launcher command",
-      "p1_golden_retrieval_latest.json report",
-      "p1-production now requires golden_retrieval_eval_passes",
-      "p1_production_latest.json now contains base_production and golden_retrieval"
+      "psycopg optional import boundary",
+      "pgvector live connection check",
+      "PostgreSQL version probe",
+      "pgvector extension probe",
+      "explicit --live flag",
+      "explicit --apply migration flag",
+      "schema apply runner",
+      "offline fake-psycopg tests",
+      "p3_pgvector_readiness_latest.json v2 report"
     ]
   },
   "release_blockers": [
-    "local sprint2 validation pending",
-    "real OpenAI embedding SDK integration missing",
-    "real PostgreSQL/pgvector missing",
+    "local sprint3 validation pending",
+    "real live PostgreSQL validation pending on user machine",
+    "real pgvector similarity search not yet wired",
+    "SQLite to PostgreSQL migration missing",
+    "Store interface SQLite vs PostgreSQL missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 2 continuation: real OpenAI embedding SDK integration or Sprint 3 PostgreSQL/pgvector",
+  "next_release": "Sprint 3 continuation: Store interface SQLite vs PostgreSQL and pgvector similarity search",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
-      "pytest -q tests/test_v185_p1_golden_retrieval.py",
-      "pytest -q tests/test_v186_p1_production_golden_gate.py",
-      "python launcher.py p1-rag-ingest-text \"Jarvis RAG Quellen Memory Evidenz lokale Quellen\" --source unit --title Golden",
-      "python launcher.py p1-golden-eval --write-report",
-      "python launcher.py p1-production --write-report"
+      "pytest -q tests/test_v190_p3_pgvector_foundation.py",
+      "python launcher.py p3-pgvector-readiness --write-report",
+      "pip install psycopg[binary]",
+      "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
+      "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://appuser:password@localhost:5432/secondbrain\"",
+      "python launcher.py p3-pgvector-readiness --live --write-report",
+      "python launcher.py p3-pgvector-readiness --apply --write-report"
     ]
   }
 }
