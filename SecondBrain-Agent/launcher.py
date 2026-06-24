@@ -175,8 +175,10 @@ def _p3_pgvector_main(raw: list[str]) -> int:
     parser.add_argument("--project-root", default=str(Path.cwd()))
     parser.add_argument("cmd")
     parser.add_argument("--write-report", action="store_true")
+    parser.add_argument("--live", action="store_true", help="check live PostgreSQL/pgvector connectivity")
+    parser.add_argument("--apply", action="store_true", help="apply the pgvector schema SQL to the configured DSN")
     args, _ = parser.parse_known_args(raw)
-    payload = pgvector_readiness(args.project_root, write_report=args.write_report)
+    payload = pgvector_readiness(args.project_root, write_report=args.write_report, live=args.live, apply=args.apply)
     out(payload)
     return 0 if payload.get("ok") else 1
 
