@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 from launcher import main
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p1_embeddings import deterministic_embedding
@@ -7,12 +9,81 @@ from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.p3_rag_store import PgVectorRagStore, RagChunkRecord, RagDocumentRecord, RagVectorRecord, SQLiteRagStore, create_rag_store, store_backend_from_config
 
 
+class _FakeCursor:
+    def __init__(self):
+        self.queries: list[tuple[str, tuple | None]] = []
+        self._last_query = ""
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def execute(self, sql, params=None):
+        self._last_query = str(sql)
+        self.queries.append((str(sql), params))
+
+    def fetchone(self):
+        if "count(*) from secondbrain.p1_documents" in self._last_query:
+            return [1]
+        if "count(*) from secondbrain.p1_chunks" in self._last_query:
+            return [1]
+        if "count(*) from secondbrain.p1_chunk_embeddings" in self._last_query:
+            return [1]
+        return [1]
+
+    def fetchall(self):
+        if "group by provider" in self._last_query:
+            return [("openai", 1536, 1)]
+        if "left join" in self._last_query and "p1_chunks" in self._last_query:
+            return [("doc1", "unit", "Doc", "hash1", "2026-01-01T00:00:00Z", {"kind": "test"}, 1)]
+        if "embedding <=>" in self._last_query:
+            return [("chk1", "doc1", "unit", "Doc", "Jarvis RAG Quellen", "openai", 3, 0.91)]
+        return []
+
+
+class _FakeConnection:
+    def __init__(self):
+        self.cursor_obj = _FakeCursor()
+        self.commits = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def cursor(self):
+        return self.cursor_obj
+
+    def commit(self):
+        self.commits += 1
+
+
+class _FakePsycopg:
+    def __init__(self):
+        self.connections: list[_FakeConnection] = []
+
+    def connect(self, dsn, connect_timeout=5):
+        assert dsn.startswith("postgresql://")
+        assert connect_timeout == 5
+        conn = _FakeConnection()
+        self.connections.append(conn)
+        return conn
+
+
+def _enable_pgvector(monkeypatch):
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
+    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+
+
 def test_sqlite_store_status_empty_when_db_missing(tmp_path):
     store = SQLiteRagStore(tmp_path / "missing.sqlite3")
 
     status = store.status()
 
-    assert status["schema"] == "secondbrain.p3_rag_store.v2"
+    assert status["schema"] == "secondbrain.p3_rag_store.v3"
     assert status["backend"] == "sqlite"
     assert status["ok"] is True
     assert status["documents"] == 0
@@ -68,8 +139,7 @@ def test_create_rag_store_defaults_to_sqlite(tmp_path):
 
 
 def test_create_rag_store_uses_pgvector_when_enabled(tmp_path, monkeypatch):
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    _enable_pgvector(monkeypatch)
 
     store = create_rag_store(tmp_path)
     status = store.status()
@@ -80,39 +150,60 @@ def test_create_rag_store_uses_pgvector_when_enabled(tmp_path, monkeypatch):
     assert status["ok"] is True
     assert status["config"]["dsn"] == "postgresql://user:***@db:5432/app"
     assert "sql_preview" in status
-    assert "sql_vector_search" in status["capabilities"]
+    assert "live_vector_search" in status["capabilities"]
 
 
-def test_pgvector_store_write_methods_return_sql_preview(tmp_path, monkeypatch):
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+def test_pgvector_store_blocks_live_methods_without_psycopg(tmp_path, monkeypatch):
+    _enable_pgvector(monkeypatch)
+    monkeypatch.setitem(sys.modules, "psycopg", None)
+    store = create_rag_store(tmp_path)
+    doc = RagDocumentRecord("doc1", "unit", "Doc", "hash1", "2026-01-01T00:00:00Z", {"kind": "test"})
+
+    result = store.upsert_document(doc)
+
+    assert result["ok"] is False
+    assert result["status"] == "blocked"
+    assert result["error"] == "psycopg_missing"
+    assert "pw" not in result["dsn"]
+
+
+def test_pgvector_store_live_write_and_search_with_fake_psycopg(tmp_path, monkeypatch):
+    fake = _FakePsycopg()
+    monkeypatch.setitem(sys.modules, "psycopg", fake)
+    _enable_pgvector(monkeypatch)
     store = create_rag_store(tmp_path)
     doc = RagDocumentRecord("doc1", "unit", "Doc", "hash1", "2026-01-01T00:00:00Z", {"kind": "test"})
     chunk = RagChunkRecord("chk1", "doc1", 0, "Jarvis RAG Quellen", 0, 18, ["jarvis", "rag", "quellen"], 3, "2026-01-01T00:00:00Z")
-    vector = RagVectorRecord("chk1", "openai", 1536, [0.1, 0.2], "2026-01-01T00:00:00Z")
+    vector = RagVectorRecord("chk1", "openai", 3, [0.1, 0.2, 0.3], "2026-01-01T00:00:00Z")
 
-    doc_sql = store.upsert_document(doc)
-    chunk_sql = store.upsert_chunks([chunk])
-    vector_sql = store.upsert_vectors([vector])
-    search_sql = store.vector_search([0.1, 0.2], provider="openai", limit=3)
+    doc_result = store.upsert_document(doc)
+    chunk_result = store.upsert_chunks([chunk])
+    vector_result = store.upsert_vectors([vector])
+    sources = store.sources()
+    hits = store.vector_search([0.1, 0.2, 0.3], provider="openai", limit=3)
 
-    assert doc_sql["status"] == "sql_preview"
-    assert "on conflict (id) do update" in doc_sql["sql"]
-    assert "p1_documents" in doc_sql["sql"]
-    assert "p1_chunks" in chunk_sql["sql"]
-    assert "p1_chunk_embeddings" in vector_sql["sql"]
-    assert "embedding <=>" in search_sql["sql"]
-    assert "e.provider = %s" in search_sql["sql"]
-    assert search_sql["params"]["provider"] == "openai"
+    assert doc_result["ok"] is True
+    assert chunk_result["chunks"] == 1
+    assert vector_result["vectors"] == 1
+    assert sources["sources"][0]["title"] == "Doc"
+    assert hits["hit_count"] == 1
+    assert hits["hits"][0]["chunk_id"] == "chk1"
+    assert any("p1_documents" in query for conn in fake.connections for query, _ in conn.cursor_obj.queries)
+    assert any("p1_chunk_embeddings" in query for conn in fake.connections for query, _ in conn.cursor_obj.queries)
 
 
-def test_pgvector_sources_live_execution_is_explicitly_not_implemented(tmp_path, monkeypatch):
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+def test_pgvector_store_status_reads_live_counts_with_fake_psycopg(tmp_path, monkeypatch):
+    fake = _FakePsycopg()
+    monkeypatch.setitem(sys.modules, "psycopg", fake)
+    _enable_pgvector(monkeypatch)
     store = create_rag_store(tmp_path)
 
-    assert store.sources()["status"] == "not_implemented"
-    assert store.sources()["error"] == "pgvector_sources_live_execution_not_implemented_yet"
+    status = store.status()
+
+    assert status["ok"] is True
+    assert status["live"]["ok"] is True
+    assert status["documents"] == 1
+    assert status["providers"][0]["provider"] == "openai"
 
 
 def test_p3_rag_store_status_launcher_sqlite(tmp_path, capsys):
@@ -123,13 +214,12 @@ def test_p3_rag_store_status_launcher_sqlite(tmp_path, capsys):
     captured = capsys.readouterr().out
 
     assert rc == 0
-    assert "secondbrain.p3_rag_store.v2" in captured
+    assert "secondbrain.p3_rag_store.v3" in captured
     assert '"backend": "sqlite"' in captured
 
 
 def test_p3_rag_store_status_launcher_pgvector(tmp_path, capsys, monkeypatch):
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_ENABLED", "true")
-    monkeypatch.setenv("SECONDBRAIN_PGVECTOR_DSN", "postgresql://user:pw@db:5432/app")
+    _enable_pgvector(monkeypatch)
 
     rc = main(["--project-root", str(tmp_path), "p3-rag-store-status"])
     captured = capsys.readouterr().out

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 import sqlite3
 from dataclasses import asdict, dataclass
@@ -9,7 +10,7 @@ from typing import Any, Protocol
 from secondbrain.p1_embeddings import cosine_similarity
 from secondbrain.p3_pgvector_foundation import PgVectorConfig, build_pgvector_schema_sql, load_pgvector_config, redact_dsn
 
-RAG_STORE_SCHEMA = "secondbrain.p3_rag_store.v2"
+RAG_STORE_SCHEMA = "secondbrain.p3_rag_store.v3"
 
 
 @dataclass(frozen=True)
@@ -242,8 +243,31 @@ class PgVectorRagStore:
         prefix = _safe_identifier(self.config.table_prefix, "p1")
         return f"{schema}.{prefix}_{suffix}"
 
+    def _psycopg(self) -> Any:
+        try:
+            return importlib.import_module("psycopg")
+        except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+            raise RuntimeError("psycopg_missing") from exc
+
+    def _connect(self) -> Any:
+        if not self.config.enabled:
+            raise RuntimeError("pgvector_disabled")
+        if not self.config.dsn:
+            raise RuntimeError("dsn_missing")
+        return self._psycopg().connect(self.config.dsn, connect_timeout=5)
+
+    def _run(self, operation: str, callback: Any) -> dict[str, Any]:
+        try:
+            with self._connect() as conn:
+                result = callback(conn)
+                if hasattr(conn, "commit"):
+                    conn.commit()
+            return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "operation": operation, "dsn": redact_dsn(self.config.dsn), **(result or {})}
+        except Exception as exc:  # noqa: BLE001 - live store boundary
+            return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": False, "status": "blocked", "operation": operation, "error": str(exc), "dsn": redact_dsn(self.config.dsn)}
+
     def status(self) -> dict[str, Any]:
-        return {
+        payload = {
             "schema": RAG_STORE_SCHEMA,
             "backend": self.backend,
             "ok": bool(self.config.enabled and self.config.dsn),
@@ -251,24 +275,91 @@ class PgVectorRagStore:
             "config": self.config.to_dict(),
             "dsn": redact_dsn(self.config.dsn),
             "sql_preview": build_pgvector_schema_sql(self.config),
-            "capabilities": ["schema_preview", "live_readiness", "sql_upsert_document", "sql_upsert_chunks", "sql_upsert_vectors", "sql_vector_search"],
+            "capabilities": ["schema_preview", "live_readiness", "live_sources", "live_upsert_document", "live_upsert_chunks", "live_upsert_vectors", "live_vector_search"],
         }
+        if self.config.enabled and self.config.dsn:
+            live = self._run("status", self._status_callback)
+            payload["live"] = live
+            if live.get("ok"):
+                payload.update({"documents": live.get("documents", 0), "chunks": live.get("chunks", 0), "vectors": live.get("vectors", 0), "providers": live.get("providers", [])})
+        return payload
+
+    def _status_callback(self, conn: Any) -> dict[str, Any]:
+        with conn.cursor() as cur:
+            cur.execute(f"select count(*) from {self._table('documents')}")
+            docs = int(cur.fetchone()[0])
+            cur.execute(f"select count(*) from {self._table('chunks')}")
+            chunks = int(cur.fetchone()[0])
+            cur.execute(f"select count(*) from {self._table('chunk_embeddings')}")
+            vectors = int(cur.fetchone()[0])
+            cur.execute(f"select provider, dimensions, count(*) from {self._table('chunk_embeddings')} group by provider, dimensions order by provider, dimensions")
+            providers = [{"provider": row[0], "dimensions": int(row[1]), "vectors": int(row[2])} for row in cur.fetchall()]
+        return {"documents": docs, "chunks": chunks, "vectors": vectors, "providers": providers}
 
     def sources(self) -> dict[str, Any]:
-        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": False, "status": "not_implemented", "error": "pgvector_sources_live_execution_not_implemented_yet"}
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks from {self._table('documents')} d left join {self._table('chunks')} c on c.document_id = d.id group by d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json order by d.created_at desc, d.title"
+                )
+                sources = []
+                for row in cur.fetchall():
+                    metadata = _coerce_metadata(row[5])
+                    metadata["chunks"] = int(row[6])
+                    sources.append(RagDocumentRecord(str(row[0]), str(row[1]), str(row[2]), str(row[3]), str(row[4]), metadata).to_dict())
+            return {"sources": sources, "documents": len(sources)}
+
+        return self._run("sources", callback)
 
     def upsert_document(self, document: RagDocumentRecord) -> dict[str, Any]:
-        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "sql_preview", "sql": self.build_upsert_document_sql(), "params": (document.id, document.source, document.title, document.content_hash, document.created_at, json.dumps(document.metadata, ensure_ascii=False, sort_keys=True))}
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(self.build_upsert_document_sql(), (document.id, document.source, document.title, document.content_hash, document.created_at, json.dumps(document.metadata, ensure_ascii=False, sort_keys=True)))
+            return {"document_id": document.id}
+
+        return self._run("upsert_document", callback)
 
     def upsert_chunks(self, chunks: list[RagChunkRecord]) -> dict[str, Any]:
-        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "sql_preview", "sql": self.build_upsert_chunk_sql(), "chunks": len(chunks)}
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                sql = self.build_upsert_chunk_sql()
+                for chunk in chunks:
+                    cur.execute(sql, (chunk.id, chunk.document_id, chunk.ordinal, chunk.text, chunk.char_start, chunk.char_end, json.dumps(chunk.tokens, ensure_ascii=False), chunk.token_count, chunk.created_at))
+            return {"chunks": len(chunks)}
+
+        return self._run("upsert_chunks", callback)
 
     def upsert_vectors(self, vectors: list[RagVectorRecord]) -> dict[str, Any]:
-        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "sql_preview", "sql": self.build_upsert_vector_sql(), "vectors": len(vectors)}
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                sql = self.build_upsert_vector_sql()
+                for vector in vectors:
+                    cur.execute(sql, (vector.chunk_id, vector.provider, vector.dimensions, _vector_literal(vector.vector), vector.created_at))
+            return {"vectors": len(vectors)}
+
+        return self._run("upsert_vectors", callback)
 
     def vector_search(self, query_vector: list[float], *, limit: int = 5, provider: str | None = None) -> dict[str, Any]:
+        if not query_vector:
+            return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "operation": "vector_search", "hit_count": 0, "hits": []}
+        query_literal = _vector_literal(query_vector)
+        dimensions = len(query_vector)
         sql = self.build_vector_search_sql(provider=provider)
-        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": bool(self.config.enabled and self.config.dsn), "status": "sql_preview", "sql": sql, "params": {"query_vector": query_vector, "limit": max(1, int(limit)), "provider": provider}, "hit_count": 0, "hits": []}
+
+        def callback(conn: Any) -> dict[str, Any]:
+            params: list[Any] = [query_literal, dimensions]
+            if provider:
+                params.append(provider)
+            params.extend([query_literal, max(1, int(limit))])
+            with conn.cursor() as cur:
+                cur.execute(sql, tuple(params))
+                hits = [RagVectorHit(str(row[0]), str(row[1]), str(row[2]), str(row[3]), float(row[7]), str(row[4]), str(row[5]), int(row[6])).to_dict() for row in cur.fetchall()]
+            return {"query_dimensions": dimensions, "hit_count": len(hits), "hits": hits}
+
+        result = self._run("vector_search", callback)
+        result["sql"] = sql
+        result["params"] = {"limit": max(1, int(limit)), "provider": provider, "dimensions": dimensions}
+        return result
 
     def build_upsert_document_sql(self) -> str:
         return f"""
@@ -335,6 +426,22 @@ def _safe_identifier(value: str, fallback: str) -> str:
     if not cleaned or cleaned[0].isdigit():
         return fallback
     return cleaned
+
+
+def _vector_literal(vector: list[float]) -> str:
+    return "[" + ",".join(str(float(v)) for v in vector) + "]"
+
+
+def _coerce_metadata(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return dict(value)
+    if value is None:
+        return {}
+    try:
+        parsed = json.loads(value)
+    except Exception:
+        return {"raw": str(value)}
+    return parsed if isinstance(parsed, dict) else {"value": parsed}
 
 
 def store_backend_from_config(project_root: str | Path) -> str:
