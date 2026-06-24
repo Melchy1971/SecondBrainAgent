@@ -12,6 +12,7 @@ from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
 from secondbrain.p1_production_gate import production_gate_with_golden
 from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.p1_vector_provider_guard import audit_vector_provider
+from secondbrain.p3_p1_store_bridge import mirror_project_p1_to_selected_store
 from secondbrain.p3_pgvector_foundation import pgvector_readiness
 from secondbrain.p3_rag_store import create_rag_store
 from secondbrain.release.dependency_inventory import build_dependency_inventory
@@ -195,6 +196,17 @@ def _p3_rag_store_main(raw: list[str]) -> int:
     return 0 if payload.get("ok") else 1
 
 
+def _p3_p1_store_bridge_main(raw: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("cmd")
+    parser.add_argument("--write-report", action="store_true")
+    args, _ = parser.parse_known_args(raw)
+    payload = mirror_project_p1_to_selected_store(args.project_root, write_report=args.write_report)
+    out(payload)
+    return 0 if payload.get("ok") else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -206,6 +218,8 @@ def main(argv: list[str] | None = None) -> int:
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
         return _p3_rag_store_main(raw)
+    if cmd == "p3-p1-store-bridge":
+        return _p3_p1_store_bridge_main(raw)
     if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-vector-provider-audit", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
