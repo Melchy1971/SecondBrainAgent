@@ -1,3 +1,5 @@
+![Jarvis](../jarvis.jpg)
+
 # SecondBrain-Agent v18.x
 
 Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, Desktop/HUD, Mobile Companion, Voice, Knowledge Graph, P0/P1-Gates und Release-Hygiene-Werkzeugen.

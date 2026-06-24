@@ -11,10 +11,14 @@
             "id": "3f5a0d5b72b23ec9",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph-Ansicht"
+              "type": "markdown",
+              "state": {
+                "file": "10_DailyBriefings/2026-06-19_daily-briefing.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-06-19_daily-briefing"
             }
           }
         ]
