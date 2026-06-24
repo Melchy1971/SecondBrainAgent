@@ -1,14 +1,14 @@
 {
-  "version": "19.0",
-  "status": "P3_PGVECTOR_FOUNDATION_STARTED",
-  "product_maturity_estimate": "73-83% technical foundation, 55-65% end-user product",
+  "version": "19.1",
+  "status": "P3_PGVECTOR_LIVE_READINESS_IMPLEMENTED",
+  "product_maturity_estimate": "74-84% technical foundation, 56-66% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_pgvector_foundation",
-    "pgvector_foundation": "config_readiness_sql_preview_implemented",
+    "database": "sqlite_foundation_with_pgvector_live_readiness",
+    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
     "multi_agent": "foundation",
@@ -25,38 +25,41 @@
   "current_sprint": {
     "id": "sprint3",
     "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-pgvector-foundation",
-    "status": "pgvector_readiness_foundation_implemented_pending_local_validation",
+    "branch": "sprint3-pgvector-live-readiness",
+    "status": "pgvector_live_readiness_implemented_pending_local_validation",
     "added": [
-      "PgVectorConfig dataclass",
-      "SECONDBRAIN_PGVECTOR_* environment configuration",
-      "config/pgvector.yaml support",
-      "DSN redaction",
-      "pgvector schema SQL preview",
-      "p3-pgvector-readiness command",
-      "p3_pgvector_readiness_latest.json report",
-      "pgvector foundation tests"
+      "psycopg optional import boundary",
+      "pgvector live connection check",
+      "PostgreSQL version probe",
+      "pgvector extension probe",
+      "explicit --live flag",
+      "explicit --apply migration flag",
+      "schema apply runner",
+      "offline fake-psycopg tests",
+      "p3_pgvector_readiness_latest.json v2 report"
     ]
   },
   "release_blockers": [
     "local sprint3 validation pending",
-    "live PostgreSQL connection runner missing",
-    "psycopg optional dependency not yet integrated",
+    "real live PostgreSQL validation pending on user machine",
     "real pgvector similarity search not yet wired",
     "SQLite to PostgreSQL migration missing",
+    "Store interface SQLite vs PostgreSQL missing",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: psycopg live readiness and migration runner",
+  "next_release": "Sprint 3 continuation: Store interface SQLite vs PostgreSQL and pgvector similarity search",
   "last_validation": {
     "status": "pending_user_local_run",
     "required_commands": [
       "pytest -q tests/test_v190_p3_pgvector_foundation.py",
       "python launcher.py p3-pgvector-readiness --write-report",
+      "pip install psycopg[binary]",
       "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
       "$env:SECONDBRAIN_PGVECTOR_DSN=\"postgresql://appuser:password@localhost:5432/secondbrain\"",
-      "python launcher.py p3-pgvector-readiness --write-report"
+      "python launcher.py p3-pgvector-readiness --live --write-report",
+      "python launcher.py p3-pgvector-readiness --apply --write-report"
     ]
   }
 }
