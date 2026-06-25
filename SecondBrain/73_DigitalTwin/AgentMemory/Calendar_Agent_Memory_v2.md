@@ -1,6 +1,6 @@
 # Calendar Agent Memory v2
 
-Aktualisiert: 2026-06-23
+Aktualisiert: 2026-06-25
 
 ## Relevante Notizen
 

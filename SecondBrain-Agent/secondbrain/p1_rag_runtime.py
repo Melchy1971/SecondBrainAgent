@@ -13,7 +13,7 @@ from typing import Any
 
 from secondbrain.document_understanding.parser_contract import ParseStatus
 from secondbrain.document_understanding.parsers import default_parser_registry
-from secondbrain.p1_embeddings import cosine_similarity, provider_from_profile
+from secondbrain.p1_embeddings import cosine_similarity, embedding_index_provider, provider_from_profile
 from secondbrain.p1_retrieval import evaluate_ranked_hits, production_decision, reciprocal_rank_fusion
 from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, create_rag_store
 
@@ -241,7 +241,7 @@ class P1RagRuntime:
             except Exception as exc:  # noqa: BLE001 - provider boundary
                 return self._embedding_failure_payload("ingest_text", exc)
             chunk_records.append(RagChunkRecord(chunk_id, document_id, idx, chunk, char_start, char_end, tokens, len(tokens), now))
-            vector_records.append(RagVectorRecord(chunk_id, self.embedding_provider.name, len(vector), vector, now))
+            vector_records.append(RagVectorRecord(chunk_id, embedding_index_provider(self.embedding_provider), len(vector), vector, now))
 
         self._delete_document_payload(document_id)
         doc_result = self.rag_store.upsert_document(document)
@@ -363,9 +363,9 @@ class P1RagRuntime:
                 vector = self.embedding_provider.embed(row["text"])
             except Exception as exc:  # noqa: BLE001 - provider boundary
                 return self._embedding_failure_payload("reindex_vectors", exc)
-            vector_records.append(RagVectorRecord(row["chunk_id"], self.embedding_provider.name, len(vector), vector, now))
+            vector_records.append(RagVectorRecord(row["chunk_id"], embedding_index_provider(self.embedding_provider), len(vector), vector, now))
         result = self.rag_store.upsert_vectors(vector_records)
-        payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": bool(result.get("ok")), "status": "pass" if result.get("ok") else "blocked", "chunks": len(chunks), "provider": self.embedding_provider.name, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "vectors": result}}
+        payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": bool(result.get("ok")), "status": "pass" if result.get("ok") else "blocked", "chunks": len(chunks), "provider": embedding_index_provider(self.embedding_provider), "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "vectors": result}}
         if write_report:
             path = self.reports_dir / "p1_vector_reindex_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -386,7 +386,7 @@ class P1RagRuntime:
         store_result = self.rag_store.vector_search(
             q_vector,
             limit=max(1, int(limit)),
-            provider=self.embedding_provider.name,
+            provider=embedding_index_provider(self.embedding_provider),
         )
         if not store_result.get("ok"):
             return {
@@ -440,7 +440,7 @@ class P1RagRuntime:
             hit["vector_score"] = round(vector_score, 4)
             hit["hybrid_score"] = round(float(hit.get("rrf_score", 0.0)), 6)
             hit["score"] = hit["hybrid_score"]
-        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass" if vector.get("ok") else "blocked", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"}, "vector_status": vector.get("status")}
+        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass" if vector.get("ok") else "blocked", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": embedding_index_provider(self.embedding_provider), "fusion": "rrf_v1"}, "vector_status": vector.get("status")}
 
     def retrieval_metrics(self, write_report: bool = False) -> dict[str, Any]:
         probes = [{"query": "Jarvis RAG Quellen", "expected_terms": ["jarvis", "rag", "quellen"]}, {"query": "Memory Evidenz", "expected_terms": ["memory", "evidenz"]}, {"query": "lokale Quellen", "expected_terms": ["lokale", "quellen"]}]

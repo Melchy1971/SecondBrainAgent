@@ -1,0 +1,16 @@
+{
+  "version": "v30.20",
+  "title": "GUI Startup Surface",
+  "type": "delta",
+  "changes": [
+    "Consolidated GUI launcher commands",
+    "Added gui-status/gui-doctor/gui-shortcuts",
+    "Updated Jarvis.bat to use launcher.py gui-open",
+    "Added Windows desktop/autostart shortcut installer",
+    "Added PowerShell/Batch GUI start files",
+    "Added GUI startup documentation and tests"
+  ],
+  "validation": [
+    "pytest tests/test_v3020_gui_startup_surface.py -q"
+  ]
+}

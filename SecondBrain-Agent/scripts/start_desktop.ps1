@@ -1,1 +1,4 @@
-python launcher.py desktop16-gui
+$ErrorActionPreference = "Stop"
+$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+Set-Location $Root
+python launcher.py gui-open --project-root $Root

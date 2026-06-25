@@ -6,7 +6,7 @@ from typing import Any, Protocol
 
 from secondbrain.p1_embedding_config import evaluate_embedding_config
 
-P1_PROVIDER_HEALTH_SCHEMA = "secondbrain.p1_provider_health.v1"
+P1_PROVIDER_HEALTH_SCHEMA = "secondbrain.p1_provider_health.v2"
 
 
 class ProviderRuntime(Protocol):
@@ -35,6 +35,10 @@ def evaluate_embedding_provider_health(runtime: ProviderRuntime, *, production: 
         blockers.append("embedding_provider_not_production_ready")
     if production and provider in {"local-deterministic", "local", "deterministic"}:
         blockers.append("local_deterministic_embeddings_not_allowed_for_production")
+    if status.get("dimension_contract_ok") is False:
+        blockers.append("embedding_dimension_contract_failed")
+    if not status.get("index_provider"):
+        blockers.append("embedding_index_provider_missing")
     if bool(status.get("fallback_allowed")):
         warnings.append("embedding_fallback_explicitly_allowed")
     if bool(status.get("fallback_used")):
@@ -48,6 +52,7 @@ def evaluate_embedding_provider_health(runtime: ProviderRuntime, *, production: 
         "status": "pass" if not blockers else "blocked",
         "production": production,
         "provider": provider,
+        "index_provider": status.get("index_provider"),
         "blockers": blockers,
         "warnings": warnings,
         "provider_status": status,

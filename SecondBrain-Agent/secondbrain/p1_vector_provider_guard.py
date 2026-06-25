@@ -5,6 +5,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Protocol
 
+from secondbrain.p1_embeddings import embedding_index_provider
+
 VECTOR_PROVIDER_GUARD_SCHEMA = "secondbrain.p1_vector_provider_guard.v1"
 
 
@@ -34,8 +36,8 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
     if store is None or not hasattr(store, "validation_snapshot"):
         return None
 
-    current_provider = getattr(runtime.embedding_provider, "name", "unknown")
     provider_status = runtime.embedding_provider.status()
+    current_provider = embedding_index_provider(runtime.embedding_provider)
     current_dimensions = int(provider_status.get("dimensions") or getattr(runtime.embedding_provider, "dimensions", 0) or 0)
     snapshot = store.validation_snapshot()
     backend = getattr(store, "backend", snapshot.get("backend", "unknown"))
@@ -120,8 +122,8 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
 
 def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
     db_path = Path(runtime.db_path)
-    current_provider = getattr(runtime.embedding_provider, "name", "unknown")
     provider_status = runtime.embedding_provider.status()
+    current_provider = embedding_index_provider(runtime.embedding_provider)
     current_dimensions = int(provider_status.get("dimensions") or getattr(runtime.embedding_provider, "dimensions", 0) or 0)
     if not db_path.exists():
         return {
@@ -206,6 +208,69 @@ def audit_vector_provider(runtime: VectorRuntime, *, write_report: bool = False)
         reports_dir = Path(runtime.reports_dir)
         reports_dir.mkdir(parents=True, exist_ok=True)
         target = reports_dir / "p1_vector_provider_guard_latest.json"
+        target.write_text(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+        payload["report"] = {"path": str(target), "bytes": target.stat().st_size}
+    return payload
+
+
+def repair_vector_index(runtime: VectorRuntime, *, write_report: bool = False) -> dict[str, Any]:
+    """Repair provider/model/dimension index drift by rebuilding current vectors.
+
+    This command is intentionally narrow: it fixes stale-provider, missing-vector
+    and dimension-drift states caused by embedding provider/model/dimension
+    changes. It does not hide structural corruption such as orphan vectors.
+    """
+    before = audit_vector_provider(runtime, write_report=False)
+    blockers = set(before.get("blockers", []))
+    repairable = {"stale_vector_provider", "missing_vectors", "dimension_mismatch_vectors"}
+    hard_blockers = sorted(blockers - repairable)
+    if not blockers:
+        payload = {
+            "schema": "secondbrain.p1_vector_index_repair.v1",
+            "ok": True,
+            "status": "pass",
+            "action": "noop",
+            "reason": "vector index already matches current embedding provider identity",
+            "before": before,
+            "after": before,
+        }
+    elif hard_blockers:
+        payload = {
+            "schema": "secondbrain.p1_vector_index_repair.v1",
+            "ok": False,
+            "status": "blocked",
+            "action": "blocked",
+            "hard_blockers": hard_blockers,
+            "before": before,
+            "after": None,
+            "remediation": "repair structural index errors first; this command only handles provider/model/dimension drift and missing vectors",
+        }
+    elif not hasattr(runtime, "reindex_vectors"):
+        payload = {
+            "schema": "secondbrain.p1_vector_index_repair.v1",
+            "ok": False,
+            "status": "blocked",
+            "action": "blocked",
+            "error": "runtime_reindex_vectors_missing",
+            "before": before,
+            "after": None,
+        }
+    else:
+        reindex = runtime.reindex_vectors(write_report=write_report)
+        after = audit_vector_provider(runtime, write_report=False)
+        payload = {
+            "schema": "secondbrain.p1_vector_index_repair.v1",
+            "ok": bool(reindex.get("ok")) and bool(after.get("ok")),
+            "status": "pass" if bool(reindex.get("ok")) and bool(after.get("ok")) else "blocked",
+            "action": "reindex_current_provider",
+            "before": before,
+            "reindex": reindex,
+            "after": after,
+        }
+    if write_report:
+        reports_dir = Path(runtime.reports_dir)
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        target = reports_dir / "p1_vector_index_repair_latest.json"
         target.write_text(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
         payload["report"] = {"path": str(target), "bytes": target.stat().st_size}
     return payload

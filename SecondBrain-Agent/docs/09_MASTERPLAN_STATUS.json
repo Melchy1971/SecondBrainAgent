@@ -1,25 +1,26 @@
 {
   "current_sprint": {
     "added": [
-      "p1-provider-health command added for explicit embedding provider readiness diagnostics",
-      "P1 production gate now includes embedding_provider_production_ready blocker",
-      "local deterministic embeddings are explicitly blocked for production readiness",
-      "golden_retrieval.json config path restored from olden_retrieval typo"
+      "Vector provider audit now compares against full provider:model:dimension index identity",
+      "New p1-vector-index-repair command rebuilds vectors after provider/model/dimension drift",
+      "Repair command blocks structural corruption instead of hiding orphan-vector issues",
+      "Launcher and ModuleRegistry expose p1-vector-index-repair"
     ],
-    "branch": "delta-v30-12-p1-provider-health-gate",
-    "id": "sprint3-continuation-v30-12",
-    "name": "P1 Provider Health Production Gate",
+    "branch": "delta-v30-18-p1-vector-index-repair",
+    "id": "sprint3-continuation-v30-18",
+    "name": "P1 Vector Index Repair Command",
     "status": "implemented_pending_full_suite"
   },
-  "current_version": "v30.14",
-  "last_delta": "P1_EMBEDDING_CONFIG_CONTRACT",
-  "last_increment": "v30.13_P1_golden_quality_gate",
+  "current_version": "v30.19",
+  "gui_status": "P1_RUNTIME_SURFACE_UPDATED",
+  "last_delta": "v30.19 P1 GUI Surface Update",
+  "last_increment": "v30.18_P1_vector_index_repair",
   "last_update": "2026-06-25",
   "last_updated": "2026-06-25",
   "last_validation": {
-    "focus_suite": "10 PASS",
-    "known_existing_failure": "test_v309 vector audit expectation still conflicts with v30.11 dimension drift blocker",
-    "pytest_collect_only": "996 tests collected"
+    "focus_suite": "7 PASS",
+    "full_pytest": "pending outside sandbox timeout",
+    "pytest_collect_only": "1016 tests collected"
   },
   "modules": {
     "connectors": "foundation_only",
@@ -27,14 +28,18 @@
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
     "document_understanding": "parser_registry_integrated_with_p1_ingest_and_structured_parse_events",
+    "embedding_dimension_contract": "implemented_provider_profile_enforced",
+    "embedding_index_identity": "provider_model_dimension_key_enforced_for_ingest_reindex_search",
     "embedding_provider_health": "production_gate_hard_blocker_with_report_command",
+    "embedding_timeout_config": "implemented_for_openai_and_ollama",
     "golden_retrieval_eval": "config_path_fixed_and_coupled_to_p1_production",
     "hybrid_rag": "parser_integrated_with_batch_directory_ingest_foundation",
     "knowledge_graph": "foundation",
     "long_term_memory": "foundation",
     "mobile_companion": "backend_foundation",
     "multi_agent": "foundation",
-    "openai_embedding_provider": "sdk_boundary_integrated",
+    "ollama_embedding_provider": "http_endpoint_integrated_with_dimension_contract_and_timeout_config",
+    "openai_embedding_provider": "sdk_or_native_http_boundary_with_dimension_contract",
     "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
     "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
     "p1_store_bridge": "export_and_mirror_bridge_implemented",
@@ -49,41 +54,44 @@
     "sqlite_to_pgvector_migration": "dry_run_apply_runner_implemented",
     "vector_provider_guard": "provider_change_reindex_guard_implemented"
   },
-  "next_release": "Sprint 3 continuation: live VPS pgvector migration/audit, then production gate threshold hardening and connector runtime foundation",
+  "next_release": "Sprint 3 continuation: full collect/test, live VPS pgvector migration/audit, then connector runtime foundation",
   "notes": [
+    "v30.17: vectors are keyed by provider:model:dimension, preventing silent model-migration drift under the same provider label.",
+    "v30.16: OpenAI embeddings no longer require the optional SDK; provider falls back to native HTTPS API, not local fake vectors.",
+    "v30.15: production provider health now blocks vector dimension mismatch before ingest/reindex can corrupt index assumptions.",
     "v30.14: embedding configuration contract added; production blocks local/fallback/missing provider prerequisites before semantic gate."
   ],
   "open_blockers": [
+    "live OpenAI/Ollama provider health against real credentials/endpoints",
     "full pytest without timeout",
     "live VPS pgvector migration/audit",
-    "production semantic embedding provider",
+    "production semantic embedding provider live credentials/endpoints",
     "connector runtime",
     "secret vault"
   ],
   "p1_status": "IN_PROGRESS",
   "product_maturity_estimate": "80-90% technical foundation, 62-72% end-user product",
   "recent_changes": [
+    "v30.17: Added embedding index identity guard and tests for provider/model/dimension scoped vector storage/search.",
+    "v30.16: Added native OpenAI HTTPS embedding transport, timeout config, transport diagnostics, and no-fallback error tests.",
+    "v30.15: Added OpenAI/Ollama dimension contract enforcement and provider default dimensions.",
+    "v30.14: Added embedding configuration contract and production prerequisite checks.",
+    "v30.13: Added Golden Retrieval quality gate with recall/MRR/nDCG/passrate.",
     "v30.12: Added provider health gate and restored config/golden_retrieval.json path.",
-    "v30.10: P1 parser ingest now emits structured parse events and adds directory ingest diagnostics.",
-    "v30.9: P1 vector provider guard is now RagStore-backed and no longer assumes SQLite for pgvector audits.",
-    "v30.8: SQLite to pgvector migration runner and hard pgvector live readiness gate.",
-    "v30.7: P1RagRuntime writes through configured RagStore bridge."
+    "v30.10: P1 parser ingest emits structured parse events and directory ingest diagnostics."
   ],
   "recent_sprint": {
-    "branch": "delta-v30-12-p1-provider-health-gate",
-    "id": "sprint3-continuation-v30-12",
-    "name": "P1 Provider Health Production Gate",
+    "branch": "delta-v30-16-p1-embedding-http-provider-boundary",
+    "id": "sprint3-continuation-v30-16",
+    "name": "P1 Embedding HTTP Provider Boundary",
     "scope": [
-      "embedding provider health gate",
-      "production readiness blocker",
-      "launcher command",
-      "module registry command index",
-      "golden config path fix"
+      "native OpenAI HTTP transport",
+      "SDK compatibility",
+      "timeout config",
+      "network failure hardening"
     ],
-    "status": "PASS_FOCUS",
     "validation": [
-      "14 focused tests PASS",
-      "991 tests collected"
+      "13 focused tests pass"
     ]
   },
   "release_blockers": [
@@ -96,8 +104,23 @@
   ],
   "release_notes": [
     "v30.12: P1 production gate now blocks non-production embedding providers explicitly and exposes p1-provider-health diagnostics.",
-    "v30.11: P1 vector provider guard now blocks same-provider embedding dimension drift and requires reindex."
+    "v30.11: P1 vector provider guard now blocks same-provider embedding dimension drift and requires reindex.",
+    "v30.18: Vector audit uses full index identity and p1-vector-index-repair deterministically fixes provider/model/dimension drift through reindex."
   ],
-  "status": "P1_PROVIDER_HEALTH_GATE_HARDENED",
-  "version": "30.13"
+  "remaining_blockers": [
+    "full pytest without sandbox timeout",
+    "live VPS pgvector migration/audit",
+    "productive connector runtime",
+    "secret vault/encryption"
+  ],
+  "status": "P1_EMBEDDING_DIMENSION_CONTRACT_HARDENED",
+  "updated_scope": [
+    "desktop_views",
+    "settings_center",
+    "rag_import_center",
+    "vector_index_center",
+    "production_gate_dashboard",
+    "p1_control_panel"
+  ],
+  "version": "30.19"
 }

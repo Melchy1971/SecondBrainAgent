@@ -1,45 +1,34 @@
 @echo off
 REM ============================================================
-REM  Jarvis  -  startet das SecondBrain HUD (Port 8851)
-REM  Aufruf:  Jarvis           (startet + oeffnet Browser)
-REM           Jarvis /quiet    (startet ohne Browser, fuer Autostart)
+REM Jarvis GUI - stabiler Startpfad fuer Desktop-Verknuepfung
+REM
+REM Normal:   Jarvis.bat          -> startet GUI und Browser
+REM Autostart Jarvis.bat /quiet   -> startet GUI ohne Browser
+REM Diagnose: python launcher.py gui-doctor
 REM ============================================================
 setlocal EnableDelayedExpansion
 set "ROOT=%~dp0"
-set "PIDFILE=%ROOT%runtime\jarvis_hud.pid"
-set "URL=http://127.0.0.1:8851"
+cd /d "%ROOT%"
 
 set "QUIET="
-if /i "%~1"=="/quiet" set "QUIET=1"
-if /i "%~1"=="-quiet" set "QUIET=1"
+set "NOBROWSER="
+if /i "%~1"=="/quiet" set "QUIET=--quiet --no-browser"
+if /i "%~1"=="-quiet" set "QUIET=--quiet --no-browser"
+if /i "%~1"=="/no-browser" set "NOBROWSER=--no-browser"
 
-REM --- laeuft bereits? ---
-if exist "%PIDFILE%" (
-  set /p PID=<"%PIDFILE%"
-  tasklist /FI "PID eq !PID!" 2>nul | find "!PID!" >nul
-  if not errorlevel 1 (
-    if not defined QUIET (
-      echo Jarvis laeuft bereits ^(PID !PID!^). Oeffne %URL%
-      start "" "%URL%"
-    )
-    goto :end
-  )
+where python >nul 2>nul
+if errorlevel 1 (
+  echo Python wurde nicht gefunden. Bitte Python installieren oder PATH pruefen.
+  pause
+  exit /b 1
 )
 
-REM --- pythonw bevorzugen (kein Konsolenfenster), sonst python ---
-set "PY=pythonw"
-where pythonw >nul 2>nul || set "PY=python"
-if not defined QUIET echo Starte Jarvis HUD ...
-
-REM --- HUD im Hintergrund starten (start_hud.py schreibt die PID-Datei) ---
-start "" /b %PY% "%ROOT%scripts\start_hud.py"
-
-REM --- kurz warten, dann Browser oeffnen (sofern nicht /quiet) ---
-if not defined QUIET (
-  >nul ping -n 2 127.0.0.1
-  start "" "%URL%"
-  echo Jarvis HUD gestartet: %URL%
+python launcher.py gui-open --project-root "%ROOT%" %QUIET% %NOBROWSER%
+set "RC=%ERRORLEVEL%"
+if not "%RC%"=="0" (
+  echo.
+  echo GUI-Start fehlgeschlagen. Diagnose:
+  python launcher.py gui-doctor --project-root "%ROOT%"
+  pause
 )
-
-:end
-endlocal
+exit /b %RC%

@@ -1,14 +1,14 @@
 # Digital Twin v5
 
-Aktualisiert: 2026-06-23
+Aktualisiert: 2026-06-25
 
 ## Prioritätsmodell
 
-- projekt: 606
-- risiko: 468
-- prozess: 335
-- entscheidung: 320
-- automatisierung: 233
+- projekt: 613
+- risiko: 475
+- prozess: 337
+- entscheidung: 323
+- automatisierung: 234
 - tischtennis: 51
 - gesundheit: 45
 - lokal: 12

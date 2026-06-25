@@ -1,5 +1,5 @@
 # Vector RAG Index
 
-Chunks: 574
+Chunks: 597
 
 Index: `H:\SecondBrainAgent\SecondBrain\99_System\vector_rag\vector_index.json`

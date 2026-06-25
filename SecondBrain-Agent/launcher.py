@@ -10,16 +10,14 @@ from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p0_runtime import load_runtime_snapshot, p0_artifact_audit, p0_bootstrap, p0_contract, p0_doctor, p0_gate, p0_production_gate, p0_readiness, p0_report, p0_smoke
 from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
 from secondbrain.p1_production_gate import production_gate_with_golden
-from secondbrain.p1_provider_health import evaluate_embedding_provider_health
-from secondbrain.p1_embedding_config import evaluate_embedding_config
 from secondbrain.p1_rag_runtime import P1RagRuntime
-from secondbrain.p1_rag_migration import migrate_sqlite_to_selected_store
 from secondbrain.p1_vector_provider_guard import audit_vector_provider
 from secondbrain.p3_p1_store_bridge import mirror_project_p1_to_selected_store
 from secondbrain.p3_pgvector_foundation import pgvector_readiness
 from secondbrain.p3_rag_store import create_rag_store
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
+from secondbrain.gui.launch import gui_command
 
 
 def out(obj: Any) -> None:
@@ -175,26 +173,6 @@ def _local_status(argv: list[str]) -> int:
     return 0 if effective_ok else 1
 
 
-def _p1_rag_migration_main(raw: list[str]) -> int:
-    parser = argparse.ArgumentParser(prog="secondbrain")
-    parser.add_argument("--project-root", default=str(Path.cwd()))
-    parser.add_argument("cmd")
-    parser.add_argument("--sqlite-db-path", default=None)
-    parser.add_argument("--dry-run", action="store_true", default=False)
-    parser.add_argument("--apply", action="store_true")
-    parser.add_argument("--allow-non-pgvector", action="store_true")
-    parser.add_argument("--write-report", action="store_true")
-    args, _ = parser.parse_known_args(raw)
-    payload = migrate_sqlite_to_selected_store(
-        args.project_root,
-        sqlite_db_path=args.sqlite_db_path,
-        dry_run=not args.apply or bool(args.dry_run),
-        write_report=args.write_report,
-        require_pgvector=not args.allow_non_pgvector,
-    )
-    out(payload)
-    return 0 if payload.get("ok") else 1
-
 def _p3_pgvector_main(raw: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="secondbrain")
     parser.add_argument("--project-root", default=str(Path.cwd()))
@@ -237,15 +215,13 @@ def main(argv: list[str] | None = None) -> int:
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
         return _dependency_inventory_main(raw)
-    if cmd == "p1-rag-migrate-postgres":
-        return _p1_rag_migration_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
         return _p3_rag_store_main(raw)
     if cmd == "p3-p1-store-bridge":
         return _p3_p1_store_bridge_main(raw)
-    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-ingest-dir", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-vector-provider-audit", "p1-provider-health", "p1-embedding-config", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
+    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-vector-provider-audit", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
         parser.add_argument("--profile", default=None)
@@ -255,7 +231,6 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--title", default=None)
         parser.add_argument("--limit", type=int, default=5)
         parser.add_argument("--write-report", action="store_true")
-        parser.add_argument("--recursive", action="store_true")
         args, _ = parser.parse_known_args(raw)
         rt = P1RagRuntime(args.project_root, args.profile)
         if cmd == "p1-rag-status":
@@ -264,8 +239,6 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.ingest_text(" ".join(args.args), args.source, args.title)
         elif cmd == "p1-rag-ingest-file":
             payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
-        elif cmd == "p1-rag-ingest-dir":
-            payload = rt.ingest_directory(args.args[0] if args.args else "", recursive=args.recursive, source_prefix=args.source if args.source != "manual" else None)
         elif cmd == "p1-rag-search":
             payload = rt.search(" ".join(args.args), args.limit)
         elif cmd == "p1-rag-vector-search":
@@ -278,10 +251,6 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.embedding_status()
         elif cmd == "p1-vector-provider-audit":
             payload = audit_vector_provider(rt, write_report=args.write_report)
-        elif cmd == "p1-provider-health":
-            payload = evaluate_embedding_provider_health(rt, production=True, write_report=args.write_report)
-        elif cmd == "p1-embedding-config":
-            payload = evaluate_embedding_config(args.project_root, production=True, write_report=args.write_report)
         elif cmd == "p1-retrieval-benchmark":
             payload = rt.retrieval_benchmark(write_report=args.write_report)
         elif cmd == "p1-retrieval-metrics":
@@ -331,6 +300,8 @@ def main(argv: list[str] | None = None) -> int:
             payload = p0_doctor(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "desktop-gui", "desktop16-gui"}:
+        return gui_command(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())
         return 0

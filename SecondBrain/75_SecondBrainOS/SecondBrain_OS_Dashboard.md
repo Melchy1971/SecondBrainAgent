@@ -1,6 +1,6 @@
 # SecondBrain OS Dashboard
 
-Aktualisiert: 2026-06-23
+Aktualisiert: 2026-06-25
 
 | Modul | Status |
 |---|---|

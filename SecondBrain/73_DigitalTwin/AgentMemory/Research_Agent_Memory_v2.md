@@ -1,11 +1,11 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-06-23
+Aktualisiert: 2026-06-25
 
 ## Relevante Notizen
 
 - [[2026-06-22_knowledge-quality]] — Score 156
-- [[2026-06-23_knowledge-quality]] — Score 152
+- [[2026-06-23_knowledge-quality]] — Score 151
 - [[2026-06-19_knowledge-quality]] — Score 140
 - [[2026-06-23_research-backlog-agent]] — Score 121
 - [[2026-06-22_research-backlog-agent]] — Score 121
@@ -14,7 +14,7 @@ Aktualisiert: 2026-06-23
 - [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 33
+- [[Knowledge_Intelligence_Dashboard_v99]] — Score 35
 - [[2026-06-19_knowledge-compression]] — Score 14
 - [[2026-06-18_knowledge-compression]] — Score 9
 - [[2026-06-18_https-obsidian-md]] — Score 7

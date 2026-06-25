@@ -860,7 +860,7 @@
     {
       "id": "Personal_CRM_Index",
       "path": "80_PersonalCRM\\Personal_CRM_Index.md",
-      "entity_type": "meeting",
+      "entity_type": "decision",
       "note_type": "unknown",
       "tags": []
     },
@@ -1359,7 +1359,7 @@
     {
       "id": "Memory_Engine_Profile",
       "path": "100_MemoryEngine\\Memory_Engine_Profile.md",
-      "entity_type": "meeting",
+      "entity_type": "project",
       "note_type": "unknown",
       "tags": []
     },
@@ -1982,7 +1982,7 @@
     {
       "id": "Calendar_Agent_Memory_v2",
       "path": "73_DigitalTwin\\AgentMemory\\Calendar_Agent_Memory_v2.md",
-      "entity_type": "project",
+      "entity_type": "person",
       "note_type": "unknown",
       "tags": []
     },
@@ -15551,6 +15551,12 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-22_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
@@ -15569,6 +15575,18 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-18_semantic-deduplication",
       "type": "blocks",
       "weight": 1
@@ -15581,25 +15599,37 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_contradictions",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-22_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
@@ -15629,6 +15659,12 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_decision-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-19_project-intelligence",
       "type": "blocks",
       "weight": 1
@@ -15653,6 +15689,12 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "Project_Agent_Memory_v2",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "SecondBrain OS – Benutzerhandbuch für Einsteiger",
       "type": "blocks",
       "weight": 1
@@ -15666,6 +15708,18 @@
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "Project_Memory",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_process-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -15731,19 +15785,7 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Project_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "Process_Memory",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Calendar_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -15767,6 +15809,18 @@
     },
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "Calendar_Agent_Memory_v2",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "target": "2026-06-23_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-19_090550_rag_answer",
       "type": "blocks",
       "weight": 1
@@ -15774,60 +15828,6 @@
     {
       "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "target": "2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Temporal_Graph",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Process_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-19_self-reflection",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "SecondBrain OS v9.1 – Einsteigerhandbuch",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "Memory_Profile",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-19_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-18_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "target": "2026-06-18_daily-briefing",
       "type": "blocks",
       "weight": 1
     },
@@ -19253,6 +19253,12 @@
     },
     {
       "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -19272,6 +19278,12 @@
     {
       "source": "2026-06-23_project-intelligence",
       "target": "weighted_edges",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_self-reflection",
       "type": "blocks",
       "weight": 1
     },
@@ -19302,6 +19314,24 @@
     {
       "source": "2026-06-23_project-intelligence",
       "target": "Goal_Map_v97",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -19385,12 +19415,6 @@
     },
     {
       "source": "2026-06-23_project-intelligence",
-      "target": "Project_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-intelligence",
       "target": "Process_Memory",
       "type": "blocks",
       "weight": 1
@@ -19398,12 +19422,6 @@
     {
       "source": "2026-06-23_project-intelligence",
       "target": "Calendar_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-intelligence",
-      "target": "Process_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -19710,6 +19728,12 @@
     {
       "source": "2026-06-23_project-intelligence",
       "target": "Business_OS_Modules",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_weekly-os",
       "type": "blocks",
       "weight": 1
     },
@@ -20885,7 +20909,19 @@
     },
     {
       "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
       "target": "2026-06-22_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_task-agent",
       "type": "decides",
       "weight": 1
     },
@@ -20934,6 +20970,12 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "facts_tasks",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_learning-plan",
       "type": "decides",
       "weight": 1
     },
@@ -20999,6 +21041,12 @@
     },
     {
       "source": "2026-06-23_meeting-intelligence",
+      "target": "Personal_CRM_Index",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
       "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "decides",
       "weight": 1
@@ -21006,12 +21054,6 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "2026-06-18_https-obsidian-md",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-intelligence",
-      "target": "Personal_CRM_Index",
       "type": "decides",
       "weight": 1
     },
@@ -21048,6 +21090,24 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "Meeting",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_recommendations",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_meeting-agent",
       "type": "decides",
       "weight": 1
     },
@@ -21090,6 +21150,12 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "Agent_Swarm_Status",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_knowledge-quality",
       "type": "decides",
       "weight": 1
     },
@@ -21161,6 +21227,12 @@
     },
     {
       "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_reasoning-map",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
       "target": "Digital_Twin_v5",
       "type": "decides",
       "weight": 1
@@ -21168,6 +21240,12 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "Executive_Dashboard",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_decision-agent",
       "type": "decides",
       "weight": 1
     },
@@ -21276,6 +21354,24 @@
     {
       "source": "2026-06-23_meeting-intelligence",
       "target": "Autonomous_Agents_Status",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_self-improvement-plan",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-intelligence",
+      "target": "2026-06-23_calendar-intelligence",
       "type": "decides",
       "weight": 1
     },
@@ -21473,6 +21569,30 @@
     },
     {
       "source": "facts_tasks",
+      "target": "2026-06-23_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
       "target": "2026-06-19_chief-of-staff-v98",
       "type": "decides",
       "weight": 1
@@ -21510,6 +21630,24 @@
     {
       "source": "facts_tasks",
       "target": "2026-06-22_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "facts_tasks",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "decides",
       "weight": 1
     },
@@ -23573,6 +23711,30 @@
     },
     {
       "source": "2026-06-23_self-improvement-plan",
+      "target": "2026-06-23_cross-source-intelligence",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-improvement-plan",
+      "target": "2026-06-23_monitoring",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-improvement-plan",
+      "target": "2026-06-23_personal-kpis",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-improvement-plan",
+      "target": "2026-06-23_weekly-review",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-improvement-plan",
       "target": "Business_OS_Modules",
       "type": "references",
       "weight": 1
@@ -23944,30 +24106,6 @@
       "weight": 1
     },
     {
-      "source": "2026-06-23_self-improvement-plan",
-      "target": "Explain like I am 5",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-improvement-plan",
-      "target": "Fix grammar and spelling",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-improvement-plan",
-      "target": "Generate glossary",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-improvement-plan",
-      "target": "Generate table of contents",
-      "type": "references",
-      "weight": 1
-    },
-    {
       "source": "2026-06-19_090550_rag_answer",
       "target": "weighted_edges",
       "type": "creates_task",
@@ -24083,90 +24221,6 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Voice_Assistant_Status",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Vector_RAG_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "SecondBrain_v9_5_Control_Center",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "SecondBrain_OS_Control_Center",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Plugin_Ecosystem",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Personal_CRM_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Meeting_Transcription_Status",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Executive_Dashboard_v9",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Email_Connector_Status",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Digital_Twin_v6",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Calendar_Connector_Status",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Autonomous_Agents_Status",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "2026-06-23_monitoring",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "2026-06-23_event-bus",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
       "target": "facts_tasks",
       "type": "blocks",
       "weight": 1
@@ -24203,31 +24257,49 @@
     },
     {
       "source": "Memory_Engine_Profile",
+      "target": "Voice_Assistant_Status",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "Vector_RAG_Index",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "SecondBrain_v9_5_Control_Center",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
       "target": "SecondBrain_OS_Dashboard",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Research_Agent_Memory_v2",
+      "target": "SecondBrain_OS_Control_Center",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Project_Agent_Memory_v2",
+      "target": "Plugin_Ecosystem",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Process_Agent_Memory_v2",
+      "target": "Personal_CRM_Index",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Meeting_Agent_Memory_v2",
+      "target": "Meeting_Transcription_Status",
       "type": "blocks",
       "weight": 1
     },
@@ -24239,7 +24311,19 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Executive_Agent_Memory_v2",
+      "target": "Executive_Dashboard_v9",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "Email_Connector_Status",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "Digital_Twin_v6",
       "type": "blocks",
       "weight": 1
     },
@@ -24251,13 +24335,67 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Decision_Intelligence_v2",
+      "target": "Calendar_Connector_Status",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "Decision_Agent_Memory_v2",
+      "target": "Autonomous_Agents_Status",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_self-improvement-plan",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_recommendations",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_monitoring",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_learning-plan",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_event-bus",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-23_calendar-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "Semantic_Index",
       "type": "blocks",
       "weight": 1
     },
@@ -24287,13 +24425,19 @@
     },
     {
       "source": "Memory_Engine_Profile",
+      "target": "2026-06-19_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
       "target": "2026-06-18_semantic-deduplication",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-19_chief-of-staff-v98",
+      "target": "2026-06-18_prediction-report",
       "type": "blocks",
       "weight": 1
     },
@@ -24305,7 +24449,7 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-18_prediction-report",
+      "target": "facts_tasks",
       "type": "blocks",
       "weight": 1
     },
@@ -24323,7 +24467,7 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "facts_tasks",
+      "target": "PDF-Analyse-Tool",
       "type": "blocks",
       "weight": 1
     },
@@ -24335,7 +24479,7 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "PDF-Analyse-Tool",
+      "target": "2026-06-19_task-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -24347,25 +24491,7 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-19_task-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
       "target": "2026-06-18_prozesslandkarte",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "2026-06-18_recommendations",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Verein_Index",
       "type": "blocks",
       "weight": 1
     },
@@ -24383,25 +24509,13 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-18_process-mining",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "Digital_Twin_Profile",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
       "target": "2026-06-19_reasoning-map",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-19_daily-briefing",
+      "target": "2026-06-18_recommendations",
       "type": "blocks",
       "weight": 1
     },
@@ -24413,13 +24527,7 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-18_decision-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Memory_Engine_Profile",
-      "target": "SecondBrain-Agent Masterplan v1.0",
+      "target": "Verein_Index",
       "type": "blocks",
       "weight": 1
     },
@@ -24431,13 +24539,43 @@
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-18_knowledge-gaps",
+      "target": "Digital_Twin_Profile",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Memory_Engine_Profile",
-      "target": "2026-06-18",
+      "target": "2026-06-19_daily-briefing",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-18_process-mining",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-18_decision-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-22_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-19_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Memory_Engine_Profile",
+      "target": "2026-06-18_knowledge-gaps",
       "type": "blocks",
       "weight": 1
     },
@@ -24923,6 +25061,12 @@
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -24953,7 +25097,19 @@
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "weighted_edges",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_self-reflection",
       "type": "blocks",
       "weight": 1
     },
@@ -24983,6 +25139,18 @@
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "Goal_Map_v97",
       "type": "blocks",
       "weight": 1
@@ -24995,7 +25163,13 @@
     },
     {
       "source": "2026-06-23_self-reflection",
-      "target": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_daily-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -25007,43 +25181,13 @@
     },
     {
       "source": "2026-06-23_self-reflection",
-      "target": "2026-06-22_reasoning-map",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "2026-06-22_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "2026-06-22_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "2026-06-19_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "2026-06-18_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "2026-06-22_task-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
       "target": "Memory_Profile",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_self-reflection",
       "type": "blocks",
       "weight": 1
     },
@@ -25079,6 +25223,12 @@
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "2026-06-22_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
@@ -25097,13 +25247,31 @@
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "2026-06-22_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_self-reflection",
+      "target": "facts_tasks",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
       "target": "SecondBrain OS v9.1 – Einsteigerhandbuch",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_self-reflection",
+      "target": "2026-06-23_task-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -25128,36 +25296,6 @@
     {
       "source": "2026-06-23_self-reflection",
       "target": "2026-06-18_decision-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "facts_tasks",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "facts_tasks",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "Weekly_Plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "Quarterly_Plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_self-reflection",
-      "target": "Personal_CRM_Index",
       "type": "blocks",
       "weight": 1
     },
@@ -26129,6 +26267,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -26148,6 +26292,12 @@
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-22_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -26195,6 +26345,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "Memory_Profile",
       "type": "blocks",
       "weight": 1
@@ -26219,6 +26375,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_reasoning-map",
       "type": "blocks",
       "weight": 1
@@ -26231,12 +26393,6 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-23_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-22_reasoning-map",
       "type": "blocks",
       "weight": 1
@@ -26244,6 +26400,12 @@
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_reasoning-map",
       "type": "blocks",
       "weight": 1
     },
@@ -26279,7 +26441,25 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_contradictions",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "Temporal_Graph",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_decision-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -26297,6 +26477,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_process-design-backlog",
       "type": "blocks",
       "weight": 1
@@ -26309,19 +26495,13 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_process-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-22_meeting-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-23_meeting-intelligence",
       "type": "blocks",
       "weight": 1
     },
@@ -26381,6 +26561,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "Memory_Engine_Profile",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "type": "blocks",
       "weight": 1
@@ -26388,12 +26574,6 @@
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-18_memory-replay",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "Memory_Engine_Profile",
       "type": "blocks",
       "weight": 1
     },
@@ -26429,6 +26609,18 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_meeting-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "Project_Agent_Memory_v2",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_research-backlog-agent",
       "type": "blocks",
       "weight": 1
@@ -26441,19 +26633,13 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "Process_Memory",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "Project_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "Calendar_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -26466,6 +26652,12 @@
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-18_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
+      "target": "Calendar_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -26531,6 +26723,12 @@
     },
     {
       "source": "2026-06-23_reasoning-map",
+      "target": "facts_tasks",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_reasoning-map",
       "target": "2026-06-19_daily-os",
       "type": "blocks",
       "weight": 1
@@ -26538,66 +26736,6 @@
     {
       "source": "2026-06-23_reasoning-map",
       "target": "2026-06-22_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-19_daily-assistant",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-22_daily-assistant",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-22_task-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "Ontology_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "facts_tasks",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-19_process-mining",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-18_daily-briefing",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-19_prozesslandkarte",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_reasoning-map",
-      "target": "2026-06-18_process-design-backlog",
       "type": "blocks",
       "weight": 1
     },
@@ -26843,6 +26981,12 @@
     },
     {
       "source": "2026-06-23_daily-assistant",
+      "target": "2026-06-23_project-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_daily-assistant",
       "target": "2026-06-22_project-agent",
       "type": "decides",
       "weight": 1
@@ -26867,7 +27011,7 @@
     },
     {
       "source": "2026-06-23_daily-assistant",
-      "target": "2026-06-22_chief-of-staff-v98",
+      "target": "2026-06-23_task-agent",
       "type": "decides",
       "weight": 1
     },
@@ -26892,12 +27036,6 @@
     {
       "source": "2026-06-23_daily-assistant",
       "target": "PDF-Analyse-Tool",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_daily-assistant",
-      "target": "2026-06-22_chief-of-staff-v98",
       "type": "decides",
       "weight": 1
     },
@@ -26945,6 +27083,12 @@
     },
     {
       "source": "2026-06-23_daily-assistant",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_daily-assistant",
       "target": "2026-06-22_chief-of-staff-v98",
       "type": "decides",
       "weight": 1
@@ -26952,12 +27096,6 @@
     {
       "source": "2026-06-23_daily-assistant",
       "target": "2026-06-19_chief-of-staff-v98",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_daily-assistant",
-      "target": "2026-06-22_reasoning-map",
       "type": "decides",
       "weight": 1
     },
@@ -27071,7 +27209,19 @@
     },
     {
       "source": "2026-06-23_task-agent",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_task-agent",
       "target": "2026-06-22_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_task-agent",
+      "target": "2026-06-23_task-agent",
       "type": "decides",
       "weight": 1
     },
@@ -27833,6 +27983,12 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-22_research-backlog-agent",
       "type": "references",
       "weight": 1
@@ -27851,6 +28007,12 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-22_chief-of-staff-v98",
       "type": "references",
       "weight": 1
@@ -27858,6 +28020,18 @@
     {
       "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-19_chief-of-staff-v98",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_process-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_meeting-agent",
       "type": "references",
       "weight": 1
     },
@@ -27911,6 +28085,12 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "facts_tasks",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-22_task-agent",
       "type": "references",
       "weight": 1
@@ -27918,12 +28098,6 @@
     {
       "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-19_project-agent",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "facts_tasks",
       "type": "references",
       "weight": 1
     },
@@ -28025,6 +28199,18 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_reasoning-map",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
+      "target": "2026-06-23_project-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-22_project-agent",
       "type": "references",
       "weight": 1
@@ -28032,12 +28218,6 @@
     {
       "source": "2026-06-23_research-backlog-agent",
       "target": "SecondBrain OS v9.1 – Einsteigerhandbuch",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-23_reasoning-map",
       "type": "references",
       "weight": 1
     },
@@ -28068,18 +28248,6 @@
     {
       "source": "2026-06-23_research-backlog-agent",
       "target": "SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "Entity_Index",
       "type": "references",
       "weight": 1
     },
@@ -28121,6 +28289,12 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "2026-06-19_chief-of-staff",
       "type": "references",
       "weight": 1
@@ -28151,43 +28325,19 @@
     },
     {
       "source": "2026-06-23_research-backlog-agent",
+      "target": "Entity_Index",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_research-backlog-agent",
       "target": "Daily_Plan",
       "type": "references",
       "weight": 1
     },
     {
       "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-22_cross-source-intelligence",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-19_recommendations",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-19_learning-report",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-19_evening-review",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-19_cross-source-intelligence",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_research-backlog-agent",
-      "target": "2026-06-18_recommendations",
+      "target": "2026-06-23_cross-source-intelligence",
       "type": "references",
       "weight": 1
     },
@@ -28925,6 +29075,12 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
       "target": "weighted_edges",
       "type": "decides",
       "weight": 1
@@ -28937,7 +29093,19 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_meeting-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
       "target": "2026-06-22_meeting-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_meeting-intelligence",
       "type": "decides",
       "weight": 1
     },
@@ -28950,12 +29118,6 @@
     {
       "source": "2026-06-23_meeting-agent",
       "target": "2026-06-19_meeting-agent",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-23_meeting-intelligence",
       "type": "decides",
       "weight": 1
     },
@@ -28979,13 +29141,13 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-22_reasoning-map",
+      "target": "2026-06-23_reasoning-map",
       "type": "decides",
       "weight": 1
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-23_reasoning-map",
+      "target": "2026-06-22_reasoning-map",
       "type": "decides",
       "weight": 1
     },
@@ -29003,19 +29165,25 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-22_task-agent",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
       "target": "2026-06-23_task-agent",
       "type": "decides",
       "weight": 1
     },
     {
       "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-22_task-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
       "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_decision-agent",
       "type": "decides",
       "weight": 1
     },
@@ -29069,13 +29237,19 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "Entity_Index",
+      "target": "facts_tasks",
       "type": "decides",
       "weight": 1
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-19_decision-agent",
+      "target": "Meeting_Agent_Memory_v2",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "Entity_Index",
       "type": "decides",
       "weight": 1
     },
@@ -29087,7 +29261,19 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "Meeting_Agent_Memory_v2",
+      "target": "Memory_Engine_Profile",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-19_decision-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_knowledge-quality",
       "type": "decides",
       "weight": 1
     },
@@ -29105,31 +29291,19 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "Memory_Engine_Profile",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
       "target": "Digital_Twin_v6",
       "type": "decides",
       "weight": 1
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "Calendar_Agent_Memory_v2",
+      "target": "Decision_Agent_Memory_v2",
       "type": "decides",
       "weight": 1
     },
     {
       "source": "2026-06-23_meeting-agent",
       "target": "2026-06-19_semantic-deduplication",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "facts_tasks",
       "type": "decides",
       "weight": 1
     },
@@ -29147,7 +29321,13 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
-      "target": "Decision_Agent_Memory_v2",
+      "target": "Executive_Agent_Memory_v2",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
+      "target": "Calendar_Agent_Memory_v2",
       "type": "decides",
       "weight": 1
     },
@@ -29184,12 +29364,6 @@
     {
       "source": "2026-06-23_meeting-agent",
       "target": "Executive_Dashboard",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "Executive_Agent_Memory_v2",
       "type": "decides",
       "weight": 1
     },
@@ -29237,37 +29411,13 @@
     },
     {
       "source": "2026-06-23_meeting-agent",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "decides",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_meeting-agent",
       "target": "2026-06-23_learning-plan",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-22_learning-plan",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-19_recommendations",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-19_learning-plan",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-18_recommendations",
-      "type": "decides",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_meeting-agent",
-      "target": "2026-06-18_quality-scores",
       "type": "decides",
       "weight": 1
     },
@@ -30233,6 +30383,12 @@
     },
     {
       "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -30258,6 +30414,12 @@
     {
       "source": "2026-06-23_project-agent",
       "target": "2026-06-22_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -30299,13 +30461,13 @@
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_reasoning-map",
+      "target": "2026-06-23_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "2026-06-23_reasoning-map",
+      "target": "2026-06-19_reasoning-map",
       "type": "blocks",
       "weight": 1
     },
@@ -30317,19 +30479,31 @@
     },
     {
       "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
       "target": "2026-06-22_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "2026-06-23_task-agent",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -30383,7 +30557,7 @@
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "2026-06-23_project-intelligence",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -30437,7 +30611,25 @@
     },
     {
       "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_decision-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
       "target": "Project_Memory",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "Project_Agent_Memory_v2",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "2026-06-23_process-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -30503,12 +30695,6 @@
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "Project_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
       "target": "Process_Memory",
       "type": "blocks",
       "weight": 1
@@ -30516,12 +30702,6 @@
     {
       "source": "2026-06-23_project-agent",
       "target": "Entity_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "Calendar_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -30540,6 +30720,24 @@
     {
       "source": "2026-06-23_project-agent",
       "target": "2026-06-18_decision-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "facts_tasks",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "Personal_CRM_Index",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "Memory_Engine_Profile",
       "type": "blocks",
       "weight": 1
     },
@@ -30569,12 +30767,6 @@
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "Personal_CRM_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
       "target": "Executive_Dashboard_v9",
       "type": "blocks",
       "weight": 1
@@ -30582,6 +30774,12 @@
     {
       "source": "2026-06-23_project-agent",
       "target": "Digital_Twin_v6",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_project-agent",
+      "target": "Calendar_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -30599,19 +30797,7 @@
     },
     {
       "source": "2026-06-23_project-agent",
-      "target": "facts_tasks",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
       "target": "PDF-Analyse-Tool",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "Memory_Engine_Profile",
       "type": "blocks",
       "weight": 1
     },
@@ -30672,42 +30858,6 @@
     {
       "source": "2026-06-23_project-agent",
       "target": "Executive_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_prozesslandkarte",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_personal-kpis",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_context-map",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-19_autonomous-project-plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_project-agent",
-      "target": "2026-06-18_refactoring-proposals",
       "type": "blocks",
       "weight": 1
     },
@@ -31709,6 +31859,12 @@
     },
     {
       "source": "2026-06-23_decision-agent",
+      "target": "2026-06-23_weekly-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_decision-agent",
       "target": "2026-06-23_recommendations",
       "type": "blocks",
       "weight": 1
@@ -31883,6 +32039,12 @@
     },
     {
       "source": "2026-06-23_decision-agent",
+      "target": "2026-06-23_personal-kpis",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_decision-agent",
       "target": "2026-06-23_meeting-intelligence",
       "type": "blocks",
       "weight": 1
@@ -31890,6 +32052,12 @@
     {
       "source": "2026-06-23_decision-agent",
       "target": "2026-06-23_meeting-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_decision-agent",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -32034,24 +32202,6 @@
     {
       "source": "2026-06-23_decision-agent",
       "target": "2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_decision-agent",
-      "target": "2026-06-18_meeting-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_decision-agent",
-      "target": "Memory_Engine_Profile",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_decision-agent",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
@@ -32837,12 +32987,6 @@
     },
     {
       "source": "2026-06-23_process-agent",
-      "target": "2026-06-23_project-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_process-agent",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -32873,7 +33017,19 @@
     },
     {
       "source": "2026-06-23_process-agent",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
       "target": "2026-06-18_prediction-report",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
+      "target": "2026-06-23_process-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -32891,7 +33047,19 @@
     },
     {
       "source": "2026-06-23_process-agent",
-      "target": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -32909,19 +33077,7 @@
     },
     {
       "source": "2026-06-23_process-agent",
-      "target": "2026-06-23_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_process-agent",
       "target": "2026-06-22_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_process-agent",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
@@ -33017,6 +33173,12 @@
     },
     {
       "source": "2026-06-23_process-agent",
+      "target": "Memory_Engine_Profile",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
       "target": "2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "type": "blocks",
       "weight": 1
@@ -33048,12 +33210,6 @@
     {
       "source": "2026-06-23_process-agent",
       "target": "2026-06-18_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_process-agent",
-      "target": "Memory_Engine_Profile",
       "type": "blocks",
       "weight": 1
     },
@@ -33095,19 +33251,25 @@
     },
     {
       "source": "2026-06-23_process-agent",
+      "target": "Personal_CRM_Index",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_process-agent",
       "target": "Memory_Profile",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_process-agent",
-      "target": "2026-06-22_knowledge-quality",
+      "target": "2026-06-23_knowledge-quality",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_process-agent",
-      "target": "Personal_CRM_Index",
+      "target": "2026-06-22_knowledge-quality",
       "type": "blocks",
       "weight": 1
     },
@@ -34619,6 +34781,12 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_project-agent",
       "type": "blocks",
       "weight": 1
@@ -34643,7 +34811,7 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-22_chief-of-staff-v98",
+      "target": "2026-06-23_task-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -34668,12 +34836,6 @@
     {
       "source": "2026-06-23_chief-of-staff-v98",
       "target": "PDF-Analyse-Tool",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-22_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -34721,6 +34883,12 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
@@ -34733,12 +34901,6 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-22_reasoning-map",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-19_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
@@ -34746,6 +34908,12 @@
     {
       "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -34757,37 +34925,19 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_task-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-19_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "SecondBrain OS v9.1 – Einsteigerhandbuch",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "PDF-Analyse-Tool",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-18_projekt-secondbrain-agent-v0-3",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-18_https-obsidian-md",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "task",
+      "target": "2026-06-23_project-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -34818,6 +34968,12 @@
     {
       "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -34859,13 +35015,13 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-19_reasoning-map",
+      "target": "2026-06-23_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_reasoning-map",
+      "target": "2026-06-19_reasoning-map",
       "type": "blocks",
       "weight": 1
     },
@@ -34877,19 +35033,31 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_task-agent",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_task-agent",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -34937,31 +35105,7 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-22_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-18_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "project",
+      "target": "SecondBrain OS ÔÇô \n\n",
       "type": "blocks",
       "weight": 1
     },
@@ -35093,6 +35237,12 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_weekly-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-23_recommendations",
       "type": "blocks",
       "weight": 1
@@ -35117,19 +35267,7 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-22_learning-plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
       "target": "weighted_edges",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_project-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -35165,7 +35303,19 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-18_prediction-report",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_process-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -35183,7 +35333,19 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_reasoning-map",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -35201,19 +35363,7 @@
     },
     {
       "source": "2026-06-23_chief-of-staff-v98",
-      "target": "2026-06-23_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
       "target": "2026-06-22_project-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "blocks",
       "weight": 1
     },
@@ -35298,12 +35448,6 @@
     {
       "source": "2026-06-23_chief-of-staff-v98",
       "target": "Temporal_Graph",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_chief-of-staff-v98",
-      "target": "Process_Agent_Memory_v2",
       "type": "blocks",
       "weight": 1
     },
@@ -36425,6 +36569,12 @@
     },
     {
       "source": "2026-06-23_contradictions",
+      "target": "2026-06-23_contradictions",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_contradictions",
       "target": "2026-06-19_knowledge-quality",
       "type": "blocks",
       "weight": 1
@@ -36455,6 +36605,12 @@
     },
     {
       "source": "2026-06-23_contradictions",
+      "target": "2026-06-23_weekly-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_contradictions",
       "target": "2026-06-19_personal-kpis",
       "type": "blocks",
       "weight": 1
@@ -36462,6 +36618,12 @@
     {
       "source": "2026-06-23_contradictions",
       "target": "2026-06-22_personal-kpis",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_contradictions",
+      "target": "2026-06-23_personal-kpis",
       "type": "blocks",
       "weight": 1
     },
@@ -38975,6 +39137,12 @@
     },
     {
       "source": "2026-06-23_knowledge-quality",
+      "target": "2026-06-23_personal-kpis",
+      "type": "creates_task",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_knowledge-quality",
       "target": "Calendar_Connector_Status",
       "type": "creates_task",
       "weight": 1
@@ -39222,6 +39390,12 @@
     {
       "source": "2026-06-23_knowledge-quality",
       "target": "2026-06-23_calendar-intelligence",
+      "type": "creates_task",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_knowledge-quality",
+      "target": "2026-06-23_cross-source-intelligence",
       "type": "creates_task",
       "weight": 1
     },
@@ -39995,6 +40169,12 @@
     },
     {
       "source": "2026-06-23_knowledge-quality",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "creates_task",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_knowledge-quality",
       "target": "2026-06-23_learning-plan",
       "type": "creates_task",
       "weight": 1
@@ -40044,6 +40224,12 @@
     {
       "source": "2026-06-23_knowledge-quality",
       "target": "2026-06-23_self-improvement-plan",
+      "type": "creates_task",
+      "weight": 1
+    },
+    {
+      "source": "2026-06-23_knowledge-quality",
+      "target": "2026-06-23_weekly-os",
       "type": "creates_task",
       "weight": 1
     },
@@ -40116,30 +40302,6 @@
     {
       "source": "2026-06-23_knowledge-quality",
       "target": "Explain like I am 5",
-      "type": "creates_task",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_knowledge-quality",
-      "target": "Fix grammar and spelling",
-      "type": "creates_task",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_knowledge-quality",
-      "target": "Full_Knowledge_Graph",
-      "type": "creates_task",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_knowledge-quality",
-      "target": "Generate glossary",
-      "type": "creates_task",
-      "weight": 1
-    },
-    {
-      "source": "2026-06-23_knowledge-quality",
-      "target": "Generate table of contents",
       "type": "creates_task",
       "weight": 1
     },
@@ -40373,6 +40535,12 @@
     },
     {
       "source": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_personal-kpis",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Knowledge_Intelligence_Dashboard_v99",
       "target": "Calendar_Connector_Status",
       "type": "blocks",
       "weight": 1
@@ -40512,12 +40680,6 @@
     {
       "source": "Knowledge_Intelligence_Dashboard_v99",
       "target": "2026-06-19_102747_production-ready-gate-v96",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Knowledge_Intelligence_Dashboard_v99",
-      "target": "2026-06-19_103237_production-ready-gate-v96",
       "type": "blocks",
       "weight": 1
     },
@@ -40763,7 +40925,7 @@
     },
     {
       "source": "2026-06-23_daily-os",
-      "target": "2026-06-19_chief-of-staff-v98",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -40841,7 +41003,7 @@
     },
     {
       "source": "2026-06-23_daily-os",
-      "target": "2026-06-23_chief-of-staff-v98",
+      "target": "2026-06-22_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -41003,7 +41165,19 @@
     },
     {
       "source": "Research_Agent_Memory_v2",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Research_Agent_Memory_v2",
       "target": "2026-06-19_knowledge-quality",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Research_Agent_Memory_v2",
+      "target": "2026-06-23_research-backlog-agent",
       "type": "references",
       "weight": 1
     },
@@ -41016,6 +41190,12 @@
     {
       "source": "Research_Agent_Memory_v2",
       "target": "2026-06-19_research-backlog-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Research_Agent_Memory_v2",
+      "target": "2026-06-23_self-improvement-plan",
       "type": "references",
       "weight": 1
     },
@@ -41069,7 +41249,19 @@
     },
     {
       "source": "Research_Agent_Memory_v2",
+      "target": "Import aus Chat Gpt",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Research_Agent_Memory_v2",
       "target": "Entity_Index",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Research_Agent_Memory_v2",
+      "target": "2026-06-19_research-backlog",
       "type": "references",
       "weight": 1
     },
@@ -41081,13 +41273,7 @@
     },
     {
       "source": "Research_Agent_Memory_v2",
-      "target": "Import aus Chat Gpt",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Research_Agent_Memory_v2",
-      "target": "2026-06-19_research-backlog",
+      "target": "2026-06-23_cross-source-intelligence",
       "type": "references",
       "weight": 1
     },
@@ -41272,32 +41458,14 @@
       "weight": 1
     },
     {
-      "source": "Research_Agent_Memory_v2",
-      "target": "Executive_Dashboard",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Research_Agent_Memory_v2",
-      "target": "Decision_Register",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Research_Agent_Memory_v2",
-      "target": "Decision_Journal",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Research_Agent_Memory_v2",
-      "target": "Decision_Intelligence_v2",
-      "type": "references",
+      "source": "Project_Agent_Memory_v2",
+      "target": "weighted_edges",
+      "type": "blocks",
       "weight": 1
     },
     {
       "source": "Project_Agent_Memory_v2",
-      "target": "weighted_edges",
+      "target": "2026-06-23_project-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -41333,6 +41501,18 @@
     },
     {
       "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
       "target": "2026-06-22_self-reflection",
       "type": "blocks",
       "weight": 1
@@ -41340,6 +41520,12 @@
     {
       "source": "Project_Agent_Memory_v2",
       "target": "2026-06-19_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_daily-os",
       "type": "blocks",
       "weight": 1
     },
@@ -41387,6 +41573,12 @@
     },
     {
       "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
       "target": "2026-06-22_project-intelligence",
       "type": "blocks",
       "weight": 1
@@ -41394,6 +41586,18 @@
     {
       "source": "Project_Agent_Memory_v2",
       "target": "2026-06-19_self-healing-report",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_reasoning-map",
       "type": "blocks",
       "weight": 1
     },
@@ -41417,7 +41621,7 @@
     },
     {
       "source": "Project_Agent_Memory_v2",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_decision-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -41435,6 +41639,12 @@
     },
     {
       "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
       "target": "2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
       "type": "blocks",
       "weight": 1
@@ -41442,6 +41652,12 @@
     {
       "source": "Project_Agent_Memory_v2",
       "target": "2026-06-19_knowledge-quality",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -41460,6 +41676,12 @@
     {
       "source": "Project_Agent_Memory_v2",
       "target": "Project_Memory",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Project_Agent_Memory_v2",
+      "target": "2026-06-23_task-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -41536,63 +41758,9 @@
       "weight": 1
     },
     {
-      "source": "Project_Agent_Memory_v2",
-      "target": "Quarterly_Plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "Monthly_Plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "Memory_Profile",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "Calendar_Agent_Memory_v2",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-22_process-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-19_task-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-19_process-design-backlog",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-19_process-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-19_decision-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Project_Agent_Memory_v2",
-      "target": "2026-06-19_daily-assistant",
-      "type": "blocks",
+      "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_decision-agent",
+      "type": "references",
       "weight": 1
     },
     {
@@ -41604,6 +41772,12 @@
     {
       "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-19_decision-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "references",
       "weight": 1
     },
@@ -41633,6 +41807,12 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-22_meeting-intelligence",
       "type": "references",
       "weight": 1
@@ -41651,6 +41831,12 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_self-reflection",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-22_self-reflection",
       "type": "references",
       "weight": 1
@@ -41658,6 +41844,12 @@
     {
       "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-19_self-reflection",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-agent",
       "type": "references",
       "weight": 1
     },
@@ -41699,6 +41891,18 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
+      "target": "Decision_Intelligence_v2",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_reasoning-map",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-22_task-agent",
       "type": "references",
       "weight": 1
@@ -41729,7 +41933,13 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
-      "target": "facts_tasks",
+      "target": "2026-06-23_task-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
       "type": "references",
       "weight": 1
     },
@@ -41753,12 +41963,6 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
-      "target": "Decision_Intelligence_v2",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
       "target": "Decision_Intelligence",
       "type": "references",
       "weight": 1
@@ -41771,13 +41975,13 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
-      "target": "Memory_Engine_Profile",
+      "target": "facts_tasks",
       "type": "references",
       "weight": 1
     },
     {
       "source": "Decision_Agent_Memory_v2",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "Memory_Engine_Profile",
       "type": "references",
       "weight": 1
     },
@@ -41813,6 +42017,18 @@
     },
     {
       "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_weekly-review",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
+      "target": "2026-06-23_daily-os",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Decision_Agent_Memory_v2",
       "target": "2026-06-22_weekly-review",
       "type": "references",
       "weight": 1
@@ -41842,56 +42058,8 @@
       "weight": 1
     },
     {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "2026-06-19_chief-of-staff-v2",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "2026-06-18_knowledge-gaps",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "2026-06-18_chief-of-staff-v2",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "project",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "facts_decisions",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "facts_decisions",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "Voice_Assistant_Status",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "Semantic_OS_Status",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Decision_Agent_Memory_v2",
-      "target": "Projekt",
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-agent",
       "type": "references",
       "weight": 1
     },
@@ -41904,6 +42072,12 @@
     {
       "source": "Meeting_Agent_Memory_v2",
       "target": "2026-06-19_meeting-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-intelligence",
       "type": "references",
       "weight": 1
     },
@@ -41945,6 +42119,18 @@
     },
     {
       "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_decision-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
       "target": "2026-06-22_knowledge-quality",
       "type": "references",
       "weight": 1
@@ -41958,6 +42144,12 @@
     {
       "source": "Meeting_Agent_Memory_v2",
       "target": "Decision_Agent_Memory_v2",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_reasoning-map",
       "type": "references",
       "weight": 1
     },
@@ -42095,6 +42287,24 @@
     },
     {
       "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_recommendations",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "references",
+      "weight": 1
+    },
+    {
+      "source": "Meeting_Agent_Memory_v2",
       "target": "2026-06-22_research-backlog-agent",
       "type": "references",
       "weight": 1
@@ -42148,51 +42358,9 @@
       "weight": 1
     },
     {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "facts_documents",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "facts_documents",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "Weekly_Plan",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "SecondBrain_v9_5_Control_Center",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "SecondBrain_OS_Dashboard",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "Quarterly_Plan",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "Plugin_Ecosystem",
-      "type": "references",
-      "weight": 1
-    },
-    {
-      "source": "Meeting_Agent_Memory_v2",
-      "target": "Monthly_Plan",
-      "type": "references",
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
+      "type": "blocks",
       "weight": 1
     },
     {
@@ -42258,6 +42426,150 @@
     {
       "source": "Calendar_Agent_Memory_v2",
       "target": "Agent_Collaboration_Protocol",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_weekly-review",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_weekly-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_task-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_self-improvement-plan",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_research-backlog-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_recommendations",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_reasoning-map",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_project-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_process-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_personal-kpis",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_monitoring",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_learning-plan",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_decision-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_daily-os",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_daily-assistant",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_cross-source-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_contradictions",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Calendar_Agent_Memory_v2",
+      "target": "2026-06-23_calendar-intelligence",
       "type": "blocks",
       "weight": 1
     },
@@ -42346,156 +42658,6 @@
       "weight": 1
     },
     {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_meeting-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_meeting-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_learning-plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_knowledge-quality",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_decision-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_daily-assistant",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_cross-source-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_contradictions",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-22_calendar-intelligence",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_weekly-review",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_weekly-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_task-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_software-factory",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_self-reflection",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_self-improvement-plan",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_self-healing-report",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_research-backlog-agent",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_research-backlog",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_refactoring-proposals",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_recommendations",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Calendar_Agent_Memory_v2",
-      "target": "2026-06-19_reasoning-map",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
       "source": "Process_Agent_Memory_v2",
       "target": "2026-06-19_process-design-backlog",
       "type": "blocks",
@@ -42504,6 +42666,12 @@
     {
       "source": "Process_Agent_Memory_v2",
       "target": "2026-06-18_process-design-backlog",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_process-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -42539,13 +42707,19 @@
     },
     {
       "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_knowledge-quality",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
       "target": "2026-06-22_knowledge-quality",
       "type": "blocks",
       "weight": 1
     },
     {
       "source": "Process_Agent_Memory_v2",
-      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "target": "2026-06-23_contradictions",
       "type": "blocks",
       "weight": 1
     },
@@ -42564,6 +42738,18 @@
     {
       "source": "Process_Agent_Memory_v2",
       "target": "Process_Agent_Memory_v2",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_self-improvement-plan",
       "type": "blocks",
       "weight": 1
     },
@@ -42594,6 +42780,12 @@
     {
       "source": "Process_Agent_Memory_v2",
       "target": "Process_Memory",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_project-intelligence",
       "type": "blocks",
       "weight": 1
     },
@@ -42677,12 +42869,6 @@
     },
     {
       "source": "Process_Agent_Memory_v2",
-      "target": "Personal_CRM_Index",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
       "target": "Memory_Profile",
       "type": "blocks",
       "weight": 1
@@ -42702,6 +42888,36 @@
     {
       "source": "Process_Agent_Memory_v2",
       "target": "Digital_Twin_Profile",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_recommendations",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_personal-kpis",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_decision-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Process_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -42742,56 +42958,8 @@
       "weight": 1
     },
     {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_recommendations",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_reasoning-map",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_process-mining",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_personal-kpis",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_personal-kpis",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_memory-replay",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-19_daily-briefing",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-18_semantic-deduplication",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Process_Agent_Memory_v2",
-      "target": "2026-06-18_self-improvement-plan",
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_project-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -42804,6 +42972,12 @@
     {
       "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-19_project-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_chief-of-staff-v98",
       "type": "blocks",
       "weight": 1
     },
@@ -42827,7 +43001,19 @@
     },
     {
       "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-22_self-reflection",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_knowledge-quality",
       "type": "blocks",
       "weight": 1
     },
@@ -42881,6 +43067,12 @@
     },
     {
       "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_self-improvement-plan",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-22_self-improvement-plan",
       "type": "blocks",
       "weight": 1
@@ -42899,6 +43091,12 @@
     },
     {
       "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_task-agent",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-22_task-agent",
       "type": "blocks",
       "weight": 1
@@ -42912,6 +43110,12 @@
     {
       "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-19_self-healing-report",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_project-intelligence",
       "type": "blocks",
       "weight": 1
     },
@@ -42954,6 +43158,18 @@
     {
       "source": "Executive_Agent_Memory_v2",
       "target": "Knowledge_Intelligence_Dashboard_v99",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_meeting-intelligence",
+      "type": "blocks",
+      "weight": 1
+    },
+    {
+      "source": "Executive_Agent_Memory_v2",
+      "target": "2026-06-23_decision-agent",
       "type": "blocks",
       "weight": 1
     },
@@ -43038,60 +43254,6 @@
     {
       "source": "Executive_Agent_Memory_v2",
       "target": "2026-06-19_event-bus",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "2026-06-19_daily-assistant",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "facts_tasks",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "Life_Dashboard_v10",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "ChiefOfStaff_Memory",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "2026-06-22_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "2026-06-22_daily-assistant",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "2026-06-19_daily-os",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "2026-06-18_quality-scores",
-      "type": "blocks",
-      "weight": 1
-    },
-    {
-      "source": "Executive_Agent_Memory_v2",
-      "target": "Temporal_Graph",
       "type": "blocks",
       "weight": 1
     },

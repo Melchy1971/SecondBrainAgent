@@ -1,23 +1,13 @@
-# ============================================================
-#  uninstall_jarvis.ps1
-#  Entfernt Desktop- und Autostart-Verknuepfung des Jarvis HUD.
-#  Aufruf:
-#   powershell -ExecutionPolicy Bypass -File uninstall_jarvis.ps1
-# ============================================================
-$desktop = [Environment]::GetFolderPath("Desktop")
-$startup = [Environment]::GetFolderPath("Startup")
-
-$targets = @(
-  (Join-Path $desktop "Jarvis HUD.lnk"),
-  (Join-Path $startup "Jarvis HUD.lnk")
+$ErrorActionPreference = "Stop"
+$Desktop = [Environment]::GetFolderPath("Desktop")
+$Startup = [Environment]::GetFolderPath("Startup")
+$Links = @(
+  (Join-Path $Desktop "Jarvis GUI.lnk"),
+  (Join-Path $Desktop "Jarvis HUD.lnk"),
+  (Join-Path $Startup "Jarvis GUI Autostart.lnk"),
+  (Join-Path $Startup "Jarvis HUD.lnk")
 )
-
-foreach ($t in $targets) {
-  if (Test-Path $t) {
-    Remove-Item $t -Force
-    Write-Host "Entfernt: $t"
-  } else {
-    Write-Host "Nicht vorhanden: $t"
-  }
+foreach ($Link in $Links) {
+  if (Test-Path $Link) { Remove-Item $Link -Force; Write-Host "Entfernt: $Link" }
 }
-Write-Host "Fertig."
+Write-Host "Jarvis Desktop-/Autostart-Verknuepfungen entfernt."

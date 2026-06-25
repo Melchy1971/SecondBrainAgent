@@ -1,0 +1,51 @@
+{
+  "version": "v30.19",
+  "name": "P1 GUI Surface Update",
+  "files": [
+    {
+      "path": "SecondBrain-Agent/APPLY_DELTA_v30_19.md",
+      "bytes": 832,
+      "sha256": "0aa70c5b48d0180c0a2773a18a790a1382894f36549dceeffe295838c20f65c1"
+    },
+    {
+      "path": "SecondBrain-Agent/docs/09_MASTERPLAN_STATUS.json",
+      "bytes": 6420,
+      "sha256": "2a4c0004567b5f8001d704b6102ce03530466a3def587a5c39e488582aefb7df"
+    },
+    {
+      "path": "SecondBrain-Agent/docs/releases/v30_19_P1_GUI_SURFACE_UPDATE.md",
+      "bytes": 945,
+      "sha256": "35502aaf1587726c16e3c0d16ddc8a1441b9b7d61d1666f64e6d97143444ca61"
+    },
+    {
+      "path": "SecondBrain-Agent/secondbrain/desktop/app.py",
+      "bytes": 6296,
+      "sha256": "49f86253b5fa8072f96ebc6e9e4b98d241b78f624296d0302dd353668509d2bf"
+    },
+    {
+      "path": "SecondBrain-Agent/secondbrain/gui/p1_control_panel.py",
+      "bytes": 4918,
+      "sha256": "552f3bb50a9448d28868673068c920cc2e22db74818d12d2c47d1981f414f145"
+    },
+    {
+      "path": "SecondBrain-Agent/secondbrain/gui/production_dashboard.py",
+      "bytes": 1814,
+      "sha256": "2f62c5639d55f6096ab748b9c705b632619c5306471ac0e681c9e2d4382a2096"
+    },
+    {
+      "path": "SecondBrain-Agent/secondbrain/gui/rag_explorer.py",
+      "bytes": 1643,
+      "sha256": "2e1c53f80c3f43adc2ba16c3d9e5cc3135936cbfb806d646a9842988d05ba5e7"
+    },
+    {
+      "path": "SecondBrain-Agent/secondbrain/gui/settings_center.py",
+      "bytes": 2140,
+      "sha256": "bf863df7b77021d1444c9ce2552975cd6f089aed953d152c88b5c5c137aa0b2d"
+    },
+    {
+      "path": "SecondBrain-Agent/tests/test_v3019_gui_p1_surface.py",
+      "bytes": 3008,
+      "sha256": "210ba7025ad9e92772db0a35d556a121e9e453eed67655100c4e44c7e7fdfb32"
+    }
+  ]
+}
