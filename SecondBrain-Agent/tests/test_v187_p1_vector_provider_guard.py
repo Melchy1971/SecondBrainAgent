@@ -90,3 +90,43 @@ def test_vector_provider_audit_command_index_registered():
 
     assert index["p1-vector-provider-audit"] == "core"
     assert ModuleRegistry().resolve_command("p1-vector-provider-audit").key == "core"
+
+class SameProviderDifferentDimensions:
+    name = "local-deterministic"
+    dimensions = 32
+
+    def embed(self, text: str) -> list[float]:
+        return deterministic_embedding(text, self.dimensions)
+
+    def status(self) -> dict:
+        return {
+            "ok": True,
+            "provider": self.name,
+            "dimensions": self.dimensions,
+            "network": False,
+            "semantic": True,
+            "fallback_used": False,
+            "production_ready": True,
+        }
+
+
+def test_vector_provider_guard_blocks_same_provider_dimension_drift(tmp_path):
+    rt = P1RagRuntime(tmp_path)
+    rt.ingest_text("Jarvis RAG Quellen Memory Evidenz lokale Quellen", source="unit", title="Seed")
+    rt.embedding_provider = SameProviderDifferentDimensions()
+
+    drift = audit_vector_provider(rt)
+
+    assert drift["ok"] is False
+    assert drift["status"] == "blocked"
+    assert drift["current_provider"] == "local-deterministic"
+    assert drift["dimension_mismatch_vectors"] >= 1
+    assert "dimension_mismatch_vectors" in drift["blockers"]
+    assert "provider/model/dimensions" in drift["remediation"]
+
+    rt.reindex_vectors(write_report=True)
+    repaired = audit_vector_provider(rt)
+
+    assert repaired["ok"] is True
+    assert repaired["dimension_mismatch_vectors"] == 0
+    assert repaired["providers"][0]["dimensions"] == 32

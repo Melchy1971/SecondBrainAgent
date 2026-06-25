@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any, Protocol
 from urllib import request
 
+from secondbrain.p1_embedding_config import load_embedding_config
+
 
 DEFAULT_DIMENSIONS = 64
 FALLBACK_ENV = "SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK"
@@ -235,26 +237,22 @@ class OpenAIEmbeddingProvider:
 
 
 def provider_from_profile(project_root: str | Path, profile: str | None = None) -> EmbeddingProvider:
-    root = Path(project_root)
-    config_path = root / "config" / "vector_rag.yaml"
-    provider = os.getenv("SECONDBRAIN_EMBEDDING_PROVIDER", "local").strip().lower()
-    model = os.getenv("SECONDBRAIN_EMBEDDING_MODEL", "").strip()
-    if config_path.exists():
-        text = config_path.read_text(encoding="utf-8", errors="ignore").lower()
-        if "embedding_provider: ollama" in text or "provider: ollama" in text:
-            provider = "ollama"
-        elif "embedding_provider: openai" in text or "provider: openai" in text:
-            provider = "openai"
-        for raw_line in text.splitlines():
-            line = raw_line.strip()
-            if line.startswith("embedding_model:") or line.startswith("model:"):
-                model = line.split(":", 1)[1].strip().strip('"\'')
-                break
-    if provider == "ollama":
-        return OllamaEmbeddingProvider(model=model or "nomic-embed-text")
-    if provider == "openai":
-        return OpenAIEmbeddingProvider(model=model or "text-embedding-3-small")
-    return LocalEmbeddingProvider()
+    cfg = load_embedding_config(project_root, profile)
+    if cfg.provider == "ollama":
+        return OllamaEmbeddingProvider(
+            model=cfg.model or "nomic-embed-text",
+            base_url=cfg.ollama_base_url,
+            dimensions=cfg.dimensions,
+            allow_fallback=cfg.allow_fallback,
+        )
+    if cfg.provider == "openai":
+        return OpenAIEmbeddingProvider(
+            model=cfg.model or "text-embedding-3-small",
+            api_key_env=cfg.openai_api_key_env,
+            dimensions=cfg.dimensions,
+            allow_fallback=cfg.allow_fallback,
+        )
+    return LocalEmbeddingProvider(dimensions=cfg.dimensions)
 
 
 def cosine_similarity(a: list[float], b: list[float]) -> float:

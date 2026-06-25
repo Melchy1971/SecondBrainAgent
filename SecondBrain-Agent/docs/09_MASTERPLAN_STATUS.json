@@ -1,47 +1,89 @@
 {
-  "version": "30.9",
-  "status": "P1_SQLITE_TO_PGVECTOR_MIGRATION_AND_STORE_SEARCH_HARDENED",
-  "product_maturity_estimate": "80-90% technical foundation, 62-72% end-user product",
+  "current_sprint": {
+    "added": [
+      "p1-provider-health command added for explicit embedding provider readiness diagnostics",
+      "P1 production gate now includes embedding_provider_production_ready blocker",
+      "local deterministic embeddings are explicitly blocked for production readiness",
+      "golden_retrieval.json config path restored from olden_retrieval typo"
+    ],
+    "branch": "delta-v30-12-p1-provider-health-gate",
+    "id": "sprint3-continuation-v30-12",
+    "name": "P1 Provider Health Production Gate",
+    "status": "implemented_pending_full_suite"
+  },
+  "current_version": "v30.14",
+  "last_delta": "P1_EMBEDDING_CONFIG_CONTRACT",
+  "last_increment": "v30.13_P1_golden_quality_gate",
+  "last_update": "2026-06-25",
+  "last_updated": "2026-06-25",
+  "last_validation": {
+    "focus_suite": "10 PASS",
+    "known_existing_failure": "test_v309 vector audit expectation still conflicts with v30.11 dimension drift blocker",
+    "pytest_collect_only": "996 tests collected"
+  },
   "modules": {
-    "packaging": "foundation_added",
-    "repo_doctor": "hardened",
+    "connectors": "foundation_only",
+    "database": "sqlite_foundation_with_pgvector_live_store",
     "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "database": "sqlite_foundation_with_pgvector_live_store",
-    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
-    "rag_store_interface": "sqlite_write_pgvector_live_execution_implemented",
-    "p1_store_bridge": "export_and_mirror_bridge_implemented",
-    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
-    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
-    "connectors": "foundation_only",
-    "document_understanding": "parser_foundation_integrated_with_p1_ingest",
-    "multi_agent": "foundation",
+    "document_understanding": "parser_registry_integrated_with_p1_ingest_and_structured_parse_events",
+    "embedding_provider_health": "production_gate_hard_blocker_with_report_command",
+    "golden_retrieval_eval": "config_path_fixed_and_coupled_to_p1_production",
+    "hybrid_rag": "parser_integrated_with_batch_directory_ingest_foundation",
     "knowledge_graph": "foundation",
     "long_term_memory": "foundation",
-    "hybrid_rag": "parser_integrated_foundation",
-    "embedding_provider_health": "production_gate_hardened",
-    "openai_embedding_provider": "sdk_boundary_integrated",
-    "vector_provider_guard": "provider_change_reindex_guard_implemented",
-    "golden_retrieval_eval": "coupled_to_p1_production",
-    "realtime_voice": "foundation",
     "mobile_companion": "backend_foundation",
+    "multi_agent": "foundation",
+    "openai_embedding_provider": "sdk_boundary_integrated",
     "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
+    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
+    "p1_store_bridge": "export_and_mirror_bridge_implemented",
     "p1_vector_search_store_path": "implemented",
+    "packaging": "foundation_added",
+    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
+    "pgvector_live_check": "blocks_when_vector_extension_missing",
+    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
+    "rag_store_interface": "sqlite_write_pgvector_live_execution_implemented",
+    "realtime_voice": "foundation",
+    "repo_doctor": "hardened",
     "sqlite_to_pgvector_migration": "dry_run_apply_runner_implemented",
-    "pgvector_live_check": "blocks_when_vector_extension_missing"
+    "vector_provider_guard": "provider_change_reindex_guard_implemented"
   },
-  "current_sprint": {
-    "id": "sprint3-continuation-v30-8",
-    "name": "P1 Migration Runner and Store Search Hardening",
-    "branch": "delta-v30-8-p1-migration-runner",
-    "status": "implemented_pending_full_suite_and_live_vps_apply",
-    "added": [
-      "p1-rag-vector-search now uses RagStore.vector_search instead of direct SQLite reads",
-      "SQLite to selected RagStore migration runner added with pgvector guard",
-      "Launcher command p1-rag-migrate-postgres added",
-      "Module registry command index updated",
-      "pgvector live check blocks when vector extension is missing",
-      "P1 gate checks selected RagStore availability instead of assuming SQLite only"
+  "next_release": "Sprint 3 continuation: live VPS pgvector migration/audit, then production gate threshold hardening and connector runtime foundation",
+  "notes": [
+    "v30.14: embedding configuration contract added; production blocks local/fallback/missing provider prerequisites before semantic gate."
+  ],
+  "open_blockers": [
+    "full pytest without timeout",
+    "live VPS pgvector migration/audit",
+    "production semantic embedding provider",
+    "connector runtime",
+    "secret vault"
+  ],
+  "p1_status": "IN_PROGRESS",
+  "product_maturity_estimate": "80-90% technical foundation, 62-72% end-user product",
+  "recent_changes": [
+    "v30.12: Added provider health gate and restored config/golden_retrieval.json path.",
+    "v30.10: P1 parser ingest now emits structured parse events and adds directory ingest diagnostics.",
+    "v30.9: P1 vector provider guard is now RagStore-backed and no longer assumes SQLite for pgvector audits.",
+    "v30.8: SQLite to pgvector migration runner and hard pgvector live readiness gate.",
+    "v30.7: P1RagRuntime writes through configured RagStore bridge."
+  ],
+  "recent_sprint": {
+    "branch": "delta-v30-12-p1-provider-health-gate",
+    "id": "sprint3-continuation-v30-12",
+    "name": "P1 Provider Health Production Gate",
+    "scope": [
+      "embedding provider health gate",
+      "production readiness blocker",
+      "launcher command",
+      "module registry command index",
+      "golden config path fix"
+    ],
+    "status": "PASS_FOCUS",
+    "validation": [
+      "14 focused tests PASS",
+      "991 tests collected"
     ]
   },
   "release_blockers": [
@@ -52,28 +94,10 @@
     "productive secret encryption missing",
     "cross-module GUI missing"
   ],
-  "next_release": "Sprint 3 continuation: run pgvector schema apply and SQLite migration against VPS, then harden production gate thresholds",
-  "last_validation": {
-    "status": "focused_pass_full_suite_pending",
-    "commands": [
-      "python -m pytest -q tests/test_v308_p1_migration_store_hardening.py tests/test_v307_p1_store_runtime_bridge.py tests/test_v190_p3_pgvector_foundation.py -> 21 passed"
-    ],
-    "pending": [
-      "pytest -q full run",
-      "p3-pgvector-readiness --live/--apply against VPS",
-      "p1-rag-migrate-postgres --apply against VPS"
-    ]
-  },
-  "current_version": "v30.9",
-  "last_update": "2026-06-25",
-  "recent_changes": [
-    "v30.9: P1 vector provider guard is now RagStore-backed and no longer assumes SQLite for pgvector audits.",
-    "v30.8: SQLite to pgvector migration runner and hard pgvector live readiness gate.",
-    "v30.7: P1RagRuntime writes through configured RagStore bridge."
+  "release_notes": [
+    "v30.12: P1 production gate now blocks non-production embedding providers explicitly and exposes p1-provider-health diagnostics.",
+    "v30.11: P1 vector provider guard now blocks same-provider embedding dimension drift and requires reindex."
   ],
-  "open_blockers": [
-    "Full pytest run must be completed outside sandbox timeout",
-    "Live VPS pgvector migration and vector-provider audit must be executed",
-    "Connector runtime/OAuth and secret vault remain open"
-  ]
+  "status": "P1_PROVIDER_HEALTH_GATE_HARDENED",
+  "version": "30.13"
 }

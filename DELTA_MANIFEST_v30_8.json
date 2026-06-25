@@ -1,0 +1,18 @@
+{
+  "delta": "v30.8_P1_migration_runner_store_search_hardening",
+  "base": "v30.7 runtime store bridge",
+  "files": [
+    "APPLY_DELTA_v30_8.md",
+    "SecondBrain-Agent/docs/09_MASTERPLAN_STATUS.json",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/secondbrain/module_registry.py",
+    "SecondBrain-Agent/secondbrain/p1_rag_migration.py",
+    "SecondBrain-Agent/secondbrain/p1_rag_runtime.py",
+    "SecondBrain-Agent/secondbrain/p3_pgvector_foundation.py",
+    "SecondBrain-Agent/tests/test_v308_p1_migration_store_hardening.py"
+  ],
+  "validation": [
+    "pytest --collect-only -q -> 978 tests collected",
+    "pytest -q tests/test_v308_p1_migration_store_hardening.py tests/test_v307_p1_store_runtime_bridge.py tests/test_v193_p1_store_backed_ingest.py tests/test_v180_p1_rag.py -> 20 passed"
+  ]
+}

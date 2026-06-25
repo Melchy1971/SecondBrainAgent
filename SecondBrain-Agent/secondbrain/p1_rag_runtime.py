@@ -19,6 +19,7 @@ from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVecto
 
 SCHEMA_VERSION = "secondbrain.p1_rag.v2"
 P1_PRODUCTION_SCHEMA = "secondbrain.p1_production.v1"
+P1_PARSE_EVENT_SCHEMA = "secondbrain.p1_parse_event.v1"
 TOKEN_RE = re.compile(r"[A-Za-zÄÖÜäöüß0-9_\-]{2,}")
 DEFAULT_CHUNK_SIZE = 900
 DEFAULT_OVERLAP = 120
@@ -249,6 +250,42 @@ class P1RagRuntime:
         ok = bool(doc_result.get("ok")) and bool(chunk_result.get("ok")) and bool(vector_result.get("ok"))
         return {"schema": SCHEMA_VERSION, "ok": ok, "status": "pass" if ok else "blocked", "document_id": document_id, "source": source_check["source"], "title": title_value, "chunks": len(chunks), "content_hash": content_hash, "metadata": metadata or {}, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "document": doc_result, "chunks": chunk_result, "vectors": vector_result}}
 
+    def _parse_event(self, parsed: Any, path: Path, title: str | None = None) -> dict[str, Any]:
+        payload = parsed.to_ingestion_payload()
+        return {
+            "schema": P1_PARSE_EVENT_SCHEMA,
+            "status": parsed.status.value,
+            "ok": parsed.status == ParseStatus.PARSED and bool(payload["text"].strip()),
+            "path": str(path),
+            "title": title or payload["title"],
+            "source_path": payload["source_path"],
+            "mime_type": parsed.mime_type,
+            "pages": parsed.page_count,
+            "chars": parsed.char_count,
+            "requires_ocr": parsed.status == ParseStatus.OCR_REQUIRED or bool(payload["metadata"].get("ocr_required")),
+            "metadata": payload["metadata"],
+            "errors": payload["errors"],
+        }
+
+    def _parse_blocked_payload(self, *, path: Path, error: str, parsed: Any, title: str | None = None) -> dict[str, Any]:
+        parse = self._parse_event(parsed, path, title)
+        metadata = {"path": str(path), "ingest_mode": "parser_registry", "mime_type": parse["mime_type"], **parse["metadata"]}
+        if parse["errors"]:
+            metadata["parse_errors"] = parse["errors"]
+        if parse["requires_ocr"]:
+            metadata["ocr_required"] = True
+        return {
+            "schema": SCHEMA_VERSION,
+            "ok": False,
+            "status": "blocked",
+            "error": error,
+            "path": str(path),
+            "title": parse["title"],
+            "metadata": metadata,
+            "errors": parse["errors"],
+            "parse": parse,
+        }
+
     def ingest_file(self, file_path: str | Path, source: str | None = None, title: str | None = None) -> dict[str, Any]:
         path = Path(file_path)
         if not path.exists():
@@ -257,20 +294,52 @@ class P1RagRuntime:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "not_a_file", "path": str(path)}
         parsed = self.parser_registry.parse(path)
         payload = parsed.to_ingestion_payload()
+        parse = self._parse_event(parsed, path, title)
         metadata = {"path": str(path), "ingest_mode": "parser_registry", "mime_type": payload["mime_type"], **payload["metadata"]}
         if payload["errors"]:
             metadata["parse_errors"] = payload["errors"]
+        if parse["requires_ocr"]:
+            metadata["ocr_required"] = True
         if parsed.status == ParseStatus.OCR_REQUIRED:
-            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "ocr_required", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+            return self._parse_blocked_payload(path=path, error="ocr_required", parsed=parsed, title=title)
         if parsed.status == ParseStatus.UNSUPPORTED:
-            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "unsupported_file_type", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+            return self._parse_blocked_payload(path=path, error="unsupported_file_type", parsed=parsed, title=title)
         if parsed.status == ParseStatus.FAILED:
-            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "parse_failed", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+            return self._parse_blocked_payload(path=path, error="parse_failed", parsed=parsed, title=title)
         if parsed.status == ParseStatus.EMPTY or not payload["text"].strip():
-            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "empty_text", "path": str(path), "title": title or payload["title"], "metadata": metadata, "errors": payload["errors"]}
+            return self._parse_blocked_payload(path=path, error="empty_text", parsed=parsed, title=title)
         result = self.ingest_text(payload["text"], source or payload["source_path"] or str(path), title or payload["title"], metadata)
-        result["parse"] = {"status": parsed.status.value, "mime_type": parsed.mime_type, "pages": parsed.page_count, "chars": parsed.char_count, "errors": payload["errors"]}
+        result["parse"] = parse
         return result
+
+    def ingest_directory(self, directory_path: str | Path, recursive: bool = False, source_prefix: str | None = None) -> dict[str, Any]:
+        directory = Path(directory_path)
+        if not directory.exists():
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "directory_not_found", "path": str(directory)}
+        if not directory.is_dir():
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": "not_a_directory", "path": str(directory)}
+        pattern = "**/*" if recursive else "*"
+        files = sorted(path for path in directory.glob(pattern) if path.is_file())
+        results = []
+        counts = Counter()
+        for file in files:
+            source = f"{source_prefix.rstrip('/')}/{file.name}" if source_prefix else None
+            item = self.ingest_file(file, source=source)
+            results.append(item)
+            counts[item.get("error") or item.get("status", "unknown")] += 1
+        blocked = sum(1 for item in results if not item.get("ok"))
+        return {
+            "schema": "secondbrain.p1_rag.directory_ingest.v1",
+            "ok": blocked == 0,
+            "status": "pass" if blocked == 0 else "blocked",
+            "path": str(directory),
+            "recursive": recursive,
+            "files": len(files),
+            "ingested": len(files) - blocked,
+            "blocked": blocked,
+            "counts": dict(counts),
+            "results": results,
+        }
 
     def _all_chunks(self) -> list[dict[str, Any]]:
         result = self.rag_store.all_chunks()
@@ -314,20 +383,48 @@ class P1RagRuntime:
             q_vector = self.embedding_provider.embed(query)
         except Exception as exc:  # noqa: BLE001 - provider boundary
             return {**self._embedding_failure_payload("vector_search", exc), "schema": "secondbrain.p1_vectors.search.v1", "query": query, "hits": []}
-        with self._connect() as conn:
-            rows = conn.execute("select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id").fetchall()
+        store_result = self.rag_store.vector_search(
+            q_vector,
+            limit=max(1, int(limit)),
+            provider=self.embedding_provider.name,
+        )
+        if not store_result.get("ok"):
+            return {
+                "schema": "secondbrain.p1_vectors.search.v1",
+                "ok": False,
+                "status": "blocked",
+                "query": query,
+                "limit": limit,
+                "hit_count": 0,
+                "hits": [],
+                "store": store_result,
+            }
         hits = []
-        for row in rows:
-            try:
-                vector = [float(v) for v in json.loads(row["vector_json"])]
-            except Exception:
-                continue
-            score = cosine_similarity(q_vector, vector)
-            if score <= 0:
-                continue
-            hits.append({"chunk_id": row["chunk_id"], "document_id": row["document_id"], "source": row["source"], "title": row["title"], "score": round(float(score), 4), "text": row["text"], "snippet": summarize_text(row["text"], 260), "char_start": int(row["char_start"]), "char_end": int(row["char_end"]), "provider": row["provider"]})
-        hits.sort(key=lambda h: (-h["score"], h["title"], h["chunk_id"]))
-        return {"schema": "secondbrain.p1_vectors.search.v1", "ok": True, "status": "pass", "query": query, "limit": limit, "hit_count": len(hits[: max(1, int(limit))]), "hits": hits[: max(1, int(limit))]}
+        for hit in store_result.get("hits", []):
+            text = str(hit.get("text", ""))
+            hits.append({
+                "chunk_id": hit.get("chunk_id"),
+                "document_id": hit.get("document_id"),
+                "source": hit.get("source"),
+                "title": hit.get("title"),
+                "score": round(float(hit.get("score", 0.0)), 4),
+                "text": text,
+                "snippet": summarize_text(text, 260),
+                "char_start": int(hit.get("char_start", 0) or 0),
+                "char_end": int(hit.get("char_end", 0) or 0),
+                "provider": hit.get("provider"),
+                "dimensions": hit.get("dimensions"),
+            })
+        return {
+            "schema": "secondbrain.p1_vectors.search.v1",
+            "ok": True,
+            "status": "pass",
+            "query": query,
+            "limit": limit,
+            "hit_count": len(hits),
+            "hits": hits,
+            "store": {"backend": self.rag_store.backend, "result": store_result},
+        }
 
     def hybrid_search(self, query: str, limit: int = 5) -> dict[str, Any]:
         keyword = self.search(query, limit=max(limit * 2, 5))
@@ -542,8 +639,9 @@ class P1RagRuntime:
         quality = self.quality_report("Jarvis RAG Quellen", 5, False)
         embedding = self.embedding_status()
         checks = [
-            {"name": "rag_database_exists", "ok": self.db_path.exists(), "severity": "blocker", "detail": {"path": str(self.db_path)}},
-            {"name": "rag_schema_ready", "ok": status["ok"] and required_columns.issubset(set(status["chunk_schema_columns"])), "severity": "blocker", "detail": {"columns": status["chunk_schema_columns"]}},
+            {"name": "rag_store_available", "ok": bool(status.get("store", {}).get("ok", status.get("ok"))), "severity": "blocker", "detail": {"backend": self.rag_store.backend, "store_status": status.get("store", {}).get("status")}},
+            {"name": "rag_database_exists", "ok": self.rag_store.backend != "sqlite" or self.db_path.exists(), "severity": "blocker", "detail": {"path": str(self.db_path), "backend": self.rag_store.backend}},
+            {"name": "rag_schema_ready", "ok": status["ok"] and required_columns.issubset(set(status["chunk_schema_columns"])), "severity": "blocker", "detail": {"columns": status["chunk_schema_columns"], "backend": self.rag_store.backend}},
             {"name": "rag_has_indexed_content", "ok": status["chunks"] > 0, "severity": "warning", "detail": {"chunks": status["chunks"]}},
             {"name": "rag_source_inventory_available", "ok": self.sources()["ok"], "severity": "blocker", "detail": {"documents": status["documents"]}},
             {"name": "rag_explainability_available", "ok": callable(getattr(self, "explain", None)), "severity": "blocker", "detail": {"ranking_model": "deterministic_tfidf_logtf_length_norm_v1"}},

@@ -36,6 +36,7 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
 
     current_provider = getattr(runtime.embedding_provider, "name", "unknown")
     provider_status = runtime.embedding_provider.status()
+    current_dimensions = int(provider_status.get("dimensions") or getattr(runtime.embedding_provider, "dimensions", 0) or 0)
     snapshot = store.validation_snapshot()
     backend = getattr(store, "backend", snapshot.get("backend", "unknown"))
     if not snapshot.get("ok"):
@@ -57,6 +58,7 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
     embeddings_by_chunk: dict[str, list[dict[str, Any]]] = {}
     provider_counts: dict[tuple[str, int], int] = {}
     stale_vectors = 0
+    dimension_mismatch_vectors = 0
     orphan_vectors = 0
 
     for embedding in embeddings:
@@ -68,6 +70,8 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
         provider_counts[(provider, dimensions)] = provider_counts.get((provider, dimensions), 0) + 1
         if provider != current_provider:
             stale_vectors += 1
+        if current_dimensions and dimensions and dimensions != current_dimensions:
+            dimension_mismatch_vectors += 1
         if chunk_id and chunk_id not in chunk_ids:
             orphan_vectors += 1
 
@@ -83,12 +87,14 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
         blockers.append("stale_vector_provider")
     if missing_vectors:
         blockers.append("missing_vectors")
+    if dimension_mismatch_vectors:
+        blockers.append("dimension_mismatch_vectors")
     if orphan_vectors:
         blockers.append("orphan_vectors")
 
     remediation = None
-    if "stale_vector_provider" in blockers or "missing_vectors" in blockers:
-        remediation = "run python launcher.py p1-rag-reindex --write-report after changing embedding provider"
+    if "stale_vector_provider" in blockers or "missing_vectors" in blockers or "dimension_mismatch_vectors" in blockers:
+        remediation = "run python launcher.py p1-rag-reindex --write-report after changing embedding provider/model/dimensions"
     elif "orphan_vectors" in blockers:
         remediation = "run python launcher.py p1-rag-validate --write-report and repair orphan embeddings"
 
@@ -102,6 +108,7 @@ def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
         "chunks": len(chunks),
         "vectors": len(embeddings),
         "stale_vectors": stale_vectors,
+        "dimension_mismatch_vectors": dimension_mismatch_vectors,
         "missing_vectors": missing_vectors,
         "orphan_vectors": orphan_vectors,
         "malformed_token_rows": malformed_token_rows,
@@ -115,6 +122,7 @@ def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
     db_path = Path(runtime.db_path)
     current_provider = getattr(runtime.embedding_provider, "name", "unknown")
     provider_status = runtime.embedding_provider.status()
+    current_dimensions = int(provider_status.get("dimensions") or getattr(runtime.embedding_provider, "dimensions", 0) or 0)
     if not db_path.exists():
         return {
             "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
@@ -126,6 +134,7 @@ def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
             "chunks": 0,
             "vectors": 0,
             "stale_vectors": 0,
+            "dimension_mismatch_vectors": 0,
             "missing_vectors": 0,
             "orphan_vectors": 0,
             "providers": [],
@@ -139,6 +148,9 @@ def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
             vectors = int(conn.execute("select count(*) as n from chunk_embeddings").fetchone()["n"])
             provider_rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider, dimensions").fetchall()
             stale_vectors = int(conn.execute("select count(*) as n from chunk_embeddings where provider <> ?", (current_provider,)).fetchone()["n"])
+            dimension_mismatch_vectors = 0
+            if current_dimensions:
+                dimension_mismatch_vectors = int(conn.execute("select count(*) as n from chunk_embeddings where dimensions <> ?", (current_dimensions,)).fetchone()["n"])
             missing_vectors = int(conn.execute("select count(*) as n from chunks c left join chunk_embeddings e on e.chunk_id = c.id where e.chunk_id is null").fetchone()["n"])
             orphan_vectors = int(conn.execute("select count(*) as n from chunk_embeddings e left join chunks c on c.id = e.chunk_id where c.id is null").fetchone()["n"])
         except sqlite3.OperationalError as exc:
@@ -159,6 +171,8 @@ def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
         blockers.append("stale_vector_provider")
     if missing_vectors:
         blockers.append("missing_vectors")
+    if dimension_mismatch_vectors:
+        blockers.append("dimension_mismatch_vectors")
     if orphan_vectors:
         blockers.append("orphan_vectors")
     return {
@@ -171,11 +185,12 @@ def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
         "chunks": chunks,
         "vectors": vectors,
         "stale_vectors": stale_vectors,
+        "dimension_mismatch_vectors": dimension_mismatch_vectors,
         "missing_vectors": missing_vectors,
         "orphan_vectors": orphan_vectors,
         "providers": provider_inventory,
         "blockers": blockers,
-        "remediation": "run python launcher.py p1-rag-reindex --write-report after changing embedding provider" if blockers else None,
+        "remediation": "run python launcher.py p1-rag-reindex --write-report after changing embedding provider/model/dimensions" if blockers else None,
     }
 
 

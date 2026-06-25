@@ -158,9 +158,11 @@ def pgvector_live_check(config: PgVectorConfig) -> dict[str, Any]:
                 row = cur.fetchone()
                 vector_extension_installed = row is not None
                 vector_extension_version = row[0] if row else None
+        ok = bool(vector_extension_installed)
         return {
-            "ok": True,
-            "status": "pass",
+            "ok": ok,
+            "status": "pass" if ok else "blocked",
+            "error": None if ok else "pgvector_extension_missing",
             "postgres_version": postgres_version,
             "vector_extension_installed": vector_extension_installed,
             "vector_extension_version": vector_extension_version,

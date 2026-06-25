@@ -5,9 +5,10 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from secondbrain.p1_golden_retrieval import evaluate_golden_retrieval
+from secondbrain.p1_provider_health import evaluate_embedding_provider_health
 from secondbrain.p1_vector_provider_guard import audit_vector_provider
 
-PRODUCTION_GOLDEN_SCHEMA = "secondbrain.p1_production.golden.v1"
+PRODUCTION_GOLDEN_SCHEMA = "secondbrain.p1_production.golden.v2"
 
 
 class ProductionRuntime(Protocol):
@@ -31,6 +32,7 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
     """
     base = runtime.production_gate(write_report=False)
     golden = evaluate_golden_retrieval(runtime, project_root, write_report=write_report)
+    provider_health = evaluate_embedding_provider_health(runtime, production=True, write_report=write_report)
     provider_guard = audit_vector_provider(runtime, write_report=write_report)
     checks = list(base.get("checks", []))
     checks.append(
@@ -44,8 +46,31 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
                 "source": golden.get("dataset", {}).get("source"),
                 "query_count": golden.get("query_count", 0),
                 "pass_rate": golden.get("pass_rate", 0.0),
+                "min_pass_rate": golden.get("min_pass_rate", 1.0),
+                "technical_ok": golden.get("technical_ok"),
+                "quality_ok": golden.get("quality_ok"),
+                "avg_recall_at_k": golden.get("avg_recall_at_k", 0.0),
+                "avg_mrr": golden.get("avg_mrr", 0.0),
+                "avg_ndcg": golden.get("avg_ndcg", 0.0),
                 "blockers": golden.get("blockers", 0),
                 "warnings": golden.get("warnings", 0),
+            },
+        }
+    )
+    checks.append(
+        {
+            "name": "embedding_provider_production_ready",
+            "ok": bool(provider_health.get("ok")),
+            "severity": "blocker",
+            "detail": {
+                "schema": provider_health.get("schema"),
+                "provider": provider_health.get("provider"),
+                "blockers": provider_health.get("blockers", []),
+                "warnings": provider_health.get("warnings", []),
+                "production_ready": provider_health.get("provider_status", {}).get("production_ready"),
+                "fallback_allowed": provider_health.get("provider_status", {}).get("fallback_allowed"),
+                "fallback_used": provider_health.get("provider_status", {}).get("fallback_used"),
+                "remediation": provider_health.get("remediation"),
             },
         }
     )
@@ -59,6 +84,7 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
                 "current_provider": provider_guard.get("current_provider"),
                 "vectors": provider_guard.get("vectors", 0),
                 "stale_vectors": provider_guard.get("stale_vectors", 0),
+                "dimension_mismatch_vectors": provider_guard.get("dimension_mismatch_vectors", 0),
                 "missing_vectors": provider_guard.get("missing_vectors", 0),
                 "providers": provider_guard.get("providers", []),
                 "blockers": provider_guard.get("blockers", []),
@@ -76,6 +102,7 @@ def production_gate_with_golden(runtime: ProductionRuntime, project_root: str | 
         "checks": checks,
         "base_production": base,
         "golden_retrieval": golden,
+        "provider_health": provider_health,
         "vector_provider_guard": provider_guard,
     }
     if write_report:
