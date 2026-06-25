@@ -4,6 +4,8 @@ import json
 import sys
 import types
 
+import pytest
+
 from launcher import main
 from secondbrain.module_registry import ModuleRegistry
 from secondbrain.p1_embeddings import LocalEmbeddingProvider, OpenAIEmbeddingProvider, cosine_similarity
@@ -51,18 +53,23 @@ def test_local_embedding_provider_is_deterministic_but_not_production_ready():
 
 def test_openai_embedding_provider_requires_api_key(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", raising=False)
     provider = OpenAIEmbeddingProvider()
 
     status = provider.status()
 
     assert status["ok"] is False
     assert status["production_ready"] is False
-    assert status["fallback_used"] is True
+    assert status["fallback_used"] is False
+    assert status["fallback_allowed"] is False
     assert status["error"] == "openai_api_key_missing"
+    with pytest.raises(RuntimeError, match="openai_embedding_unavailable"):
+        provider.embed("must block without api key")
 
 
 def test_openai_embedding_provider_reports_missing_sdk(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", raising=False)
     monkeypatch.setitem(sys.modules, "openai", None)
     provider = OpenAIEmbeddingProvider()
 
@@ -70,7 +77,8 @@ def test_openai_embedding_provider_reports_missing_sdk(monkeypatch):
 
     assert status["ok"] is False
     assert status["production_ready"] is False
-    assert status["fallback_used"] is True
+    assert status["fallback_used"] is False
+    assert status["fallback_allowed"] is False
     assert status["error"] == "openai_sdk_missing"
 
 
@@ -92,7 +100,7 @@ def test_openai_embedding_provider_uses_sdk_when_available(monkeypatch):
     assert status["dimensions"] == 4
 
 
-def test_openai_embedding_provider_falls_back_on_sdk_failure(monkeypatch):
+def test_openai_embedding_provider_blocks_on_sdk_failure_by_default(monkeypatch):
     class BrokenEmbeddingsApi:
         def create(self, *, model, input):
             raise RuntimeError("boom")
@@ -102,6 +110,32 @@ def test_openai_embedding_provider_falls_back_on_sdk_failure(monkeypatch):
             self.embeddings = BrokenEmbeddingsApi()
 
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", raising=False)
+    monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=BrokenClient))
+    provider = OpenAIEmbeddingProvider(dimensions=16)
+
+    with pytest.raises(RuntimeError, match="openai_embedding_unavailable"):
+        provider.embed("fallback path")
+    status = provider.status()
+
+    assert status["ok"] is False
+    assert status["production_ready"] is False
+    assert status["fallback_used"] is False
+    assert status["fallback_allowed"] is False
+    assert "boom" in status["error"]
+
+
+def test_openai_embedding_provider_fallback_requires_explicit_opt_in(monkeypatch):
+    class BrokenEmbeddingsApi:
+        def create(self, *, model, input):
+            raise RuntimeError("boom")
+
+    class BrokenClient:
+        def __init__(self, *, api_key):
+            self.embeddings = BrokenEmbeddingsApi()
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", "true")
     monkeypatch.setitem(sys.modules, "openai", types.SimpleNamespace(OpenAI=BrokenClient))
     provider = OpenAIEmbeddingProvider(dimensions=16)
 
@@ -112,6 +146,7 @@ def test_openai_embedding_provider_falls_back_on_sdk_failure(monkeypatch):
     assert status["ok"] is False
     assert status["production_ready"] is False
     assert status["fallback_used"] is True
+    assert status["fallback_allowed"] is True
     assert "boom" in status["error"]
 
 
