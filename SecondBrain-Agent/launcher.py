@@ -18,6 +18,7 @@ from secondbrain.p3_rag_store import create_rag_store
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
 from secondbrain.gui.launch import gui_command
+from secondbrain.gui.bootstrap import write_bootstrap_report
 
 
 def out(obj: Any) -> None:
@@ -211,6 +212,11 @@ def _p3_p1_store_bridge_main(raw: list[str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
+    if cmd is None:
+        return gui_command(["gui", "--project-root", str(Path.cwd())])
+    if cmd == "bootstrap":
+        out(write_bootstrap_report(Path.cwd(), repair=True))
+        return 0
     if cmd == "repo-doctor":
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
@@ -300,12 +306,12 @@ def main(argv: list[str] | None = None) -> int:
             payload = p0_doctor(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "desktop-gui", "desktop16-gui"}:
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
         return gui_command(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())
         return 0
-    if cmd in {None, "status", "health", "module-status", "module-health", "modules"}:
+    if cmd in {"status", "health", "module-status", "module-health", "modules"}:
         return _local_status(raw)
     if cmd.startswith("mobile16-"):
         return _mobile_main(raw)

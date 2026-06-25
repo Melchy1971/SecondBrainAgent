@@ -79,6 +79,7 @@ except Exception:  # pragma: no cover - Fallback ohne psutil
 SETTINGS_FILE = ROOT / "config" / "hud_settings.json"
 
 DEFAULT_SETTINGS = {
+    # --- Standort / Wetter / News / Darstellung ---
     "place": WEATHER_PLACE,
     "lat": WEATHER_LAT,
     "lon": WEATHER_LON,
@@ -86,9 +87,55 @@ DEFAULT_SETTINGS = {
     "news_max": NEWS_MAX,
     "weather_min": 15,   # Wetter-Refresh im Browser (Minuten)
     "accent": "#2fe6ff",  # HUD-Akzentfarbe
+    # --- Identitaet / Header ---
+    "version": "v30.21",
+    "environment": "production",
+    "log_level": "INFO",
+    "system_health": "EXCELLENT",
+    "system_status_text": "All Systems Operational",
+    "user_name": "Jarvis",
+    "user_role": "Administrator",
+    # --- Datenbank / Stack ---
+    "database": "PostgreSQL 16 + pgvector",
+    "postgres_status": "ONLINE",
+    "pgvector_version": "1.0.5",
+    "embedding_provider": "OpenAI",
+    "embedding_model": "text-embedding-3-small",
+    "embedding_dim": 1536,
+    "ollama_url": "http://localhost:11434",
+    "ollama_models": 7,
+    "memory_engine": "LangGraph + Memory Store",
+    # --- Queue / Release Gate ---
+    "queue_name": "Redis Queue",
+    "queue_pending": 3,
+    "release_blocking": 0,
+    # --- Statusleiste / Zaehler ---
+    "backup_active": "Aktiv",
+    "sync_active": "Aktiv",
+    "connectors": 8,
+    "agents_active": 3,
+    "vectors": 1248932,
+    "documents": 4392,
+    "memories": 12845,
+    "backup_last": "15:23",
+    "backup_next": "Heute, 22:00",
+    "vector_index": "OK",
 }
-# Welche Felder duerfen ueberschrieben werden + Typ/Begrenzung.
-_NUM = {"lat": (-90, 90), "lon": (-180, 180), "news_max": (1, 20), "weather_min": (1, 720)}
+# Welche Zahlenfelder duerfen ueberschrieben werden + erlaubter Bereich.
+_NUM = {
+    "lat": (-90, 90), "lon": (-180, 180),
+    "news_max": (1, 20), "weather_min": (1, 720),
+    "embedding_dim": (1, 100000), "ollama_models": (0, 10000),
+    "queue_pending": (0, 1000000), "release_blocking": (0, 1000000),
+    "connectors": (0, 100000), "agents_active": (0, 100000),
+    "vectors": (0, 10 ** 12), "documents": (0, 10 ** 12), "memories": (0, 10 ** 12),
+}
+# Zahlenfelder, die als Ganzzahl gespeichert werden (Rest bleibt float).
+_INT = {
+    "news_max", "weather_min", "embedding_dim", "ollama_models",
+    "queue_pending", "release_blocking", "connectors", "agents_active",
+    "vectors", "documents", "memories",
+}
 
 
 def load_settings() -> dict:
@@ -115,7 +162,7 @@ def save_settings(incoming: dict) -> dict:
                 continue
             lo, hi = _NUM[key]
             num = max(lo, min(hi, num))
-            current[key] = int(num) if key in ("news_max", "weather_min") else num
+            current[key] = int(num) if key in _INT else num
         else:
             current[key] = str(val)[:300]
     SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)

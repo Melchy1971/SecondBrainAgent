@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecondBrain HUD · Jarvis Control Center</title>
+<style>
+  :root{
+    --cyan:#2fe6ff; --cyan-dim:#137a90; --cyan-soft:#9fe9f7;
+    --bg:#02060b; --panel:rgba(10,24,34,.55); --line:rgba(47,230,255,.28);
+    --warn:#ffb24d; --good:#3ef0a4; --bad:#ff5d6c; --muted:#5d8597;
+    --glow:0 0 6px rgba(47,230,255,.55);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(1200px 800px at 50% 42%, rgba(47,230,255,.10), transparent 60%),
+      radial-gradient(900px 600px at 50% 60%, rgba(255,60,40,.05), transparent 60%),
+      #02060b;
+    color:var(--cyan-soft);
+    font-family:"Segoe UI",Roboto,system-ui,sans-serif;
+    overflow-x:hidden;
+    letter-spacing:.04em;
+  }
+  /* feines Gitter im Hintergrund */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(47,230,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47,230,255,.035) 1px, transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 45%, #000 35%, transparent 85%);
+  }
+  .wrap{position:relative; z-index:1; display:grid;
+    grid-template-columns:300px 1fr 320px; gap:18px; padding:18px; min-height:100vh;}
+  @media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+
+  h1,h2,h3{font-weight:600; margin:0; text-transform:uppercase; letter-spacing:.14em}
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; backdrop-filter:blur(3px);
+    box-shadow:inset 0 0 22px rgba(47,230,255,.06), 0 0 18px rgba(0,0,0,.4);
+  }
+  .panel h2{font-size:12px; color:var(--cyan); text-shadow:var(--glow);
+    border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:12px;
+    display:flex; justify-content:space-between; align-items:center}
+  .panel h2 small{color:var(--muted); font-size:9px; letter-spacing:.1em}
+  .col{display:flex; flex-direction:column; gap:18px}
+
+  /* ---- linke Spalte ---- */
+  .clock{display:flex; flex-direction:column; align-items:center; gap:2px}
+  .clock .day{font-size:12px; color:var(--cyan); letter-spacing:.3em}
+  .clock .month{font-size:14px; color:var(--cyan-soft)}
+  .clock .time{font-size:46px; font-weight:300; color:#eafcff; text-shadow:var(--glow);
+    font-variant-numeric:tabular-nums; line-height:1}
+  .clock .date{font-size:11px; color:var(--muted)}
+
+  .kv{display:flex; justify-content:space-between; font-size:12px; padding:5px 0;
+    border-bottom:1px dashed rgba(47,230,255,.12)}
+  .kv:last-child{border-bottom:0}
+  .kv b{color:#eafcff; font-weight:500}
+  .kv .ok{color:var(--good)} .kv .no{color:var(--bad)}
+
+  /* ---- Mitte: Arc Reactor ---- */
+  .center{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:14px}
+  .reactor{position:relative; width:430px; height:430px; max-width:80vw; max-height:80vw}
+  .reactor svg{position:absolute; inset:0; width:100%; height:100%}
+  .spin-slow{transform-origin:50% 50%; animation:spin 26s linear infinite}
+  .spin-med{transform-origin:50% 50%; animation:spin 14s linear infinite reverse}
+  .spin-fast{transform-origin:50% 50%; animation:spin 8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .reactor-core{position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center}
+  .reactor-core .brand{font-size:26px; letter-spacing:.34em; color:#eafcff; text-shadow:0 0 14px rgba(47,230,255,.8)}
+  .reactor-core .sub{font-size:10px; color:var(--cyan); letter-spacing:.4em; margin-top:4px}
+  .reactor-core .ver{font-size:42px; font-weight:200; color:var(--cyan); text-shadow:var(--glow); margin-top:6px}
+
+  .actions{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:620px}
+  .btn{background:rgba(47,230,255,.06); color:var(--cyan-soft); border:1px solid var(--line);
+    padding:9px 13px; border-radius:8px; cursor:pointer; font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; transition:.15s; font-family:inherit}
+  .btn:hover{background:rgba(47,230,255,.18); color:#eafcff; box-shadow:var(--glow)}
+  .btn.go{border-color:rgba(62,240,164,.5); color:var(--good)}
+  .btn.warn{border-color:rgba(255,178,77,.5); color:var(--warn)}
+
+  .meter-row{display:flex; gap:10px; justify-content:space-between; width:100%}
+  .meter{flex:1; text-align:center}
+  .meter .lbl{font-size:10px; color:var(--muted); letter-spacing:.16em; margin-bottom:6px}
+  .bar{height:8px; background:rgba(47,230,255,.10); border-radius:5px; overflow:hidden;
+    border:1px solid var(--line)}
+  .bar > span{display:block; height:100%; width:0%;
+    background:linear-gradient(90deg, var(--cyan-dim), var(--cyan)); transition:width .6s ease}
+  .meter .val{font-size:13px; color:#eafcff; margin-top:5px; font-variant-numeric:tabular-nums}
+
+  /* Ring-Metriken */
+  .rings{display:flex; justify-content:space-around; gap:6px; flex-wrap:wrap}
+  .ring{width:84px; text-align:center}
+  .ring svg{width:84px; height:84px; transform:rotate(-90deg)}
+  .ring .track{fill:none; stroke:rgba(47,230,255,.12); stroke-width:7}
+  .ring .prog{fill:none; stroke:var(--cyan); stroke-width:7; stroke-linecap:round;
+    filter:drop-shadow(0 0 4px rgba(47,230,255,.7)); transition:stroke-dashoffset .6s ease}
+  .ring .pct{font-size:13px; fill:#eafcff; transform:rotate(90deg); transform-origin:center}
+  .ring .name{font-size:10px; color:var(--muted); letter-spacing:.14em; margin-top:4px}
+
+  /* ---- rechte Spalte ---- */
+  .weather-now{display:flex; align-items:center; gap:14px; margin-bottom:10px}
+  .weather-now .temp{font-size:44px; font-weight:200; color:#eafcff; text-shadow:var(--glow);
+    line-height:1}
+  .weather-now .meta{font-size:11px; color:var(--muted); line-height:1.6}
+  .weather-now .meta b{color:var(--cyan); font-weight:500}
+  .fc{display:flex; justify-content:space-between; gap:4px}
+  .fc div{flex:1; text-align:center; font-size:10px; color:var(--muted)}
+  .fc .t{color:#eafcff; font-size:11px; margin-top:3px}
+
+  .news li{list-style:none; font-size:11px; color:var(--cyan-soft); padding:7px 0 7px 14px;
+    border-bottom:1px dashed rgba(47,230,255,.12); position:relative; line-height:1.4}
+  .news li:before{content:"›"; position:absolute; left:0; color:var(--cyan)}
+  .news ul{margin:0; padding:0}
+
+  /* Konsole */
+  .console{grid-column:1 / -1}
+  .console pre{background:rgba(0,8,12,.7); border:1px solid var(--line); border-radius:8px;
+    padding:12px; font-size:11px; color:var(--cyan-soft); max-height:240px; overflow:auto;
+    white-space:pre-wrap; margin:0}
+  .rag{display:flex; gap:8px; margin-bottom:10px}
+  .rag input{flex:1; background:rgba(0,8,12,.6); border:1px solid var(--line); border-radius:8px;
+    color:#eafcff; padding:9px 12px; font-family:inherit; font-size:12px}
+  .rag input:focus{outline:none; box-shadow:var(--glow)}
+  .dash a{display:block; font-size:11px; color:var(--cyan-soft); text-decoration:none;
+    padding:5px 0; border-bottom:1px dashed rgba(47,230,255,.12)}
+  .dash a:hover{color:#eafcff}
+  .dash code{color:var(--muted); font-size:9px; display:block; word-break:break-all}
+  .status-dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px;
+    background:var(--bad); box-shadow:0 0 6px var(--bad)}
+  .status-dot.on{background:var(--good); box-shadow:0 0 6px var(--good)}
+  .corner{position:fixed; width:22px; height:22px; border:1px solid var(--line); z-index:2; pointer-events:none}
+  .corner.tl{top:8px; left:8px; border-right:0; border-bottom:0}
+  .corner.tr{top:8px; right:8px; border-left:0; border-bottom:0}
+  .corner.bl{bottom:8px; left:8px; border-right:0; border-top:0}
+  .corner.br{bottom:8px; right:8px; border-left:0; border-top:0}
+
+  /* Einstellungen-Modal */
+  .overlay{position:fixed; inset:0; z-index:10; display:none; align-items:center;
+    justify-content:center; background:rgba(2,6,11,.78); backdrop-filter:blur(4px)}
+  .overlay.open{display:flex}
+  .modal{width:440px; max-width:92vw; max-height:88vh; overflow:auto;
+    background:linear-gradient(160deg, rgba(10,28,38,.96), rgba(4,12,18,.96));
+    border:1px solid var(--cyan); border-radius:14px; padding:22px 24px;
+    box-shadow:0 0 40px rgba(47,230,255,.25), inset 0 0 30px rgba(47,230,255,.06)}
+  .modal h2{font-size:14px; color:var(--cyan); text-shadow:var(--glow);
+    border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:16px;
+    display:flex; justify-content:space-between; align-items:center}
+  .modal .close{cursor:pointer; color:var(--muted); font-size:18px; line-height:1}
+  .modal .close:hover{color:#eafcff}
+  .field{margin-bottom:14px}
+  .field label{display:block; font-size:10px; color:var(--muted); letter-spacing:.14em;
+    text-transform:uppercase; margin-bottom:5px}
+  .field input{width:100%; background:rgba(0,8,12,.6); border:1px solid var(--line);
+    border-radius:8px; color:#eafcff; padding:9px 11px; font-family:inherit; font-size:12px}
+  .field input:focus{outline:none; box-shadow:var(--glow)}
+  .field input[type=color]{height:38px; padding:3px; cursor:pointer}
+  .field .row{display:flex; gap:10px}
+  .field .row > div{flex:1}
+  .modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:8px}
+  .modal .hint{font-size:10px; color:var(--muted); margin:-8px 0 16px}
+  .modal .saved{color:var(--good); font-size:11px}
+</style>
+</head>
+<body>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<div class="wrap">
+
+  <!-- ===================== LINKS ===================== -->
+  <div class="col">
+    <div class="panel">
+      <h2>Chronometer <small id="conn"><span class="status-dot" id="dot"></span>HUD</small></h2>
+      <div class="clock">
+        <div class="day" id="c-day">—</div>
+        <div class="month" id="c-month">—</div>
+        <div class="time" id="c-time">00:00:00</div>
+        <div class="date" id="c-date">—</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Speicher / Disk</h2>
+      <div class="kv"><span>Gesamt</span><b id="d-total">— GB</b></div>
+      <div class="kv"><span>Belegt</span><b id="d-used">— GB</b></div>
+      <div class="kv"><span>Frei</span><b id="d-free">— GB</b></div>
+      <div class="bar" style="margin-top:8px"><span id="d-bar"></span></div>
+    </div>
+
+    <div class="panel">
+      <h2>System</h2>
+      <div class="kv"><span>Uptime</span><b id="s-uptime">—</b></div>
+      <div class="kv"><span>Netz ↓</span><b id="s-down">— KB/s</b></div>
+      <div class="kv"><span>Netz ↑</span><b id="s-up">— KB/s</b></div>
+      <div class="kv"><span>Vault MD</span><b id="s-md">—</b></div>
+      <div class="kv"><span>Vault</span><b id="s-vault" class="no">prüfe…</b></div>
+      <div class="kv"><span>Inbox</span><b id="s-inbox" class="no">prüfe…</b></div>
+    </div>
+  </div>
+
+  <!-- ===================== MITTE ===================== -->
+  <div class="col center">
+    <div class="reactor">
+      <svg viewBox="0 0 200 200" class="spin-slow">
+        <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(47,230,255,.20)" stroke-width="1"/>
+        <circle cx="100" cy="100" r="92" fill="none" stroke="var(--cyan)" stroke-width="2"
+          stroke-dasharray="6 20" opacity=".7"/>
+      </svg>
+      <svg viewBox="0 0 200 200" class="spin-med">
+        <circle cx="100" cy="100" r="76" fill="none" stroke="rgba(47,230,255,.16)" stroke-width="6"
+          stroke-dasharray="40 14"/>
+      </svg>
+      <svg viewBox="0 0 200 200" class="spin-fast">
+        <circle cx="100" cy="100" r="60" fill="none" stroke="var(--cyan)" stroke-width="1.5"
+          stroke-dasharray="2 8" opacity=".6"/>
+        <circle cx="100" cy="100" r="52" fill="none" stroke="rgba(47,230,255,.5)" stroke-width="3"
+          stroke-dasharray="90 200" stroke-linecap="round"/>
+      </svg>
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="core" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#dffaff"/>
+            <stop offset="45%" stop-color="#2fe6ff"/>
+            <stop offset="100%" stop-color="rgba(47,230,255,0)"/>
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="40" fill="url(#core)" opacity=".5"/>
+      </svg>
+      <div class="reactor-core">
+        <div class="brand">SECONDBRAIN</div>
+        <div class="sub">JARVIS CONTROL CENTER</div>
+        <div class="ver" id="cpu-big">0%</div>
+        <div class="sub" style="margin-top:0">CPU LAST</div>
+      </div>
+    </div>
+
+    <div class="panel" style="width:100%; max-width:640px">
+      <h2>Live-Metriken <small id="m-src">psutil</small></h2>
+      <div class="rings">
+        <div class="ring">
+          <svg><circle class="track" cx="42" cy="42" r="34"/>
+            <circle class="prog" id="r-cpu" cx="42" cy="42" r="34"/>
+            <text class="pct" id="t-cpu" x="42" y="47" text-anchor="middle">0%</text></svg>
+          <div class="name">CPU</div>
+        </div>
+        <div class="ring">
+          <svg><circle class="track" cx="42" cy="42" r="34"/>
+            <circle class="prog" id="r-ram" cx="42" cy="42" r="34"/>
+            <text class="pct" id="t-ram" x="42" y="47" text-anchor="middle">0%</text></svg>
+          <div class="name">RAM</div>
+        </div>
+        <div class="ring">
+          <svg><circle class="track" cx="42" cy="42" r="34"/>
+            <circle class="prog" id="r-swap" cx="42" cy="42" r="34"/>
+            <text class="pct" id="t-swap" x="42" y="47" text-anchor="middle">0%</text></svg>
+          <div class="name">SWAP</div>
+        </div>
+        <div class="ring">
+          <svg><circle class="track" cx="42" cy="42" r="34"/>
+            <circle class="prog" id="r-disk" cx="42" cy="42" r="34"/>
+            <text class="pct" id="t-disk" x="42" y="47" text-anchor="middle">0%</text></svg>
+          <div class="name">DISK</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel actions" style="width:100%; max-width:640px">
+      <button class="btn go" data-run="run_v10_cycle.py">v10 Cycle</button>
+      <button class="btn go" data-run="run_v101_cycle.py">v10.1 Cycle</button>
+      <button class="btn" data-run="import_ai_exports.py">Import AI</button>
+      <button class="btn" data-run="build_vector_rag.py">RAG Index</button>
+      <button class="btn" data-run="check_paths_v9.py">Path Check</button>
+      <button class="btn warn" data-run="release_gate_v9.py">Release Gate</button>
+      <button class="btn warn" data-run="run_regression_tests_v9.py">Regression</button>
+      <button class="btn" id="btn-logs">Logs</button>
+      <button class="btn" id="btn-settings">⚙ Einstellungen</button>
+    </div>
+  </div>
+
+  <!-- ===================== RECHTS ===================== -->
+  <div class="col">
+    <div class="panel">
+      <h2>Wetter <small id="w-place">—</small></h2>
+      <div class="weather-now">
+        <div class="temp" id="w-temp">—°</div>
+        <div class="meta">
+          <div id="w-text">—</div>
+          <div>Feuchte <b id="w-hum">—%</b></div>
+          <div>Wind <b id="w-wind">— km/h</b></div>
+        </div>
+      </div>
+      <div class="fc" id="w-fc"></div>
+    </div>
+
+    <div class="panel">
+      <h2>News <small>tagesschau</small></h2>
+      <div class="news"><ul id="news-list"><li>lade…</li></ul></div>
+    </div>
+
+    <div class="panel dash">
+      <h2>Dashboards</h2>
+      <div id="dash-list"><a>lade…</a></div>
+    </div>
+  </div>
+
+  <!-- ===================== KONSOLE ===================== -->
+  <div class="panel console">
+    <h2>RAG / Konsole <small id="busy"></small></h2>
+    <div class="rag">
+      <input id="rag-q" placeholder="Frage an dein Vault…" />
+      <button class="btn" id="rag-go">Fragen</button>
+    </div>
+    <pre id="out">Bereit. review-first · keine Löschaktionen.</pre>
+  </div>
+
+</div>
+
+<!-- ===================== EINSTELLUNGEN ===================== -->
+<div class="overlay" id="settings-overlay">
+  <div class="modal">
+    <h2>⚙ Einstellungen <span class="close" id="settings-close">✕</span></h2>
+    <div class="field">
+      <label>Ort (Anzeige)</label>
+      <input id="set-place" placeholder="Bonn">
+    </div>
+    <div class="field">
+      <div class="row">
+        <div><label>Breitengrad</label><input id="set-lat" type="number" step="0.0001"></div>
+        <div><label>Längengrad</label><input id="set-lon" type="number" step="0.0001"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>News-Feed (RSS-URL)</label>
+      <input id="set-rss" placeholder="https://www.tagesschau.de/index~rss2.xml">
+    </div>
+    <div class="field">
+      <div class="row">
+        <div><label>News-Anzahl (1–20)</label><input id="set-newsmax" type="number" min="1" max="20"></div>
+        <div><label>Wetter-Intervall (min)</label><input id="set-wmin" type="number" min="1" max="720"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Akzentfarbe</label>
+      <input id="set-accent" type="color">
+    </div>
+    <p class="hint">Standort speist Wetter (Open-Meteo). Werte werden serverseitig in
+      config/hud_settings.json gespeichert.</p>
+    <div class="modal-actions">
+      <span class="saved" id="set-status"></span>
+      <button class="btn" id="settings-cancel">Abbrechen</button>
+      <button class="btn go" id="settings-save">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const DAYS = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+const MON  = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+const C = 2 * Math.PI * 34; // Ring-Umfang
+["r-cpu","r-ram","r-swap","r-disk"].forEach(id=>{
+  const e=$(id); e.style.strokeDasharray=C; e.style.strokeDashoffset=C;
+});
+function ring(id, txt, pct){
+  pct = Math.max(0, Math.min(100, pct||0));
+  $(id).style.strokeDashoffset = C * (1 - pct/100);
+  $(txt).textContent = Math.round(pct) + "%";
+}
+function ringColor(id, pct){
+  const c = pct>=90 ? "var(--bad)" : pct>=70 ? "var(--warn)" : "var(--cyan)";
+  $(id).style.stroke = c;
+}
+
+// --- Uhr (lokal, jede Sekunde) ---
+function tick(){
+  const d = new Date();
+  $("c-day").textContent  = DAYS[d.getDay()];
+  $("c-month").textContent= MON[d.getMonth()] + " " + d.getDate();
+  $("c-time").textContent = d.toLocaleTimeString("de-DE",{hour12:false});
+  $("c-date").textContent = d.toLocaleDateString("de-DE");
+}
+setInterval(tick, 1000); tick();
+
+// --- Helper ---
+async function getJSON(url, opts){
+  const r = await fetch(url, opts);
+  return r.json();
+}
+function setConn(online){
+  if(online){ $("dot").classList.add("on"); $("conn").lastChild.textContent="HUD ONLINE"; }
+  else { $("dot").classList.remove("on"); $("conn").lastChild.textContent="HUD OFFLINE"; }
+}
+
+// --- Metriken ---
+async function loadMetrics(){
+  try{
+    const m = await getJSON("/api/metrics");
+    setConn(true);
+    if(!m.psutil){ $("m-src").textContent="psutil fehlt"; return; }
+    $("m-src").textContent="psutil";
+    ring("r-cpu","t-cpu",m.cpu);        ringColor("r-cpu",m.cpu);
+    ring("r-ram","t-ram",m.ram);        ringColor("r-ram",m.ram);
+    ring("r-swap","t-swap",m.swap);     ringColor("r-swap",m.swap);
+    ring("r-disk","t-disk",m.disk_pct); ringColor("r-disk",m.disk_pct);
+    $("cpu-big").textContent = Math.round(m.cpu)+"%";
+    $("d-total").textContent = m.disk_total+" GB";
+    $("d-used").textContent  = m.disk_used+" GB";
+    $("d-free").textContent  = m.disk_free+" GB";
+    $("d-bar").style.width   = m.disk_pct+"%";
+    $("s-uptime").textContent= m.uptime;
+    $("s-down").textContent  = (m.net?.down??0)+" KB/s";
+    $("s-up").textContent    = (m.net?.up??0)+" KB/s";
+  }catch(e){
+    setConn(false);
+  }
+}
+
+// --- Systemstatus (Vault / Inbox / Markdown-Anzahl) ---
+async function loadStatus(){
+  try{
+    const s = await getJSON("/api/status");
+    $("s-md").textContent = s.markdown_files ?? "—";
+    const v = $("s-vault"), i = $("s-inbox");
+    v.textContent = s.vault_exists ? "OK" : "fehlt";
+    v.className = s.vault_exists ? "ok" : "no";
+    i.textContent = s.inbox_exists ? "OK" : "fehlt";
+    i.className = s.inbox_exists ? "ok" : "no";
+  }catch(e){}
+}
+
+// --- Wetter ---
+async function loadWeather(){
+  try{
+    const w = await getJSON("/api/weather");
+    $("w-place").textContent = w.place || "—";
+    if(!w.ok){ $("w-text").textContent = "offline"; return; }
+    $("w-temp").textContent = (w.temp ?? "—")+"°";
+    $("w-text").textContent = w.text || "—";
+    $("w-hum").textContent  = (w.humidity ?? "—")+"%";
+    $("w-wind").textContent = (w.wind ?? "—")+" km/h";
+    const fc = $("w-fc"); fc.innerHTML = "";
+    (w.days||[]).forEach(d=>{
+      const el = document.createElement("div");
+      el.innerHTML = `<div>${d.label}</div>`+
+                     `<div class="t">${d.max}° / ${d.min}°</div>`+
+                     `<div>${d.text}</div>`;
+      fc.appendChild(el);
+    });
+  }catch(e){ $("w-text").textContent = "Fehler"; }
+}
+
+// --- News ---
+async function loadNews(){
+  try{
+    const n = await getJSON("/api/news");
+    const ul = $("news-list"); ul.innerHTML = "";
+    if(!n.ok || !(n.items||[]).length){
+      ul.innerHTML = "<li>Keine News.</li>"; return;
+    }
+    n.items.forEach(t=>{
+      const li = document.createElement("li");
+      li.textContent = t; ul.appendChild(li);
+    });
+  }catch(e){ $("news-list").innerHTML = "<li>Fehler.</li>"; }
+}
+
+// --- Dashboards ---
+async function loadDashboards(){
+  try{
+    const r = await getJSON("/api/dashboards");
+    const box = $("dash-list"); box.innerHTML = "";
+    const links = r.links || {};
+    const keys = Object.keys(links);
+    if(!keys.length){ box.innerHTML = "<a>Keine Dashboards.</a>"; return; }
+    keys.forEach(name=>{
+      const a = document.createElement("a");
+      a.textContent = name;
+      a.title = links[name];
+      box.appendChild(a);
+    });
+  }catch(e){ $("dash-list").innerHTML = "<a>Fehler.</a>"; }
+}
+
+// --- Konsole / Skript-Runner ---
+function setBusy(on, label){
+  $("busy").textContent = on ? (label||"läuft…") : "";
+}
+function printOut(text){ $("out").textContent = text; }
+
+async function runScript(script){
+  setBusy(true, script+" …");
+  printOut("> "+script+"\n");
+  try{
+    const r = await getJSON("/api/run?script="+encodeURIComponent(script));
+    printOut("> "+script+(r.ok?"  [OK]":"  [FEHLER]")+"\n\n"+(r.output||""));
+  }catch(e){
+    printOut("Fehler beim Ausführen: "+e);
+  }finally{ setBusy(false); }
+}
+
+async function loadLogs(){
+  setBusy(true, "Logs …");
+  try{
+    const r = await getJSON("/api/logs");
+    printOut(r.log || "Keine Logs.");
+  }catch(e){ printOut("Fehler beim Laden der Logs."); }
+  finally{ setBusy(false); }
+}
+
+async function askRag(){
+  const q = $("rag-q").value.trim();
+  if(!q){ $("rag-q").focus(); return; }
+  setBusy(true, "RAG …");
+  printOut("? "+q+"\n");
+  try{
+    const r = await getJSON("/api/rag?q="+encodeURIComponent(q));
+    let out = (r.answer||"")+"\n";
+    (r.hits||[]).forEach((h,i)=>{
+      out += `\n[${i+1}] ${h.note}  (Score ${h.score})\n    ${(h.preview||"").slice(0,200)}\n`;
+    });
+    printOut(out);
+  }catch(e){ printOut("RAG-Fehler: "+e); }
+  finally{ setBusy(false); }
+}
+
+// --- Einstellungen ---
+function applyAccent(hex){
+  if(!hex) return;
+  document.documentElement.style.setProperty("--cyan", hex);
+}
+async function openSettings(){
+  try{
+    const r = await getJSON("/api/settings");
+    const s = r.settings || {};
+    $("set-place").value   = s.place ?? "";
+    $("set-lat").value     = s.lat ?? "";
+    $("set-lon").value     = s.lon ?? "";
+    $("set-rss").value     = s.news_rss ?? "";
+    $("set-newsmax").value = s.news_max ?? "";
+    $("set-wmin").value    = s.weather_min ?? "";
+    $("set-accent").value  = s.accent ?? "#2fe6ff";
+    $("set-status").textContent = "";
+  }catch(e){}
+  $("settings-overlay").classList.add("open");
+}
+function closeSettings(){ $("settings-overlay").classList.remove("open"); }
+
+async function saveSettings(){
+  const payload = {
+    place:     $("set-place").value,
+    lat:       parseFloat($("set-lat").value),
+    lon:       parseFloat($("set-lon").value),
+    news_rss:  $("set-rss").value,
+    news_max:  parseInt($("set-newsmax").value, 10),
+    weather_min: parseInt($("set-wmin").value, 10),
+    accent:    $("set-accent").value,
+  };
+  $("set-status").textContent = "Speichere …";
+  try{
+    const r = await getJSON("/api/settings", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
+    });
+    const s = r.settings || {};
+    applyAccent(s.accent);
+    $("set-status").textContent = "Gespeichert.";
+    loadWeather(); loadNews();
+    setTimeout(closeSettings, 600);
+  }catch(e){ $("set-status").textContent = "Fehler."; }
+}
+
+// --- Verdrahtung ---
+document.querySelectorAll("[data-run]").forEach(btn=>{
+  btn.addEventListener("click", ()=> runScript(btn.getAttribute("data-run")));
+});
+$("btn-logs").addEventListener("click", loadLogs);
+$("btn-settings").addEventListener("click", openSettings);
+$("settings-close").addEventListener("click", closeSettings);
+$("settings-cancel").addEventListener("click", closeSettings);
+$("settings-save").addEventListener("click", saveSettings);
+$("set-accent").addEventListener("input", e=> applyAccent(e.target.value));
+$("rag-go").addEventListener("click", askRag);
+$("rag-q").addEventListener("keydown", e=>{ if(e.key==="Enter") askRag(); });
+$("settings-overlay").addEventListener("click", e=>{ if(e.target.id==="settings-overlay") closeSettings(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSettings(); });
+
+// --- Initiale Akzentfarbe aus Settings ---
+(async()=>{ try{ const r=await getJSON("/api/settings"); applyAccent((r.settings||{}).accent); }catch(e){} })();
+
+// --- Poll-Schleifen ---
+loadMetrics(); setInterval(loadMetrics, 2000);
+loadStatus();  setInterval(loadStatus, 15000);
+loadWeather(); setInterval(loadWeather, 15*60*1000);
+loadNews();    setInterval(loadNews, 15*60*1000);
+loadDashboards();
+</script>
+</body>
+</html>

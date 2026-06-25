@@ -1,6 +1,5 @@
 @echo off
 setlocal
-set "ROOT=%~dp0"
-cd /d "%ROOT%"
-python launcher.py gui-open --project-root "%ROOT%"
-endlocal
+cd /d "%~dp0"
+python launcher.py jarvis %*
+if errorlevel 1 pause

@@ -10,9 +10,11 @@ import webbrowser
 from pathlib import Path
 from typing import Any
 
+from secondbrain.gui.bootstrap import bootstrap_status, write_bootstrap_report
+
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8851
-GUI_COMMANDS = {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "desktop-gui", "desktop16-gui"}
+GUI_COMMANDS = {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}
 
 
 def _print(payload: dict[str, Any]) -> None:
@@ -93,8 +95,9 @@ def gui_doctor(project_root: str | Path | None = None) -> dict[str, Any]:
     check("shortcut_installer", (root / "Install-Jarvis-Desktop.ps1").exists(), "Install-Jarvis-Desktop.ps1 vorhanden")
     check("python", bool(sys.executable), sys.executable)
     status = gui_status(root)
-    ok = all(c["ok"] for c in checks)
-    return {"ok": ok, "status": "pass" if ok else "blocked", "checks": checks, "runtime": status}
+    bootstrap = bootstrap_status(root, repair=False)
+    ok = all(c["ok"] for c in checks) and bootstrap.get("ok", False)
+    return {"ok": ok, "status": "pass" if ok else "blocked", "checks": checks, "runtime": status, "bootstrap": bootstrap}
 
 
 def shortcut_manifest(project_root: str | Path | None = None) -> dict[str, Any]:
@@ -120,6 +123,9 @@ def shortcut_manifest(project_root: str | Path | None = None) -> dict[str, Any]:
 
 def start_gui(project_root: str | Path | None = None, *, open_browser: bool = True, quiet: bool = False, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> dict[str, Any]:
     root = _root(project_root)
+    bootstrap = write_bootstrap_report(root, repair=True)
+    if not bootstrap.get("ok"):
+        return {"ok": False, "status": "blocked", "error": "bootstrap blocked", "bootstrap": bootstrap}
     status = gui_status(root, host, port)
     if status["ok"]:
         if open_browser and not quiet:
@@ -158,7 +164,7 @@ def gui_command(argv: list[str] | None = None) -> int:
     parser.add_argument("--quiet", action="store_true")
     args, _ = parser.parse_known_args(raw)
 
-    if args.cmd in {"gui", "gui-start", "gui-open", "desktop-gui", "desktop16-gui"}:
+    if args.cmd in {"gui", "gui-start", "gui-open", "jarvis", "desktop-gui", "desktop16-gui"}:
         payload = start_gui(args.project_root, open_browser=not args.no_browser, quiet=args.quiet, host=args.host, port=args.port)
     elif args.cmd == "gui-status":
         payload = gui_status(args.project_root, args.host, args.port)
@@ -166,6 +172,8 @@ def gui_command(argv: list[str] | None = None) -> int:
         payload = gui_doctor(args.project_root)
     elif args.cmd == "gui-shortcuts":
         payload = shortcut_manifest(args.project_root)
+    elif args.cmd == "gui-bootstrap":
+        payload = write_bootstrap_report(args.project_root, repair=True)
     else:
         payload = {"ok": False, "status": "unknown_command", "cmd": args.cmd}
     _print(payload)

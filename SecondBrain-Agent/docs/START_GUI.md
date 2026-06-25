@@ -1,50 +1,48 @@
-# Jarvis GUI starten
+# Jarvis starten ab v30.21
 
-## Standardstart
+## Standard
 
-```powershell
-python launcher.py gui-open
+```bash
+python launcher.py
 ```
 
-Alias-Kommandos:
+Dieser Befehl startet automatisch den Jarvis-GUI-Bootstrap und danach die Oberfläche.
 
-```powershell
+## Alternative Befehle
+
+```bash
+python launcher.py jarvis
 python launcher.py gui
-python launcher.py gui-start
-python launcher.py desktop-gui
-python launcher.py desktop16-gui
-```
-
-## Status und Diagnose
-
-```powershell
-python launcher.py gui-status
+python launcher.py gui-bootstrap
 python launcher.py gui-doctor
-python launcher.py gui-shortcuts
 ```
 
-## Windows Desktop-Verknüpfung erstellen
+## Windows
+
+Doppelklick auf:
+
+```text
+Jarvis.bat
+Start-Jarvis-GUI.bat
+```
+
+Desktop-Verknüpfung erstellen:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File Install-Jarvis-Desktop.ps1
+powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Erzeugt:
+## Bootstrap-Prüfungen
 
-- Desktop: `Jarvis GUI.lnk`
-- Autostart: `Jarvis GUI Autostart.lnk`
+Der Start prüft und repariert lokal:
 
-## Manuelle Startdateien
+- `.env` Defaults
+- Runtime-Ordner
+- Schreibrechte
+- Python-Version
+- DATABASE_URL-Format
+- Embedding-Provider-Konfiguration
+- Ollama-Erreichbarkeit bei Ollama-Provider
+- OpenAI-Key bei OpenAI-Provider
 
-- `Jarvis.bat`
-- `Start-Jarvis-GUI.bat`
-- `Start-Jarvis-GUI.ps1`
-- `scripts/start_gui.py`
-- `scripts/start_jarvis_gui.py`
-
-## Startlogik
-
-1. Prüft laufende GUI über PID-Datei und Port `8851`.
-2. Startet `scripts/start_hud.py`, falls noch nicht aktiv.
-3. Öffnet Browser auf `http://127.0.0.1:8851`.
-4. `/quiet` startet ohne Browser für Autostart.
+Blocker verhindern den GUI-Start. Warnungen erlauben lokalen Start, blockieren aber weiterhin Production Gates.
