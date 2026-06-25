@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,22 @@ EXPECTED_PYPROJECT_LINES: tuple[str, ...] = (
     "[project.scripts]",
     "secondbrain = \"launcher:main\"",
     "[tool.setuptools.packages.find]",
+)
+
+EXPECTED_OPTIONAL_EXTRAS: tuple[str, ...] = (
+    "dev",
+    "pdf",
+    "connectors",
+    "openai",
+    "all",
+)
+
+EXPECTED_CI_LINES: tuple[str, ...] = (
+    "cd SecondBrain-Agent",
+    "pip install -e \".[dev]\"",
+    "python launcher.py repo-doctor --execute-runtime-checks",
+    "python launcher.py dependency-inventory",
+    "pytest -q",
 )
 
 FORBIDDEN_ROOT_PREFIXES: tuple[str, ...] = (
@@ -117,6 +134,15 @@ def summarize_checks(checks: Iterable[DoctorCheck]) -> dict[str, int]:
     return summary
 
 
+def _repository_root(project_root: Path) -> Path:
+    """Return the Git repository root when the project lives in a nested folder."""
+    if (project_root / ".git").exists():
+        return project_root
+    if (project_root.parent / ".git").exists():
+        return project_root.parent
+    return project_root
+
+
 def _check_required_paths(root: Path) -> list[DoctorCheck]:
     checks: list[DoctorCheck] = []
     for rel in REQUIRED_PATHS:
@@ -153,6 +179,17 @@ def _check_pyproject(root: Path) -> list[DoctorCheck]:
             checks.append(DoctorCheck(f"pyproject.toml:{expected}", "ok", "blocking", "expected pyproject setting present"))
         else:
             checks.append(DoctorCheck(f"pyproject.toml:{expected}", "error", "blocking", "expected pyproject setting missing"))
+    for extra in EXPECTED_OPTIONAL_EXTRAS:
+        pattern = re.compile(rf"^\s*{re.escape(extra)}\s*=\s*\[", re.MULTILINE)
+        if pattern.search(content):
+            checks.append(DoctorCheck(f"pyproject.toml:extra:{extra}", "ok", "blocking", "expected optional extra present"))
+        else:
+            checks.append(DoctorCheck(f"pyproject.toml:extra:{extra}", "error", "blocking", "expected optional extra missing"))
+    version_match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
+    if version_match:
+        checks.append(DoctorCheck("pyproject.toml:version", "ok", "blocking", "project version declared", {"version": version_match.group(1)}))
+    else:
+        checks.append(DoctorCheck("pyproject.toml:version", "error", "blocking", "project version missing"))
     return checks
 
 
@@ -171,6 +208,11 @@ def _check_requirements(root: Path) -> list[DoctorCheck]:
         checks.append(DoctorCheck("requirements-runtime.txt:policy", "ok", "blocking", "runtime dependency policy is explicit"))
     else:
         checks.append(DoctorCheck("requirements-runtime.txt:policy", "error", "blocking", "runtime dependency policy missing"))
+    dev_content = (root / "requirements-dev.txt").read_text(encoding="utf-8") if (root / "requirements-dev.txt").exists() else ""
+    if "pytest" in dev_content.lower():
+        checks.append(DoctorCheck("requirements-dev.txt:pytest", "ok", "blocking", "pytest declared for dev/test path"))
+    else:
+        checks.append(DoctorCheck("requirements-dev.txt:pytest", "error", "blocking", "pytest missing from dev requirements"))
     return checks
 
 
@@ -196,6 +238,35 @@ def _check_readme(root: Path) -> list[DoctorCheck]:
         checks.append(DoctorCheck("README.md:editable-install", "ok", "documentation", "editable install documented"))
     else:
         checks.append(DoctorCheck("README.md:editable-install", "warning", "documentation", "editable install not documented"))
+    if "docs/releases" in content:
+        checks.append(DoctorCheck("README.md:release-doc-source", "ok", "documentation", "release documentation source is explicit"))
+    else:
+        checks.append(DoctorCheck("README.md:release-doc-source", "warning", "documentation", "release documentation source is not explicit"))
+    return checks
+
+
+def _check_release_docs(root: Path) -> list[DoctorCheck]:
+    release_dir = root / "docs" / "releases"
+    if not release_dir.exists():
+        return [DoctorCheck("docs/releases", "error", "blocking", "release documentation directory missing")]
+    release_docs = sorted(path.relative_to(root).as_posix() for path in release_dir.glob("*.md"))
+    if release_docs:
+        return [DoctorCheck("docs/releases:md", "ok", "blocking", "release documentation exists", {"count": len(release_docs), "latest": release_docs[-5:]})]
+    return [DoctorCheck("docs/releases:md", "error", "blocking", "release documentation directory contains no markdown files")]
+
+
+def _check_ci_workflow(root: Path) -> list[DoctorCheck]:
+    repo_root = _repository_root(root)
+    path = repo_root / ".github" / "workflows" / "secondbrain-ci.yml"
+    if not path.exists():
+        return [DoctorCheck("ci:secondbrain-ci.yml", "error", "blocking", "GitHub Actions P0 smoke workflow missing")]
+    content = path.read_text(encoding="utf-8")
+    checks: list[DoctorCheck] = [DoctorCheck("ci:secondbrain-ci.yml", "ok", "blocking", "GitHub Actions P0 smoke workflow exists")]
+    for expected in EXPECTED_CI_LINES:
+        if expected in content:
+            checks.append(DoctorCheck(f"ci:secondbrain-ci.yml:{expected}", "ok", "blocking", "expected CI command present"))
+        else:
+            checks.append(DoctorCheck(f"ci:secondbrain-ci.yml:{expected}", "error", "blocking", "expected CI command missing"))
     return checks
 
 
@@ -264,6 +335,8 @@ def run_repo_doctor(
         checks.extend(_check_pyproject(root))
         checks.extend(_check_requirements(root))
         checks.extend(_check_readme(root))
+        checks.extend(_check_release_docs(root))
+        checks.extend(_check_ci_workflow(root))
         checks.extend(_check_forbidden_artifacts(root))
         if execute_runtime_checks:
             for args in LIGHTWEIGHT_COMMANDS:
