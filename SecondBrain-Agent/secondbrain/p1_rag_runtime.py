@@ -178,7 +178,37 @@ class P1RagRuntime:
             conn.execute("delete from chunks where document_id = ?", (document_id,))
             conn.commit()
 
+    def _embedding_provider_blocker(self, operation: str) -> dict[str, Any] | None:
+        status = self.embedding_provider.status()
+        is_network_provider = bool(status.get("network"))
+        fallback_allowed = bool(status.get("fallback_allowed"))
+        if is_network_provider and not bool(status.get("ok")) and not fallback_allowed:
+            return {
+                "schema": SCHEMA_VERSION,
+                "ok": False,
+                "status": "blocked",
+                "error": "embedding_provider_unhealthy",
+                "operation": operation,
+                "provider": status,
+                "remediation": "fix the configured embedding provider or set SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK=true for explicit offline fallback",
+            }
+        return None
+
+    def _embedding_failure_payload(self, operation: str, exc: Exception) -> dict[str, Any]:
+        return {
+            "schema": SCHEMA_VERSION,
+            "ok": False,
+            "status": "blocked",
+            "error": "embedding_generation_failed",
+            "operation": operation,
+            "provider": self.embedding_provider.status(),
+            "detail": str(exc),
+        }
+
     def ingest_text(self, text: str, source: str = "manual", title: str | None = None, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+        provider_blocker = self._embedding_provider_blocker("ingest_text")
+        if provider_blocker:
+            return provider_blocker
         source_check = validate_source(source)
         if not source_check["ok"]:
             return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "error": source_check["error"]}
@@ -199,14 +229,7 @@ class P1RagRuntime:
             spans.append((found, found + len(chunk)))
             cursor = max(found + 1, found + len(chunk) - DEFAULT_OVERLAP)
 
-        document = RagDocumentRecord(
-            id=document_id,
-            source=source_check["source"],
-            title=title_value,
-            content_hash=content_hash,
-            created_at=now,
-            metadata=metadata or {},
-        )
+        document = RagDocumentRecord(document_id, source_check["source"], title_value, content_hash, now, metadata or {})
         chunk_records: list[RagChunkRecord] = []
         vector_records: list[RagVectorRecord] = []
         for idx, chunk in enumerate(chunks):
@@ -214,7 +237,10 @@ class P1RagRuntime:
             chunk_hash = fingerprint(f"{document_id}:{idx}:{chunk}")[:16]
             chunk_id = f"chk_{chunk_hash}"
             char_start, char_end = spans[idx]
-            vector = self.embedding_provider.embed(chunk)
+            try:
+                vector = self.embedding_provider.embed(chunk)
+            except Exception as exc:  # noqa: BLE001 - provider boundary
+                return self._embedding_failure_payload("ingest_text", exc)
             chunk_records.append(RagChunkRecord(chunk_id, document_id, idx, chunk, char_start, char_end, tokens, len(tokens), now))
             vector_records.append(RagVectorRecord(chunk_id, self.embedding_provider.name, len(vector), vector, now))
 
@@ -223,24 +249,7 @@ class P1RagRuntime:
         chunk_result = self.rag_store.upsert_chunks(chunk_records)
         vector_result = self.rag_store.upsert_vectors(vector_records)
         ok = bool(doc_result.get("ok")) and bool(chunk_result.get("ok")) and bool(vector_result.get("ok"))
-        return {
-            "schema": SCHEMA_VERSION,
-            "ok": ok,
-            "status": "pass" if ok else "blocked",
-            "document_id": document_id,
-            "source": source_check["source"],
-            "title": title_value,
-            "chunks": len(chunks),
-            "content_hash": content_hash,
-            "metadata": metadata or {},
-            "store": {
-                "backend": self.rag_store.backend,
-                "write_path": "rag_store",
-                "document": doc_result,
-                "chunks": chunk_result,
-                "vectors": vector_result,
-            },
-        }
+        return {"schema": SCHEMA_VERSION, "ok": ok, "status": "pass" if ok else "blocked", "document_id": document_id, "source": source_check["source"], "title": title_value, "chunks": len(chunks), "content_hash": content_hash, "metadata": metadata or {}, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "document": doc_result, "chunks": chunk_result, "vectors": vector_result}}
 
     def ingest_file(self, file_path: str | Path, source: str | None = None, title: str | None = None) -> dict[str, Any]:
         path = Path(file_path)
@@ -275,12 +284,18 @@ class P1RagRuntime:
         return {"schema": "secondbrain.p1_embeddings.status.v1", "ok": True, "status": "pass", "provider": self.embedding_provider.status(), "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows]}
 
     def reindex_vectors(self, write_report: bool = False) -> dict[str, Any]:
+        provider_blocker = self._embedding_provider_blocker("reindex_vectors")
+        if provider_blocker:
+            return provider_blocker
         now = utc_now()
         vector_records: list[RagVectorRecord] = []
         with self._connect() as conn:
             chunks = conn.execute("select id, text from chunks order by document_id, ordinal").fetchall()
         for row in chunks:
-            vector = self.embedding_provider.embed(row["text"])
+            try:
+                vector = self.embedding_provider.embed(row["text"])
+            except Exception as exc:  # noqa: BLE001 - provider boundary
+                return self._embedding_failure_payload("reindex_vectors", exc)
             vector_records.append(RagVectorRecord(row["id"], self.embedding_provider.name, len(vector), vector, now))
         result = self.rag_store.upsert_vectors(vector_records)
         payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": bool(result.get("ok")), "status": "pass" if result.get("ok") else "blocked", "chunks": len(chunks), "provider": self.embedding_provider.name, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "vectors": result}}
@@ -294,7 +309,13 @@ class P1RagRuntime:
         query_tokens = tokenize(query)
         if not query_tokens:
             return {"schema": "secondbrain.p1_vectors.search.v1", "ok": False, "status": "blocked", "error": "empty_query", "hits": []}
-        q_vector = self.embedding_provider.embed(query)
+        provider_blocker = self._embedding_provider_blocker("vector_search")
+        if provider_blocker:
+            return {**provider_blocker, "schema": "secondbrain.p1_vectors.search.v1", "query": query, "hits": []}
+        try:
+            q_vector = self.embedding_provider.embed(query)
+        except Exception as exc:  # noqa: BLE001 - provider boundary
+            return {**self._embedding_failure_payload("vector_search", exc), "schema": "secondbrain.p1_vectors.search.v1", "query": query, "hits": []}
         with self._connect() as conn:
             rows = conn.execute("select c.id as chunk_id, c.document_id, c.text, c.char_start, c.char_end, d.source, d.title, e.vector_json, e.provider from chunk_embeddings e join chunks c on c.id = e.chunk_id join documents d on d.id = c.document_id").fetchall()
         hits = []
@@ -324,7 +345,7 @@ class P1RagRuntime:
             hit["vector_score"] = round(vector_score, 4)
             hit["hybrid_score"] = round(float(hit.get("rrf_score", 0.0)), 6)
             hit["score"] = hit["hybrid_score"]
-        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"}}
+        return {"schema": "secondbrain.p1_hybrid.search.v1", "ok": bool(keyword.get("ok")) and bool(vector.get("ok")), "status": "pass" if vector.get("ok") else "blocked", "query": query, "limit": limit, "hit_count": len(hits), "hits": hits, "models": {"keyword": "tfidf_logtf_length_norm_v1", "vector": self.embedding_provider.name, "fusion": "rrf_v1"}, "vector_status": vector.get("status")}
 
     def retrieval_metrics(self, write_report: bool = False) -> dict[str, Any]:
         probes = [{"query": "Jarvis RAG Quellen", "expected_terms": ["jarvis", "rag", "quellen"]}, {"query": "Memory Evidenz", "expected_terms": ["memory", "evidenz"]}, {"query": "lokale Quellen", "expected_terms": ["lokale", "quellen"]}]
