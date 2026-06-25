@@ -12,6 +12,7 @@ from urllib import request
 
 
 DEFAULT_DIMENSIONS = 64
+FALLBACK_ENV = "SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK"
 
 
 class EmbeddingProvider(Protocol):
@@ -23,6 +24,13 @@ class EmbeddingProvider(Protocol):
 
     def status(self) -> dict[str, Any]:
         ...
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _normalize(vector: list[float]) -> list[float]:
@@ -74,6 +82,7 @@ class LocalEmbeddingProvider:
             "semantic": False,
             "fallback": None,
             "fallback_used": False,
+            "fallback_allowed": False,
             "production_ready": False,
             "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
         }
@@ -86,7 +95,11 @@ class OllamaEmbeddingProvider:
     dimensions: int = DEFAULT_DIMENSIONS
     timeout_seconds: float = 2.0
     fallback: LocalEmbeddingProvider = LocalEmbeddingProvider()
+    allow_fallback: bool = False
     name: str = "ollama"
+
+    def _fallback_allowed(self) -> bool:
+        return bool(self.allow_fallback or _env_flag(FALLBACK_ENV, False))
 
     def _request_embedding(self, text: str) -> list[float]:
         payload = json.dumps({"model": self.model, "prompt": text}).encode("utf-8")
@@ -98,10 +111,13 @@ class OllamaEmbeddingProvider:
     def embed(self, text: str) -> list[float]:
         try:
             return self._request_embedding(text)
-        except Exception:
-            return self.fallback.embed(text)
+        except Exception as exc:  # noqa: BLE001 - provider boundary
+            if self._fallback_allowed():
+                return self.fallback.embed(text)
+            raise RuntimeError("ollama_embedding_unavailable") from exc
 
     def status(self) -> dict[str, Any]:
+        fallback_allowed = self._fallback_allowed()
         try:
             vector = self._request_embedding("secondbrain health probe")
             return {
@@ -113,6 +129,7 @@ class OllamaEmbeddingProvider:
                 "configured_dimensions": self.dimensions,
                 "fallback": self.fallback.name,
                 "fallback_used": False,
+                "fallback_allowed": fallback_allowed,
                 "network": True,
                 "semantic": True,
                 "production_ready": True,
@@ -125,12 +142,13 @@ class OllamaEmbeddingProvider:
                 "base_url": self.base_url,
                 "dimensions": self.dimensions,
                 "fallback": self.fallback.name,
-                "fallback_used": True,
+                "fallback_used": fallback_allowed,
+                "fallback_allowed": fallback_allowed,
                 "network": True,
                 "semantic": True,
                 "production_ready": False,
                 "error": str(exc),
-                "reason": "ollama embedding endpoint unavailable or returned invalid vector",
+                "reason": "ollama embedding endpoint unavailable or returned invalid vector; ingest/reindex blocks unless SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK=true",
             }
 
 
@@ -140,7 +158,11 @@ class OpenAIEmbeddingProvider:
     api_key_env: str = "OPENAI_API_KEY"
     dimensions: int = DEFAULT_DIMENSIONS
     fallback: LocalEmbeddingProvider = LocalEmbeddingProvider()
+    allow_fallback: bool = False
     name: str = "openai"
+
+    def _fallback_allowed(self) -> bool:
+        return bool(self.allow_fallback or _env_flag(FALLBACK_ENV, False))
 
     def _api_key(self) -> str:
         return os.getenv(self.api_key_env, "").strip()
@@ -170,11 +192,14 @@ class OpenAIEmbeddingProvider:
     def embed(self, text: str) -> list[float]:
         try:
             return self._request_embedding(text)
-        except Exception:
-            return self.fallback.embed(text)
+        except Exception as exc:  # noqa: BLE001 - provider boundary
+            if self._fallback_allowed():
+                return self.fallback.embed(text)
+            raise RuntimeError("openai_embedding_unavailable") from exc
 
     def status(self) -> dict[str, Any]:
         api_key_configured = bool(self._api_key())
+        fallback_allowed = self._fallback_allowed()
         try:
             vector = self._request_embedding("secondbrain health probe")
             return {
@@ -186,6 +211,7 @@ class OpenAIEmbeddingProvider:
                 "configured_dimensions": self.dimensions,
                 "fallback": self.fallback.name,
                 "fallback_used": False,
+                "fallback_allowed": fallback_allowed,
                 "network": True,
                 "semantic": True,
                 "production_ready": True,
@@ -198,12 +224,13 @@ class OpenAIEmbeddingProvider:
                 "api_key_configured": api_key_configured,
                 "dimensions": self.dimensions,
                 "fallback": self.fallback.name,
-                "fallback_used": True,
+                "fallback_used": fallback_allowed,
+                "fallback_allowed": fallback_allowed,
                 "network": True,
                 "semantic": True,
                 "production_ready": False,
                 "error": str(exc),
-                "reason": "OpenAI embeddings require openai SDK, API key and a successful embeddings health probe",
+                "reason": "OpenAI embeddings require openai SDK, API key and a successful embeddings health probe; ingest/reindex blocks unless SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK=true",
             }
 
 
@@ -239,4 +266,4 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
     db = math.sqrt(sum(b[i] * b[i] for i in range(size)))
     if da <= 0 or db <= 0:
         return 0.0
-    return numerator / (da * db)
+    return round(numerator / (da * db), 8)
