@@ -1,0 +1,47 @@
+name: SecondBrain P0 Smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  p0-smoke:
+    name: P0 build and hygiene smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            SecondBrain-Agent/pyproject.toml
+            SecondBrain-Agent/requirements*.txt
+
+      - name: Install package
+        run: |
+          cd SecondBrain-Agent
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run repo doctor
+        run: |
+          cd SecondBrain-Agent
+          python launcher.py repo-doctor --execute-runtime-checks
+
+      - name: Run dependency inventory
+        run: |
+          cd SecondBrain-Agent
+          python launcher.py dependency-inventory
+
+      - name: Run tests
+        run: |
+          cd SecondBrain-Agent
+          pytest -q
