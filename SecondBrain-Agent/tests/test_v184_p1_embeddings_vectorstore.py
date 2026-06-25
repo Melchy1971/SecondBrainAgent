@@ -8,7 +8,7 @@ import pytest
 
 from launcher import main
 from secondbrain.module_registry import ModuleRegistry
-from secondbrain.p1_embeddings import LocalEmbeddingProvider, OpenAIEmbeddingProvider, cosine_similarity
+from secondbrain.p1_embeddings import LocalEmbeddingProvider, OllamaEmbeddingProvider, OpenAIEmbeddingProvider, cosine_similarity
 from secondbrain.p1_rag_runtime import P1RagRuntime
 
 
@@ -148,6 +148,54 @@ def test_openai_embedding_provider_fallback_requires_explicit_opt_in(monkeypatch
     assert status["fallback_used"] is True
     assert status["fallback_allowed"] is True
     assert "boom" in status["error"]
+
+
+def test_ollama_embedding_provider_blocks_by_default(monkeypatch):
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", raising=False)
+    provider = OllamaEmbeddingProvider(base_url="http://127.0.0.1:9", timeout_seconds=0.01, dimensions=16)
+
+    status = provider.status()
+
+    assert status["ok"] is False
+    assert status["production_ready"] is False
+    assert status["fallback_used"] is False
+    assert status["fallback_allowed"] is False
+    with pytest.raises(RuntimeError, match="ollama_embedding_unavailable"):
+        provider.embed("must block without ollama")
+
+
+def test_ollama_embedding_provider_fallback_requires_explicit_opt_in(monkeypatch):
+    monkeypatch.setenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", "true")
+    provider = OllamaEmbeddingProvider(base_url="http://127.0.0.1:9", timeout_seconds=0.01, dimensions=16)
+
+    vector = provider.embed("fallback path")
+    status = provider.status()
+
+    assert len(vector) == 16
+    assert status["ok"] is False
+    assert status["production_ready"] is False
+    assert status["fallback_used"] is True
+    assert status["fallback_allowed"] is True
+
+
+def test_rag_ingest_reindex_and_vector_search_block_on_unhealthy_network_provider(monkeypatch, tmp_path):
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_ALLOW_FALLBACK", raising=False)
+    rt = P1RagRuntime(tmp_path)
+    rt.embedding_provider = OllamaEmbeddingProvider(base_url="http://127.0.0.1:9", timeout_seconds=0.01)
+
+    ingest = rt.ingest_text("Jarvis RAG Quellen", source="unit", title="Blocked")
+    reindex = rt.reindex_vectors()
+    vector = rt.vector_search("Jarvis")
+
+    assert ingest["ok"] is False
+    assert ingest["error"] == "embedding_provider_unhealthy"
+    assert ingest["operation"] == "ingest_text"
+    assert reindex["ok"] is False
+    assert reindex["error"] == "embedding_provider_unhealthy"
+    assert reindex["operation"] == "reindex_vectors"
+    assert vector["ok"] is False
+    assert vector["error"] == "embedding_provider_unhealthy"
+    assert vector["operation"] == "vector_search"
 
 
 def test_p1_ingest_creates_vectors_and_hybrid_search(tmp_path):
