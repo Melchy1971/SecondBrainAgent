@@ -1,4 +1,4 @@
-"""Public desktop search API."""
+"""Desktop search public exports."""
 
 from .hybrid_search_ui import HybridCandidate, HybridScoreBreakdown, HybridSearchBackendAdapter, HybridSearchEngine, HybridSearchSettings
 from .preview import SearchHighlight, SearchPreview, SearchPreviewBuilder, SearchPreviewSettings
@@ -13,4 +13,30 @@ from .search_result import SearchResult
 from .search_service import InMemorySearchBackend, SearchBackend, SearchService
 from .search_state import SearchState
 
-__all__ = [name for name in globals() if not name.startswith("_")]
+__all__ = [
+    "FacetBucket",
+    "HybridCandidate",
+    "HybridScoreBreakdown",
+    "HybridSearchBackendAdapter",
+    "HybridSearchEngine",
+    "HybridSearchSettings",
+    "InMemorySearchBackend",
+    "SavedSearch",
+    "SavedSearchError",
+    "SavedSearchRepository",
+    "SavedSearchService",
+    "SearchBackend",
+    "SearchEventBus",
+    "SearchFacets",
+    "SearchFilters",
+    "SearchHighlight",
+    "SearchHistory",
+    "SearchPersistence",
+    "SearchPreview",
+    "SearchPreviewBuilder",
+    "SearchPreviewSettings",
+    "SearchQuery",
+    "SearchResult",
+    "SearchService",
+    "SearchState",
+]

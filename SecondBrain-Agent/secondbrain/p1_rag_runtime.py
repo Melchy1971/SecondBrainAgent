@@ -15,7 +15,7 @@ from secondbrain.document_understanding.parser_contract import ParseStatus
 from secondbrain.document_understanding.parsers import default_parser_registry
 from secondbrain.p1_embeddings import cosine_similarity, provider_from_profile
 from secondbrain.p1_retrieval import evaluate_ranked_hits, production_decision, reciprocal_rank_fusion
-from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, SQLiteRagStore
+from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, create_rag_store
 
 SCHEMA_VERSION = "secondbrain.p1_rag.v2"
 P1_PRODUCTION_SCHEMA = "secondbrain.p1_production.v1"
@@ -116,8 +116,9 @@ class P1RagRuntime:
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         self.embedding_provider = provider_from_profile(self.root, self.profile)
         self.parser_registry = default_parser_registry()
-        self.rag_store = SQLiteRagStore(self.db_path)
-        self._init_db()
+        self.rag_store = create_rag_store(self.root, sqlite_db_path=self.db_path)
+        if self.rag_store.backend == "sqlite":
+            self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path)
@@ -171,12 +172,9 @@ class P1RagRuntime:
             conn.commit()
 
     def _delete_document_payload(self, document_id: str) -> None:
-        with self._connect() as conn:
-            chunk_ids = [row[0] for row in conn.execute("select id from chunks where document_id = ?", (document_id,)).fetchall()]
-            if chunk_ids:
-                conn.executemany("delete from chunk_embeddings where chunk_id = ?", [(chunk_id,) for chunk_id in chunk_ids])
-            conn.execute("delete from chunks where document_id = ?", (document_id,))
-            conn.commit()
+        result = self.rag_store.delete_document_payload(document_id)
+        if not result.get("ok"):
+            raise RuntimeError(f"rag_store_delete_failed:{result.get('error', result.get('status'))}")
 
     def _embedding_provider_blocker(self, operation: str) -> dict[str, Any] | None:
         status = self.embedding_provider.status()
@@ -274,14 +272,15 @@ class P1RagRuntime:
         result["parse"] = {"status": parsed.status.value, "mime_type": parsed.mime_type, "pages": parsed.page_count, "chars": parsed.char_count, "errors": payload["errors"]}
         return result
 
-    def _all_chunks(self) -> list[sqlite3.Row]:
-        with self._connect() as conn:
-            return conn.execute("select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id").fetchall()
+    def _all_chunks(self) -> list[dict[str, Any]]:
+        result = self.rag_store.all_chunks()
+        if not result.get("ok"):
+            return []
+        return list(result.get("chunks", []))
 
     def embedding_status(self) -> dict[str, Any]:
-        with self._connect() as conn:
-            rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider").fetchall()
-        return {"schema": "secondbrain.p1_embeddings.status.v1", "ok": True, "status": "pass", "provider": self.embedding_provider.status(), "indexed_vectors": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows]}
+        summary = self.rag_store.embedding_summary()
+        return {"schema": "secondbrain.p1_embeddings.status.v1", "ok": bool(summary.get("ok", True)), "status": "pass" if summary.get("ok", True) else "blocked", "provider": self.embedding_provider.status(), "indexed_vectors": list(summary.get("providers", [])), "store": {"backend": self.rag_store.backend, "summary": summary}}
 
     def reindex_vectors(self, write_report: bool = False) -> dict[str, Any]:
         provider_blocker = self._embedding_provider_blocker("reindex_vectors")
@@ -289,14 +288,13 @@ class P1RagRuntime:
             return provider_blocker
         now = utc_now()
         vector_records: list[RagVectorRecord] = []
-        with self._connect() as conn:
-            chunks = conn.execute("select id, text from chunks order by document_id, ordinal").fetchall()
+        chunks = self._all_chunks()
         for row in chunks:
             try:
                 vector = self.embedding_provider.embed(row["text"])
             except Exception as exc:  # noqa: BLE001 - provider boundary
                 return self._embedding_failure_payload("reindex_vectors", exc)
-            vector_records.append(RagVectorRecord(row["id"], self.embedding_provider.name, len(vector), vector, now))
+            vector_records.append(RagVectorRecord(row["chunk_id"], self.embedding_provider.name, len(vector), vector, now))
         result = self.rag_store.upsert_vectors(vector_records)
         payload = {"schema": "secondbrain.p1_vectors.reindex.v1", "generated_at": now, "ok": bool(result.get("ok")), "status": "pass" if result.get("ok") else "blocked", "chunks": len(chunks), "provider": self.embedding_provider.name, "store": {"backend": self.rag_store.backend, "write_path": "rag_store", "vectors": result}}
         if write_report:
@@ -421,12 +419,20 @@ class P1RagRuntime:
         return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "query": query, "answer": "\n".join(bullets), "citations": citations, "confidence": round(confidence, 4)}
 
     def sources(self) -> dict[str, Any]:
-        with self._connect() as conn:
-            rows = conn.execute("select d.id, d.source, d.title, d.content_hash, d.created_at, d.metadata_json, count(c.id) as chunks, coalesce(sum(c.token_count), 0) as tokens from documents d left join chunks c on c.document_id = d.id group by d.id order by d.created_at desc, d.title").fetchall()
-        items = []
+        result = self.rag_store.sources()
+        if not result.get("ok"):
+            return {"schema": SCHEMA_VERSION, "ok": False, "status": "blocked", "documents": 0, "sources": [], "store": result}
+        rows = self._all_chunks()
+        tokens_by_doc: Counter[str] = Counter()
         for row in rows:
-            items.append({"document_id": row["id"], "source": row["source"], "title": row["title"], "content_hash": row["content_hash"], "created_at": row["created_at"], "chunks": int(row["chunks"]), "tokens": int(row["tokens"]), "metadata": json.loads(row["metadata_json"] or "{}")})
-        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "documents": len(items), "sources": items}
+            tokens_by_doc[row["document_id"]] += int(row.get("token_count", 0))
+        items = []
+        for source in result.get("sources", []):
+            document_id = source.get("id") or source.get("document_id")
+            metadata = dict(source.get("metadata") or {})
+            chunks = int(metadata.pop("chunks", source.get("chunks", 0) or 0))
+            items.append({"document_id": document_id, "source": source.get("source"), "title": source.get("title"), "content_hash": source.get("content_hash"), "created_at": source.get("created_at"), "chunks": chunks, "tokens": int(tokens_by_doc.get(document_id, 0)), "metadata": metadata})
+        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "documents": len(items), "sources": items, "store": {"backend": self.rag_store.backend}}
 
     def explain(self, query: str, limit: int = 5) -> dict[str, Any]:
         result = self.search(query, limit)
@@ -435,23 +441,31 @@ class P1RagRuntime:
         return {"schema": "secondbrain.p1_rag.explain.v1", "ok": True, "status": "pass", "query": query, "tokenized_query": tokenize(query), "ranking_model": "deterministic_tfidf_logtf_length_norm_v1", "hit_count": result["hit_count"], "hits": [{"rank": idx, "chunk_id": hit["chunk_id"], "document_id": hit["document_id"], "title": hit["title"], "score": hit["score"], "matched_terms": hit["terms"], "char_range": [hit["char_start"], hit["char_end"]], "snippet": hit["snippet"]} for idx, hit in enumerate(result["hits"], 1)]}
 
     def status(self) -> dict[str, Any]:
-        with self._connect() as conn:
-            docs = conn.execute("select count(*) from documents").fetchone()[0]
-            chunks = conn.execute("select count(*) from chunks").fetchone()[0]
-            tokens = conn.execute("select coalesce(sum(token_count), 0) from chunks").fetchone()[0]
-            avg_tokens = conn.execute("select coalesce(avg(token_count), 0) from chunks").fetchone()[0]
-            schema_cols = [row[1] for row in conn.execute("pragma table_info(chunks)").fetchall()]
-        return {"schema": SCHEMA_VERSION, "ok": True, "status": "pass", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "store": self.rag_store.status(), "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
+        store_status = self.rag_store.status()
+        rows = self._all_chunks()
+        docs = int(store_status.get("documents", 0)) if "documents" in store_status else len({row["document_id"] for row in rows})
+        chunks = int(store_status.get("chunks", len(rows)))
+        tokens = sum(int(row.get("token_count", 0)) for row in rows)
+        avg_tokens = tokens / max(1, chunks)
+        schema_cols = ["id", "document_id", "ordinal", "text", "char_start", "char_end", "token_json", "token_count", "created_at"]
+        return {"schema": SCHEMA_VERSION, "ok": bool(store_status.get("ok", True)), "status": "pass" if store_status.get("ok", True) else "blocked", "profile": self.profile, "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "tokens": tokens, "avg_tokens_per_chunk": round(float(avg_tokens), 2), "chunk_schema_columns": schema_cols, "embedding_provider": self.embedding_provider.status(), "store": store_status, "capabilities": ["ingest_text", "ingest_file", "search", "vector_search", "hybrid_search", "answer", "sources", "explain", "validate_index", "quality_report", "retrieval_metrics", "retrieval_benchmark", "production_gate", "gate"]}
 
     def validate_index(self, write_report: bool = False) -> dict[str, Any]:
-        with self._connect() as conn:
-            docs = conn.execute("select id, source, title, content_hash from documents").fetchall()
-            chunks = conn.execute("select id, document_id, text, char_start, char_end, token_count, token_json from chunks").fetchall()
-            embeddings = conn.execute("select chunk_id, provider, dimensions, vector_json from chunk_embeddings").fetchall()
-            embedded_ids = {row["chunk_id"] for row in embeddings}
-            orphan_chunks = conn.execute("select c.id from chunks c left join documents d on d.id = c.document_id where d.id is null").fetchall()
-            orphan_embeddings = conn.execute("select e.chunk_id from chunk_embeddings e left join chunks c on c.id = e.chunk_id where c.id is null").fetchall()
-            duplicate_hashes = conn.execute("select content_hash, count(*) as n from documents group by content_hash having n > 1").fetchall()
+        snapshot = self.rag_store.validation_snapshot()
+        if not snapshot.get("ok"):
+            payload = {"schema": "secondbrain.p1_rag.validation.v1", "generated_at": utc_now(), "ok": False, "status": "blocked", "documents": 0, "chunks": 0, "embeddings": 0, "blockers": 1, "warnings": 0, "findings": [{"severity": "blocker", "code": "store_validation_snapshot_failed", "detail": snapshot}]}
+            if write_report:
+                path = self.reports_dir / "p1_rag_validation_latest.json"
+                path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+                payload["report"] = {"path": str(path), "bytes": path.stat().st_size}
+            return payload
+        docs = list(snapshot.get("docs", []))
+        chunks = list(snapshot.get("chunks", []))
+        embeddings = list(snapshot.get("embeddings", []))
+        embedded_ids = {row["chunk_id"] for row in embeddings}
+        orphan_chunks = list(snapshot.get("orphan_chunks", []))
+        orphan_embeddings = list(snapshot.get("orphan_embeddings", []))
+        duplicate_hashes = list(snapshot.get("duplicate_hashes", []))
         findings: list[dict[str, Any]] = []
         for row in docs:
             src = validate_source(row["source"])

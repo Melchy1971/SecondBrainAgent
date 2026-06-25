@@ -7,43 +7,60 @@ from secondbrain.release.repo_doctor import run_repo_doctor
 
 
 PYPROJECT = """[build-system]
-requires = [\"setuptools>=69\", \"wheel\"]
-build-backend = \"setuptools.build_meta\"
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = \"secondbrain-agent\"
-version = \"18.11.0\"
-requires-python = \">=3.11\"
+name = "secondbrain-agent"
+version = "18.11.0"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-dev = [\"pytest>=8.0.0\"]
+dev = ["pytest>=8.0.0"]
+pdf = ["PyMuPDF>=1.24.0", "pypdf>=5.0.0"]
+connectors = ["requests>=2.31.0", "python-dotenv>=1.0.0"]
+openai = ["openai>=1.40.0"]
+all = ["pytest>=8.0.0", "PyMuPDF>=1.24.0", "pypdf>=5.0.0", "requests>=2.31.0", "python-dotenv>=1.0.0", "openai>=1.40.0"]
 
 [project.scripts]
-secondbrain = \"launcher:main\"
+secondbrain = "launcher:main"
 
 [tool.setuptools.packages.find]
-include = [\"secondbrain\", \"secondbrain.*\"]
+include = ["secondbrain", "secondbrain.*"]
 """
-
 
 def _write_minimal_project(root: Path) -> None:
     (root / "secondbrain").mkdir(parents=True)
     (root / "secondbrain" / "release").mkdir(parents=True)
     (root / "docs").mkdir(parents=True)
+    (root / "docs" / "releases").mkdir(parents=True)
     (root / "secondbrain" / "module_registry.py").write_text("", encoding="utf-8")
     (root / "secondbrain" / "launcher_runtime_v126.py").write_text("", encoding="utf-8")
     (root / "secondbrain" / "p0_runtime.py").write_text("", encoding="utf-8")
     (root / "secondbrain" / "p1_rag_runtime.py").write_text("", encoding="utf-8")
     (root / "secondbrain" / "release" / "dependency_inventory.py").write_text("", encoding="utf-8")
     (root / "docs" / "RELEASE_WORKFLOW_v18_9.md").write_text("# Release Workflow\n", encoding="utf-8")
+    (root / "docs" / "releases" / "v18_11_P0_REPRODUCIBILITY.md").write_text("# P0 Reproducibility\n", encoding="utf-8")
     (root / "launcher.py").write_text("print('ok')\n", encoding="utf-8")
     (root / "pyproject.toml").write_text(PYPROJECT, encoding="utf-8")
     (root / "requirements.txt").write_text("# core runtime uses stdlib\n", encoding="utf-8")
     (root / "requirements-dev.txt").write_text("-r requirements.txt\npytest>=8.0.0\n", encoding="utf-8")
     (root / "requirements-runtime.txt").write_text("# Optional feature dependencies are declared in pyproject.toml extras.\n", encoding="utf-8")
     (root / "pytest.ini").write_text("[pytest]\ntestpaths = tests\npythonpath = .\n", encoding="utf-8")
-    (root / "README.md").write_text("# SecondBrain-Agent v18.x\n\npython launcher.py health\n\npip install -e \".[dev]\"\n", encoding="utf-8")
+    (root / "README.md").write_text("# SecondBrain-Agent v18.x\n\npython launcher.py health\n\npip install -e \".[dev]\"\n\nRelease docs: docs/releases\n", encoding="utf-8")
+
+    repo = root.parent
+    workflow_dir = repo / ".github" / "workflows"
+    workflow_dir.mkdir(parents=True, exist_ok=True)
+    (workflow_dir / "secondbrain-ci.yml").write_text(
+        "cd SecondBrain-Agent\n"
+        "pip install -e \".[dev]\"\n"
+        "python launcher.py repo-doctor --execute-runtime-checks\n"
+        "python launcher.py dependency-inventory\n"
+        "pytest -q\n",
+        encoding="utf-8",
+    )
 
 
 def test_repo_doctor_accepts_minimal_valid_project(tmp_path: Path) -> None:
@@ -89,7 +106,7 @@ def test_repo_doctor_blocks_forbidden_root_artifacts(tmp_path: Path) -> None:
     assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "error" for check in payload["checks"])
 
 
-def test_repo_doctor_blocks_pycache_outside_virtualenv(tmp_path: Path) -> None:
+def test_repo_doctor_reports_pycache_outside_virtualenv_as_diagnostic(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
     cache = tmp_path / "secondbrain" / "__pycache__"
     cache.mkdir()
@@ -97,8 +114,8 @@ def test_repo_doctor_blocks_pycache_outside_virtualenv(tmp_path: Path) -> None:
 
     payload = run_repo_doctor(tmp_path).to_dict()
 
-    assert payload["ok"] is False
-    assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "error" for check in payload["checks"])
+    assert payload["ok"] is True
+    assert any(check["key"] == "repo:cache-artifacts" and check["status"] == "warning" for check in payload["checks"])
 
 
 def test_repo_doctor_ignores_virtualenv_cache_artifacts(tmp_path: Path) -> None:

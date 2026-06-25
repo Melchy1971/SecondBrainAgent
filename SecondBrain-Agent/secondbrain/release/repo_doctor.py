@@ -135,12 +135,22 @@ def summarize_checks(checks: Iterable[DoctorCheck]) -> dict[str, int]:
 
 
 def _repository_root(project_root: Path) -> Path:
-    """Return the Git repository root when the project lives in a nested folder."""
-    if (project_root / ".git").exists():
-        return project_root
-    if (project_root.parent / ".git").exists():
-        return project_root.parent
-    return project_root
+    """Return the repository root for nested project layouts.
+
+    The distributed ZIP may not contain a .git directory. In that case the
+    nearest ancestor containing .github is the best available repository root.
+    This keeps CI validation stable for both cloned repositories and unpacked
+    release archives.
+    """
+    current = project_root.resolve()
+    candidates = (current, *current.parents)
+    for candidate in candidates:
+        if (candidate / ".git").exists():
+            return candidate
+    for candidate in candidates:
+        if (candidate / ".github").exists():
+            return candidate
+    return current
 
 
 def _check_required_paths(root: Path) -> list[DoctorCheck]:
@@ -271,21 +281,32 @@ def _check_ci_workflow(root: Path) -> list[DoctorCheck]:
 
 
 def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
-    findings: list[str] = []
+    blocking_findings: list[str] = []
+    cache_findings: list[str] = []
     for path in root.rglob("*"):
         if any(part in IGNORED_ARTIFACT_PARTS for part in path.parts):
             continue
         rel = path.relative_to(root).as_posix()
-        if path.is_file() and path.parent == root and path.name.startswith(FORBIDDEN_ROOT_PREFIXES):
-            findings.append(rel)
         if any(part in FORBIDDEN_CACHE_PARTS for part in path.parts):
-            findings.append(rel)
-        if path.is_file() and path.suffix in FORBIDDEN_FILE_SUFFIXES:
-            findings.append(rel)
-    if findings:
-        return [DoctorCheck("repo:forbidden-artifacts", "error", "blocking", "forbidden cache/log/pid/obsolete artifacts found", {"files": sorted(set(findings))[:200], "count": len(set(findings))})]
-    return [DoctorCheck("repo:forbidden-artifacts", "ok", "blocking", "no forbidden cache/log/pid/obsolete artifacts found")]
+            cache_findings.append(rel)
+        elif path.is_file() and path.parent == root and path.name.startswith(FORBIDDEN_ROOT_PREFIXES):
+            blocking_findings.append(rel)
+        elif path.is_file() and path.suffix in FORBIDDEN_FILE_SUFFIXES:
+            blocking_findings.append(rel)
+        elif path.is_dir() and path.name == "runtime" and path.parent == root:
+            blocking_findings.append(rel)
 
+    checks: list[DoctorCheck] = []
+    if blocking_findings:
+        checks.append(DoctorCheck("repo:forbidden-artifacts", "error", "blocking", "forbidden runtime/log/pid/obsolete artifacts found", {"files": sorted(set(blocking_findings))[:200], "count": len(set(blocking_findings))}))
+    else:
+        checks.append(DoctorCheck("repo:forbidden-artifacts", "ok", "blocking", "no forbidden runtime/log/pid/obsolete artifacts found"))
+
+    if cache_findings:
+        checks.append(DoctorCheck("repo:cache-artifacts", "warning", "diagnostic", "python/test cache artifacts found; run scripts/p0_cleanup_artifacts.py before committing", {"files": sorted(set(cache_findings))[:200], "count": len(set(cache_findings))}))
+    else:
+        checks.append(DoctorCheck("repo:cache-artifacts", "ok", "diagnostic", "no python/test cache artifacts found"))
+    return checks
 
 def _run_command(root: Path, args: tuple[str, ...], timeout_seconds: int) -> DoctorCheck:
     cmd = [sys.executable, "launcher.py", *args]

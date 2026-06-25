@@ -12,72 +12,181 @@ class VectorRuntime(Protocol):
     db_path: Path
     reports_dir: Path
     embedding_provider: Any
+    rag_store: Any
 
 
-def audit_vector_provider(runtime: VectorRuntime, *, write_report: bool = False) -> dict[str, Any]:
-    """Detect stale vectors after embedding provider changes.
+def _parse_tokens(raw: Any) -> list[Any]:
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, tuple):
+        return list(raw)
+    if isinstance(raw, str):
+        try:
+            value = json.loads(raw)
+            return value if isinstance(value, list) else []
+        except Exception:  # noqa: BLE001 - defensive stats parsing
+            return []
+    return []
 
-    The current SQLite vector store keeps one embedding row per chunk. If the
-    active provider changes from local to OpenAI/Ollama, all existing vectors
-    must be recreated before production can be considered safe.
-    """
+
+def _audit_from_snapshot(runtime: VectorRuntime) -> dict[str, Any] | None:
+    store = getattr(runtime, "rag_store", None)
+    if store is None or not hasattr(store, "validation_snapshot"):
+        return None
+
+    current_provider = getattr(runtime.embedding_provider, "name", "unknown")
+    provider_status = runtime.embedding_provider.status()
+    snapshot = store.validation_snapshot()
+    backend = getattr(store, "backend", snapshot.get("backend", "unknown"))
+    if not snapshot.get("ok"):
+        return {
+            "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
+            "ok": False,
+            "status": "blocked",
+            "store_backend": backend,
+            "current_provider": current_provider,
+            "provider_status": provider_status,
+            "error": snapshot.get("error", "validation_snapshot_failed"),
+            "store": snapshot,
+            "reason": "rag store validation snapshot failed; vector provider audit cannot prove index consistency",
+        }
+
+    chunks = list(snapshot.get("chunks", []))
+    embeddings = list(snapshot.get("embeddings", []))
+    chunk_ids = {str(chunk.get("id") or chunk.get("chunk_id")) for chunk in chunks if chunk.get("id") or chunk.get("chunk_id")}
+    embeddings_by_chunk: dict[str, list[dict[str, Any]]] = {}
+    provider_counts: dict[tuple[str, int], int] = {}
+    stale_vectors = 0
+    orphan_vectors = 0
+
+    for embedding in embeddings:
+        chunk_id = str(embedding.get("chunk_id") or "")
+        provider = str(embedding.get("provider") or "")
+        dimensions = int(embedding.get("dimensions") or 0)
+        if chunk_id:
+            embeddings_by_chunk.setdefault(chunk_id, []).append(embedding)
+        provider_counts[(provider, dimensions)] = provider_counts.get((provider, dimensions), 0) + 1
+        if provider != current_provider:
+            stale_vectors += 1
+        if chunk_id and chunk_id not in chunk_ids:
+            orphan_vectors += 1
+
+    missing_vectors = sum(1 for chunk_id in chunk_ids if chunk_id not in embeddings_by_chunk)
+    malformed_token_rows = sum(1 for chunk in chunks if not _parse_tokens(chunk.get("token_json", [])))
+    provider_inventory = [
+        {"provider": provider, "dimensions": dimensions, "vectors": count}
+        for (provider, dimensions), count in sorted(provider_counts.items(), key=lambda item: (item[0][0], item[0][1]))
+    ]
+
+    blockers: list[str] = []
+    if stale_vectors:
+        blockers.append("stale_vector_provider")
+    if missing_vectors:
+        blockers.append("missing_vectors")
+    if orphan_vectors:
+        blockers.append("orphan_vectors")
+
+    remediation = None
+    if "stale_vector_provider" in blockers or "missing_vectors" in blockers:
+        remediation = "run python launcher.py p1-rag-reindex --write-report after changing embedding provider"
+    elif "orphan_vectors" in blockers:
+        remediation = "run python launcher.py p1-rag-validate --write-report and repair orphan embeddings"
+
+    return {
+        "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
+        "ok": not blockers,
+        "status": "pass" if not blockers else "blocked",
+        "store_backend": backend,
+        "current_provider": current_provider,
+        "provider_status": provider_status,
+        "chunks": len(chunks),
+        "vectors": len(embeddings),
+        "stale_vectors": stale_vectors,
+        "missing_vectors": missing_vectors,
+        "orphan_vectors": orphan_vectors,
+        "malformed_token_rows": malformed_token_rows,
+        "providers": provider_inventory,
+        "blockers": blockers,
+        "remediation": remediation,
+    }
+
+
+def _audit_sqlite_legacy(runtime: VectorRuntime) -> dict[str, Any]:
     db_path = Path(runtime.db_path)
     current_provider = getattr(runtime.embedding_provider, "name", "unknown")
     provider_status = runtime.embedding_provider.status()
     if not db_path.exists():
-        payload = {
+        return {
             "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
             "ok": True,
             "status": "pass",
+            "store_backend": "sqlite_legacy",
             "current_provider": current_provider,
             "provider_status": provider_status,
             "chunks": 0,
             "vectors": 0,
             "stale_vectors": 0,
             "missing_vectors": 0,
+            "orphan_vectors": 0,
             "providers": [],
             "message": "no vector database exists yet",
         }
-    else:
-        with sqlite3.connect(db_path) as conn:
-            conn.row_factory = sqlite3.Row
-            try:
-                chunks = int(conn.execute("select count(*) as n from chunks").fetchone()["n"])
-                vectors = int(conn.execute("select count(*) as n from chunk_embeddings").fetchone()["n"])
-                provider_rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider, dimensions").fetchall()
-                stale_vectors = int(conn.execute("select count(*) as n from chunk_embeddings where provider <> ?", (current_provider,)).fetchone()["n"])
-                missing_vectors = int(conn.execute("select count(*) as n from chunks c left join chunk_embeddings e on e.chunk_id = c.id where e.chunk_id is null").fetchone()["n"])
-            except sqlite3.OperationalError as exc:
-                payload = {
-                    "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
-                    "ok": False,
-                    "status": "blocked",
-                    "current_provider": current_provider,
-                    "provider_status": provider_status,
-                    "error": str(exc),
-                    "reason": "vector store schema is not initialized",
-                }
-            else:
-                provider_inventory = [{"provider": row["provider"], "dimensions": int(row["dimensions"]), "vectors": int(row["n"])} for row in provider_rows]
-                blockers = []
-                if stale_vectors:
-                    blockers.append("stale_vector_provider")
-                if missing_vectors:
-                    blockers.append("missing_vectors")
-                payload = {
-                    "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
-                    "ok": not blockers,
-                    "status": "pass" if not blockers else "blocked",
-                    "current_provider": current_provider,
-                    "provider_status": provider_status,
-                    "chunks": chunks,
-                    "vectors": vectors,
-                    "stale_vectors": stale_vectors,
-                    "missing_vectors": missing_vectors,
-                    "providers": provider_inventory,
-                    "blockers": blockers,
-                    "remediation": "run python launcher.py p1-rag-reindex --write-report after changing embedding provider" if blockers else None,
-                }
+
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        try:
+            chunks = int(conn.execute("select count(*) as n from chunks").fetchone()["n"])
+            vectors = int(conn.execute("select count(*) as n from chunk_embeddings").fetchone()["n"])
+            provider_rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider, dimensions").fetchall()
+            stale_vectors = int(conn.execute("select count(*) as n from chunk_embeddings where provider <> ?", (current_provider,)).fetchone()["n"])
+            missing_vectors = int(conn.execute("select count(*) as n from chunks c left join chunk_embeddings e on e.chunk_id = c.id where e.chunk_id is null").fetchone()["n"])
+            orphan_vectors = int(conn.execute("select count(*) as n from chunk_embeddings e left join chunks c on c.id = e.chunk_id where c.id is null").fetchone()["n"])
+        except sqlite3.OperationalError as exc:
+            return {
+                "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
+                "ok": False,
+                "status": "blocked",
+                "store_backend": "sqlite_legacy",
+                "current_provider": current_provider,
+                "provider_status": provider_status,
+                "error": str(exc),
+                "reason": "vector store schema is not initialized",
+            }
+
+    provider_inventory = [{"provider": row["provider"], "dimensions": int(row["dimensions"]), "vectors": int(row["n"])} for row in provider_rows]
+    blockers = []
+    if stale_vectors:
+        blockers.append("stale_vector_provider")
+    if missing_vectors:
+        blockers.append("missing_vectors")
+    if orphan_vectors:
+        blockers.append("orphan_vectors")
+    return {
+        "schema": VECTOR_PROVIDER_GUARD_SCHEMA,
+        "ok": not blockers,
+        "status": "pass" if not blockers else "blocked",
+        "store_backend": "sqlite_legacy",
+        "current_provider": current_provider,
+        "provider_status": provider_status,
+        "chunks": chunks,
+        "vectors": vectors,
+        "stale_vectors": stale_vectors,
+        "missing_vectors": missing_vectors,
+        "orphan_vectors": orphan_vectors,
+        "providers": provider_inventory,
+        "blockers": blockers,
+        "remediation": "run python launcher.py p1-rag-reindex --write-report after changing embedding provider" if blockers else None,
+    }
+
+
+def audit_vector_provider(runtime: VectorRuntime, *, write_report: bool = False) -> dict[str, Any]:
+    """Audit vector/provider consistency through the active RagStore.
+
+    v30.9 removes the SQLite-only assumption from the provider guard. The audit now
+    uses ``runtime.rag_store.validation_snapshot()`` for SQLite and pgvector and only
+    falls back to direct SQLite reads for older runtimes without a RagStore bridge.
+    """
+    payload = _audit_from_snapshot(runtime) or _audit_sqlite_legacy(runtime)
     if write_report:
         reports_dir = Path(runtime.reports_dir)
         reports_dir.mkdir(parents=True, exist_ok=True)

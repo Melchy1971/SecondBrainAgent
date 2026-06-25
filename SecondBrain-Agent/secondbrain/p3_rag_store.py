@@ -94,6 +94,18 @@ class RagStore(Protocol):
     def vector_search(self, query_vector: list[float], *, limit: int = 5, provider: str | None = None) -> dict[str, Any]:
         ...
 
+    def delete_document_payload(self, document_id: str) -> dict[str, Any]:
+        ...
+
+    def all_chunks(self) -> dict[str, Any]:
+        ...
+
+    def embedding_summary(self) -> dict[str, Any]:
+        ...
+
+    def validation_snapshot(self) -> dict[str, Any]:
+        ...
+
 
 class SQLiteRagStore:
     backend = "sqlite"
@@ -206,6 +218,36 @@ class SQLiteRagStore:
                 )
             conn.commit()
         return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "vectors": len(vectors)}
+
+
+    def delete_document_payload(self, document_id: str) -> dict[str, Any]:
+        with self._connect() as conn:
+            chunk_ids = [row[0] for row in conn.execute("select id from chunks where document_id = ?", (document_id,)).fetchall()]
+            if chunk_ids:
+                conn.executemany("delete from chunk_embeddings where chunk_id = ?", [(chunk_id,) for chunk_id in chunk_ids])
+            conn.execute("delete from chunks where document_id = ?", (document_id,))
+            conn.commit()
+        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "document_id": document_id, "deleted_chunks": len(chunk_ids)}
+
+    def all_chunks(self) -> dict[str, Any]:
+        with self._connect() as conn:
+            rows = conn.execute("select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from chunks c join documents d on d.id = c.document_id order by d.created_at desc, c.ordinal").fetchall()
+        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "chunks": [dict(row) for row in rows]}
+
+    def embedding_summary(self) -> dict[str, Any]:
+        with self._connect() as conn:
+            rows = conn.execute("select provider, dimensions, count(*) as n from chunk_embeddings group by provider, dimensions order by provider").fetchall()
+        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "providers": [{"provider": r["provider"], "dimensions": int(r["dimensions"]), "chunks": int(r["n"])} for r in rows]}
+
+    def validation_snapshot(self) -> dict[str, Any]:
+        with self._connect() as conn:
+            docs = [dict(row) for row in conn.execute("select id, source, title, content_hash from documents").fetchall()]
+            chunks = [dict(row) for row in conn.execute("select id, document_id, text, char_start, char_end, token_count, token_json from chunks").fetchall()]
+            embeddings = [dict(row) for row in conn.execute("select chunk_id, provider, dimensions, vector_json from chunk_embeddings").fetchall()]
+            orphan_chunks = [dict(row) for row in conn.execute("select c.id from chunks c left join documents d on d.id = c.document_id where d.id is null").fetchall()]
+            orphan_embeddings = [dict(row) for row in conn.execute("select e.chunk_id from chunk_embeddings e left join chunks c on c.id = e.chunk_id where c.id is null").fetchall()]
+            duplicate_hashes = [dict(row) for row in conn.execute("select content_hash, count(*) as n from documents group by content_hash having n > 1").fetchall()]
+        return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "docs": docs, "chunks": chunks, "embeddings": embeddings, "orphan_chunks": orphan_chunks, "orphan_embeddings": orphan_embeddings, "duplicate_hashes": duplicate_hashes}
 
     def vector_search(self, query_vector: list[float], *, limit: int = 5, provider: str | None = None) -> dict[str, Any]:
         if not query_vector:
@@ -361,6 +403,52 @@ class PgVectorRagStore:
         result["params"] = {"limit": max(1, int(limit)), "provider": provider, "dimensions": dimensions}
         return result
 
+
+    def delete_document_payload(self, document_id: str) -> dict[str, Any]:
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(f"select count(*) from {self._table('chunks')} where document_id = %s", (document_id,))
+                deleted_chunks = int(cur.fetchone()[0])
+                cur.execute(f"delete from {self._table('chunks')} where document_id = %s", (document_id,))
+            return {"document_id": document_id, "deleted_chunks": deleted_chunks}
+        return self._run("delete_document_payload", callback)
+
+    def all_chunks(self) -> dict[str, Any]:
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(f"select c.id as chunk_id, c.document_id, c.ordinal, c.text, c.char_start, c.char_end, c.token_json, c.token_count, d.source, d.title, d.metadata_json from {self._table('chunks')} c join {self._table('documents')} d on d.id = c.document_id order by d.created_at desc, c.ordinal")
+                chunks = []
+                for row in cur.fetchall():
+                    chunks.append({"chunk_id": str(row[0]), "document_id": str(row[1]), "ordinal": int(row[2]), "text": str(row[3]), "char_start": int(row[4]), "char_end": int(row[5]), "token_json": json.dumps(_coerce_metadata(row[6]) if isinstance(row[6], dict) else row[6], ensure_ascii=False) if not isinstance(row[6], str) else row[6], "token_count": int(row[7]), "source": str(row[8]), "title": str(row[9]), "metadata_json": json.dumps(_coerce_metadata(row[10]), ensure_ascii=False)})
+            return {"chunks": chunks}
+        return self._run("all_chunks", callback)
+
+    def embedding_summary(self) -> dict[str, Any]:
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(f"select provider, dimensions, count(*) from {self._table('chunk_embeddings')} group by provider, dimensions order by provider")
+                providers = [{"provider": str(row[0]), "dimensions": int(row[1]), "chunks": int(row[2])} for row in cur.fetchall()]
+            return {"providers": providers}
+        return self._run("embedding_summary", callback)
+
+    def validation_snapshot(self) -> dict[str, Any]:
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(f"select id, source, title, content_hash from {self._table('documents')}")
+                docs = [{"id": str(r[0]), "source": str(r[1]), "title": str(r[2]), "content_hash": str(r[3])} for r in cur.fetchall()]
+                cur.execute(f"select id, document_id, text, char_start, char_end, token_count, token_json from {self._table('chunks')}")
+                chunks = [{"id": str(r[0]), "document_id": str(r[1]), "text": str(r[2]), "char_start": int(r[3]), "char_end": int(r[4]), "token_count": int(r[5]), "token_json": json.dumps(r[6], ensure_ascii=False) if not isinstance(r[6], str) else r[6]} for r in cur.fetchall()]
+                cur.execute(f"select chunk_id, provider, dimensions, embedding::text from {self._table('chunk_embeddings')}")
+                embeddings = [{"chunk_id": str(r[0]), "provider": str(r[1]), "dimensions": int(r[2]), "vector_json": _pgvector_text_to_json(str(r[3]))} for r in cur.fetchall()]
+                cur.execute(f"select c.id from {self._table('chunks')} c left join {self._table('documents')} d on d.id = c.document_id where d.id is null")
+                orphan_chunks = [{"id": str(r[0])} for r in cur.fetchall()]
+                cur.execute(f"select e.chunk_id from {self._table('chunk_embeddings')} e left join {self._table('chunks')} c on c.id = e.chunk_id where c.id is null")
+                orphan_embeddings = [{"chunk_id": str(r[0])} for r in cur.fetchall()]
+                cur.execute(f"select content_hash, count(*) from {self._table('documents')} group by content_hash having count(*) > 1")
+                duplicate_hashes = [{"content_hash": str(r[0]), "n": int(r[1])} for r in cur.fetchall()]
+            return {"docs": docs, "chunks": chunks, "embeddings": embeddings, "orphan_chunks": orphan_chunks, "orphan_embeddings": orphan_embeddings, "duplicate_hashes": duplicate_hashes}
+        return self._run("validation_snapshot", callback)
+
     def build_upsert_document_sql(self) -> str:
         return f"""
 insert into {self._table('documents')}(id, source, title, content_hash, created_at, metadata_json)
@@ -457,3 +545,10 @@ def create_rag_store(project_root: str | Path, *, sqlite_db_path: str | Path | N
     if config.enabled:
         return PgVectorRagStore(config)
     return SQLiteRagStore(sqlite_db_path or root / "runtime" / "p1_rag" / "rag.sqlite3")
+
+
+def _pgvector_text_to_json(value: str) -> str:
+    cleaned = (value or "").strip()
+    if cleaned.startswith("[") and cleaned.endswith("]"):
+        return cleaned
+    return "[" + cleaned.strip("[]") + "]"

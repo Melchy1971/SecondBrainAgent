@@ -1,7 +1,7 @@
 {
-  "version": "30.5",
-  "status": "EXPORT_AND_TEST_COLLECTION_HARDENING_APPLIED",
-  "product_maturity_estimate": "79-89% technical foundation, 61-71% end-user product",
+  "version": "30.9",
+  "status": "P1_SQLITE_TO_PGVECTOR_MIGRATION_AND_STORE_SEARCH_HARDENED",
+  "product_maturity_estimate": "80-90% technical foundation, 62-72% end-user product",
   "modules": {
     "packaging": "foundation_added",
     "repo_doctor": "hardened",
@@ -11,7 +11,7 @@
     "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
     "rag_store_interface": "sqlite_write_pgvector_live_execution_implemented",
     "p1_store_bridge": "export_and_mirror_bridge_implemented",
-    "p1_store_backed_ingest": "implemented_for_sqlite_store",
+    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
     "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
     "connectors": "foundation_only",
     "document_understanding": "parser_foundation_integrated_with_p1_ingest",
@@ -24,48 +24,56 @@
     "vector_provider_guard": "provider_change_reindex_guard_implemented",
     "golden_retrieval_eval": "coupled_to_p1_production",
     "realtime_voice": "foundation",
-    "mobile_companion": "backend_foundation"
+    "mobile_companion": "backend_foundation",
+    "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
+    "p1_vector_search_store_path": "implemented",
+    "sqlite_to_pgvector_migration": "dry_run_apply_runner_implemented",
+    "pgvector_live_check": "blocks_when_vector_extension_missing"
   },
   "current_sprint": {
-    "id": "v30.5",
-    "name": "Export and test collection hardening",
-    "branch": "delta-v30.5-export-test-collection",
-    "status": "implemented_partial_suite_validated",
+    "id": "sprint3-continuation-v30-8",
+    "name": "P1 Migration Runner and Store Search Hardening",
+    "branch": "delta-v30-8-p1-migration-runner",
+    "status": "implemented_pending_full_suite_and_live_vps_apply",
     "added": [
-      "public package exports for agent and desktop APIs",
-      "dashboard documents search package exports",
-      "WorkspaceRef.id backward compatibility alias",
-      "legacy workspace list isolation",
-      "pytest package markers to prevent duplicate module import mismatch"
+      "p1-rag-vector-search now uses RagStore.vector_search instead of direct SQLite reads",
+      "SQLite to selected RagStore migration runner added with pgvector guard",
+      "Launcher command p1-rag-migrate-postgres added",
+      "Module registry command index updated",
+      "pgvector live check blocks when vector extension is missing",
+      "P1 gate checks selected RagStore availability instead of assuming SQLite only"
     ]
   },
   "release_blockers": [
-    "local sprint3 validation pending",
-    "real live PostgreSQL validation pending on user machine",
-    "P1RagRuntime still uses SQLiteRagStore for default ingest",
-    "SQLite to PostgreSQL migration runner missing",
-    "P1RagRuntime search/sources/validation not yet fully store-backed",
+    "full pytest -q completion pending outside sandbox timeout",
+    "real live PostgreSQL/pgvector validation pending on user VPS",
+    "SQLite to PostgreSQL migration live apply pending against VPS",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
-    "cross-module GUI missing",
-    "full pytest suite exceeds current sandbox execution window; local full-suite run still required",
-    "runtime/cache artifacts are present in uploaded repo and must be removed from versioned source"
+    "cross-module GUI missing"
   ],
-  "next_release": "Sprint continuation: remove committed runtime/cache artifacts, complete full local pytest run, then validate pgvector live path on VPS.",
+  "next_release": "Sprint 3 continuation: run pgvector schema apply and SQLite migration against VPS, then harden production gate thresholds",
   "last_validation": {
-    "status": "partial_pass_collection_fixed",
-    "executed_commands": [
-      "pytest -q -x",
-      "pytest --collect-only -q"
+    "status": "focused_pass_full_suite_pending",
+    "commands": [
+      "python -m pytest -q tests/test_v308_p1_migration_store_hardening.py tests/test_v307_p1_store_runtime_bridge.py tests/test_v190_p3_pgvector_foundation.py -> 21 passed"
     ],
-    "observed": [
-      "314 PASS before sandbox timeout on full execution path",
-      "970 tests collected without collection/import mismatch"
-    ],
-    "required_commands": [
-      "pytest -q",
-      "python launcher.py repo-doctor --execute-runtime-checks",
-      "python launcher.py p3-pgvector-readiness --live --write-report"
+    "pending": [
+      "pytest -q full run",
+      "p3-pgvector-readiness --live/--apply against VPS",
+      "p1-rag-migrate-postgres --apply against VPS"
     ]
-  }
+  },
+  "current_version": "v30.9",
+  "last_update": "2026-06-25",
+  "recent_changes": [
+    "v30.9: P1 vector provider guard is now RagStore-backed and no longer assumes SQLite for pgvector audits.",
+    "v30.8: SQLite to pgvector migration runner and hard pgvector live readiness gate.",
+    "v30.7: P1RagRuntime writes through configured RagStore bridge."
+  ],
+  "open_blockers": [
+    "Full pytest run must be completed outside sandbox timeout",
+    "Live VPS pgvector migration and vector-provider audit must be executed",
+    "Connector runtime/OAuth and secret vault remain open"
+  ]
 }

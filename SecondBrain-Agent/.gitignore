@@ -23,6 +23,7 @@ htmlcov/
 
 # Local runtime artifacts
 runtime/
+.config/
 logs/
 release/*_latest.json
 *.pid

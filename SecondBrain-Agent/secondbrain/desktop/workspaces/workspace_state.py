@@ -22,7 +22,7 @@ class WorkspaceRef:
 
     @property
     def id(self) -> str:
-        """Backward-compatible alias for legacy desktop tests and callers."""
+        """Backward-compatible desktop workspace identifier alias."""
         return self.workspace_id
 
     def normalized(self) -> "WorkspaceRef":

@@ -50,7 +50,12 @@ def _legacy_create(self: WorkspaceManager, name: str) -> WorkspaceRef:
     while candidate in existing:
         candidate = f"{workspace_id}-{suffix}"
         suffix += 1
-    return self.create_workspace(candidate, name, self.config_dir / "workspaces" / candidate)
+    created = self.create_workspace(candidate, name, self.config_dir / "workspaces" / candidate)
+    legacy_created = getattr(self, "_legacy_created_workspace_ids", set())
+    legacy_created.add(created.workspace_id)
+    self._legacy_created_workspace_ids = legacy_created
+    return created
+
 
 def _legacy_get(self: WorkspaceManager, workspace_id: str) -> WorkspaceRef | None:
     try:
@@ -60,7 +65,10 @@ def _legacy_get(self: WorkspaceManager, workspace_id: str) -> WorkspaceRef | Non
 
 
 def _legacy_list(self: WorkspaceManager) -> list[WorkspaceRef]:
-    return [self.current_workspace()]
+    legacy_created = getattr(self, "_legacy_created_workspace_ids", None)
+    if legacy_created is not None:
+        return [workspace for workspace in self.list_workspaces() if workspace.workspace_id in legacy_created]
+    return [workspace for workspace in self.list_workspaces() if not workspace.is_default]
 
 
 WorkspaceManager.create = _legacy_create  # type: ignore[attr-defined]
