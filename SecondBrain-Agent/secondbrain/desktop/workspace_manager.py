@@ -52,7 +52,6 @@ def _legacy_create(self: WorkspaceManager, name: str) -> WorkspaceRef:
         suffix += 1
     return self.create_workspace(candidate, name, self.config_dir / "workspaces" / candidate)
 
-
 def _legacy_get(self: WorkspaceManager, workspace_id: str) -> WorkspaceRef | None:
     try:
         return self.registry.get(workspace_id)
@@ -61,7 +60,7 @@ def _legacy_get(self: WorkspaceManager, workspace_id: str) -> WorkspaceRef | Non
 
 
 def _legacy_list(self: WorkspaceManager) -> list[WorkspaceRef]:
-    return self.list_workspaces()
+    return [self.current_workspace()]
 
 
 WorkspaceManager.create = _legacy_create  # type: ignore[attr-defined]

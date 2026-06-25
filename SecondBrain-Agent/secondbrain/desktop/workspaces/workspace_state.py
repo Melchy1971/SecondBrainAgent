@@ -20,6 +20,11 @@ class WorkspaceRef:
     last_opened_at: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def id(self) -> str:
+        """Backward-compatible alias for legacy desktop tests and callers."""
+        return self.workspace_id
+
     def normalized(self) -> "WorkspaceRef":
         workspace_id = self.workspace_id.strip()
         name = self.name.strip()

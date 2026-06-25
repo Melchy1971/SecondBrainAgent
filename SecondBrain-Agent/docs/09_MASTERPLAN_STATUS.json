@@ -1,6 +1,6 @@
 {
-  "version": "19.6",
-  "status": "P3_PGVECTOR_LIVE_STORE_IMPLEMENTED",
+  "version": "30.5",
+  "status": "EXPORT_AND_TEST_COLLECTION_HARDENING_APPLIED",
   "product_maturity_estimate": "79-89% technical foundation, 61-71% end-user product",
   "modules": {
     "packaging": "foundation_added",
@@ -27,20 +27,16 @@
     "mobile_companion": "backend_foundation"
   },
   "current_sprint": {
-    "id": "sprint3",
-    "name": "PostgreSQL/pgvector Foundation",
-    "branch": "sprint3-pgvector-live-store",
-    "status": "pgvector_live_store_implemented_pending_local_and_vps_validation",
+    "id": "v30.5",
+    "name": "Export and test collection hardening",
+    "branch": "delta-v30.5-export-test-collection",
+    "status": "implemented_partial_suite_validated",
     "added": [
-      "PgVectorRagStore live psycopg boundary",
-      "PgVectorRagStore live status counts",
-      "PgVectorRagStore live sources",
-      "PgVectorRagStore live upsert_document",
-      "PgVectorRagStore live upsert_chunks",
-      "PgVectorRagStore live upsert_vectors",
-      "PgVectorRagStore live vector_search using pgvector cosine distance",
-      "redacted DSN in live store results",
-      "fake-psycopg live store tests"
+      "public package exports for agent and desktop APIs",
+      "dashboard documents search package exports",
+      "WorkspaceRef.id backward compatibility alias",
+      "legacy workspace list isolation",
+      "pytest package markers to prevent duplicate module import mismatch"
     ]
   },
   "release_blockers": [
@@ -51,19 +47,25 @@
     "P1RagRuntime search/sources/validation not yet fully store-backed",
     "real OAuth/API connectors missing",
     "productive secret encryption missing",
-    "cross-module GUI missing"
+    "cross-module GUI missing",
+    "full pytest suite exceeds current sandbox execution window; local full-suite run still required",
+    "runtime/cache artifacts are present in uploaded repo and must be removed from versioned source"
   ],
-  "next_release": "Sprint 3 continuation: SQLite to PostgreSQL migration runner or P1RagRuntime pgvector-selected ingest",
+  "next_release": "Sprint continuation: remove committed runtime/cache artifacts, complete full local pytest run, then validate pgvector live path on VPS.",
   "last_validation": {
-    "status": "pending_user_local_run",
+    "status": "partial_pass_collection_fixed",
+    "executed_commands": [
+      "pytest -q -x",
+      "pytest --collect-only -q"
+    ],
+    "observed": [
+      "314 PASS before sandbox timeout on full execution path",
+      "970 tests collected without collection/import mismatch"
+    ],
     "required_commands": [
-      "pytest -q tests/test_v191_p3_rag_store.py",
-      "pip install psycopg[binary]",
-      "$env:SECONDBRAIN_PGVECTOR_ENABLED=\"true\"",
-      "$env:DATABASE_URL=\"postgresql://appuser:***@85.215.131.200:5432/secondbrain_prod\"",
-      "python launcher.py p3-pgvector-readiness --live --write-report",
-      "python launcher.py p3-pgvector-readiness --apply --write-report",
-      "python launcher.py p3-rag-store-status"
+      "pytest -q",
+      "python launcher.py repo-doctor --execute-runtime-checks",
+      "python launcher.py p3-pgvector-readiness --live --write-report"
     ]
   }
 }
