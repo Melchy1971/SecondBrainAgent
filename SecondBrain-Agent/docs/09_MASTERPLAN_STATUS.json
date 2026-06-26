@@ -1,38 +1,37 @@
 {
-  "current_version": "v30.21",
-  "version": "30.21",
-  "last_delta": "v30.21 Unified Application Bootstrap",
+  "current_version": "v30.22",
+  "version": "30.22",
+  "last_delta": "v30.22 GUI Runtime Truth Update",
   "last_update": "2026-06-26",
   "last_updated": "2026-06-26",
-  "status": "UNIFIED_APPLICATION_BOOTSTRAP_READY",
-  "gui_status": "BOOTSTRAP_READY",
+  "status": "GUI_RUNTIME_TRUTH_READY",
+  "gui_status": "RUNTIME_TRUTH_SURFACE_READY",
   "p1_status": "IN_PROGRESS",
   "product_maturity_estimate": "80-90% technical foundation, 65-75% local end-user product",
   "current_sprint": {
-    "id": "sprint3-continuation-v30-21",
-    "name": "Unified Application Bootstrap",
-    "branch": "delta-v30-21-unified-application-bootstrap",
+    "id": "sprint3-continuation-v30-22",
+    "name": "GUI Runtime Truth Update",
+    "branch": "delta-v30-22-gui-runtime-truth",
     "status": "implemented_local_docs_updated",
     "added": [
-      "python launcher.py starts Jarvis directly",
-      "jarvis alias added for explicit GUI start",
-      "gui-bootstrap validates and repairs local runtime defaults",
-      "Windows start scripts and shortcut installer point at the launcher",
-      "central documentation updated to v30.21"
+      "/api/runtime-truth exposes derived runtime facts",
+      "HUD shows P1 DB/Embedding/Gate/Golden/Migration/Security status",
+      "Settings modal contains P1 runtime/env/security fields",
+      "static demo counters are overwritten by runtime-truth where available"
     ]
   },
   "last_validation": {
-    "gui_bootstrap": "PASS ready with warnings for DATABASE_URL and local embedding provider",
-    "gui_doctor": "PASS",
-    "command_index": "PASS",
-    "full_pytest": "not run in this documentation update"
+    "runtime_truth_import": "PASS",
+    "runtime_truth_endpoint_function": "PASS",
+    "html_surface_static_check": "PASS",
+    "full_pytest": "not run in sandbox"
   },
   "modules": {
     "launcher": "default_gui_start_v30_21",
     "gui_bootstrap": "ready_with_local_defaults",
     "gui_startup_surface": "implemented_v30_20",
     "desktop_views": "p1_runtime_surface_updated",
-    "settings_center": "p1_runtime_surface_updated",
+    "settings_center": "p1_runtime_truth_fields_updated",
     "rag_import_center": "p1_runtime_surface_updated",
     "vector_index_center": "p1_runtime_surface_updated",
     "production_gate_dashboard": "p1_runtime_surface_updated",
@@ -56,9 +55,12 @@
     "mobile_companion": "backend_foundation",
     "multi_agent": "foundation",
     "realtime_voice": "foundation",
-    "repo_doctor": "hardened"
+    "repo_doctor": "hardened",
+    "gui_runtime_truth": "implemented_v30_22",
+    "jarvis_hud": "runtime_truth_p1_surface_updated"
   },
   "recent_changes": [
+    "v30.22: HUD GUI now exposes Runtime Truth for P1 store, embeddings, gates, golden quality, migration and security status.",
     "v30.21: Unified application bootstrap makes python launcher.py start Jarvis directly.",
     "v30.20: GUI startup commands and Windows scripts were unified around the launcher.",
     "v30.19: P1 GUI runtime surfaces were updated.",

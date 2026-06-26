@@ -15,6 +15,7 @@ Endpoints:
     GET /api/weather      -> Open-Meteo (schluesselfrei, Standardort Bonn)
     GET /api/news         -> Tagesschau-RSS Schlagzeilen
     GET /api/status       -> system_status() aus gui_backend_v102
+    GET /api/runtime-truth -> v30.22 Runtime-Truth fuer GUI (P1/DB/Embedding/Gates)
     GET /api/dashboards   -> dashboard_links() aus gui_backend_v102
     GET /api/run?script=  -> Skript ausfuehren (review-first, keine Loeschungen)
     GET /api/rag?q=       -> RAG-Frage an das Vault
@@ -104,7 +105,7 @@ DEFAULT_SETTINGS = {
     "weather_min": 15,   # Wetter-Refresh im Browser (Minuten)
     "accent": "#2fe6ff",  # HUD-Akzentfarbe
     # --- Identitaet / Header ---
-    "version": "v30.21",
+    "version": "v30.22",
     "environment": "production",
     "log_level": "INFO",
     "system_health": "EXCELLENT",
@@ -136,6 +137,17 @@ DEFAULT_SETTINGS = {
     "backup_last": "15:23",
     "backup_next": "Heute, 22:00",
     "vector_index": "OK",
+    "database_url_env": "DATABASE_URL",
+    "embedding_provider_env": "SECONDBRAIN_EMBEDDING_PROVIDER",
+    "embedding_model_env": "SECONDBRAIN_EMBEDDING_MODEL",
+    "embedding_dimensions_env": "SECONDBRAIN_EMBEDDING_DIMENSIONS",
+    "openai_key_env": "OPENAI_API_KEY",
+    "golden_quality_status": "not_run",
+    "migration_status": "not_run",
+    "parser_ingest_status": "ready",
+    "secret_vault_status": "missing",
+    "connector_runtime_status": "stub",
+    "gui_truth_mode": "runtime",
     # --- Assistant (Chat) ---
     "assistant_engine": "ollama",          # ollama | openai
     "assistant_model": "",                 # leer = erstes verfuegbares Ollama-Modell
@@ -386,6 +398,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(news())
         elif path == "/api/status":
             self._json(system_status())
+        elif path == "/api/runtime-truth":
+            self._json(runtime_truth())
         elif path == "/api/dashboards":
             self._json({"ok": True, "links": dashboard_links()})
         elif path == "/api/settings":
@@ -736,6 +750,122 @@ def assistant_models() -> dict:
     return {"ok": True, "engine": cfg.get("assistant_engine", "ollama"),
             "active": cfg.get("assistant_model", ""),
             "configured": configured, "live": live, "models": merged}
+
+
+def _read_json_file(path: Path) -> dict:
+    try:
+        if path.exists():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+    except Exception as exc:
+        log_event("hud.runtime_truth_read_error", {"path": str(path), "error": str(exc)})
+    return {}
+
+
+def _env_value(name: str, default: str = "") -> str:
+    return os.environ.get(name, default) or default
+
+
+def runtime_truth() -> dict:
+    """v30.22 GUI truth layer.
+
+    Liefert keine Marketing-/Demo-Werte, sondern ableitbare Runtime-Fakten aus
+    Environment, Bootstrap-Report, P1-Reports und leichtgewichtigen Runtime-APIs.
+    Externe Netz-/DB-Operationen werden hier nicht erzwungen; nicht belegbare
+    Werte werden als missing/not_run/stub markiert.
+    """
+    cfg = load_settings()
+    reports = ROOT / "runtime" / "reports"
+    bootstrap = _read_json_file(reports / "bootstrap_v30_21.json") or _read_json_file(reports / "bootstrap_v30_22.json")
+    production = _read_json_file(reports / "p1_production_gate.json")
+    provider_health = _read_json_file(reports / "p1_provider_health_latest.json")
+    vector_audit = _read_json_file(reports / "p1_vector_provider_audit_latest.json")
+    golden = _read_json_file(reports / "p1_golden_retrieval_latest.json")
+    migration = _read_json_file(reports / "p1_sqlite_to_pgvector_migration_latest.json")
+
+    db_url = _env_value(str(cfg.get("database_url_env") or "DATABASE_URL"), _env_value("DATABASE_URL"))
+    emb_provider = _env_value("SECONDBRAIN_EMBEDDING_PROVIDER", str(cfg.get("embedding_provider") or "local")).lower()
+    emb_model = _env_value("SECONDBRAIN_EMBEDDING_MODEL", str(cfg.get("embedding_model") or "deterministic-local"))
+    emb_dim = _env_value("SECONDBRAIN_EMBEDDING_DIMENSIONS", str(cfg.get("embedding_dim") or "64"))
+    openai_key_env = str(cfg.get("openai_key_env") or "OPENAI_API_KEY")
+    openai_key_present = bool(os.environ.get(openai_key_env))
+
+    try:
+        rag_status = P1RagRuntime(ROOT).status()
+    except Exception as exc:  # noqa: BLE001
+        rag_status = {"ok": False, "status": "unavailable", "error": str(exc)}
+
+    prod_status = production.get("status") or production.get("overall_status") or "not_run"
+    prod_blockers = production.get("blockers") or production.get("blocking") or []
+    if isinstance(prod_blockers, int):
+        blocker_count = prod_blockers
+    elif isinstance(prod_blockers, list):
+        blocker_count = len(prod_blockers)
+    else:
+        blocker_count = int(bool(prod_blockers))
+
+    store = rag_status.get("store") if isinstance(rag_status.get("store"), dict) else {}
+    docs = rag_status.get("documents", cfg.get("documents", 0))
+    chunks = rag_status.get("chunks", 0)
+    vectors = store.get("vectors", rag_status.get("vectors", cfg.get("vectors", 0)))
+    index_provider = (provider_health.get("index_provider") or vector_audit.get("index_provider") or
+                      f"{emb_provider}:{emb_model}:{emb_dim}")
+
+    database_status = "postgresql" if db_url.startswith(("postgresql://", "postgres://")) else "sqlite/default"
+    provider_ready = emb_provider not in {"", "local", "deterministic", "deterministic-local"}
+    if emb_provider == "openai" and not openai_key_present:
+        provider_ready = False
+
+    payload = {
+        "ok": True,
+        "schema": "secondbrain.gui.runtime_truth.v1",
+        "version": "v30.22",
+        "truth_mode": "runtime",
+        "database": {
+            "status": database_status,
+            "database_url_present": bool(db_url),
+            "pgvector": (store.get("backend") == "pgvector") or bool(store.get("pgvector_ready")),
+            "store": store,
+        },
+        "embedding": {
+            "provider": emb_provider,
+            "model": emb_model,
+            "dimensions": int(emb_dim) if str(emb_dim).isdigit() else emb_dim,
+            "index_provider": index_provider,
+            "production_ready": provider_ready,
+            "openai_key_env": openai_key_env,
+            "openai_key_present": openai_key_present,
+            "health_status": provider_health.get("status", "not_run"),
+        },
+        "rag": {
+            "status": rag_status.get("status", "unknown"),
+            "documents": docs,
+            "chunks": chunks,
+            "vectors": vectors,
+            "parser_ingest_status": cfg.get("parser_ingest_status", "ready"),
+        },
+        "gates": {
+            "production_status": prod_status,
+            "blocking": blocker_count,
+            "golden_quality_status": golden.get("status") or golden.get("quality_status") or cfg.get("golden_quality_status", "not_run"),
+            "golden_metrics": golden.get("metrics", {}),
+            "vector_audit_status": vector_audit.get("status", "not_run"),
+            "migration_status": migration.get("status") or cfg.get("migration_status", "not_run"),
+        },
+        "security": {
+            "secret_vault_status": cfg.get("secret_vault_status", "missing"),
+            "connector_runtime_status": cfg.get("connector_runtime_status", "stub"),
+        },
+        "reports": {
+            "bootstrap": bool(bootstrap),
+            "production_gate": bool(production),
+            "provider_health": bool(provider_health),
+            "vector_audit": bool(vector_audit),
+            "golden": bool(golden),
+            "migration": bool(migration),
+        },
+    }
+    return payload
 
 
 # --- Documents (Vault-Browser, read-only) ------------------------------------

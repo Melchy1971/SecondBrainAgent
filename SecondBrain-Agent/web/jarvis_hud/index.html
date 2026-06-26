@@ -194,7 +194,12 @@
   .alert-row:last-child{border-bottom:0}
   .alert-row span{color:var(--cyan-soft)}
   .alert-row b{font-weight:500}
-  .alert-row b.ok{color:var(--good)} .alert-row b.warn{color:var(--warn)} .alert-row b.cy{color:var(--cyan)}
+  .alert-row b.ok{color:var(--good)} .alert-row b.warn{color:var(--warn)} .alert-row b.cy{color:var(--cyan)} .alert-row b.bad{color:var(--bad)}
+  .truth-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+  .truth-card{border:1px solid rgba(47,230,255,.16); border-radius:8px; padding:8px; background:rgba(0,8,12,.28)}
+  .truth-card .k{font-size:8px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase}
+  .truth-card .v{font-size:12px; color:#eafcff; margin-top:4px; word-break:break-word}
+  .truth-card.ok .v{color:var(--good)} .truth-card.warn .v{color:var(--warn)} .truth-card.bad .v{color:var(--bad)}
 
   /* Konsole */
   .console{grid-column:1 / -1}
@@ -520,6 +525,7 @@
           <button class="btn" data-run="build_vector_rag.py">RAG Index</button>
           <button class="btn" data-run="check_paths_v9.py">Path Check</button>
           <button class="btn" data-run="health_check.py">Health Check</button>
+          <button class="btn" id="btn-runtime-truth">Runtime Truth</button>
           <button class="btn warn" data-run="release_gate_v9.py">Release Gate</button>
           <button class="btn warn" data-run="run_regression_tests_v9.py">Regression</button>
           <button class="btn" data-run="vector_audit.py">Vector Audit</button>
@@ -534,7 +540,7 @@
         <div class="panel">
           <h2>System-Info</h2>
           <div class="info">
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">v30.21</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">v30.22</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="t"><div class="k">Environment</div><div class="v" id="i-env">production</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div><div class="t"><div class="k">Database</div><div class="v" id="i-db">PostgreSQL 16 + pgvector</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg></div><div class="t"><div class="k">Embedding</div><div class="v" id="i-emb">OpenAI text-embedding-3-small<br><small>Dimension: 1536</small></div></div></div>
@@ -574,6 +580,17 @@
           <div class="alert-row"><span>Backup</span><b class="ok" id="a-backup">Letztes: 15:23</b></div>
           <div class="alert-row"><span>Vector Index</span><b class="ok" id="a-vindex">OK</b></div>
           <div class="alert-row"><span>Queue</span><b class="warn" id="a-queue">3 Pending</b></div>
+        </div>
+        <div class="panel alerts">
+          <h2>Runtime Truth <small>v30.22</small></h2>
+          <div class="truth-grid">
+            <div class="truth-card" id="truth-db-card"><div class="k">DB Store</div><div class="v" id="truth-db">—</div></div>
+            <div class="truth-card" id="truth-emb-card"><div class="k">Embedding</div><div class="v" id="truth-emb">—</div></div>
+            <div class="truth-card" id="truth-gate-card"><div class="k">Production Gate</div><div class="v" id="truth-gate">—</div></div>
+            <div class="truth-card" id="truth-golden-card"><div class="k">Golden Quality</div><div class="v" id="truth-golden">—</div></div>
+            <div class="truth-card" id="truth-migration-card"><div class="k">Migration</div><div class="v" id="truth-migration">—</div></div>
+            <div class="truth-card" id="truth-security-card"><div class="k">Security</div><div class="v" id="truth-security">—</div></div>
+          </div>
         </div>
       </div>
 
@@ -761,7 +778,7 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
 
     <div class="sec">Identität &amp; Header</div>
     <div class="field"><div class="row">
-      <div><label>Version</label><input id="set-version" placeholder="v30.21"></div>
+      <div><label>Version</label><input id="set-version" placeholder="v30.22"></div>
       <div><label>Environment</label><input id="set-environment" placeholder="production"></div>
     </div></div>
     <div class="field"><div class="row">
@@ -831,6 +848,29 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       <div><label>Kontext-Chunks (1–20)</label><input id="set-assistant_context_chunks" type="number" min="1" max="20"></div>
     </div></div>
 
+    <div class="sec">P1 Runtime Truth</div>
+    <div class="field"><div class="row">
+      <div><label>DATABASE_URL ENV</label><input id="set-database_url_env" placeholder="DATABASE_URL"></div>
+      <div><label>GUI Truth Mode</label><input id="set-gui_truth_mode" placeholder="runtime"></div>
+    </div></div>
+    <div class="field"><div class="row">
+      <div><label>Provider ENV</label><input id="set-embedding_provider_env" placeholder="SECONDBRAIN_EMBEDDING_PROVIDER"></div>
+      <div><label>OpenAI Key ENV</label><input id="set-openai_key_env" placeholder="OPENAI_API_KEY"></div>
+    </div></div>
+    <div class="field"><div class="row">
+      <div><label>Model ENV</label><input id="set-embedding_model_env" placeholder="SECONDBRAIN_EMBEDDING_MODEL"></div>
+      <div><label>Dimensions ENV</label><input id="set-embedding_dimensions_env" placeholder="SECONDBRAIN_EMBEDDING_DIMENSIONS"></div>
+    </div></div>
+    <div class="field"><div class="row">
+      <div><label>Golden Quality</label><input id="set-golden_quality_status" placeholder="not_run/pass/blocked"></div>
+      <div><label>Migration</label><input id="set-migration_status" placeholder="not_run/pass/blocked"></div>
+    </div></div>
+    <div class="field"><div class="row">
+      <div><label>Parser/Ingest</label><input id="set-parser_ingest_status" placeholder="ready"></div>
+      <div><label>Secret Vault</label><input id="set-secret_vault_status" placeholder="missing"></div>
+    </div></div>
+    <div class="field"><label>Connector Runtime</label><input id="set-connector_runtime_status" placeholder="stub"></div>
+
     <div class="sec">Darstellung</div>
     <div class="field"><label>Akzentfarbe</label><input id="set-accent" type="color"></div>
 
@@ -858,6 +898,8 @@ const FIELDS = [
   "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
   "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",
   "backup_last","backup_next","vector_index",
+  "database_url_env","embedding_provider_env","embedding_model_env","embedding_dimensions_env","openai_key_env",
+  "golden_quality_status","migration_status","parser_ingest_status","secret_vault_status","connector_runtime_status","gui_truth_mode",
   "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks"
 ];
 const INT_FIELDS = new Set(["news_max","weather_min","embedding_dim","ollama_models","queue_pending",
@@ -986,6 +1028,39 @@ async function loadStatus(){
   }catch(e){}
 }
 
+
+function statusClass(ok, warn){ return ok ? "ok" : (warn ? "warn" : "bad"); }
+function setTruthCard(cardId, valueId, text, cls){
+  const c=$(cardId), v=$(valueId); if(!c || !v) return;
+  c.className = "truth-card " + (cls || ""); v.textContent = text;
+}
+
+async function loadRuntimeTruth(){
+  try{
+    const r = await getJSON("/api/runtime-truth");
+    if(!r.ok) return;
+    const db = r.database || {}, emb = r.embedding || {}, rag = r.rag || {}, gates = r.gates || {}, sec = r.security || {};
+    const dbOk = db.status === "postgresql" && db.pgvector;
+    setTruthCard("truth-db-card", "truth-db", (db.status||"—") + (db.pgvector ? " + pgvector" : ""), dbOk ? "ok" : "warn");
+    setTruthCard("truth-emb-card", "truth-emb", (emb.provider||"—") + ":" + (emb.model||"—") + ":" + (emb.dimensions||"—"), emb.production_ready ? "ok" : "bad");
+    setTruthCard("truth-gate-card", "truth-gate", (gates.production_status||"not_run") + " / " + (gates.blocking||0) + " Blocker", (gates.blocking||0)===0 && gates.production_status!=="not_run" ? "ok" : "warn");
+    setTruthCard("truth-golden-card", "truth-golden", gates.golden_quality_status || "not_run", gates.golden_quality_status==="pass" ? "ok" : "warn");
+    setTruthCard("truth-migration-card", "truth-migration", gates.migration_status || "not_run", gates.migration_status==="pass" ? "ok" : "warn");
+    setTruthCard("truth-security-card", "truth-security", "vault="+(sec.secret_vault_status||"missing")+" / connector="+(sec.connector_runtime_status||"stub"), sec.secret_vault_status==="ready" ? "ok" : "bad");
+
+    const dim = emb.dimensions ?? "";
+    const embShort = (emb.provider || "—") + (dim!=="" ? " ("+dim+")" : "");
+    $("hdr-ver").textContent = r.version || "v30.22"; $("i-ver").textContent = r.version || "v30.22";
+    $("p-emb").textContent = embShort; $("a-emb").textContent = embShort;
+    $("p-gate").textContent = "BLOCKING " + (gates.blocking || 0); $("a-gate").textContent = (gates.blocking || 0) + " Blocker";
+    $("i-db").textContent = db.status || "—"; $("a-pg").textContent = db.status === "postgresql" ? "PostgreSQL" : "SQLite/default";
+    $("a-pgvector").textContent = db.pgvector ? "ready" : "missing";
+    $("i-emb").innerHTML = (emb.provider||"") + " " + (emb.model||"") + "<br><small>Dimension: " + (dim!==""?dim:"—") + "</small>";
+    $("sb-docs").textContent = fmt(rag.documents ?? 0); $("sb-vectors").textContent = fmt(rag.vectors ?? 0);
+    $("a-vindex").textContent = gates.vector_audit_status || "not_run";
+  }catch(e){ /* Runtime Truth ist ergänzend; HUD bleibt bedienbar. */ }
+}
+
 // --- Wetter ---
 async function loadWeather(){
   try{
@@ -1081,6 +1156,7 @@ document.querySelectorAll("[data-run]").forEach(btn=>{
   btn.addEventListener("click", ()=> runScript(btn.getAttribute("data-run")));
 });
 $("btn-logs").addEventListener("click", loadLogs);
+$("btn-runtime-truth").addEventListener("click", async()=>{ await loadRuntimeTruth(); printOut(JSON.stringify(await getJSON("/api/runtime-truth"), null, 2)); });
 $("btn-settings").addEventListener("click", openSettings);
 $("nav-settings").addEventListener("click", openSettings);
 $("m-details").addEventListener("click", loadLogs);
@@ -1530,6 +1606,7 @@ $("imp-zip").addEventListener("click", impZip);
 // --- Poll-Schleifen ---
 loadMetrics(); setInterval(loadMetrics, 2000);
 loadStatus();  setInterval(loadStatus, 15000);
+loadRuntimeTruth(); setInterval(loadRuntimeTruth, 15000);
 loadWeather(); setInterval(loadWeather, 15*60*1000);
 loadNews();    setInterval(loadNews, 15*60*1000);
 loadDocStats();

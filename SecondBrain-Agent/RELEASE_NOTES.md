@@ -1,3 +1,15 @@
+
+## v30.22 - GUI Runtime Truth Update
+
+- Added `/api/runtime-truth` for runtime-derived GUI state.
+- HUD dashboard now shows P1 database/store, embedding index identity, production gate, golden quality, migration and security status.
+- Settings modal now includes P1 runtime ENV fields, OpenAI key ENV, migration/golden/parser/secret/connector status.
+- Static demo values remain as visual fallback, but runtime truth overwrites them when available.
+
+Validation:
+- `python -m py_compile secondbrain/jarvis_hud_server.py`
+- `python - <<PY ... runtime_truth() ... PY`
+
 # SecondBrain-Agent Release Notes
 
 Aktueller dokumentierter Stand: v30.21 Unified Application Bootstrap.
