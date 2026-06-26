@@ -2,17 +2,20 @@
 
 ## Standard
 
-```bash
+```powershell
 python launcher.py
 ```
 
-Dieser Befehl startet automatisch den Jarvis-GUI-Bootstrap und danach die Oberfläche.
+Dieser Befehl startet automatisch den Jarvis-GUI-Bootstrap und danach die lokale Oberflaeche.
 
 ## Alternative Befehle
 
-```bash
+```powershell
 python launcher.py jarvis
 python launcher.py gui
+python launcher.py gui-start
+python launcher.py gui-open
+python launcher.py gui-status
 python launcher.py gui-bootstrap
 python launcher.py gui-doctor
 ```
@@ -26,21 +29,28 @@ Jarvis.bat
 Start-Jarvis-GUI.bat
 ```
 
-Desktop-Verknüpfung erstellen:
+Desktop-Verknuepfung erstellen:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-## Bootstrap-Prüfungen
+## Browser
 
-Der Start prüft und repariert lokal:
+```text
+http://127.0.0.1:8851
+```
+
+## Bootstrap-Pruefungen
+
+Der Start prueft und repariert lokal:
 
 - `.env` Defaults
 - Runtime-Ordner
+- Datenordner
 - Schreibrechte
 - Python-Version
-- DATABASE_URL-Format
+- `DATABASE_URL`-Format
 - Embedding-Provider-Konfiguration
 - Ollama-Erreichbarkeit bei Ollama-Provider
 - OpenAI-Key bei OpenAI-Provider

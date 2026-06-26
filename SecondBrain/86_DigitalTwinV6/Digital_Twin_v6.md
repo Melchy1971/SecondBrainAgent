@@ -1,50 +1,50 @@
 # Digital Twin v6
 
-Aktualisiert: 2026-06-25
+Aktualisiert: 2026-06-26
 
 ## Prioritätssignale
 
-- projekt: 618
-- risiko: 475
-- prozess: 339
-- entscheidung: 326
-- automatisierung: 234
-- gesundheit: 46
-- lernen: 26
+- projekt: 697
+- risiko: 626
+- prozess: 386
+- entscheidung: 386
+- automatisierung: 309
+- gesundheit: 48
+- lernen: 30
 - lokal: 12
 
 ## Wissensschwerpunkte
 
-- #obsidian: 20
-- #email: 19
-- #pdf: 19
-- #secondbrain: 17
-- #decision: 17
-- #meeting: 16
-- #process: 16
-- #knowledge-gap: 16
-- #briefing: 15
-- #gemini: 15
-- #ki: 14
-- #import: 13
-- #Entscheidungen: 11
-- #Prioritäten: 11
-- #Risiken: 11
-- #copilot-conversation: 10
-- #Arbeitsmuster: 10
-- #evergreen: 8
-- #projects: 8
-- #travel: 8
-- #Fokuszeiten: 6
-- #Meeting-Vorbereitung: 6
-- #Nachbereitung: 5
-- #Tagesplanung: 5
-- #Wochenplanung: 5
+- #obsidian: 21
+- #email: 20
+- #pdf: 20
+- #secondbrain: 18
+- #decision: 18
+- #meeting: 17
+- #process: 17
+- #knowledge-gap: 17
+- #briefing: 16
+- #gemini: 16
+- #ki: 15
+- #import: 14
+- #Entscheidungen: 12
+- #Prioritäten: 12
+- #Risiken: 12
+- #copilot-conversation: 11
+- #Arbeitsmuster: 11
+- #evergreen: 9
+- #projects: 9
+- #travel: 9
+- #Fokuszeiten: 8
+- #Meeting-Vorbereitung: 8
+- #Nachbereitung: 7
+- #Tagesplanung: 7
+- #Wochenplanung: 7
+- #Empfehlungen: 5
+- #Keine.: 5
 - #konfigurieren: 4
-- #Empfehlungen: 4
 - #Aktivität: 4
 - #Alternativen: 4
-- #Annahmen: 4
 
 ## Kernfragen
 

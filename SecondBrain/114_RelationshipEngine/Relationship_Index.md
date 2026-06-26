@@ -1,14 +1,14 @@
 # Relationship Engine v9.9
 
-Aktualisiert: 2026-06-25
+Aktualisiert: 2026-06-26
 
 | Beziehung | Anzahl |
 |---|---:|
-| blocks | 5928 |
-| mentions | 1205 |
-| decides | 1050 |
-| references | 346 |
-| tagged_as | 265 |
+| blocks | 6579 |
+| mentions | 1555 |
+| decides | 1311 |
+| references | 406 |
+| tagged_as | 285 |
 | creates_task | 10 |
 | influences | 5 |
 

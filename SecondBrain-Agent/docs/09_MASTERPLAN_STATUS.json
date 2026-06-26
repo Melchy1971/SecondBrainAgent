@@ -1,111 +1,84 @@
 {
+  "current_version": "v30.21",
+  "version": "30.21",
+  "last_delta": "v30.21 Unified Application Bootstrap",
+  "last_update": "2026-06-26",
+  "last_updated": "2026-06-26",
+  "status": "UNIFIED_APPLICATION_BOOTSTRAP_READY",
+  "gui_status": "BOOTSTRAP_READY",
+  "p1_status": "IN_PROGRESS",
+  "product_maturity_estimate": "80-90% technical foundation, 65-75% local end-user product",
   "current_sprint": {
+    "id": "sprint3-continuation-v30-21",
+    "name": "Unified Application Bootstrap",
+    "branch": "delta-v30-21-unified-application-bootstrap",
+    "status": "implemented_local_docs_updated",
     "added": [
-      "Vector provider audit now compares against full provider:model:dimension index identity",
-      "New p1-vector-index-repair command rebuilds vectors after provider/model/dimension drift",
-      "Repair command blocks structural corruption instead of hiding orphan-vector issues",
-      "Launcher and ModuleRegistry expose p1-vector-index-repair"
-    ],
-    "branch": "delta-v30-18-p1-vector-index-repair",
-    "id": "sprint3-continuation-v30-18",
-    "name": "P1 Vector Index Repair Command",
-    "status": "implemented_pending_full_suite"
+      "python launcher.py starts Jarvis directly",
+      "jarvis alias added for explicit GUI start",
+      "gui-bootstrap validates and repairs local runtime defaults",
+      "Windows start scripts and shortcut installer point at the launcher",
+      "central documentation updated to v30.21"
+    ]
   },
-  "current_version": "v30.19",
-  "gui_status": "P1_RUNTIME_SURFACE_UPDATED",
-  "last_delta": "v30.19 P1 GUI Surface Update",
-  "last_increment": "v30.18_P1_vector_index_repair",
-  "last_update": "2026-06-25",
-  "last_updated": "2026-06-25",
   "last_validation": {
-    "focus_suite": "7 PASS",
-    "full_pytest": "pending outside sandbox timeout",
-    "pytest_collect_only": "1016 tests collected"
+    "gui_bootstrap": "PASS ready with warnings for DATABASE_URL and local embedding provider",
+    "gui_doctor": "PASS",
+    "command_index": "PASS",
+    "full_pytest": "not run in this documentation update"
   },
   "modules": {
+    "launcher": "default_gui_start_v30_21",
+    "gui_bootstrap": "ready_with_local_defaults",
+    "gui_startup_surface": "implemented_v30_20",
+    "desktop_views": "p1_runtime_surface_updated",
+    "settings_center": "p1_runtime_surface_updated",
+    "rag_import_center": "p1_runtime_surface_updated",
+    "vector_index_center": "p1_runtime_surface_updated",
+    "production_gate_dashboard": "p1_runtime_surface_updated",
+    "p1_control_panel": "p1_runtime_surface_updated",
+    "document_understanding": "parser_registry_integrated_with_p1_ingest_and_structured_parse_events",
+    "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
+    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
+    "p1_vector_search_store_path": "implemented",
+    "embedding_index_identity": "provider_model_dimension_key_enforced_for_ingest_reindex_search",
+    "embedding_dimension_contract": "implemented_provider_profile_enforced",
+    "embedding_provider_health": "production_gate_hard_blocker_with_report_command",
+    "openai_embedding_provider": "sdk_or_native_http_boundary_with_dimension_contract",
+    "ollama_embedding_provider": "http_endpoint_integrated_with_dimension_contract_and_timeout_config",
+    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
+    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
     "connectors": "foundation_only",
     "database": "sqlite_foundation_with_pgvector_live_store",
-    "dependency_inventory": "foundation",
     "desktop_app": "foundation",
-    "document_understanding": "parser_registry_integrated_with_p1_ingest_and_structured_parse_events",
-    "embedding_dimension_contract": "implemented_provider_profile_enforced",
-    "embedding_index_identity": "provider_model_dimension_key_enforced_for_ingest_reindex_search",
-    "embedding_provider_health": "production_gate_hard_blocker_with_report_command",
-    "embedding_timeout_config": "implemented_for_openai_and_ollama",
-    "golden_retrieval_eval": "config_path_fixed_and_coupled_to_p1_production",
-    "hybrid_rag": "parser_integrated_with_batch_directory_ingest_foundation",
     "knowledge_graph": "foundation",
     "long_term_memory": "foundation",
     "mobile_companion": "backend_foundation",
     "multi_agent": "foundation",
-    "ollama_embedding_provider": "http_endpoint_integrated_with_dimension_contract_and_timeout_config",
-    "openai_embedding_provider": "sdk_or_native_http_boundary_with_dimension_contract",
-    "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
-    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
-    "p1_store_bridge": "export_and_mirror_bridge_implemented",
-    "p1_vector_search_store_path": "implemented",
-    "packaging": "foundation_added",
-    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
-    "pgvector_live_check": "blocks_when_vector_extension_missing",
-    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
-    "rag_store_interface": "sqlite_write_pgvector_live_execution_implemented",
     "realtime_voice": "foundation",
-    "repo_doctor": "hardened",
-    "sqlite_to_pgvector_migration": "dry_run_apply_runner_implemented",
-    "vector_provider_guard": "provider_change_reindex_guard_implemented"
+    "repo_doctor": "hardened"
   },
-  "next_release": "Sprint 3 continuation: full collect/test, live VPS pgvector migration/audit, then connector runtime foundation",
-  "notes": [
-    "v30.17: vectors are keyed by provider:model:dimension, preventing silent model-migration drift under the same provider label.",
-    "v30.16: OpenAI embeddings no longer require the optional SDK; provider falls back to native HTTPS API, not local fake vectors.",
-    "v30.15: production provider health now blocks vector dimension mismatch before ingest/reindex can corrupt index assumptions.",
-    "v30.14: embedding configuration contract added; production blocks local/fallback/missing provider prerequisites before semantic gate."
+  "recent_changes": [
+    "v30.21: Unified application bootstrap makes python launcher.py start Jarvis directly.",
+    "v30.20: GUI startup commands and Windows scripts were unified around the launcher.",
+    "v30.19: P1 GUI runtime surfaces were updated.",
+    "v30.18: Vector audit uses full index identity and p1-vector-index-repair fixes provider/model/dimension drift through reindex.",
+    "v30.17: Vectors are keyed by provider:model:dimension to prevent silent model-migration drift.",
+    "v30.16: OpenAI embeddings can use native HTTPS transport without falling back to fake local vectors."
+  ],
+  "release_notes": [
+    "Current operating source of truth: README.md, INSTALLATION_BEGINNER.md, docs/README.md, docs/START_GUI.md.",
+    "Historical release artifacts remain under docs/releases/.",
+    "Production readiness remains blocked without live provider credentials, pgvector validation, real connectors and secure secret storage."
   ],
   "open_blockers": [
     "live OpenAI/Ollama provider health against real credentials/endpoints",
     "full pytest without timeout",
     "live VPS pgvector migration/audit",
     "production semantic embedding provider live credentials/endpoints",
-    "connector runtime",
-    "secret vault"
-  ],
-  "p1_status": "IN_PROGRESS",
-  "product_maturity_estimate": "80-90% technical foundation, 62-72% end-user product",
-  "recent_changes": [
-    "v30.17: Added embedding index identity guard and tests for provider/model/dimension scoped vector storage/search.",
-    "v30.16: Added native OpenAI HTTPS embedding transport, timeout config, transport diagnostics, and no-fallback error tests.",
-    "v30.15: Added OpenAI/Ollama dimension contract enforcement and provider default dimensions.",
-    "v30.14: Added embedding configuration contract and production prerequisite checks.",
-    "v30.13: Added Golden Retrieval quality gate with recall/MRR/nDCG/passrate.",
-    "v30.12: Added provider health gate and restored config/golden_retrieval.json path.",
-    "v30.10: P1 parser ingest emits structured parse events and directory ingest diagnostics."
-  ],
-  "recent_sprint": {
-    "branch": "delta-v30-16-p1-embedding-http-provider-boundary",
-    "id": "sprint3-continuation-v30-16",
-    "name": "P1 Embedding HTTP Provider Boundary",
-    "scope": [
-      "native OpenAI HTTP transport",
-      "SDK compatibility",
-      "timeout config",
-      "network failure hardening"
-    ],
-    "validation": [
-      "13 focused tests pass"
-    ]
-  },
-  "release_blockers": [
-    "full pytest -q completion pending outside sandbox timeout",
-    "real live PostgreSQL/pgvector validation pending on user VPS",
-    "SQLite to PostgreSQL migration live apply pending against VPS",
-    "real OAuth/API connectors missing",
-    "productive secret encryption missing",
-    "cross-module GUI missing"
-  ],
-  "release_notes": [
-    "v30.12: P1 production gate now blocks non-production embedding providers explicitly and exposes p1-provider-health diagnostics.",
-    "v30.11: P1 vector provider guard now blocks same-provider embedding dimension drift and requires reindex.",
-    "v30.18: Vector audit uses full index identity and p1-vector-index-repair deterministically fixes provider/model/dimension drift through reindex."
+    "productive connector runtime with OAuth/API sync",
+    "secret vault/encryption",
+    "service lifecycle for safe stop/restart"
   ],
   "remaining_blockers": [
     "full pytest without sandbox timeout",
@@ -113,14 +86,5 @@
     "productive connector runtime",
     "secret vault/encryption"
   ],
-  "status": "P1_EMBEDDING_DIMENSION_CONTRACT_HARDENED",
-  "updated_scope": [
-    "desktop_views",
-    "settings_center",
-    "rag_import_center",
-    "vector_index_center",
-    "production_gate_dashboard",
-    "p1_control_panel"
-  ],
-  "version": "30.19"
+  "next_release": "Service lifecycle, full local release validation, live provider gate, pgvector production path, then connector runtime validation"
 }

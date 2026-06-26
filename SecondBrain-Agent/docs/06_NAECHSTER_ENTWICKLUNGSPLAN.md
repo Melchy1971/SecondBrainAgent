@@ -1,68 +1,70 @@
-# Nächster Entwicklungsplan
+# Naechster Entwicklungsplan nach v30.21
 
-## v17.0 – Integration Core
-Ziel: Alle v16.x Module in einen gemeinsamen Projektstand integrieren.
+## 1. Vollstaendige lokale Release-Validierung
 
-Lieferumfang:
-- Unified Launcher
-- Module Registry
-- Shared Config
-- Shared SQLite/PostgreSQL Adapter
-- Event Bus
-- Unified Health
-- Cross-module Smoke Tests
-
-## v17.1 – PostgreSQL + pgvector
-Ziel: produktive Datenhaltung.
+Ziel: v30.21 reproduzierbar absichern.
 
 Lieferumfang:
-- PostgreSQL Adapter
-- pgvector Schema
-- Alembic Migrations
-- Connection Pool
-- Repository Layer
-- Migration von SQLite zu PostgreSQL
 
-## v17.2 – Provider Layer
-Ziel: echte LLM-/Embedding-Anbindung.
+- `repo-doctor --execute-runtime-checks`
+- `dependency-inventory`
+- `gui-bootstrap`
+- `gui-doctor`
+- `p0-gate`
+- `p1-gate`
+- vollstaendiger `pytest -q`
 
-Lieferumfang:
-- OpenAI Provider
-- Ollama Provider
-- Gemini Provider Scaffold
-- Embedding Service
-- RAG Answer Generator
-- Token/Cost Tracking
+## 2. GUI Lifecycle und Service Control
 
-## v17.3 – Real Gmail/Calendar Connector
-Ziel: erster echter Produkt-Connector.
+Ziel: Jarvis nicht nur starten, sondern kontrolliert betreiben.
 
 Lieferumfang:
-- OAuth Browser Flow
-- Token Refresh
-- Gmail Read Sync
-- Calendar Read Sync
-- Delta Cursor
-- Approval für Write Operations
 
-## v17.4 – Desktop Control Center
-Ziel: GUI wird Steuerzentrale.
+- Start/Stop/Restart Status in der GUI.
+- PID-/Port-Konsistenz pruefen und reparieren.
+- Saubere Fehlerzustaende fuer belegte Ports und tote PID-Dateien.
+- Windows-Tray oder Dienst-Integration vorbereiten.
 
-Lieferumfang:
-- Module Dashboard
-- Agent Runs
-- RAG Chat
-- Connector Status
-- Approval Inbox
-- Memory Explorer
-- Graph Explorer
+## 3. P1 Production Provider Live Gate
 
-## v17.5 – Automation Engine
-Ziel: Trigger → Condition → Action → Approval → Execution.
+Ziel: produktive Embeddings nachweisbar machen.
 
 Lieferumfang:
-- Trigger Registry
-- Rules
-- Action Runner
-- Approval Gate
-- Feedback Loop
+
+- Live-Checks fuer OpenAI/Ollama gegen echte Zielkonfiguration.
+- Klare Gate-Ausgaben fuer fehlende Keys, unerreichbare Endpoints und Dimensionsdrift.
+- Dokumentierter Reindex-Pfad ueber `p1-vector-index-repair`.
+
+## 4. PostgreSQL/pgvector Produktivpfad
+
+Ziel: SQLite-Prototyp durch produktiven Store ergaenzen.
+
+Lieferumfang:
+
+- `DATABASE_URL`-basierter Startpfad.
+- Migration und Audit gegen Live-PostgreSQL.
+- Backup/Restore-Probe.
+- Performance- und Qualitaetsmessung fuer Vector Search.
+
+## 5. Connector Runtime Foundation live validieren
+
+Ziel: echte Datenquellen kontrolliert anbinden.
+
+Lieferumfang:
+
+- OAuth Flow.
+- Token Refresh.
+- Gmail/Calendar/Drive/GitHub Read Sync.
+- Approval Gate fuer Write Operations.
+- Retry/Backoff und Dead Letter Reports.
+
+## 6. Secret- und Approval-Schicht
+
+Ziel: lokale Produktivnutzung absichern.
+
+Lieferumfang:
+
+- DPAPI/Keyring Secret Store.
+- Rollen- und Berechtigungsmodell.
+- Approval Inbox in der GUI.
+- Audit Reports fuer agentische Aktionen.

@@ -1,54 +1,60 @@
-# Installation v0.4 für Anfänger
+# Installation v30.21 fuer Einsteiger
 
-## 1. ZIP entpacken
+## 1. Projektordner oeffnen
 
-Nach:
-
-```text
-H:\SecondBrainAgent
-```
-
-## 2. In den Projektordner wechseln
-
-PowerShell öffnen:
+PowerShell oeffnen und in den Agent-Ordner wechseln:
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
-Wichtig: Nicht in `H:\SecondBrainAgent` bleiben. `requirements.txt` und
-`launcher.py` liegen im Unterordner `SecondBrain-Agent`.
+Wichtig: Nicht in `H:\SecondBrainAgent` bleiben. `launcher.py`, `pytest.ini`, `pyproject.toml` und die Startskripte liegen im Unterordner `SecondBrain-Agent`.
 
-## 3. Zusatzpakete installieren
+## 2. Python-Umgebung anlegen
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
 ```
 
-Fallback, falls nur die Basis-Importer genutzt werden:
+Falls editable install nicht benoetigt wird:
 
 ```powershell
-python -m pip install pypdf requests beautifulsoup4
+python -m pip install -r requirements-dev.txt
 ```
 
-## 4. Healthcheck ausführen
+## 3. Jarvis vorbereiten
 
 ```powershell
-python scripts\healthcheck.py
+python launcher.py gui-bootstrap
 ```
 
-## 5. Menü starten
+Der Bootstrap prueft Python, `.env`, Runtime-Ordner, Schreibrechte, Datenbank-URL und Embedding-Provider. Warnungen erlauben lokalen Start, blockieren aber weiterhin produktive Gates.
+
+## 4. Diagnose ausfuehren
 
 ```powershell
-python scripts\menu.py
+python launcher.py gui-doctor
+python launcher.py health
 ```
 
-## 6. Web-UI starten
+## 5. Jarvis starten
 
-Aktuelles Jarvis HUD:
+Standard:
 
 ```powershell
-python scripts\start_hud.py
+python launcher.py
+```
+
+Alternativen:
+
+```powershell
+python launcher.py jarvis
+python launcher.py gui
+.\Jarvis.bat
+.\Start-Jarvis-GUI.bat
 ```
 
 Browser:
@@ -57,31 +63,25 @@ Browser:
 http://127.0.0.1:8851
 ```
 
-Einfaches Dashboard:
+## 6. Desktop-Verknuepfung erstellen
 
 ```powershell
-python scripts\web_dashboard.py
+powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Browser:
-
-```text
-http://localhost:8765
-```
-
-## 7. Launcher-Beispiele
+## 7. Relevante Checks vor Aenderungen
 
 ```powershell
-python launcher.py health
-python launcher.py desktop16-status
-python launcher.py agent16-migrate
-python launcher.py agent16-task-create "Sprint" "Plane den nächsten Sprint"
-python launcher.py agent16-tasks
+python launcher.py repo-doctor --execute-runtime-checks
+python launcher.py dependency-inventory
+python launcher.py p0-gate
+python launcher.py p1-gate
+pytest -q
 ```
 
 ## 8. Import testen
 
-Dateien in die passenden Inbox-Ordner legen:
+Dateien in passende Inbox-Ordner legen:
 
 ```text
 H:\SecondBrainAgent\SecondBrain-Inbox\PDFs
@@ -89,4 +89,9 @@ H:\SecondBrainAgent\SecondBrain-Inbox\Webseiten
 H:\SecondBrainAgent\SecondBrain-Inbox\ChatGPT
 ```
 
-Dann Menüoption 1 ausführen.
+Danach gezielt den passenden Importer oder RAG-Ingest ausfuehren, z. B.:
+
+```powershell
+python launcher.py p1-rag-ingest-file .\sample_docs\demo.md
+python launcher.py p1-rag-search Jarvis
+```

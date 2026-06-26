@@ -1,1 +1,0 @@
-SecondBrain-Agent/config/olden_retrieval.json

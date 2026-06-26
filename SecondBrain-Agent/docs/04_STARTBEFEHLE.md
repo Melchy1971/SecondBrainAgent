@@ -1,120 +1,124 @@
-# Startbefehle
+# Startbefehle v30.21
 
 ## Voraussetzung
 
-Alle Befehle aus dem Projektordner ausführen:
+Alle Befehle aus dem Projektordner ausfuehren:
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
-Abhängigkeiten:
+Empfohlene Installation:
 
 ```powershell
-python -m pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -e ".[dev]"
 ```
 
-Smoke Check:
+## Jarvis starten
+
+Standard ab v30.21:
+
+```powershell
+python launcher.py
+```
+
+Explizite GUI-Befehle:
+
+```powershell
+python launcher.py jarvis
+python launcher.py gui
+python launcher.py gui-start
+python launcher.py gui-open
+python launcher.py gui-status
+python launcher.py gui-doctor
+python launcher.py gui-bootstrap
+python launcher.py gui-shortcuts
+```
+
+Browser:
+
+```text
+http://127.0.0.1:8851
+```
+
+## Windows
+
+```powershell
+.\Jarvis.bat
+.\Start-Jarvis-GUI.bat
+powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
+```
+
+## Hygiene und Gates
 
 ```powershell
 python launcher.py health
+python launcher.py command-index
+python launcher.py repo-doctor --execute-runtime-checks
+python launcher.py dependency-inventory
+python launcher.py p0-gate
+python launcher.py p1-gate
+pytest -q
 ```
 
-## Lokale Oberflächen
-
-Jarvis HUD:
+## P1 RAG
 
 ```powershell
-python scripts\start_hud.py
+python launcher.py p1-rag-status
+python launcher.py p1-rag-ingest-file .\sample_docs\demo.md
+python launcher.py p1-rag-search Jarvis
+python launcher.py p1-rag-vector-search Jarvis
+python launcher.py p1-rag-hybrid-search Jarvis
+python launcher.py p1-rag-answer "Was weiss Jarvis?"
+python launcher.py p1-vector-provider-audit
+python launcher.py p1-vector-index-repair
+python launcher.py p1-provider-health
+python launcher.py p1-golden-eval
+python launcher.py p1-production
 ```
 
-Browser: `http://127.0.0.1:8851`
-
-Einfaches Web-Dashboard:
+## Desktop-Kommandos
 
 ```powershell
-python scripts\web_dashboard.py
+python launcher.py desktop-status
+python launcher.py desktop-dashboard
+python launcher.py desktop-activity
+python launcher.py desktop-widgets
+python launcher.py desktop-commands
+python launcher.py desktop-notifications
+python launcher.py desktop-session
+python launcher.py desktop-notify "Test" --body "Nachricht" --level info
 ```
 
-Browser: `http://localhost:8765`
-
-## v16.0 Desktop
+## Voice
 
 ```powershell
-python launcher.py desktop16-gui
-python launcher.py desktop16-status
-python launcher.py desktop16-seed
+python launcher.py voice-status2
+python launcher.py voice-session2
+python launcher.py voice-wake "Jarvis status"
+python launcher.py voice-parse2 "Jarvis notiz Neuer Gedanke"
+python launcher.py voice-handle2 "Jarvis status"
 ```
 
-## v16.1 Datenbank
+## Knowledge Graph
 
 ```powershell
-python launcher.py db16-migrate
-python launcher.py db16-health
-python launcher.py db16-stats
+python launcher.py graph-status
+python launcher.py graph-ingest-text "Jarvis nutzt RAG"
+python launcher.py graph-search Jarvis
+python launcher.py graph-neighbors Jarvis
+python launcher.py graph-timeline
 ```
 
-## v16.2 Connectoren
+## Mobile Companion
 
 ```powershell
-python launcher.py conn16-migrate
-python launcher.py conn16-enable gmail
-python launcher.py conn16-sync gmail
-python launcher.py conn16-status
-```
-
-## v16.3 Dokumente
-
-```powershell
-python launcher.py doc16-migrate
-python launcher.py doc16-ingest-file .\sample_docs\demo.md
-python launcher.py doc16-search Jarvis
-```
-
-## v16.4 Agenten
-
-```powershell
-python launcher.py agent16-migrate
-python launcher.py agent16-task-create "Sprint" "Plane den nächsten Sprint"
-python launcher.py agent16-tasks
-```
-
-## v16.5 Knowledge Graph
-
-```powershell
-python launcher.py kg16-migrate
-python launcher.py kg16-seed
-python launcher.py kg16-status
-```
-
-## v16.6 Memory
-
-```powershell
-python launcher.py mem16-migrate
-python launcher.py mem16-seed
-python launcher.py mem16-recall Jarvis
-```
-
-## v16.7 RAG
-
-```powershell
-python launcher.py rag16-migrate
-python launcher.py rag16-seed
-python launcher.py rag16-search Jarvis
-```
-
-## v16.8 Voice
-
-```powershell
-python launcher.py voice16-migrate
-python launcher.py voice16-wake "Jarvis status"
-python launcher.py voice16-status
-```
-
-## v16.9 Mobile
-
-```powershell
-python launcher.py mobile16-migrate
-python launcher.py mobile16-pair-request "iPhone Markus" ios
 python launcher.py mobile16-status
+python launcher.py mobile16-manifest
+python launcher.py mobile16-pair-request "iPhone Markus" ios
+python launcher.py mobile16-devices
+python launcher.py mobile16-sync
 ```

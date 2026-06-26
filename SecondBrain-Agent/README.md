@@ -1,8 +1,8 @@
-![Jarvis](../jarvis.jpg)
+![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v18.x
+# SecondBrain-Agent v30.21
 
-Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, Desktop/HUD, Mobile Companion, Voice, Knowledge Graph, P0/P1-Gates und Release-Hygiene-Werkzeugen.
+Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, GUI/HUD, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
 
 ## Projektwurzel
 
@@ -12,23 +12,17 @@ Alle Befehle laufen aus dem Projektordner:
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
-Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und `requirements.txt` nicht zuverlässig.
+Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
 
 ## Installation
 
-Empfohlen für Entwicklung und lokale Ausführung:
+Empfohlen fuer Entwicklung und lokale Ausfuehrung:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
-```
-
-Minimaler Legacy-Pfad:
-
-```powershell
-python -m pip install -r requirements-dev.txt
 ```
 
 Optionale Feature-Sets:
@@ -40,55 +34,67 @@ pip install -e ".[openai]"
 pip install -e ".[all]"
 ```
 
+Minimaler Legacy-Pfad:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
 ## Schnellstart
 
 ```powershell
-python launcher.py repo-doctor
-python launcher.py dependency-inventory
-python launcher.py health
-python launcher.py command-index
+python launcher.py gui-bootstrap
+python launcher.py gui-doctor
+python launcher.py
 ```
 
-Nach editable install zusätzlich:
+`python launcher.py` startet seit v30.21 den Jarvis-GUI-Bootstrap und danach die lokale Oberflaeche.
+
+Alternative Startbefehle:
+
+```powershell
+python launcher.py jarvis
+python launcher.py gui
+python launcher.py gui-start
+python launcher.py gui-open
+```
+
+Nach editable install zusaetzlich:
 
 ```powershell
 secondbrain health
 secondbrain command-index
 ```
 
-## Primäre lokale Oberfläche
-
-### Jarvis HUD
+## Windows-Start
 
 ```powershell
-python scripts\start_hud.py
+.\Jarvis.bat
+.\Start-Jarvis-GUI.bat
+powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Browser:
+Die Desktop-/Startmenue-Verknuepfungen zeigen auf den Jarvis-Launcher. Alte HUD-Verknuepfungen sind nicht mehr die primaere Startflaeche.
+
+## Lokale Oberflaechen
+
+Primaer:
 
 ```text
 http://127.0.0.1:8851
 ```
 
-Alternativ:
+Direkter HUD-Start bleibt kompatibel:
 
 ```powershell
-.\Jarvis.bat
+python scripts\start_hud.py
 ```
 
-Stoppen:
-
-```powershell
-.\Jarvis-stop.bat
-```
-
-### Einfaches lokales Dashboard
+Einfaches lokales Dashboard:
 
 ```powershell
 python scripts\web_dashboard.py
 ```
-
-Browser:
 
 ```text
 http://localhost:8765
@@ -101,6 +107,8 @@ Vor Featureentwicklung oder Merge:
 ```powershell
 python launcher.py repo-doctor --execute-runtime-checks
 python launcher.py dependency-inventory
+python launcher.py gui-bootstrap
+python launcher.py gui-doctor
 python launcher.py p0-gate
 python launcher.py p1-gate
 pytest -q
@@ -110,33 +118,34 @@ Logische Reihenfolge:
 
 ```text
 repo-doctor
-  ↓
-dependency-inventory
-  ↓
-p0-gate
-  ↓
-p1-gate
-  ↓
-feature-specific tests
-  ↓
-release report
+  -> dependency-inventory
+  -> gui-bootstrap/gui-doctor
+  -> p0-gate
+  -> p1-gate
+  -> feature-specific tests
+  -> release report
 ```
 
-## Release-Dokumentation
+## Aktueller Stand
 
-Source of Truth für Paketstände und Sprint-Ergebnisse:
+Source of Truth fuer Paketstaende und Sprint-Ergebnisse:
 
 ```text
 docs/releases/
+docs/09_MASTERPLAN_STATUS.json
 ```
 
-Git-History bleibt die technische Änderungsquelle. Root-Artefakte mit Präfix `PATCH_`, `CHANGELOG_` oder `VALIDATION_` sind nicht mehr zulässig.
+Aktueller dokumentierter Stand: v30.21 Unified Application Bootstrap.
+
+Bekannte lokale Warnungen:
+
+- Ohne `DATABASE_URL` bleibt SQLite/RAG-Prototyp aktiv.
+- Der lokale deterministische Embedding-Provider erlaubt Entwicklung, blockiert aber Production-Gates.
+- Live-Validierung fuer OpenAI/Ollama und PostgreSQL/pgvector bleibt umgebungsabhaengig.
 
 ## Hygiene-Gates
 
 ### Repo Doctor
-
-Prüft Repository-Struktur, Packaging, pytest-Konfiguration, Requirements-Policy, README-Basis, Release-Dokumentation, CI-Smoke, verbotene Runtime-/Cache-Artefakte und optionale Launcher-Smokes.
 
 ```powershell
 python launcher.py repo-doctor
@@ -150,15 +159,7 @@ Report:
 release/repo_doctor_latest.json
 ```
 
-Doku:
-
-```text
-docs/REPO_DOCTOR_v18_7.md
-```
-
 ### Dependency Inventory
-
-Erzeugt ein statisches Import-Inventar und trennt Standardbibliothek, interne Module, externe Pakete und optionale Provider.
 
 ```powershell
 python launcher.py dependency-inventory
@@ -169,12 +170,6 @@ Report:
 
 ```text
 release/dependency_inventory_latest.json
-```
-
-Doku:
-
-```text
-docs/DEPENDENCY_INVENTORY_v18_8.md
 ```
 
 ## Core-Kommandos

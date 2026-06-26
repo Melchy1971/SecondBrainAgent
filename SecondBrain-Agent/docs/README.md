@@ -1,25 +1,19 @@
-# SecondBrain OS / Jarvis – Dokumentation v16.9
+# SecondBrain OS / Jarvis Dokumentation v30.21
 
-Stand: v16.9 Mobile Companion Backend
+Stand: v30.21 Unified Application Bootstrap
 
 ## Zielbild
-SecondBrain OS entwickelt sich zu einem persönlichen Betriebssystem für Wissen, Aufgaben, Dokumente, Agenten, Automatisierung, Sprache, Mobile Companion und proaktive Entscheidungsunterstützung.
+
+SecondBrain OS ist ein lokaler Jarvis-/SecondBrain-Agent fuer Wissen, Dokumente, Aufgaben, RAG, Agenten, GUI, Voice, Mobile Companion und kontrollierte Automatisierung.
 
 ## Aktueller Reifegrad
-- Infrastruktur: hoch
-- Desktop-Grundlage: vorhanden
-- Datenbankgrundlage: vorhanden
-- Connector Framework: vorhanden, noch ohne echte API-Calls
-- Dokumentenverständnis: vorhanden, OCR/PDF noch nicht produktiv
-- Multi-Agent Runtime: vorhanden, noch deterministisch
-- Knowledge Graph: vorhanden, noch SQLite/Neo4j-Export
-- Langzeitgedächtnis: vorhanden
-- Hybrid RAG: vorhanden, noch mit Pseudo-Embeddings
-- Realtime Voice: vorhanden, noch ohne echtes Mikrofon/STT/TTS
-- Mobile Companion: Backend vorhanden, keine native App
 
-## Wichtig
-Die Releases v16.0 bis v16.9 sind als modulare Codepakete entstanden. Für ein produktives Gesamtsystem müssen sie in einen gemeinsamen Hauptbranch integriert werden.
+- GUI/HUD: startfaehig ueber `python launcher.py`, `jarvis`, `gui` und Windows-Startskripte.
+- Bootstrap: prueft lokale Defaults, Runtime-Ordner, Python, Datenbank-URL und Embedding-Provider.
+- P1 RAG: lokale Entwicklung mit deterministischem Provider; produktive Provider bleiben Gate-relevant.
+- PostgreSQL/pgvector: Foundation und Live-Checks vorhanden, produktive Live-Validierung umgebungsabhaengig.
+- Connectoren: Produktionsnahe Strukturen vorhanden, echte OAuth/API-Laeufe bleiben offen.
+- Desktop/Voice/Mobile/Graph/Memory: modulare Foundations vorhanden, Produktreife je Modul unterschiedlich.
 
 ## Aktueller Startpunkt
 
@@ -29,32 +23,32 @@ Alle lokalen Befehle aus dem Projektordner starten:
 cd H:\SecondBrainAgent\SecondBrain-Agent
 ```
 
-Basisprüfung:
+Bootstrap und Diagnose:
 
 ```powershell
-python launcher.py health
+python launcher.py gui-bootstrap
+python launcher.py gui-doctor
 ```
 
-Menü:
+Jarvis starten:
 
 ```powershell
-python scripts\menu.py
-```
-
-Jarvis HUD:
-
-```powershell
-python scripts\start_hud.py
+python launcher.py
 ```
 
 Browser: `http://127.0.0.1:8851`
 
-Einfaches Web-Dashboard:
+Weitere Startbefehle: `docs\04_STARTBEFEHLE.md` und `docs\START_GUI.md`.
 
-```powershell
-python scripts\web_dashboard.py
-```
+## Dokumentationsstruktur
 
-Browser: `http://localhost:8765`
-
-Weitere Startbefehle: `docs\04_STARTBEFEHLE.md`.
+- `01_ARCHITEKTUR_UEBERSICHT.md`: System- und Datenfluss.
+- `02_RELEASE_HISTORY.md`: komprimierte Release-Historie.
+- `03_MODUL_MATRIX.md`: aktueller Modulstatus.
+- `04_STARTBEFEHLE.md`: verifizierte Start- und Diagnosebefehle.
+- `05_OFFENE_LUECKEN.md`: offene technische und produktive Luecken.
+- `06_NAECHSTER_ENTWICKLUNGSPLAN.md`: naechste sinnvolle Arbeitspakete.
+- `07_IMPLEMENTIERUNGSREGELN.md`: Regeln fuer Code, Persistenz und Gates.
+- `08_RELEASE_GATE.md`: aktueller Gate-Status.
+- `09_MASTERPLAN_STATUS.json`: maschinenlesbarer Status.
+- `releases/`: historische, auditierbare Release-Artefakte.

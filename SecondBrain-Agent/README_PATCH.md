@@ -1,24 +1,12 @@
-# Patch: fehlende v9 Scripts
+# Historischer Patch-Hinweis
 
-## Zielordner
+Dieses Dokument ist nur noch ein Archivhinweis fuer alte v9-Patchpakete.
 
-Diese ZIP in folgenden Ordner entpacken:
+Aktuelle Installation und Startbefehle stehen hier:
 
-```text
-H:\SecondBrainAgent\SecondBrain-Agent
-```
+- `README.md`
+- `INSTALLATION_BEGINNER.md`
+- `docs/README.md`
+- `docs/START_GUI.md`
 
-Danach müssen vorhanden sein:
-
-```text
-H:\SecondBrainAgent\SecondBrain-Agent\scripts\release_gate_v9.py
-H:\SecondBrainAgent\SecondBrain-Agent\scripts\run_regression_tests_v9.py
-```
-
-## Test
-
-```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
-python scripts\release_gate_v9.py
-python scripts\run_regression_tests_v9.py
-```
+Aktueller Stand: v30.21 Unified Application Bootstrap.

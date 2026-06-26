@@ -1,59 +1,59 @@
 # Personal CRM
 
-Aktualisiert: 2026-06-25
+Aktualisiert: 2026-06-26
 
 ## E-Mail-Kontakte
 
 
 ## Namenssignale
 
-- Score: 677
-- Tags: 524
-- Links: 518
-- Risiken: 453
-- Risiko: 382
-- Signale: 364
-- Frontmatter: 330
-- Zusammenfassung: 319
-- Titel: 316
-- Ergebnis: 299
-- Aufgaben: 267
-- Nachbereitung: 234
-- Blocker: 230
-- Review: 177
-- Annahmen: 169
-- Alternativen: 169
-- Agent: 161
-- Schritt: 161
-- Recherchefrage: 155
-- Quellenbedarf: 154
-- Datum: 150
-- Wirkung: 148
-- Struktur: 143
-- Inhalt: 143
-- Notizen: 139
-- Automatisierung: 131
-- Status: 126
-- Protokoll: 112
-- Analyse: 98
-- Benutzerhandbuch: 91
-- Einsteiger: 91
-- Entscheidungen: 90
-- Projekte: 89
+- Score: 690
+- Tags: 648
+- Links: 643
+- Risiken: 571
+- Risiko: 502
+- Signale: 478
+- Frontmatter: 386
+- Zusammenfassung: 378
+- Titel: 376
+- Ergebnis: 368
+- Aufgaben: 322
+- Nachbereitung: 304
+- Blocker: 288
+- Review: 230
+- Annahmen: 223
+- Alternativen: 223
+- Recherchefrage: 206
+- Quellenbedarf: 204
+- Wirkung: 200
+- Struktur: 192
+- Inhalt: 183
+- Schritt: 180
+- Datum: 178
+- Automatisierung: 176
+- Agent: 169
+- Notizen: 158
+- Protokoll: 155
+- Status: 143
+- Benutzerhandbuch: 111
+- Einsteiger: 111
+- Projekte: 107
+- Analyse: 104
+- Entscheidungen: 99
+- Aufgabe: 95
+- Prozessmodell: 92
+- Tool: 91
+- Kernnotizen: 91
+- Karteikarten: 91
+- Praxisaufgabe: 91
+- Entscheidungs: 90
 - Aktualisiert: 88
-- Tool: 86
+- Entscheidung: 86
 - Prozessdokumentation: 85
-- Aufgabe: 84
 - Testfälle: 84
-- Kernnotizen: 76
-- Karteikarten: 76
-- Praxisaufgabe: 76
-- Entscheidung: 73
-- Prozessmodell: 72
-- Projekt: 68
-- Entscheidungs: 68
-- Agenda: 67
-- Anforderungen: 66
-- Wissensnotiz: 65
-- Meeting: 64
-- Fragen: 63
+- Anforderungen: 80
+- Fragen: 77
+- Meeting: 74
+- Projekt: 73
+- Beispiel: 72
+- Journal: 71

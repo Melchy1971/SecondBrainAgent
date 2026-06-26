@@ -19,6 +19,21 @@ Endpoints:
     GET /api/run?script=  -> Skript ausfuehren (review-first, keine Loeschungen)
     GET /api/rag?q=       -> RAG-Frage an das Vault
     GET /api/logs         -> Tail des GUI-Logs
+    GET /api/assistant/models  -> verfuegbare Ollama-Modelle
+    POST /api/assistant        -> RAG-gestuetzter Chat (query, history)
+    POST /api/assistant/note   -> Assistant-Antwort als Notiz speichern
+    GET /api/documents?path=   -> Vault-Ordner listen (read-only)
+    GET /api/document?path=    -> Notiz-Inhalt lesen (read-only)
+    GET /api/documents/stats   -> echter Markdown-Bestand
+    GET /api/memory            -> Vault-Memory-Ordner gruppiert (read-only)
+    GET /api/memory/stats      -> echter Memory-Bestand
+    GET /api/knowledge/stats   -> Wissensgraph-Kennzahlen
+    GET /api/knowledge/entities-> Entitaeten (Suche/Typ/Limit, dedupliziert)
+    GET /api/knowledge/entity  -> Entitaet-Detail (Beziehungen + Quellnotiz)
+    GET /api/search?q=&type=&tag= -> Volltextsuche mit Facetten
+    GET /api/search/facets     -> verfuegbare Typen + Tags
+    GET /api/imports/status    -> Inbox-Quellen + letzte Import-Reports
+    POST /api/imports/zip      -> ZIP-Upload (base64) + Import der gewaehlten Quelle
 """
 from __future__ import annotations
 
@@ -35,6 +50,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 # Geteilte, GUI-neutrale Logik aus dem Kernmodul (Phase 2).
 from secondbrain.hud_core import (  # noqa: E402
+    INBOX,
     LOG_DIR,
     ROOT,
     VAULT,
@@ -120,6 +136,12 @@ DEFAULT_SETTINGS = {
     "backup_last": "15:23",
     "backup_next": "Heute, 22:00",
     "vector_index": "OK",
+    # --- Assistant (Chat) ---
+    "assistant_engine": "ollama",          # ollama | openai
+    "assistant_model": "",                 # leer = erstes verfuegbares Ollama-Modell
+    "assistant_models": "llama3.1, qwen, deepseek-coder, gemma",  # Auswahl rechts (Komma-getrennt)
+    "assistant_temperature": 0.2,
+    "assistant_context_chunks": 5,
 }
 # Welche Zahlenfelder duerfen ueberschrieben werden + erlaubter Bereich.
 _NUM = {
@@ -129,12 +151,13 @@ _NUM = {
     "queue_pending": (0, 1000000), "release_blocking": (0, 1000000),
     "connectors": (0, 100000), "agents_active": (0, 100000),
     "vectors": (0, 10 ** 12), "documents": (0, 10 ** 12), "memories": (0, 10 ** 12),
+    "assistant_temperature": (0, 2), "assistant_context_chunks": (1, 20),
 }
 # Zahlenfelder, die als Ganzzahl gespeichert werden (Rest bleibt float).
 _INT = {
     "news_max", "weather_min", "embedding_dim", "ollama_models",
     "queue_pending", "release_blocking", "connectors", "agents_active",
-    "vectors", "documents", "memories",
+    "vectors", "documents", "memories", "assistant_context_chunks",
 }
 
 
@@ -375,6 +398,32 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/rag":
             query = (qs.get("q", [""])[0] or "").strip()
             self._json(rag_answer(query))
+        elif path == "/api/assistant/models":
+            self._json(assistant_models())
+        elif path == "/api/documents":
+            self._json(documents_list((qs.get("path", [""])[0] or "")))
+        elif path == "/api/document":
+            self._json(document_read((qs.get("path", [""])[0] or "")))
+        elif path == "/api/documents/stats":
+            self._json(documents_stats())
+        elif path == "/api/memory":
+            self._json(memory_list())
+        elif path == "/api/memory/stats":
+            self._json(memory_stats())
+        elif path == "/api/knowledge/stats":
+            self._json(knowledge_stats())
+        elif path == "/api/knowledge/entities":
+            self._json(knowledge_entities(qs.get("q", [""])[0], qs.get("type", [""])[0],
+                                          qs.get("limit", ["50"])[0], qs.get("offset", ["0"])[0]))
+        elif path == "/api/knowledge/entity":
+            self._json(knowledge_entity(qs.get("name", [""])[0]))
+        elif path == "/api/search":
+            self._json(search_query(qs.get("q", [""])[0], qs.get("type", [""])[0],
+                                    qs.get("tag", [""])[0], qs.get("limit", ["50"])[0]))
+        elif path == "/api/search/facets":
+            self._json(search_facets())
+        elif path == "/api/imports/status":
+            self._json(imports_status())
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -392,6 +441,15 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/run":
             script = str(body.get("script", "")).strip()
             self._json(run_allowed_script(script))
+        elif path == "/api/assistant":
+            query = str(body.get("query", "")).strip()
+            history = body.get("history") if isinstance(body.get("history"), list) else []
+            self._json(assistant_chat(query, history))
+        elif path == "/api/assistant/note":
+            self._json(assistant_save_note(str(body.get("title", "")),
+                                           str(body.get("content", ""))))
+        elif path == "/api/imports/zip":
+            self._json(imports_zip(body))
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -399,13 +457,31 @@ class Handler(BaseHTTPRequestHandler):
 # --- Skript-Runner (Allowlist, review-first) ---------------------------------
 # Nur explizit freigegebene Skripte. Keine Loeschaktionen, keine freie Eingabe.
 ALLOWED_SCRIPTS = {
+    # Zyklen
     "run_v10_cycle.py",
     "run_v101_cycle.py",
-    "import_ai_exports.py",
-    "build_vector_rag.py",
-    "check_paths_v9.py",
+    "run_os_cycle.py",
+    "run_secondbrain_os_cycle.py",
+    "run_intelligence_cycle.py",
+    # Gates & Qualitaet
     "release_gate_v9.py",
+    "production_gate.py",
+    "production_ready_gate_v96.py",
+    "run_quality_gate.py",
+    "run_quality_report.py",
     "run_regression_tests_v9.py",
+    "run_tests.py",
+    # Checks & Health
+    "check_paths_v9.py",
+    "ai_healthcheck.py",
+    "healthcheck.py",
+    "run_sync_health.py",
+    "run_conflict_report.py",
+    "run_governance.py",
+    # Index & Import
+    "build_vector_rag.py",
+    "reindex.py",
+    "import_ai_exports.py",
 }
 
 
@@ -491,13 +567,683 @@ def rag_answer(query: str, limit: int = 5) -> dict:
     return {"ok": bool(hits), "query": query, "answer": answer, "hits": hits}
 
 
+# --- Assistant (RAG-gestuetzter Chat) ----------------------------------------
+# Retrieval ueber den vorhandenen Token-Chunk-Index (search_rag), Generierung
+# ueber das lokale Ollama. Embeddings sind hier bewusst NICHT im Spiel: der
+# Index speichert Tokens, keine Vektoren. Sobald build_rag_index echte
+# Embeddings ablegt, kann _assistant_retrieve auf Vektorsuche umgestellt werden
+# (Seam). Bis dahin ist dies ehrlich ein Token-Retrieval, kein Vektor-RAG.
+
+def _vault_settings() -> dict:
+    """Minimal-Settings fuer secondbrain.rag.search_rag."""
+    return {"vault_path": str(VAULT), "vault_folders": {"system": "99_System"}}
+
+
+def _assistant_retrieve(query: str, limit: int) -> list:
+    """Top-Chunks aus dem Vault. Faellt bei Importfehlern leise auf []."""
+    try:
+        from secondbrain.rag import search_rag  # lazy: haelt Serverstart frei
+        return search_rag(_vault_settings(), query, limit=limit)
+    except Exception as exc:  # pragma: no cover - defensive
+        log_event("hud.assistant_retrieve_error", {"error": str(exc)})
+        return []
+
+
+def _ollama_models(base_url: str) -> list:
+    """Verfuegbare Ollama-Modelle (Namen). Leere Liste, wenn nicht erreichbar."""
+    try:
+        url = base_url.rstrip("/") + "/api/tags"
+        with urllib.request.urlopen(url, timeout=4) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return [m.get("name", "") for m in data.get("models", []) if m.get("name")]
+    except Exception:
+        return []
+
+
+def _ollama_chat(base_url: str, model: str, prompt: str, temperature: float) -> str:
+    """Generierung ueber Ollama /api/generate (dependency-frei)."""
+    url = base_url.rstrip("/") + "/api/generate"
+    payload = json.dumps({
+        "model": model, "prompt": prompt, "stream": False,
+        "options": {"temperature": float(temperature)},
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=payload,
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        return json.loads(resp.read().decode("utf-8")).get("response", "").strip()
+
+
+def _openai_chat(model: str, prompt: str, temperature: float) -> str:
+    """Generierung ueber OpenAI. Erfordert OPENAI_API_KEY."""
+    key = os.environ.get("OPENAI_API_KEY")
+    if not key:
+        raise RuntimeError("OPENAI_API_KEY nicht gesetzt")
+    url = "https://api.openai.com/v1/chat/completions"
+    payload = json.dumps({
+        "model": model or "gpt-4o-mini",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": float(temperature),
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers={
+        "Content-Type": "application/json", "Authorization": f"Bearer {key}"})
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    return data["choices"][0]["message"]["content"].strip()
+
+
+def _build_prompt(query: str, chunks: list, history: list) -> str:
+    parts = [
+        "Du bist der SecondBrain-Assistant. Antworte praezise auf Deutsch,",
+        "ausschliesslich gestuetzt auf den folgenden Kontext aus dem Vault.",
+        "Reicht der Kontext nicht, sag das offen. Erfinde nichts.",
+        "Verweise im Text mit [1], [2] ... auf die genutzten Quellen.",
+        "",
+    ]
+    for turn in (history or [])[-6:]:
+        role = "Nutzer" if turn.get("role") == "user" else "Assistant"
+        parts.append(f"{role}: {str(turn.get('content',''))[:600]}")
+    if history:
+        parts.append("")
+    parts.append("Kontext:")
+    if chunks:
+        for i, c in enumerate(chunks, 1):
+            parts.append(f"[{i}] {c.get('note','?')}: {str(c.get('preview',''))[:500]}")
+    else:
+        parts.append("(kein Kontext gefunden)")
+    parts += ["", f"Frage: {query}", "", "Antwort:"]
+    return "\n".join(parts)
+
+
+def assistant_chat(query: str, history: list | None = None) -> dict:
+    """RAG-gestuetzte Chat-Antwort. Retrieval + Generierung, mit Fallback."""
+    query = (query or "").strip()
+    if not query:
+        return {"ok": False, "answer": "Keine Frage angegeben.", "sources": [],
+                "llm_ok": False, "engine": "", "model": ""}
+    cfg = load_settings()
+    engine = (cfg.get("assistant_engine") or "ollama").lower()
+    temp = cfg.get("assistant_temperature", 0.2)
+    limit = int(cfg.get("assistant_context_chunks", 5) or 5)
+    chunks = _assistant_retrieve(query, limit)
+    sources = [{"note": c.get("note", ""), "score": c.get("score", 0),
+                "chunk_id": c.get("chunk_id", 0),
+                "preview": str(c.get("preview", ""))[:240]} for c in chunks]
+    prompt = _build_prompt(query, chunks, history)
+
+    model = cfg.get("assistant_model") or ""
+    llm_ok, answer = False, ""
+    try:
+        if engine == "openai":
+            answer = _openai_chat(model, prompt, temp); llm_ok = True
+        else:
+            base = cfg.get("ollama_url") or "http://localhost:11434"
+            if not model:
+                avail = _ollama_models(base)
+                model = avail[0] if avail else ""
+            if not model:
+                raise RuntimeError("kein Ollama-Modell verfuegbar")
+            answer = _ollama_chat(base, model, prompt, temp); llm_ok = True
+    except Exception as exc:
+        log_event("hud.assistant_llm_error", {"engine": engine, "error": str(exc)})
+        if sources:
+            names = ", ".join(s["note"] for s in sources[:3])
+            answer = (f"LLM nicht erreichbar ({exc}). {len(sources)} Treffer im "
+                      f"Vault. Top: {names}.")
+        else:
+            answer = f"LLM nicht erreichbar ({exc}) und keine Vault-Treffer."
+
+    log_event("hud.assistant", {"query": query, "sources": len(sources),
+                                "engine": engine, "llm_ok": llm_ok})
+    return {"ok": True, "answer": answer, "sources": sources,
+            "llm_ok": llm_ok, "engine": engine, "model": model}
+
+
+def assistant_save_note(title: str, content: str) -> dict:
+    """Speichert einen Assistant-Output als NEUE Notiz im Inbox-Ordner.
+    Review-first: legt nur an, ueberschreibt/loescht nie."""
+    content = (content or "").strip()
+    if not content:
+        return {"ok": False, "error": "Kein Inhalt."}
+    folder = VAULT / "00_Inbox"
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:
+        return {"ok": False, "error": f"Inbox nicht beschreibbar: {exc}"}
+    base = "".join(c if c.isalnum() else "-" for c in (title or "assistant").lower())
+    base = base.strip("-")[:60] or "assistant"
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    target = folder / f"{stamp}_{base}.md"
+    n = 1
+    while target.exists():  # niemals ueberschreiben
+        target = folder / f"{stamp}_{base}_{n}.md"; n += 1
+    head = f"# {title or 'Assistant-Notiz'}\n\n_Quelle: Jarvis Assistant · {now()}_\n\n"
+    try:
+        target.write_text(head + content + "\n", encoding="utf-8")
+    except Exception as exc:
+        return {"ok": False, "error": f"Schreibfehler: {exc}"}
+    log_event("hud.assistant_note", {"file": str(target.relative_to(VAULT))})
+    return {"ok": True, "file": str(target.relative_to(VAULT))}
+
+
+def assistant_models() -> dict:
+    """Modelle fuer die UI: konfigurierte (Settings) + live aus Ollama, vereinigt.
+    Konfigurierte zuerst, damit die Auswahl auch ohne laufendes Ollama steht."""
+    cfg = load_settings()
+    base = cfg.get("ollama_url") or "http://localhost:11434"
+    configured = [m.strip() for m in str(cfg.get("assistant_models", "")).split(",") if m.strip()]
+    live = _ollama_models(base)
+    merged = list(dict.fromkeys(configured + live))
+    return {"ok": True, "engine": cfg.get("assistant_engine", "ollama"),
+            "active": cfg.get("assistant_model", ""),
+            "configured": configured, "live": live, "models": merged}
+
+
+# --- Documents (Vault-Browser, read-only) ------------------------------------
+# Liest ausschliesslich innerhalb des Vault. Jeder Pfad wird gegen Ausbruch
+# (path traversal) geprueft: nur Pfade unterhalb von VAULT sind zulaessig.
+
+def _safe_vault_path(rel: str):
+    """Loest rel relativ zum Vault auf und stellt Containment sicher."""
+    base = VAULT.resolve()
+    try:
+        target = (base / (rel or "")).resolve()
+    except Exception:
+        return None
+    if target == base or base in target.parents:
+        return target
+    return None
+
+
+def _doc_rel(p) -> str:
+    try:
+        return str(p.relative_to(VAULT.resolve())).replace("\\", "/")
+    except Exception:
+        return ""
+
+
+def documents_list(rel: str = "") -> dict:
+    """Listet die direkten Kinder eines Vault-Ordners (Ordner + .md-Dateien)."""
+    base = VAULT.resolve()
+    target = _safe_vault_path(rel)
+    if target is None or not target.exists() or not target.is_dir():
+        return {"ok": False, "error": "Pfad ungueltig", "path": rel, "entries": []}
+    dirs, files = [], []
+    for child in sorted(target.iterdir(), key=lambda c: c.name.lower()):
+        if child.name.startswith("."):
+            continue
+        try:
+            st = child.stat()
+        except Exception:
+            continue
+        entry = {"name": child.name, "path": _doc_rel(child), "mtime": int(st.st_mtime)}
+        if child.is_dir():
+            entry["type"] = "dir"
+            dirs.append(entry)
+        elif child.suffix.lower() == ".md":
+            entry["type"] = "file"
+            entry["size"] = st.st_size
+            files.append(entry)
+    return {"ok": True, "path": ("" if target == base else _doc_rel(target)),
+            "entries": dirs + files}
+
+
+def document_read(rel: str) -> dict:
+    """Liefert den Inhalt einer einzelnen .md-Notiz (read-only, pfadgeschuetzt)."""
+    target = _safe_vault_path(rel)
+    if (target is None or not target.exists() or not target.is_file()
+            or target.suffix.lower() != ".md"):
+        return {"ok": False, "error": "Datei ungueltig"}
+    try:
+        text = target.read_text(encoding="utf-8", errors="ignore")
+        st = target.stat()
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+    return {"ok": True, "path": _doc_rel(target), "content": text,
+            "size": st.st_size, "mtime": int(st.st_mtime)}
+
+
+def documents_stats() -> dict:
+    """Echter Markdown-Bestand im Vault (ohne 99_System und versteckte Ordner)."""
+    base = VAULT.resolve()
+    count = 0
+    try:
+        for p in base.rglob("*.md"):
+            parts = p.parts
+            if "99_System" in parts or any(s.startswith(".") for s in parts):
+                continue
+            count += 1
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "count": 0}
+    return {"ok": True, "count": count}
+
+
+# --- Memory (Vault-Erinnerungsordner, read-only) -----------------------------
+# Einzige real befuellte Quelle sind die Memory-Ordner im Vault. Der JSON-/DB-
+# Store (DesktopStore, sqlite-Tabelle 'memories') ist Geruest ohne Daten und
+# wird hier bewusst NICHT als Quelle ausgegeben.
+_MEMORY_DIRS = ("22_Memory", "48_AgentMemory", "100_MemoryEngine")
+
+
+def memory_list() -> dict:
+    """Erinnerungen aus den Vault-Memory-Ordnern, nach Kategorie gruppiert."""
+    base = VAULT.resolve()
+    groups, total = [], 0
+    for d in _MEMORY_DIRS:
+        folder = base / d
+        if not folder.exists() or not folder.is_dir():
+            continue
+        entries = []
+        for p in sorted(folder.rglob("*.md"), key=lambda c: c.name.lower()):
+            if any(s.startswith(".") for s in p.parts):
+                continue
+            try:
+                st = p.stat()
+            except Exception:
+                continue
+            entries.append({"name": p.stem, "file": p.name, "path": _doc_rel(p),
+                            "size": st.st_size, "mtime": int(st.st_mtime)})
+        total += len(entries)
+        groups.append({"category": d, "count": len(entries), "entries": entries})
+    return {"ok": True, "groups": groups, "count": total}
+
+
+def memory_stats() -> dict:
+    """Echter Memory-Bestand (Summe der Notizen in den Memory-Ordnern)."""
+    return {"ok": True, "count": memory_list().get("count", 0)}
+
+
+# --- Knowledge (Wissensgraph, read-only) -------------------------------------
+# Quelle sind die generierten Graph-Artefakte unter 99_System: entity_index,
+# relationships, full_knowledge_graph. Die Extraktion ist teils verrauscht,
+# daher _kg_valid als Rauschfilter. JSONs werden nach mtime gecacht (gross).
+_KG_CACHE = {}
+
+
+def _kg_json(rel_path: str):
+    p = VAULT / "99_System" / rel_path
+    try:
+        st = p.stat()
+    except Exception:
+        return None
+    key = str(p)
+    cached = _KG_CACHE.get(key)
+    if cached and cached[0] == st.st_mtime:
+        return cached[1]
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    _KG_CACHE[key] = (st.st_mtime, data)
+    return data
+
+
+def _kg_valid(s) -> bool:
+    """Rauschfilter: keine rohen Steuerzeichen/Zeilenumbrueche (Extraktionsmuell),
+    min. 2 Zeichen, min. ein alphanumerisches Zeichen."""
+    if not isinstance(s, str):
+        return False
+    if any(ord(c) < 32 for c in s):   # roh pruefen: faengt '\nI thin\n' u. ae.
+        return False
+    t = s.strip()
+    if len(t) < 2:
+        return False
+    if not any(c.isalnum() for c in t):
+        return False
+    return True
+
+
+def _doc_rel_from_abs(abs_path: str) -> str:
+    if not abs_path:
+        return ""
+    try:
+        return _doc_rel(Path(abs_path))
+    except Exception:
+        return ""
+
+
+def knowledge_stats() -> dict:
+    from collections import Counter
+    ents = _kg_json("entities/entity_index.json") or []
+    rels = _kg_json("relationships/relationships.json") or []
+    graph = _kg_json("knowledge_graph/full_knowledge_graph.json") or {}
+    v_ents = [e for e in ents if isinstance(e, dict) and _kg_valid(e.get("entity"))]
+    v_rels = [r for r in rels if isinstance(r, dict)
+              and _kg_valid(r.get("source")) and _kg_valid(r.get("target"))]
+    types = Counter((e.get("type") or "unbekannt") for e in v_ents)
+    # eindeutige Entitaeten (nach Name) fuer ehrliche Zaehlung
+    uniq = len({e.get("entity", "").lower() for e in v_ents})
+    return {"ok": True,
+            "entities": uniq, "entities_rows": len(v_ents), "entities_raw": len(ents),
+            "relationships": len(v_rels), "relationships_raw": len(rels),
+            "nodes": len(graph.get("nodes", [])) if isinstance(graph, dict) else 0,
+            "edges": len(graph.get("edges", [])) if isinstance(graph, dict) else 0,
+            "types": [{"type": t, "count": c} for t, c in types.most_common()]}
+
+
+def knowledge_entities(query="", etype="", limit=50, offset=0) -> dict:
+    try:
+        limit = max(1, min(500, int(limit)))
+    except Exception:
+        limit = 50
+    try:
+        offset = max(0, int(offset))
+    except Exception:
+        offset = 0
+    ents = _kg_json("entities/entity_index.json") or []
+    q = (query or "").strip().lower()
+    etype = (etype or "").strip().lower()
+    agg = {}
+    for e in ents:
+        if not isinstance(e, dict):
+            continue
+        name = e.get("entity")
+        if not _kg_valid(name):
+            continue
+        t = e.get("type", "") or ""
+        if etype and t.lower() != etype:
+            continue
+        if q and q not in name.lower():
+            continue
+        key = name.lower()
+        a = agg.get(key)
+        if not a:
+            a = {"entity": name, "type": t, "count": 0, "notes": []}
+            agg[key] = a
+        a["count"] += 1
+        n = e.get("note")
+        if n and n not in a["notes"] and len(a["notes"]) < 20:
+            a["notes"].append(n)
+    items = sorted(agg.values(), key=lambda x: (-x["count"], x["entity"].lower()))
+    total = len(items)
+    return {"ok": True, "total": total, "offset": offset, "limit": limit,
+            "entities": items[offset:offset + limit]}
+
+
+def knowledge_entity(name="") -> dict:
+    name = (name or "").strip()
+    if not name:
+        return {"ok": False, "error": "Kein Name angegeben."}
+    nl = name.lower()
+    rels = _kg_json("relationships/relationships.json") or []
+    outgoing, incoming = [], []
+    for r in rels:
+        if not isinstance(r, dict):
+            continue
+        s, t = r.get("source"), r.get("target")
+        if not (_kg_valid(s) and _kg_valid(t)):
+            continue
+        ty, w = r.get("type", ""), r.get("weight", 1)
+        if s.lower() == nl:
+            outgoing.append({"target": t, "type": ty, "weight": w})
+        elif t.lower() == nl:
+            incoming.append({"source": s, "type": ty, "weight": w})
+    outgoing.sort(key=lambda x: -(x.get("weight") or 0))
+    incoming.sort(key=lambda x: -(x.get("weight") or 0))
+    note = path = etype = ""
+    for e in (_kg_json("entities/entity_index.json") or []):
+        if isinstance(e, dict) and e.get("entity", "").lower() == nl:
+            etype = e.get("type", "") or etype
+            note = e.get("note", "") or note
+            path = e.get("path", "") or path
+            if note:
+                break
+    return {"ok": True, "entity": name, "type": etype, "note": note,
+            "path": _doc_rel_from_abs(path),
+            "out_total": len(outgoing), "in_total": len(incoming),
+            "outgoing": outgoing[:100], "incoming": incoming[:100]}
+
+
+# --- Search (Volltext + Facetten, read-only) ---------------------------------
+# Kandidatenkatalog ist der semantic_index (Notiz -> Typ/Tags); gewertet wird
+# per Stichwort gegen den echten Notizinhalt. Keine Vektor-Semantik.
+
+def _search_index():
+    return _kg_json("semantic_search/semantic_index.json") or []
+
+
+def search_facets() -> dict:
+    from collections import Counter
+    idx = _search_index()
+    types, tags = Counter(), Counter()
+    for e in idx:
+        if not isinstance(e, dict):
+            continue
+        if e.get("type"):
+            types[e["type"]] += 1
+        for t in (e.get("tags") or []):
+            if _kg_valid(t):
+                tags[str(t)] += 1
+    return {"ok": True,
+            "types": [{"type": k, "count": v} for k, v in types.most_common()],
+            "tags": [{"tag": k, "count": v} for k, v in tags.most_common(60)]}
+
+
+def search_query(query="", etype="", tag="", limit=50) -> dict:
+    try:
+        limit = max(1, min(200, int(limit)))
+    except Exception:
+        limit = 50
+    q = (query or "").strip()
+    etype = (etype or "").strip().lower()
+    tag = (tag or "").strip().lower()
+    idx = _search_index()
+    base = VAULT.resolve()
+    terms = [t for t in _tokenize(q) if t not in _STOPWORDS and len(t) > 1] if q else []
+    results = []
+    for e in idx:
+        if not isinstance(e, dict):
+            continue
+        etype_e = e.get("type") or ""
+        tags_e = [str(t) for t in (e.get("tags") or [])]
+        if etype and etype_e.lower() != etype:
+            continue
+        if tag and tag not in [x.lower() for x in tags_e]:
+            continue
+        rel = str(e.get("path", "")).replace("\\", "/")
+        if not rel:
+            continue
+        score, snippet = 0, ""
+        if terms:
+            try:
+                text = (base / rel).read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                text = ""
+            low = text.lower()
+            score = sum(low.count(t) for t in terms)
+            score += sum(3 for t in terms if t in str(e.get("stem", "")).lower())
+            score += sum(2 for t in terms for tg in tags_e if t in tg.lower())
+            if score <= 0:
+                continue
+            pos = min((low.find(t) for t in terms if t in low), default=0)
+            start = max(0, pos - 90)
+            snippet = text[start:start + 260].replace("\n", " ").strip()
+        else:
+            snippet = str(e.get("preview", ""))[:200]
+        results.append({"path": rel, "stem": e.get("stem", ""), "type": etype_e,
+                        "tags": tags_e[:8], "score": score, "snippet": snippet})
+    if terms:
+        results.sort(key=lambda x: -x["score"])
+    else:
+        results.sort(key=lambda x: str(x["stem"]).lower())
+    return {"ok": True, "query": q, "total": len(results), "results": results[:limit]}
+
+
+# --- Imports (Inbox-Status + Reports, Auslösen via Skript-Runner) -------------
+# Read-only-Status. Das Ausloesen selbst laeuft ueber den vorhandenen,
+# allowlisted /api/run (import_ai_exports.py) - kein zusaetzlicher Schreibweg.
+
+def imports_status() -> dict:
+    sources = []
+    try:
+        for child in sorted(INBOX.iterdir(), key=lambda c: c.name.lower()):
+            if not child.is_dir() or child.name.startswith("."):
+                continue
+            cnt = 0
+            for f in child.rglob("*"):
+                if f.is_file() and not any(p.lower() == "processed" for p in f.parts):
+                    cnt += 1
+            sources.append({"name": child.name, "pending": cnt})
+    except Exception as exc:
+        log_event("hud.imports_status_error", {"error": str(exc)})
+    reports = []
+    sysdir = VAULT / "99_System"
+    try:
+        for jf in sysdir.rglob("*.json"):
+            if "import" not in jf.parent.name.lower():
+                continue
+            try:
+                d = json.loads(jf.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if not isinstance(d, dict) or ("imported_count" not in d and "source" not in d):
+                continue
+            reports.append({
+                "source": d.get("source", jf.parent.name),
+                "time": d.get("time", ""),
+                "imported": d.get("imported_count", len(d.get("imported", []) or [])),
+                "errors": d.get("error_count", len(d.get("errors", []) or [])),
+                "file": _doc_rel(jf),
+            })
+    except Exception:
+        pass
+    reports.sort(key=lambda r: str(r.get("time", "")), reverse=True)
+    return {"ok": True, "inbox": str(INBOX), "sources": sources,
+            "pending_total": sum(s["pending"] for s in sources),
+            "reports": reports[:12]}
+
+
+# Quelle -> Export-Skript (nimmt einen ZIP-Pfad als Argument).
+_IMPORT_SCRIPTS = {
+    "chatgpt": "import_chatgpt_export.py",
+    "gemini": "import_gemini_export.py",
+    "perplexity": "import_perplexity_export.py",
+}
+_ZIP_MAX = 200 * 1024 * 1024  # 200 MB
+
+
+def imports_zip(body: dict) -> dict:
+    """Nimmt ein base64-ZIP entgegen, validiert es, fuehrt den passenden
+    Export-Importer aus und entfernt die temporaere Datei wieder."""
+    import base64
+    body = body or {}
+    source = str(body.get("source", "")).strip().lower()
+    script = _IMPORT_SCRIPTS.get(source)
+    if not script:
+        return {"ok": False, "error": f"Unbekannte Quelle: {source}. "
+                f"Erlaubt: {sorted(_IMPORT_SCRIPTS)}"}
+    data_b64 = body.get("data_b64", "")
+    if not data_b64:
+        return {"ok": False, "error": "Keine Datei empfangen."}
+    try:
+        raw = base64.b64decode(data_b64)
+    except Exception as exc:
+        return {"ok": False, "error": f"Base64-Fehler: {exc}"}
+    if len(raw) > _ZIP_MAX:
+        return {"ok": False, "error": "Datei zu gross (max. 200 MB)."}
+    if raw[:2] != b"PK":
+        return {"ok": False, "error": "Keine gueltige ZIP-Datei (PK-Signatur fehlt)."}
+    updir = ROOT / "data" / "_zip_uploads"
+    try:
+        updir.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:
+        return {"ok": False, "error": f"Upload-Ordner nicht beschreibbar: {exc}"}
+    fname = str(body.get("filename", "") or f"{source}-export.zip")
+    safe = "".join(c if (c.isalnum() or c in "._-") else "_" for c in fname)[:80] or "export.zip"
+    if not safe.lower().endswith(".zip"):
+        safe += ".zip"
+    target = updir / f"{datetime.now():%Y%m%d_%H%M%S}_{safe}"
+    try:
+        target.write_bytes(raw)
+    except Exception as exc:
+        return {"ok": False, "error": f"Schreibfehler: {exc}"}
+    try:
+        result = run_script(script, str(target))
+    finally:
+        try:
+            target.unlink()
+        except Exception:
+            pass
+    log_event("hud.imports_zip", {"source": source, "bytes": len(raw),
+                                  "ok": result.get("ok")})
+    return {"ok": result.get("ok", False), "source": source, "script": script,
+            "output": result.get("output", "")}
+
+
+# --- Auto-Reload (optionaler Dev-Modus) --------------------------------------
+# Aktiv mit Umgebungsvariable HUD_RELOAD=1 oder Argument --reload.
+# Muster: Monitor-Prozess startet den Server als Kindprozess neu, sobald sich
+# eine .py-Datei aendert (Kind beendet sich mit Code 3). Ohne HUD_RELOAD bleibt
+# das Verhalten exakt wie zuvor (kein Overhead, kein zusaetzlicher Prozess).
+
+def _reload_enabled() -> bool:
+    return (os.environ.get("HUD_RELOAD", "").lower() in ("1", "true", "yes", "on")
+            or "--reload" in sys.argv)
+
+
+def _reload_watch_files():
+    roots = [Path(__file__).resolve().parent, ROOT / "scripts"]
+    files = []
+    for r in roots:
+        try:
+            files += [p for p in r.rglob("*.py") if "__pycache__" not in p.parts]
+        except Exception:
+            pass
+    return files
+
+
+def _start_reload_watch(interval: float = 1.5) -> None:
+    import threading
+    import time as _time
+
+    def loop():
+        mtimes = {}
+        for p in _reload_watch_files():
+            try:
+                mtimes[p] = p.stat().st_mtime
+            except Exception:
+                pass
+        while True:
+            _time.sleep(interval)
+            for p in _reload_watch_files():
+                try:
+                    m = p.stat().st_mtime
+                except Exception:
+                    continue
+                if mtimes.get(p) != m:
+                    print(f"[reload] Aenderung erkannt ({p.name}) - Neustart ...", flush=True)
+                    os._exit(3)  # Monitor startet neu
+
+    threading.Thread(target=loop, daemon=True).start()
+
+
+def _reload_monitor() -> None:
+    import subprocess
+    print("[reload] Dev-Modus aktiv - Server startet bei Code-Aenderung neu. Stop mit Strg+C.",
+          flush=True)
+    while True:
+        env = dict(os.environ)
+        env["HUD_RELOAD_CHILD"] = "true"
+        try:
+            ret = subprocess.run([sys.executable] + sys.argv, env=env).returncode
+        except KeyboardInterrupt:
+            break
+        if ret != 3:   # nur Code 3 = "wegen Aenderung neu starten"
+            break
+
+
 # --- Server-Bootstrap --------------------------------------------------------
 def run(host: str = "127.0.0.1", port: int = 8851) -> None:
+    if _reload_enabled() and os.environ.get("HUD_RELOAD_CHILD") != "true":
+        _reload_monitor()
+        return
+    if _reload_enabled():
+        _start_reload_watch()
     port = int(os.environ.get("HUD_PORT", port))
     host = os.environ.get("HUD_HOST", host)
     server = HTTPServer((host, port), Handler)
     log_event("hud.start", {"host": host, "port": port})
-    print(f"Jarvis HUD laeuft: http://{host}:{port}")
+    print(f"Jarvis HUD laeuft: http://{host}:{port}"
+          + ("  [Auto-Reload]" if _reload_enabled() else ""))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

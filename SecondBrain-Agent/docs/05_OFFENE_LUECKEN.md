@@ -1,96 +1,78 @@
-# Offene Lücken nach v17.2
+# Offene Luecken nach v30.21
 
-## P0 – Integration
-Status: teilweise geschlossen.
+## Geschlossen oder deutlich verbessert
 
-Erledigt:
-- gemeinsamer Launcher wiederhergestellt
-- Command Index verfügbar
-- Module Registry vorhanden
-- Runtime Healthcheck vorhanden
-- P0 Doctor vorhanden
-- Event-Bus-Probe über `p0-doctor`
-- Test-Collection repariert
+- Gemeinsamer Launcher vorhanden.
+- `python launcher.py` startet Jarvis direkt.
+- GUI-Bootstrap mit lokalen Defaults und Runtime-Ordnern vorhanden.
+- `gui-doctor` prueft Launcher, Startskripte, Shortcut-Installer, Python und Runtime-Status.
+- P0 Gates, Repo Doctor und Dependency Inventory vorhanden.
+- P1 RAG Runtime, Golden Eval, Provider Health Gate und Vector Index Repair vorhanden.
+- Embedding-Index-Identitaet beruecksichtigt Provider, Modell und Dimension.
+- Windows-Startskripte und Shortcut-Installer sind auf den Jarvis-Launcher ausgerichtet.
 
-Offen:
-- gemeinsame Runtime-Lifecycle-Steuerung für Start/Stop aller Module
-- einheitliches Logging über alle Module
-- verbindliches Fehler-/Exit-Code-Modell
-- Cross-Module Smoke Tests für echte Workflows statt nur Statusbefehle
-
-## P0 – Produktive Datenbank
-Offen:
-- PostgreSQL als produktiver Default
-- pgvector
-- Alembic-Migrationen
-- Connection Pooling
-- Repository Layer
-- Backup/Restore produktiv
-
-## P0 – Sicherheit
-Offen:
-- echte Secret-Verschlüsselung statt Placeholder/Base64
-- DPAPI/Keyring
-- Rollenmodell
-- Audit Reports
-- DSGVO Export/Löschung
-- Approval UI
-- Write-Action-Gate für Agenten und Connectoren
-
-## P1 – echte Connectoren
-Offen:
-- echter OAuth Flow
-- Gmail API
-- Google Calendar API
-- Google Drive API
-- GitHub API
-- Paperless API
-- Obsidian Watcher
-- Token Refresh
-- Delta Sync mit Retry/Backoff
-
-## P1 – echte Intelligenz
-Offen:
-- LLM Provider Layer produktiv
-- Tool Calling mit Policy Enforcement
-- echte Embeddings
-- Reranker
-- Agent Planning
-- Result Validation
-- Memory Compression
-
-## P1 – Desktop produktiv
-Offen:
-- Docking Layout
-- System Tray
-- Settings vollständig
-- Agent Control Center
-- Graph View
-- RAG Chat
-- Connector UI
-- Approval Inbox
-
-## P2 – Mobile/Voice produktiv
-Offen:
-- native App oder PWA
-- echte Push Notifications
-- Faster Whisper
-- Piper/ElevenLabs
-- OpenWakeWord/Porcupine
-- Mikrofonstreaming
-
-## Update v17.5 P0
-
-Geschlossen:
-- Smoke-Gate für lokale P0-Fitness ergänzt.
-- Command-Konflikte werden erkannt und blockieren `p0-gate`.
-- Kritische Module sind maschinenlesbar über Registry verfügbar.
+## P0 / Runtime
 
 Offen:
-- Echte Connectoren/OAuth.
-- Produktive PostgreSQL/pgvector-Schicht.
-- GUI-Control-Center.
-- Write-Action Approval Flow.
 
-## Stand v17.6 P0
-Geschlossen: Launcher-Vertrag ist jetzt durch `p0-contract` maschinenlesbar abgesichert. Offen bleiben produktive Datenbankintegration, echte Secret-Verwaltung, Connector-OAuth, GUI-Control-Center und produktives RAG.
+- Gemeinsame Lifecycle-Steuerung fuer Start/Stop aller produktiven Services.
+- Einheitliches Logging ueber alle Module hinweg.
+- Cross-Module Smoke Tests fuer echte Workflows statt nur Statusbefehle.
+- Stabiler Hintergrundbetrieb als Windows-Dienst mit Restart-Policy.
+
+## Datenbank und RAG
+
+Offen:
+
+- PostgreSQL/pgvector als produktiver Default.
+- Live-Migration von SQLite zu PostgreSQL/pgvector.
+- Betrieblich abgesicherte Backups und Restore-Proben.
+- Live-Provider-Validierung fuer OpenAI/Ollama in der Zielumgebung.
+- Reranker und semantische Qualitaetsmessung mit echten Daten.
+
+## Sicherheit
+
+Offen:
+
+- Echte Secret-Verschluesselung statt Placeholder-Konfiguration.
+- DPAPI/Keyring-Integration.
+- Rollenmodell fuer lokale und agentische Aktionen.
+- Approval UI fuer Write Operations.
+- DSGVO Export/Loeschung und Audit Reports.
+
+## Connectoren
+
+Offen:
+
+- Echter OAuth Browser Flow.
+- Gmail, Google Calendar, Google Drive und GitHub API Sync gegen echte Konten.
+- Token Refresh und sichere Token-Ablage.
+- Delta Sync mit Retry/Backoff und Dead Letter Handling.
+- Write Operations nur ueber Approval Gate.
+
+## GUI / Produkt
+
+Offen:
+
+- Vollstaendige Cross-Module Workflows in der GUI.
+- Approval Inbox.
+- RAG Chat mit Quellenanzeige und Fehlerzustaenden.
+- Connector Control Center.
+- Graph/Memory Explorer fuer Endnutzer.
+- System Tray und kontrollierter Stop/Restart.
+
+## Voice / Mobile
+
+Offen:
+
+- Produktives Mikrofonstreaming.
+- STT/TTS-Integration.
+- Wake Word Engine mit sicherer Aktivierungslogik.
+- Native App oder PWA.
+- Echte Push Notifications.
+
+## Aktuelle Gate-Warnungen
+
+- Ohne `DATABASE_URL` bleibt SQLite/RAG-Prototyp aktiv.
+- Lokaler deterministischer Embedding-Provider erlaubt Entwicklung, blockiert aber Production Gates.
+- Vollstaendiger `pytest -q` kann je nach Umgebung lange laufen und muss fuer Release-Freigaben separat abgeschlossen werden.

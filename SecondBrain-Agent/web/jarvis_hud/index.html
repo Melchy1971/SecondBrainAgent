@@ -250,6 +250,131 @@
     padding:14px 0 4px}
   .modal .hint{font-size:10px; color:var(--muted); margin:10px 0 0}
   .modal .saved{color:var(--good); font-size:11px; align-self:center; margin-right:auto}
+
+  /* ===================== ASSISTANT-ANSICHT ===================== */
+  .view-assistant{padding:18px 20px; display:flex; flex-direction:column; gap:14px; min-width:0}
+  .view-assistant[hidden]{display:none}
+  .asst-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .asst-head h2{font-size:14px; color:var(--cyan); text-shadow:var(--glow); letter-spacing:.18em}
+  .asst-engine{font-size:10px; color:var(--muted); letter-spacing:.1em}
+  .asst-engine b{color:var(--cyan); font-weight:600}
+  .asst-model{margin-left:auto; display:flex; gap:8px; align-items:center}
+  .asst-model select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff;
+    border-radius:8px; padding:7px 10px; font-family:inherit; font-size:11px; max-width:240px}
+  .asst-controls{margin-left:auto; display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap}
+  .ctl{display:flex; flex-direction:column; gap:3px}
+  .ctl label{font-size:8px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)}
+  .ctl select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff;
+    border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px; max-width:260px}
+  .ctl select:focus{outline:none; box-shadow:var(--glow)}
+  .asst-refresh-btn{align-self:flex-end}
+  .asst-status{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted);
+    align-self:flex-end; padding-bottom:9px}
+  .asst-status b{color:var(--good); font-weight:600}
+  .asst-quick{display:flex; flex-wrap:wrap; gap:7px}
+  .asst-log{flex:1; overflow:auto; display:flex; flex-direction:column; gap:12px;
+    border:1px solid var(--line); border-radius:12px; padding:14px; background:rgba(4,11,18,.4);
+    min-height:300px; max-height:calc(100vh - 340px)}
+  .asst-empty{color:var(--muted); font-size:12px; text-align:center; margin:auto; max-width:520px; line-height:1.6}
+  .msg{max-width:80%; padding:10px 13px; border-radius:10px; font-size:12.5px; line-height:1.5;
+    white-space:pre-wrap; word-break:break-word}
+  .msg.user{align-self:flex-end; background:rgba(47,230,255,.12); border:1px solid var(--line); color:#eafcff}
+  .msg.asst{align-self:flex-start; background:rgba(10,24,34,.6); border:1px solid var(--side-line); color:var(--cyan-soft)}
+  .msg.asst.err{border-color:rgba(255,93,108,.5)}
+  .msg .sources{margin-top:9px; display:flex; flex-wrap:wrap; gap:6px}
+  .msg .src{font-size:9px; color:var(--cyan); border:1px solid var(--line); border-radius:6px;
+    padding:3px 7px; background:rgba(47,230,255,.06); cursor:default}
+  .msg .msg-actions{margin-top:8px}
+  .btn.mini{font-size:9px; padding:4px 9px}
+  .asst-input{display:flex; gap:8px}
+  .asst-input textarea{flex:1; background:rgba(0,8,12,.6); border:1px solid var(--line); border-radius:10px;
+    color:#eafcff; padding:11px 13px; font-family:inherit; font-size:13px; resize:vertical;
+    min-height:48px; max-height:160px}
+  .asst-input textarea:focus{outline:none; box-shadow:var(--glow)}
+
+  /* ===================== DOCUMENTS-ANSICHT ===================== */
+  .view-docs{padding:18px 20px; display:flex; flex-direction:column; gap:14px; min-width:0}
+  .view-docs[hidden]{display:none}
+  .docs-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .docs-head h2{font-size:14px; color:var(--cyan); text-shadow:var(--glow); letter-spacing:.18em}
+  .docs-count{font-size:10px; color:var(--muted); letter-spacing:.1em}
+  .docs-count b{color:var(--cyan); font-weight:600}
+  .docs-head .btn{margin-left:auto}
+  .docs-body{display:grid; grid-template-columns:320px 1fr; gap:14px; min-height:0; height:calc(100vh - 240px)}
+  @media(max-width:900px){.docs-body{grid-template-columns:1fr; height:auto}}
+  .docs-tree{overflow:auto; border:1px solid var(--line); border-radius:12px; padding:10px;
+    background:rgba(4,11,18,.4); font-size:12px}
+  .docs-row{display:flex; align-items:center; gap:6px; padding:5px 7px; border-radius:6px;
+    cursor:pointer; white-space:nowrap; color:var(--cyan-soft)}
+  .docs-row:hover{background:rgba(47,230,255,.08); color:#eafcff}
+  .docs-row.sel{background:rgba(47,230,255,.16); color:#eafcff}
+  .docs-row .tw{width:12px; color:var(--muted); font-size:9px; flex:none}
+  .docs-row .di{color:var(--cyan)} .docs-row .fi{color:var(--muted)}
+  .docs-kids{margin-left:14px; border-left:1px dashed rgba(47,230,255,.15); padding-left:4px}
+  .docs-pane{display:flex; flex-direction:column; gap:10px; min-width:0}
+  .docs-meta{font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:8px;
+    padding:8px 11px; background:rgba(10,24,34,.4); word-break:break-all}
+  .docs-preview{flex:1; overflow:auto; border:1px solid var(--line); border-radius:12px;
+    padding:18px 22px; background:rgba(4,11,18,.5)}
+  .docs-empty{color:var(--muted); font-size:12px; text-align:center; margin:auto; padding:30px}
+  .md{color:var(--cyan-soft); font-size:13px; line-height:1.6}
+  .md h1{font-size:20px; color:#eafcff; margin:.4em 0; letter-spacing:.02em; text-transform:none}
+  .md h2{font-size:16px; color:#eafcff; margin:.5em 0; letter-spacing:.02em; text-transform:none}
+  .md h3{font-size:14px; color:var(--cyan); margin:.5em 0; letter-spacing:.02em; text-transform:none}
+  .md code{background:rgba(0,8,12,.6); border:1px solid var(--line); border-radius:4px; padding:1px 5px; font-size:12px; color:#eafcff}
+  .md ul{margin:.4em 0; padding-left:20px} .md li{margin:2px 0}
+  .md p{margin:.6em 0}
+  .md .wl{color:var(--cyan); border-bottom:1px dotted var(--cyan)}
+  .mem-cat{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--cyan);
+    margin:12px 4px 5px; border-bottom:1px solid var(--line); padding-bottom:4px}
+  .mem-cat:first-child{margin-top:0}
+
+  /* ===================== KNOWLEDGE-ANSICHT ===================== */
+  .kg-stats{display:flex; gap:8px; flex-wrap:wrap}
+  .kg-chip{font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:7px; padding:5px 9px; background:rgba(10,24,34,.4)}
+  .kg-chip b{color:var(--cyan); font-weight:600}
+  .kg-controls{display:flex; gap:8px; flex-wrap:wrap}
+  .kg-controls input{flex:1; min-width:160px; background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:9px 12px; font-family:inherit; font-size:12px}
+  .kg-controls input:focus{outline:none; box-shadow:var(--glow)}
+  .kg-controls select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:9px 11px; font-family:inherit; font-size:12px}
+  .kg-tag{font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan); border:1px solid var(--line); border-radius:5px; padding:1px 6px; margin-left:6px}
+  .kg-count{margin-left:auto; color:var(--muted); font-size:9px; padding-left:8px}
+  .kg-ent-head{display:flex; align-items:center; gap:8px; margin-bottom:10px}
+  .kg-ent-name{font-size:17px; color:#eafcff}
+  .kg-rels{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px}
+  @media(max-width:700px){.kg-rels{grid-template-columns:1fr}}
+  .kg-col-h{font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--cyan); margin-bottom:6px; border-bottom:1px solid var(--line); padding-bottom:4px}
+  .kg-rel{font-size:11px; padding:4px 0; border-bottom:1px dashed rgba(47,230,255,.10); color:var(--cyan-soft)}
+  .kg-rt{color:var(--warn); font-size:9px; text-transform:uppercase; letter-spacing:.06em}
+  .kg-link{color:var(--cyan); cursor:pointer; border-bottom:1px dotted var(--cyan)}
+  .kg-link:hover{color:#eafcff}
+  .kg-w{color:var(--muted); font-size:9px}
+  .kg-note{margin-top:14px; border-top:1px solid var(--line); padding-top:12px}
+
+  /* ===================== SEARCH-ANSICHT ===================== */
+  .srch-row{padding:8px; border-radius:7px; cursor:pointer; border-bottom:1px dashed rgba(47,230,255,.10)}
+  .srch-row:hover{background:rgba(47,230,255,.08)}
+  .srch-row.sel{background:rgba(47,230,255,.16)}
+  .srch-row .st{display:flex; align-items:center; gap:8px}
+  .srch-row .nm{color:#eafcff; font-size:12px; word-break:break-word}
+  .srch-row .sc{margin-left:auto; color:var(--muted); font-size:9px; flex:none}
+  .srch-row .sn{color:var(--cyan-soft); font-size:10px; margin-top:4px; line-height:1.4; opacity:.8}
+
+  /* ===================== IMPORTS-ANSICHT ===================== */
+  .imp-sources{display:flex; gap:10px; flex-wrap:wrap}
+  .imp-card{border:1px solid var(--line); border-radius:10px; padding:10px 14px; background:rgba(10,24,34,.4); min-width:110px}
+  .imp-card .n{font-size:11px; color:var(--cyan-soft); letter-spacing:.06em}
+  .imp-card .c{font-size:22px; color:var(--cyan); margin-top:4px; font-variant-numeric:tabular-nums}
+  .imp-card .c.zero{color:var(--muted)}
+  .imp-report{font-size:11px; padding:7px 0; border-bottom:1px dashed rgba(47,230,255,.10); color:var(--cyan-soft)}
+  .imp-report b{color:#eafcff}
+  .imp-report .ok{color:var(--good)} .imp-report .bad{color:var(--bad)}
+  .imp-out pre{white-space:pre-wrap; font-size:11px; color:var(--cyan-soft); margin:0}
+  .imp-upload{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:rgba(10,24,34,.4)}
+  .imp-upload .lbl{font-size:9px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase}
+  .imp-upload select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px}
+  .imp-upload input[type=file]{color:var(--cyan-soft); font-size:11px; font-family:inherit; max-width:340px}
+  .imp-upload input[type=file]::file-selector-button{background:rgba(47,230,255,.08); color:var(--cyan-soft); border:1px solid var(--line); border-radius:7px; padding:6px 10px; margin-right:8px; cursor:pointer; font-family:inherit; font-size:11px}
 </style>
 </head>
 <body>
@@ -267,13 +392,13 @@
       <div class="collapse" title="Sidebar">«</div>
     </div>
     <nav>
-      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Assistant</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Documents</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/><path d="M12 7v10"/></svg>Memory</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Knowledge</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Imports</a>
+      <a class="nav-item active" id="nav-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a class="nav-item" id="nav-assistant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Assistant</a>
+      <a class="nav-item" id="nav-documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Documents</a>
+      <a class="nav-item" id="nav-memory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/><path d="M12 7v10"/></svg>Memory</a>
+      <a class="nav-item" id="nav-knowledge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Knowledge</a>
+      <a class="nav-item" id="nav-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search</a>
+      <a class="nav-item" id="nav-imports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Imports</a>
       <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>Jobs</a>
       <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Connectoren</a>
       <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>Agents<span class="badge">NEW</span></a>
@@ -465,6 +590,143 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
 
     </div>
 
+    <!-- ===================== ASSISTANT-ANSICHT ===================== -->
+    <section id="view-assistant" class="view-assistant" hidden>
+      <div class="asst-head">
+        <h2>ASSISTANT</h2>
+        <div class="asst-controls">
+          <div class="ctl">
+            <label>Engine</label>
+            <select id="asst-engine-sel">
+              <option value="ollama">Ollama (lokal)</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label>Modell</label>
+            <select id="asst-model-sel" title="Aktives Modell wählen"></select>
+          </div>
+          <button class="btn asst-refresh-btn" id="asst-refresh" title="Modelle neu laden">↻ Modelle</button>
+          <span class="asst-status"><span class="status-dot" id="asst-dot"></span><span id="asst-status-txt">—</span></span>
+        </div>
+      </div>
+      <div class="asst-quick" id="asst-quick">
+        <button class="btn go" data-act="run_v10_cycle.py">V10 Cycle</button>
+        <button class="btn" data-act="build_vector_rag.py">RAG Index neu</button>
+        <button class="btn" data-act="check_paths_v9.py">Path Check</button>
+        <button class="btn warn" data-act="release_gate_v9.py">Release Gate</button>
+      </div>
+      <div class="asst-log" id="asst-log">
+        <div class="asst-empty" id="asst-empty">Frag den Assistant etwas über dein Vault. Antworten stützen sich auf gefundene Notizen (Token-Retrieval) und werden lokal über Ollama formuliert. Quellen stehen unter jeder Antwort.</div>
+      </div>
+      <div class="asst-input">
+        <textarea id="asst-q" placeholder="Frage an den Assistant…  (Enter sendet · Shift+Enter = neue Zeile)"></textarea>
+        <button class="btn go" id="asst-send">Senden</button>
+      </div>
+    </section>
+
+    <!-- ===================== DOCUMENTS-ANSICHT ===================== -->
+    <section id="view-documents" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>DOCUMENTS</h2>
+        <div class="docs-count">Vault: <b id="docs-count">—</b> Notizen</div>
+        <button class="btn" id="docs-refresh">↻ Neu laden</button>
+      </div>
+      <div class="docs-body">
+        <div class="docs-tree" id="docs-tree"><div class="docs-empty">… lädt</div></div>
+        <div class="docs-pane">
+          <div class="docs-meta" id="docs-meta">Keine Notiz gewählt</div>
+          <div class="docs-preview" id="docs-preview"><div class="docs-empty">Wähle links eine Notiz für die Vorschau.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MEMORY-ANSICHT ===================== -->
+    <section id="view-memory" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>MEMORY</h2>
+        <div class="docs-count">Erinnerungen: <b id="mem-count">—</b></div>
+        <button class="btn" id="mem-refresh">↻ Neu laden</button>
+      </div>
+      <div class="docs-body">
+        <div class="docs-tree" id="mem-list"><div class="docs-empty">… lädt</div></div>
+        <div class="docs-pane">
+          <div class="docs-meta" id="mem-meta">Keine Erinnerung gewählt</div>
+          <div class="docs-preview" id="mem-preview"><div class="docs-empty">Wähle links eine Erinnerung für die Vorschau.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== KNOWLEDGE-ANSICHT ===================== -->
+    <section id="view-knowledge" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>KNOWLEDGE</h2>
+        <div class="kg-stats" id="kg-stats"></div>
+        <button class="btn" id="kg-refresh">↻ Neu laden</button>
+      </div>
+      <div class="kg-controls">
+        <input id="kg-q" placeholder="Entität suchen…">
+        <select id="kg-type"><option value="">Alle Typen</option></select>
+      </div>
+      <div class="docs-body">
+        <div class="docs-tree" id="kg-list"><div class="docs-empty">… lädt</div></div>
+        <div class="docs-pane">
+          <div class="docs-preview" id="kg-detail"><div class="docs-empty">Wähle links eine Entität für Details und Beziehungen.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEARCH-ANSICHT ===================== -->
+    <section id="view-search" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>SEARCH</h2>
+        <div class="docs-count" id="srch-count"></div>
+      </div>
+      <div class="kg-controls">
+        <input id="srch-q" placeholder="Volltextsuche im Vault…">
+        <select id="srch-type"><option value="">Alle Typen</option></select>
+        <select id="srch-tag"><option value="">Alle Tags</option></select>
+      </div>
+      <div class="docs-body">
+        <div class="docs-tree" id="srch-list"><div class="docs-empty">Gib oben einen Suchbegriff ein.</div></div>
+        <div class="docs-pane">
+          <div class="docs-meta" id="srch-meta">Kein Treffer gewählt</div>
+          <div class="docs-preview" id="srch-preview"><div class="docs-empty">Wähle links einen Treffer für die Vorschau.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== IMPORTS-ANSICHT ===================== -->
+    <section id="view-imports" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>IMPORTS</h2>
+        <div class="docs-count">Wartend: <b id="imp-pending">—</b></div>
+        <button class="btn go" id="imp-run">Sammel-Import starten</button>
+        <button class="btn" id="imp-refresh">↻</button>
+      </div>
+      <div class="imp-upload">
+        <span class="lbl">ZIP importieren</span>
+        <select id="imp-src">
+          <option value="chatgpt">ChatGPT</option>
+          <option value="gemini">Gemini</option>
+          <option value="perplexity">Perplexity</option>
+        </select>
+        <input type="file" id="imp-file" accept=".zip,application/zip">
+        <button class="btn go" id="imp-zip">Importieren</button>
+      </div>
+      <div class="imp-sources" id="imp-sources"></div>
+      <div class="docs-body" style="grid-template-columns:1fr 1fr">
+        <div class="docs-pane">
+          <div class="kg-col-h">Letzte Reports</div>
+          <div class="docs-tree" id="imp-reports"><div class="docs-empty">… lädt</div></div>
+        </div>
+        <div class="docs-pane">
+          <div class="kg-col-h">Ausgabe</div>
+          <div class="docs-preview imp-out" id="imp-out"><div class="docs-empty">Noch kein Import ausgeführt.</div></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Statusleiste -->
     <footer class="statusbar">
       <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg><span class="k">Backup</span> <b class="ok" id="sb-backup">Aktiv</b></div>
@@ -558,6 +820,17 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       <div><label>Nächstes Backup</label><input id="set-backup_next" placeholder="Heute, 22:00"></div>
     </div></div>
 
+    <div class="sec">Assistant</div>
+    <div class="field"><div class="row">
+      <div><label>Engine (ollama/openai)</label><input id="set-assistant_engine" placeholder="ollama"></div>
+      <div><label>Modell (leer = Auto)</label><input id="set-assistant_model" placeholder="z.B. llama3.1"></div>
+    </div></div>
+    <div class="field"><label>Auswählbare Modelle (Komma-getrennt, erscheinen rechts)</label><input id="set-assistant_models" placeholder="llama3.1, qwen, deepseek-coder, gemma"></div>
+    <div class="field"><div class="row">
+      <div><label>Temperatur (0–2)</label><input id="set-assistant_temperature" type="number" min="0" max="2" step="0.1"></div>
+      <div><label>Kontext-Chunks (1–20)</label><input id="set-assistant_context_chunks" type="number" min="1" max="20"></div>
+    </div></div>
+
     <div class="sec">Darstellung</div>
     <div class="field"><label>Akzentfarbe</label><input id="set-accent" type="color"></div>
 
@@ -584,11 +857,12 @@ const FIELDS = [
   "database","postgres_status","pgvector_version","embedding_provider","embedding_model","embedding_dim",
   "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
   "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",
-  "backup_last","backup_next","vector_index"
+  "backup_last","backup_next","vector_index",
+  "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks"
 ];
 const INT_FIELDS = new Set(["news_max","weather_min","embedding_dim","ollama_models","queue_pending",
-  "release_blocking","connectors","agents_active","vectors","documents","memories"]);
-const FLOAT_FIELDS = new Set(["lat","lon"]);
+  "release_blocking","connectors","agents_active","vectors","documents","memories","assistant_context_chunks"]);
+const FLOAT_FIELDS = new Set(["lat","lon","assistant_temperature"]);
 
 let SS_ONLINE_TEXT = "All Systems Operational";
 
@@ -822,11 +1096,444 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSettings(); 
 // --- Initiale Settings laden + anwenden ---
 (async()=>{ try{ const r=await getJSON("/api/settings"); applySettings(r.settings||{}); }catch(e){} })();
 
+// ===================== ASSISTANT =====================
+let ASST_HISTORY = [];
+function showView(view){
+  document.querySelector(".content").style.display = (view==="dashboard") ? "" : "none";
+  $("view-assistant").hidden = (view!=="assistant");
+  $("view-documents").hidden = (view!=="documents");
+  $("view-memory").hidden    = (view!=="memory");
+  $("view-knowledge").hidden = (view!=="knowledge");
+  $("view-search").hidden    = (view!=="search");
+  $("view-imports").hidden   = (view!=="imports");
+  ["dashboard","assistant","documents","memory","knowledge","search","imports"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
+  if(view==="assistant"){ loadAssistantModels(); $("asst-q").focus(); }
+  if(view==="documents"){ docsInit(); }
+  if(view==="memory"){ memInit(); }
+  if(view==="knowledge"){ kgInit(); }
+  if(view==="search"){ srchInit(); }
+  if(view==="imports"){ impInit(); }
+}
+function asstAppend(role, text, sources, isErr){
+  const empty=$("asst-empty"); if(empty) empty.remove();
+  const log=$("asst-log");
+  const m=document.createElement("div");
+  m.className="msg "+(role==="user"?"user":"asst")+(isErr?" err":"");
+  m.textContent=text;
+  if(sources && sources.length){
+    const sx=document.createElement("div"); sx.className="sources";
+    sources.forEach((s,i)=>{ const c=document.createElement("span"); c.className="src";
+      c.textContent=`[${i+1}] ${s.note}`;
+      c.title=`Score ${s.score} · ${(s.preview||"").slice(0,180)}`; sx.appendChild(c); });
+    m.appendChild(sx);
+  }
+  if(role==="asst" && !isErr){
+    const act=document.createElement("div"); act.className="msg-actions";
+    const b=document.createElement("button"); b.className="btn mini"; b.textContent="Als Notiz speichern";
+    b.addEventListener("click",()=>saveNote(text)); act.appendChild(b);
+    m.appendChild(act);
+  }
+  log.appendChild(m); log.scrollTop=log.scrollHeight;
+  return m;
+}
+async function sendAssistant(){
+  const q=$("asst-q").value.trim(); if(!q) return;
+  $("asst-q").value="";
+  asstAppend("user", q);
+  ASST_HISTORY.push({role:"user", content:q});
+  const pending=asstAppend("asst","… denkt nach");
+  try{
+    const r=await getJSON("/api/assistant",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({query:q, history:ASST_HISTORY.slice(-10)})});
+    pending.remove();
+    asstAppend("asst", r.answer||"(keine Antwort)", r.sources, !r.llm_ok);
+    if(r.model){ const ms=$("asst-model-sel");
+      if(ms && [...ms.options].some(o=>o.value===r.model)) ms.value=r.model; }
+    if(r.engine && $("asst-engine-sel")) $("asst-engine-sel").value=r.engine;
+    ASST_HISTORY.push({role:"assistant", content:r.answer||""});
+  }catch(e){ pending.remove(); asstAppend("asst","Fehler: "+e, null, true); }
+}
+async function saveNote(text){
+  const lastUser=ASST_HISTORY.filter(h=>h.role==="user").slice(-1)[0];
+  const title=(lastUser && lastUser.content || "Assistant-Notiz").slice(0,60);
+  try{
+    const r=await getJSON("/api/assistant/note",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({title, content:text})});
+    asstAppend("asst", r.ok ? ("Gespeichert: "+r.file) : ("Speichern fehlgeschlagen: "+(r.error||"")), null, !r.ok);
+  }catch(e){ asstAppend("asst","Speichern-Fehler: "+e, null, true); }
+}
+function asstStatus(on, text){
+  const d=$("asst-dot"); if(d) d.classList.toggle("on", !!on);
+  const t=$("asst-status-txt"); if(t) t.innerHTML=text;
+}
+function addOpts(sel, names, active){
+  names.forEach(name=>{ const o=document.createElement("option");
+    o.value=name; o.textContent=name; if(name===active) o.selected=true; sel.appendChild(o); });
+}
+async function loadAssistantModels(){
+  try{
+    const r=await getJSON("/api/assistant/models");
+    if($("asst-engine-sel")) $("asst-engine-sel").value = r.engine || "ollama";
+    const sel=$("asst-model-sel"); sel.innerHTML="";
+    const configured=r.configured||[], live=r.live||[];
+    const liveOnly=live.filter(m=>!configured.includes(m));
+    if(configured.length){ const g=document.createElement("optgroup"); g.label="Konfiguriert";
+      sel.appendChild(g); addOpts(g, configured, r.active); }
+    if(liveOnly.length){ const g=document.createElement("optgroup"); g.label="Installiert (live)";
+      sel.appendChild(g); addOpts(g, liveOnly, r.active); }
+    if(!configured.length && !liveOnly.length){ const o=document.createElement("option");
+      o.value=""; o.textContent="(keine Modelle / Ollama offline)"; sel.appendChild(o); }
+    if(r.active) sel.value=r.active;
+    if(live.length) asstStatus(true, `Ollama: ${live.length} Modell(e) live`);
+    else asstStatus(false, "Ollama offline – nutze konfigurierte Liste");
+  }catch(e){ asstStatus(false, "Modell-Endpunkt nicht erreichbar"); }
+}
+async function setAssistantModel(name){
+  try{
+    await getJSON("/api/settings",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({assistant_model:name})});
+    asstStatus(true, `Aktiv: <b>${name||"Auto"}</b>`);
+  }catch(e){ asstStatus(false, "Speichern fehlgeschlagen"); }
+}
+async function setAssistantEngine(engine){
+  try{
+    await getJSON("/api/settings",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({assistant_engine:engine})});
+    await loadAssistantModels();
+    asstStatus(true, `Engine: <b>${engine}</b>`);
+  }catch(e){ asstStatus(false, "Engine-Wechsel fehlgeschlagen"); }
+}
+document.querySelectorAll("#asst-quick [data-act]").forEach(b=>{
+  b.addEventListener("click", async()=>{
+    const sc=b.getAttribute("data-act");
+    asstAppend("asst","▶ "+sc+" …");
+    try{ const r=await getJSON("/api/run?script="+encodeURIComponent(sc));
+      asstAppend("asst",(r.ok?"[OK] ":"[FEHLER] ")+sc+"\n\n"+(r.output||""), null, !r.ok);
+    }catch(e){ asstAppend("asst","Fehler: "+e, null, true); }
+  });
+});
+$("nav-assistant").addEventListener("click", ()=>showView("assistant"));
+$("nav-dashboard").addEventListener("click", ()=>showView("dashboard"));
+$("asst-send").addEventListener("click", sendAssistant);
+$("asst-q").addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendAssistant(); }});
+$("asst-refresh").addEventListener("click", loadAssistantModels);
+$("asst-model-sel").addEventListener("change", e=>setAssistantModel(e.target.value));
+$("asst-engine-sel").addEventListener("change", e=>setAssistantEngine(e.target.value));
+
+// ===================== DOCUMENTS =====================
+let DOCS_LOADED=false;
+function fmtBytes(n){ n=Number(n)||0; if(n<1024) return n+" B"; if(n<1048576) return (n/1024).toFixed(1)+" KB"; return (n/1048576).toFixed(1)+" MB"; }
+function docEsc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function mdRender(md){
+  let h=docEsc(md||"");
+  h=h.replace(/^### (.*)$/gm,"<h3>$1</h3>")
+     .replace(/^## (.*)$/gm,"<h2>$1</h2>")
+     .replace(/^# (.*)$/gm,"<h1>$1</h1>")
+     .replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")
+     .replace(/`([^`]+)`/g,"<code>$1</code>")
+     .replace(/\[\[([^\]]+?)\]\]/g,"<span class='wl'>$1</span>")
+     .replace(/^\s*[-*] (.*)$/gm,"<li>$1</li>");
+  h=h.replace(/(?:<li>.*?<\/li>\n?)+/gs, m=>"<ul>"+m+"</ul>");
+  h=h.split(/\n{2,}/).map(b=> /^\s*<(h\d|ul|li)/.test(b) ? b : "<p>"+b.replace(/\n/g,"<br>")+"</p>").join("");
+  return "<div class='md'>"+h+"</div>";
+}
+async function docsListInto(container, path){
+  try{
+    const r=await getJSON("/api/documents?path="+encodeURIComponent(path||""));
+    container.innerHTML="";
+    if(!r.ok || !(r.entries||[]).length){ container.innerHTML="<div class='docs-empty'>Leer.</div>"; return; }
+    r.entries.forEach(e=>{
+      if(e.type==="dir"){
+        const wrap=document.createElement("div");
+        const row=document.createElement("div"); row.className="docs-row dir";
+        row.innerHTML="<span class='tw'>▶</span><span class='di'>▣</span>"+e.name;
+        const kids=document.createElement("div"); kids.className="docs-kids"; kids.style.display="none";
+        let loaded=false;
+        row.addEventListener("click", async ev=>{ ev.stopPropagation();
+          const open=kids.style.display==="none"; kids.style.display=open?"block":"none";
+          row.querySelector(".tw").textContent=open?"▼":"▶";
+          if(open && !loaded){ loaded=true; kids.innerHTML="<div class='docs-empty'>…</div>"; await docsListInto(kids, e.path); }
+        });
+        wrap.appendChild(row); wrap.appendChild(kids); container.appendChild(wrap);
+      } else {
+        const row=document.createElement("div"); row.className="docs-row file";
+        row.innerHTML="<span class='tw'></span><span class='fi'>▢</span>"+e.name;
+        row.title=e.path;
+        row.addEventListener("click", ev=>{ ev.stopPropagation(); docsOpen(e.path, row); });
+        container.appendChild(row);
+      }
+    });
+  }catch(e){ container.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function docsOpen(path, row){
+  document.querySelectorAll(".docs-row.sel").forEach(x=>x.classList.remove("sel"));
+  if(row) row.classList.add("sel");
+  const pv=$("docs-preview"); pv.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{
+    const r=await getJSON("/api/document?path="+encodeURIComponent(path));
+    if(!r.ok){ pv.innerHTML="<div class='docs-empty'>Fehler: "+(r.error||"")+"</div>"; return; }
+    $("docs-meta").textContent=r.path+"  ·  "+fmtBytes(r.size)+"  ·  "+new Date(r.mtime*1000).toLocaleString("de-DE");
+    pv.innerHTML=mdRender(r.content);
+  }catch(e){ pv.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function docsInit(){ if(DOCS_LOADED) return; DOCS_LOADED=true; docsListInto($("docs-tree"), ""); }
+function docsRefresh(){ DOCS_LOADED=false; $("docs-tree").innerHTML="<div class='docs-empty'>… lädt</div>"; docsInit(); loadDocStats(); }
+async function loadDocStats(){
+  try{ const r=await getJSON("/api/documents/stats");
+    if(r.ok){ $("docs-count").textContent=r.count; $("sb-docs").textContent=Number(r.count).toLocaleString("de-DE"); }
+  }catch(e){}
+}
+$("nav-documents").addEventListener("click", ()=>showView("documents"));
+$("docs-refresh").addEventListener("click", docsRefresh);
+
+// ===================== MEMORY =====================
+let MEM_LOADED=false;
+async function memLoad(){
+  const box=$("mem-list");
+  try{
+    const r=await getJSON("/api/memory");
+    box.innerHTML="";
+    if(!r.ok || !(r.groups||[]).length){ box.innerHTML="<div class='docs-empty'>Keine Erinnerungen.</div>"; return; }
+    r.groups.forEach(g=>{
+      const h=document.createElement("div"); h.className="mem-cat";
+      h.textContent=g.category+" ("+g.count+")"; box.appendChild(h);
+      (g.entries||[]).forEach(e=>{
+        const row=document.createElement("div"); row.className="docs-row file";
+        row.innerHTML="<span class='tw'></span><span class='fi'>▢</span>"+e.name;
+        row.title=e.path;
+        row.addEventListener("click", ()=>memOpen(e.path, row));
+        box.appendChild(row);
+      });
+    });
+  }catch(e){ box.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function memOpen(path, row){
+  document.querySelectorAll("#mem-list .docs-row.sel").forEach(x=>x.classList.remove("sel"));
+  if(row) row.classList.add("sel");
+  const pv=$("mem-preview"); pv.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{
+    const r=await getJSON("/api/document?path="+encodeURIComponent(path));
+    if(!r.ok){ pv.innerHTML="<div class='docs-empty'>Fehler: "+(r.error||"")+"</div>"; return; }
+    $("mem-meta").textContent=r.path+"  ·  "+fmtBytes(r.size)+"  ·  "+new Date(r.mtime*1000).toLocaleString("de-DE");
+    pv.innerHTML=mdRender(r.content);
+  }catch(e){ pv.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function memInit(){ if(MEM_LOADED) return; MEM_LOADED=true; memLoad(); }
+function memRefresh(){ MEM_LOADED=false; $("mem-list").innerHTML="<div class='docs-empty'>… lädt</div>"; memInit(); loadMemStats(); }
+async function loadMemStats(){
+  try{ const r=await getJSON("/api/memory/stats");
+    if(r.ok){ $("mem-count").textContent=r.count; $("sb-mem").textContent=Number(r.count).toLocaleString("de-DE"); }
+  }catch(e){}
+}
+$("nav-memory").addEventListener("click", ()=>showView("memory"));
+$("mem-refresh").addEventListener("click", memRefresh);
+
+// ===================== KNOWLEDGE =====================
+let KG_LOADED=false, KG_Q="", KG_TYPE="", KG_OFFSET=0, KG_TOTAL=0, KG_TIMER=null;
+function attrEsc(s){ return docEsc(s).replace(/"/g,"&quot;"); }
+async function kgStats(){
+  try{
+    const r=await getJSON("/api/knowledge/stats"); if(!r.ok) return;
+    $("kg-stats").innerHTML =
+      "<span class='kg-chip'><b>"+Number(r.entities).toLocaleString('de-DE')+"</b> Entitäten</span>"+
+      "<span class='kg-chip'><b>"+Number(r.relationships).toLocaleString('de-DE')+"</b> Beziehungen</span>"+
+      "<span class='kg-chip'><b>"+Number(r.nodes).toLocaleString('de-DE')+"</b> Knoten</span>"+
+      "<span class='kg-chip'><b>"+Number(r.edges).toLocaleString('de-DE')+"</b> Kanten</span>";
+    const sel=$("kg-type"), cur=sel.value;
+    sel.innerHTML="<option value=''>Alle Typen</option>";
+    (r.types||[]).forEach(t=>{ const o=document.createElement("option"); o.value=t.type;
+      o.textContent=t.type+" ("+t.count+")"; sel.appendChild(o); });
+    sel.value=cur;
+  }catch(e){}
+}
+async function kgLoad(reset){
+  if(reset) KG_OFFSET=0;
+  try{
+    const r=await getJSON("/api/knowledge/entities?q="+encodeURIComponent(KG_Q)
+      +"&type="+encodeURIComponent(KG_TYPE)+"&limit=80&offset="+KG_OFFSET);
+    const box=$("kg-list");
+    if(reset) box.innerHTML="";
+    const oldMore=$("kg-more"); if(oldMore) oldMore.remove();
+    KG_TOTAL=r.total||0;
+    const list=r.entities||[];
+    if(reset && !list.length){ box.innerHTML="<div class='docs-empty'>Keine Entität gefunden.</div>"; return; }
+    list.forEach(e=>{
+      const row=document.createElement("div"); row.className="docs-row file";
+      row.innerHTML="<span class='fi'>◆</span>"+docEsc(e.entity)
+        +"<span class='kg-tag'>"+docEsc(e.type||"?")+"</span><span class='kg-count'>"+e.count+"×</span>";
+      row.title=e.entity;
+      row.addEventListener("click", ()=>kgOpen(e.entity, row));
+      box.appendChild(row);
+    });
+    KG_OFFSET += list.length;
+    if(KG_OFFSET < KG_TOTAL){
+      const m=document.createElement("button"); m.id="kg-more"; m.className="btn";
+      m.style.cssText="width:100%; margin-top:8px";
+      m.textContent="Mehr laden ("+KG_OFFSET+"/"+KG_TOTAL+")";
+      m.addEventListener("click", ()=>kgLoad(false));
+      box.appendChild(m);
+    }
+  }catch(e){ $("kg-list").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function kgRel(type, other, weight){
+  return "<div class='kg-rel'><span class='kg-rt'>"+docEsc(type||"")+"</span> "
+    +"<span class='kg-link' data-ent=\""+attrEsc(other)+"\">"+docEsc(other)+"</span>"
+    +(weight?" <span class='kg-w'>"+weight+"</span>":"")+"</div>";
+}
+async function kgOpen(name, row){
+  document.querySelectorAll("#kg-list .docs-row.sel").forEach(x=>x.classList.remove("sel"));
+  if(row) row.classList.add("sel");
+  const d=$("kg-detail"); d.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{
+    const r=await getJSON("/api/knowledge/entity?name="+encodeURIComponent(name));
+    if(!r.ok){ d.innerHTML="<div class='docs-empty'>Fehler: "+(r.error||"")+"</div>"; return; }
+    let h="<div class='kg-ent-head'><span class='kg-ent-name'>"+docEsc(r.entity)+"</span>"
+      +(r.type?"<span class='kg-tag'>"+docEsc(r.type)+"</span>":"")+"</div>";
+    if(r.path) h+="<button class='btn mini' id='kg-note-btn' data-path=\""+attrEsc(r.path)+"\">Quellnotiz anzeigen</button>";
+    h+="<div class='kg-rels'>";
+    h+="<div><div class='kg-col-h'>Ausgehend ("+r.out_total+")</div>"
+      +(r.outgoing.length?r.outgoing.map(x=>kgRel(x.type,x.target,x.weight)).join(""):"<div class='kg-rel'>—</div>")+"</div>";
+    h+="<div><div class='kg-col-h'>Eingehend ("+r.in_total+")</div>"
+      +(r.incoming.length?r.incoming.map(x=>kgRel(x.type,x.source,x.weight)).join(""):"<div class='kg-rel'>—</div>")+"</div>";
+    h+="</div><div class='kg-note' id='kg-note'></div>";
+    d.innerHTML=h;
+    d.querySelectorAll(".kg-link").forEach(s=>s.addEventListener("click", ()=>kgOpen(s.dataset.ent)));
+    const nb=$("kg-note-btn"); if(nb) nb.addEventListener("click", ()=>kgShowNote(nb.dataset.path));
+  }catch(e){ d.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function kgShowNote(path){
+  const n=$("kg-note"); if(!n) return; n.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{ const r=await getJSON("/api/document?path="+encodeURIComponent(path));
+    n.innerHTML = r.ok ? mdRender(r.content) : "<div class='docs-empty'>Notiz nicht ladbar</div>";
+  }catch(e){ n.innerHTML="<div class='docs-empty'>Fehler</div>"; }
+}
+function kgInit(){ if(KG_LOADED) return; KG_LOADED=true; kgStats(); kgLoad(true); }
+function kgRefresh(){ kgStats(); kgLoad(true); }
+$("nav-knowledge").addEventListener("click", ()=>showView("knowledge"));
+$("kg-refresh").addEventListener("click", kgRefresh);
+$("kg-q").addEventListener("input", e=>{ KG_Q=e.target.value.trim(); clearTimeout(KG_TIMER); KG_TIMER=setTimeout(()=>kgLoad(true),250); });
+$("kg-type").addEventListener("change", e=>{ KG_TYPE=e.target.value; kgLoad(true); });
+
+// ===================== SEARCH =====================
+let SRCH_FAC=false, SRCH_TIMER=null;
+async function srchFacets(){
+  if(SRCH_FAC) return; SRCH_FAC=true;
+  try{
+    const r=await getJSON("/api/search/facets");
+    const ts=$("srch-type"); (r.types||[]).forEach(t=>{ const o=document.createElement("option");
+      o.value=t.type; o.textContent=t.type+" ("+t.count+")"; ts.appendChild(o); });
+    const gs=$("srch-tag"); (r.tags||[]).forEach(t=>{ const o=document.createElement("option");
+      o.value=t.tag; o.textContent=t.tag+" ("+t.count+")"; gs.appendChild(o); });
+  }catch(e){}
+}
+async function srchRun(){
+  const q=$("srch-q").value.trim(), ty=$("srch-type").value, tg=$("srch-tag").value;
+  const box=$("srch-list");
+  if(!q && !ty && !tg){ box.innerHTML="<div class='docs-empty'>Gib oben einen Suchbegriff ein.</div>"; $("srch-count").textContent=""; return; }
+  box.innerHTML="<div class='docs-empty'>… sucht</div>";
+  try{
+    const r=await getJSON("/api/search?q="+encodeURIComponent(q)+"&type="+encodeURIComponent(ty)+"&tag="+encodeURIComponent(tg)+"&limit=80");
+    box.innerHTML="";
+    $("srch-count").textContent=(r.total||0)+" Treffer";
+    if(!(r.results||[]).length){ box.innerHTML="<div class='docs-empty'>Keine Treffer.</div>"; return; }
+    r.results.forEach(it=>{
+      const row=document.createElement("div"); row.className="srch-row";
+      let h="<div class='st'><span class='nm'>"+docEsc(it.stem||it.path)+"</span>";
+      if(it.type && it.type!=="unknown") h+="<span class='kg-tag'>"+docEsc(it.type)+"</span>";
+      if(it.score) h+="<span class='sc'>Score "+it.score+"</span>";
+      h+="</div>";
+      if(it.snippet) h+="<div class='sn'>"+docEsc(it.snippet)+"</div>";
+      row.innerHTML=h;
+      row.addEventListener("click", ()=>srchOpen(it.path, row));
+      box.appendChild(row);
+    });
+  }catch(e){ box.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function srchOpen(path, row){
+  document.querySelectorAll("#srch-list .srch-row.sel").forEach(x=>x.classList.remove("sel"));
+  if(row) row.classList.add("sel");
+  const pv=$("srch-preview"); pv.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{
+    const r=await getJSON("/api/document?path="+encodeURIComponent(path));
+    if(!r.ok){ pv.innerHTML="<div class='docs-empty'>Fehler: "+(r.error||"")+"</div>"; return; }
+    $("srch-meta").textContent=r.path+"  ·  "+fmtBytes(r.size)+"  ·  "+new Date(r.mtime*1000).toLocaleString("de-DE");
+    pv.innerHTML=mdRender(r.content);
+  }catch(e){ pv.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function srchInit(){ srchFacets(); $("srch-q").focus(); }
+$("nav-search").addEventListener("click", ()=>showView("search"));
+$("srch-q").addEventListener("input", ()=>{ clearTimeout(SRCH_TIMER); SRCH_TIMER=setTimeout(srchRun,300); });
+$("srch-q").addEventListener("keydown", e=>{ if(e.key==="Enter"){ clearTimeout(SRCH_TIMER); srchRun(); }});
+$("srch-type").addEventListener("change", srchRun);
+$("srch-tag").addEventListener("change", srchRun);
+
+// ===================== IMPORTS =====================
+let IMP_LOADED=false;
+async function impLoad(){
+  try{
+    const r=await getJSON("/api/imports/status");
+    $("imp-pending").textContent=r.pending_total ?? 0;
+    const sb=$("imp-sources"); sb.innerHTML="";
+    (r.sources||[]).forEach(s=>{
+      const c=document.createElement("div"); c.className="imp-card";
+      c.innerHTML="<div class='n'>"+docEsc(s.name)+"</div>"
+        +"<div class='c"+(s.pending?"":" zero")+"'>"+s.pending+"</div>";
+      sb.appendChild(c);
+    });
+    const rb=$("imp-reports"); rb.innerHTML="";
+    if(!(r.reports||[]).length){ rb.innerHTML="<div class='docs-empty'>Keine Reports.</div>"; }
+    else r.reports.forEach(rep=>{
+      const d=document.createElement("div"); d.className="imp-report";
+      d.innerHTML="<b>"+docEsc(rep.source)+"</b> · "+docEsc(rep.time||"")+" · "
+        +"<span class='ok'>"+rep.imported+" importiert</span>"
+        +(rep.errors?(" · <span class='bad'>"+rep.errors+" Fehler</span>"):"");
+      rb.appendChild(d);
+    });
+  }catch(e){ $("imp-sources").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function impRun(){
+  const out=$("imp-out"); out.innerHTML="<div class='docs-empty'>Import läuft …</div>";
+  $("imp-run").disabled=true;
+  try{
+    const r=await getJSON("/api/run?script=import_ai_exports.py");
+    out.innerHTML="<pre>"+(r.ok?"[OK] ":"[FEHLER] ")+"import_ai_exports.py\n\n"+docEsc(r.output||"")+"</pre>";
+    impLoad();
+  }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  finally{ $("imp-run").disabled=false; }
+}
+function fileToB64(file){
+  return new Promise((res,rej)=>{ const r=new FileReader();
+    r.onload=()=>{ const s=String(r.result); res(s.slice(s.indexOf(",")+1)); };
+    r.onerror=rej; r.readAsDataURL(file); });
+}
+async function impZip(){
+  const f=$("imp-file").files[0], src=$("imp-src").value, out=$("imp-out");
+  if(!f){ out.innerHTML="<div class='docs-empty'>Bitte zuerst eine ZIP-Datei wählen.</div>"; return; }
+  if(!/\.zip$/i.test(f.name)){ out.innerHTML="<div class='docs-empty'>Bitte eine .zip-Datei wählen.</div>"; return; }
+  out.innerHTML="<div class='docs-empty'>Lade „"+docEsc(f.name)+"“ hoch und importiere …</div>";
+  $("imp-zip").disabled=true;
+  try{
+    const b64=await fileToB64(f);
+    const r=await getJSON("/api/imports/zip",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({source:src, filename:f.name, data_b64:b64})});
+    out.innerHTML="<pre>"+(r.ok?"[OK] ":"[FEHLER] ")+docEsc(r.script||src)+"\n\n"+docEsc(r.output||r.error||"")+"</pre>";
+    $("imp-file").value=""; impLoad();
+  }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  finally{ $("imp-zip").disabled=false; }
+}
+function impInit(){ if(IMP_LOADED) return; IMP_LOADED=true; impLoad(); }
+$("nav-imports").addEventListener("click", ()=>showView("imports"));
+$("imp-run").addEventListener("click", impRun);
+$("imp-refresh").addEventListener("click", impLoad);
+$("imp-zip").addEventListener("click", impZip);
+
 // --- Poll-Schleifen ---
 loadMetrics(); setInterval(loadMetrics, 2000);
 loadStatus();  setInterval(loadStatus, 15000);
 loadWeather(); setInterval(loadWeather, 15*60*1000);
 loadNews();    setInterval(loadNews, 15*60*1000);
+loadDocStats();
+loadMemStats();
 </script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+# Local inbox exports can exceed GitHub's 100 MB blob limit.
+SecondBrain-Inbox/**/*.zip
+SecondBrain-Agent/SecondBrain-Inbox/**/*.zip
+
+# Local runtime/cache artifacts.
+runtime/
+logs/
+.pytest_cache/
+.pytest_tmp/

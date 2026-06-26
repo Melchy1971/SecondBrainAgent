@@ -1,150 +1,56 @@
 # Release-Historie
 
-## v14.0 – Persistent Personal AGI
-- Persistent Personal AGI Runtime
-- Governance Policy
-- Observe → Think → Plan → Act → Verify → Learn
-- Proactive Assistant
-- Self Optimizer
+Diese Datei fasst die Hauptlinie zusammen. Vollstaendige Release-Artefakte liegen unter `docs/releases/`.
 
-## v15.0 – Production Core
-- Service Foundation
-- Watchdog
-- Secrets Vault Scaffold
-- Audit Trail
-- Approval Workflow
-- Backup / Restore Plan
+## v14.x bis v16.x Foundation
 
-## v15.1 – Service Runtime
-- Service Runner
-- JSON Logs
-- Health / Ready / Metrics
-- HTTP Health Server
-- pywin32 / NSSM Scaffold
+- Persistent Personal AGI, Production Core, Service Runtime und Installer/Update Layer aufgebaut.
+- Desktop App, Database Architecture, Connector Framework, Document Understanding, Multi-Agent Runtime, Knowledge Graph, Long-Term Memory, Hybrid RAG, Realtime Voice und Mobile Companion als modulare Foundations ergaenzt.
 
-## v15.2 – Installer & Update
-- Release Manifest
-- Config Validator
-- Portable Installer Plan
-- Backup before Update
-- Rollback Plan
+## v17.x P0 Integration
 
-## v16.0 – PySide6 Desktop App
-- Main Window
-- Dashboard
-- Chat UI
-- Knowledge Explorer
-- Task Board
-- Notifications
-- Settings
+- Gemeinsamer Launcher, Module Registry, Command Index und Runtime Healthchecks etabliert.
+- P0 Doctor, Smoke, Contract, Readiness, Bootstrap, Production und Audit Gate ergaenzt.
+- Repository-Hygiene, Runtime-Konfigurationssnapshots und Event-Bus-Proben eingefuehrt.
 
-## v16.1 – Database Architecture
-- SQLite Persistence
-- PostgreSQL-ready Schema
-- Memories, Tasks, Documents, Events, Automations, Embeddings
-- Migration Runner
+## v18.x Reproducibility und P1 Start
 
-## v16.2 – Connector Framework
-- Gmail, Google Calendar, Google Drive, GitHub, Obsidian, Paperless Registry
-- Delta Cursor
-- Sync Runs
-- Connector Items
-- Dead Letter Queue
+- Packaging, Repo Doctor, Dependency Inventory und Release Workflow gehaertet.
+- P1 Parser/Ingest, Embedding Health, Golden Retrieval, Provider Guards und Production Golden Gate aufgebaut.
+- OpenAI/Ollama-Providergrenzen und striktes Fallback-Verhalten vorbereitet.
 
-## v16.3 – Document Understanding
-- TXT/Markdown/EML Ingestion
-- DOCX XML Reader
-- XLSX/PPTX Scaffold
-- PDF Stub
-- Chunking
-- Citations
-- Entity Extraction
+## v19.x P1 Store und Retrieval
 
-## v16.4 – Multi-Agent Runtime
-- Supervisor
-- Planner
-- Research
-- Execution
-- Review
-- Memory
-- Improvement Agent
+- PostgreSQL/pgvector Foundation, Live Readiness, Store Interface und Store-backed Ingest ergaenzt.
+- P1 Retrieval, Hybrid Gate, Maturity Candidate und Completion dokumentiert.
 
-## v16.5 – Knowledge Graph
-- Nodes / Edges
-- Neighbors
-- Shortest Path
-- Communities
-- Timeline
-- Neo4j Cypher Export
+## v20.x bis v28.x Produktbereiche und GA-Hardening
 
-## v16.6 – Long-Term Memory
-- Episodic Memory
-- Semantic Memory
-- Procedural Memory
-- Memory Links
-- Consolidation
-- Recall
+- Memory, Agent Runtime, Connector Runtime, GUI, Voice, Mobile und weitere Produktbereiche iterativ erweitert.
+- GA-Hardening und GA 1.0 Artefakte dokumentiert.
 
-## v16.7 – Hybrid RAG
-- BM25-like Search
-- Pseudo Embeddings
-- Hybrid Ranking
-- Reranking
-- Citation Engine
-- Context Compression
+## v30.0 bis v30.5 Production Layer
 
-## v16.8 – Realtime Voice
-- Voice Sessions
-- Wake Word Stub
-- STT/TTS Adapter
-- Intent Parser
-- Approval Boundary
-- Interrupts
+- Provider Layer, PostgreSQL Production, pgvector Production, Agent Workflow Engine und Production Connectors dokumentiert.
+- Export- und Test-Collection-Hardening ergaenzt.
 
-## v16.9 – Mobile Companion
-- Device Pairing
-- Offline Capture
-- Voice Notes
-- Camera OCR Scaffold
-- Push Outbox
-- Mobile Widgets
-- Sync Runs
-- Remote Sessions
+## v30.11 bis v30.18 P1 Embedding und Vector Index
 
-## v17.2 – P0 Runtime Doctor
-- P0 Doctor Command (`p0-doctor`) ergänzt.
-- Runtime-Konfigurationssnapshot eingeführt.
-- Event-Bus-Probe in den P0 Doctor integriert.
-- `command-index` als dedizierter Launcher-Befehl ergänzt.
-- Unbekannte Module liefern jetzt einen klaren Fehler statt `KeyError`.
-- P0 Integrationstests auf 234 Tests erweitert.
-## v17.6 P0
-- `p0-contract` ergänzt.
-- Launcher-Vertrag in `p0-gate` und `p0-smoke` integriert.
-- Validierung: 243 passed.
+- Vector Dimension Drift Guard, Provider Health Gate und Golden Quality Gate ergaenzt.
+- Embedding-Konfigurationsvertrag, Dimension Contract, HTTP Provider Boundary und Index Identity Guard eingefuehrt.
+- `p1-vector-index-repair` fuer provider/model/dimension Drift ergaenzt.
 
-## v17.8 P0 – Readiness & Bootstrap
+## v30.19 P1 GUI Surface Update
 
-- `p0-readiness` ergänzt.
-- `p0-bootstrap` ergänzt.
-- P0-Gate um Runtime-Readiness erweitert.
-- Secrets-, Database-, Event-Bus- und Runtime-State-Prüfungen ergänzt.
-- Reports `p0_readiness_latest.json` und `p0_bootstrap_latest.json` ergänzt.
-- Tests erweitert: 246 passed.
+- P1 Runtime Surface fuer Desktop Views, Settings Center, RAG Import, Vector Index und Production Gate aktualisiert.
 
+## v30.20 GUI Startup Surface
 
-## v17.9 P0 – Production Gate & Artifact Audit
+- GUI-Startbefehle vereinheitlicht.
+- `Jarvis.bat`, Shortcut-Installer und kompatible GUI-Aliase auf Launcher-Pfad ausgerichtet.
 
-- `p0-production` ergänzt.
-- `p0-audit` ergänzt.
-- Vollständige P0-Sequenz mit persistenter Evidenzkette ergänzt.
-- Report `runtime/reports/p0_production_gate_latest.json` ergänzt.
-- Report `runtime/reports/p0_artifact_audit_latest.json` ergänzt.
-- Launcher-Vertrag um `p0-production` und `p0-audit` erweitert.
-- Tests erweitert.
+## v30.21 Unified Application Bootstrap
 
-Validierung:
-
-- `python launcher.py p0-production --write-report`: PASS
-- `python launcher.py p0-audit --write-report`: PASS
-- `pytest -q`: 249 passed
+- `python launcher.py` startet Jarvis direkt.
+- `python launcher.py jarvis` und `python launcher.py gui-bootstrap` ergaenzt.
+- Bootstrap erzeugt lokale Defaults, Runtime-/Datenordner und `runtime/reports/bootstrap_v30_21.json`.
