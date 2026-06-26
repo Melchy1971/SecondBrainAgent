@@ -194,12 +194,7 @@
   .alert-row:last-child{border-bottom:0}
   .alert-row span{color:var(--cyan-soft)}
   .alert-row b{font-weight:500}
-  .alert-row b.ok{color:var(--good)} .alert-row b.warn{color:var(--warn)} .alert-row b.cy{color:var(--cyan)} .alert-row b.bad{color:var(--bad)}
-  .truth-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
-  .truth-card{border:1px solid rgba(47,230,255,.16); border-radius:8px; padding:8px; background:rgba(0,8,12,.28)}
-  .truth-card .k{font-size:8px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase}
-  .truth-card .v{font-size:12px; color:#eafcff; margin-top:4px; word-break:break-word}
-  .truth-card.ok .v{color:var(--good)} .truth-card.warn .v{color:var(--warn)} .truth-card.bad .v{color:var(--bad)}
+  .alert-row b.ok{color:var(--good)} .alert-row b.warn{color:var(--warn)} .alert-row b.cy{color:var(--cyan)}
 
   /* Konsole */
   .console{grid-column:1 / -1}
@@ -300,6 +295,19 @@
   /* ===================== DOCUMENTS-ANSICHT ===================== */
   .view-docs{padding:18px 20px; display:flex; flex-direction:column; gap:14px; min-width:0}
   .view-docs[hidden]{display:none}
+
+  .doc-runtime{display:grid; grid-template-columns:repeat(6,minmax(100px,1fr)); gap:8px; margin-bottom:10px}
+  .doc-rt-card{border:1px solid var(--line); border-radius:8px; padding:8px 10px; background:rgba(0,8,12,.38)}
+  .doc-rt-card .k{font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:.14em}
+  .doc-rt-card .v{font-size:16px; color:#eafcff; margin-top:3px; font-variant-numeric:tabular-nums}
+  .doc-rt-card.good .v{color:var(--good)} .doc-rt-card.warn .v{color:var(--warn)} .doc-rt-card.bad .v{color:var(--bad)}
+  .doc-meta-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:8px 0 12px}
+  .doc-mini-panel{border:1px solid var(--line); border-radius:8px; padding:9px 10px; background:rgba(0,8,12,.32); min-height:88px}
+  .doc-mini-panel h3{font-size:9px; color:var(--cyan); margin-bottom:8px}
+  .doc-chip{display:inline-block; border:1px solid rgba(47,230,255,.22); border-radius:999px; padding:3px 7px; margin:2px; font-size:9px; color:var(--cyan-soft)}
+  .doc-file-row{display:grid; grid-template-columns:1fr 60px 70px 70px; gap:8px; align-items:center; padding:6px 0; border-bottom:1px dashed rgba(47,230,255,.10); font-size:10px}
+  .doc-file-row b{color:#eafcff; font-weight:500}
+  .doc-file-row .ok{color:var(--good)} .doc-file-row .warn{color:var(--warn)} .doc-file-row .bad{color:var(--bad)}
   .docs-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
   .docs-head h2{font-size:14px; color:var(--cyan); text-shadow:var(--glow); letter-spacing:.18em}
   .docs-count{font-size:10px; color:var(--muted); letter-spacing:.1em}
@@ -525,7 +533,6 @@
           <button class="btn" data-run="build_vector_rag.py">RAG Index</button>
           <button class="btn" data-run="check_paths_v9.py">Path Check</button>
           <button class="btn" data-run="health_check.py">Health Check</button>
-          <button class="btn" id="btn-runtime-truth">Runtime Truth</button>
           <button class="btn warn" data-run="release_gate_v9.py">Release Gate</button>
           <button class="btn warn" data-run="run_regression_tests_v9.py">Regression</button>
           <button class="btn" data-run="vector_audit.py">Vector Audit</button>
@@ -540,7 +547,7 @@
         <div class="panel">
           <h2>System-Info</h2>
           <div class="info">
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">v30.22</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">v30.21</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="t"><div class="k">Environment</div><div class="v" id="i-env">production</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div><div class="t"><div class="k">Database</div><div class="v" id="i-db">PostgreSQL 16 + pgvector</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg></div><div class="t"><div class="k">Embedding</div><div class="v" id="i-emb">OpenAI text-embedding-3-small<br><small>Dimension: 1536</small></div></div></div>
@@ -580,17 +587,6 @@
           <div class="alert-row"><span>Backup</span><b class="ok" id="a-backup">Letztes: 15:23</b></div>
           <div class="alert-row"><span>Vector Index</span><b class="ok" id="a-vindex">OK</b></div>
           <div class="alert-row"><span>Queue</span><b class="warn" id="a-queue">3 Pending</b></div>
-        </div>
-        <div class="panel alerts">
-          <h2>Runtime Truth <small>v30.22</small></h2>
-          <div class="truth-grid">
-            <div class="truth-card" id="truth-db-card"><div class="k">DB Store</div><div class="v" id="truth-db">—</div></div>
-            <div class="truth-card" id="truth-emb-card"><div class="k">Embedding</div><div class="v" id="truth-emb">—</div></div>
-            <div class="truth-card" id="truth-gate-card"><div class="k">Production Gate</div><div class="v" id="truth-gate">—</div></div>
-            <div class="truth-card" id="truth-golden-card"><div class="k">Golden Quality</div><div class="v" id="truth-golden">—</div></div>
-            <div class="truth-card" id="truth-migration-card"><div class="k">Migration</div><div class="v" id="truth-migration">—</div></div>
-            <div class="truth-card" id="truth-security-card"><div class="k">Security</div><div class="v" id="truth-security">—</div></div>
-          </div>
         </div>
       </div>
 
@@ -645,15 +641,29 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
     <!-- ===================== DOCUMENTS-ANSICHT ===================== -->
     <section id="view-documents" class="view-docs" hidden>
       <div class="docs-head">
-        <h2>DOCUMENTS</h2>
-        <div class="docs-count">Vault: <b id="docs-count">—</b> Notizen</div>
+        <h2>DOCUMENT CENTER</h2>
+        <div class="docs-count">Vault: <b id="docs-count">—</b> · Index: <b id="doc-index-count">—</b></div>
+        <button class="btn warn" id="doc-center-refresh">Runtime Status</button>
         <button class="btn" id="docs-refresh">↻ Neu laden</button>
+      </div>
+      <div class="doc-runtime" id="doc-runtime">
+        <div class="doc-rt-card"><div class="k">Index</div><div class="v" id="doc-rt-index">—</div></div>
+        <div class="doc-rt-card"><div class="k">Chunks</div><div class="v" id="doc-rt-chunks">—</div></div>
+        <div class="doc-rt-card"><div class="k">Vectors</div><div class="v" id="doc-rt-vectors">—</div></div>
+        <div class="doc-rt-card"><div class="k">Pending</div><div class="v" id="doc-rt-pending">—</div></div>
+        <div class="doc-rt-card"><div class="k">OCR</div><div class="v" id="doc-rt-ocr">—</div></div>
+        <div class="doc-rt-card"><div class="k">Gate</div><div class="v" id="doc-rt-gate">—</div></div>
+      </div>
+      <div class="doc-meta-grid">
+        <div class="doc-mini-panel"><h3>Parser / MIME</h3><div id="doc-parser-chips">—</div></div>
+        <div class="doc-mini-panel"><h3>P1 Runtime Truth</h3><div id="doc-runtime-truth">—</div></div>
       </div>
       <div class="docs-body">
         <div class="docs-tree" id="docs-tree"><div class="docs-empty">… lädt</div></div>
         <div class="docs-pane">
           <div class="docs-meta" id="docs-meta">Keine Notiz gewählt</div>
           <div class="docs-preview" id="docs-preview"><div class="docs-empty">Wähle links eine Notiz für die Vorschau.</div></div>
+          <div class="doc-mini-panel" style="margin-top:10px"><h3>Letzte indexierte Dokumente</h3><div id="doc-indexed-files"><div class="docs-empty">Runtime Status laden.</div></div></div>
         </div>
       </div>
     </section>
@@ -661,15 +671,28 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
     <!-- ===================== MEMORY-ANSICHT ===================== -->
     <section id="view-memory" class="view-docs" hidden>
       <div class="docs-head">
-        <h2>MEMORY</h2>
+        <h2>MEMORY CENTER</h2>
         <div class="docs-count">Erinnerungen: <b id="mem-count">—</b></div>
         <button class="btn" id="mem-refresh">↻ Neu laden</button>
+      </div>
+      <div class="doc-runtime">
+        <div class="doc-rt-card"><div class="k">Total</div><div class="v" id="mem-rt-total">—</div></div>
+        <div class="doc-rt-card"><div class="k">Vault</div><div class="v" id="mem-rt-vault">—</div></div>
+        <div class="doc-rt-card"><div class="k">SQLite</div><div class="v" id="mem-rt-sqlite">—</div></div>
+        <div class="doc-rt-card"><div class="k">Semantic</div><div class="v" id="mem-rt-semantic">—</div></div>
+        <div class="doc-rt-card"><div class="k">Lineage Gaps</div><div class="v" id="mem-rt-lineage">—</div></div>
+        <div class="doc-rt-card"><div class="k">Governance</div><div class="v" id="mem-rt-gov">—</div></div>
+      </div>
+      <div class="doc-meta-grid">
+        <div class="doc-mini-panel"><h3>Memory Sources</h3><div id="mem-source-chips">—</div></div>
+        <div class="doc-mini-panel"><h3>Governance / Privacy</h3><div id="mem-governance-chips">—</div></div>
       </div>
       <div class="docs-body">
         <div class="docs-tree" id="mem-list"><div class="docs-empty">… lädt</div></div>
         <div class="docs-pane">
           <div class="docs-meta" id="mem-meta">Keine Erinnerung gewählt</div>
           <div class="docs-preview" id="mem-preview"><div class="docs-empty">Wähle links eine Erinnerung für die Vorschau.</div></div>
+          <div class="doc-mini-panel" style="margin-top:10px"><h3>Letzte Memory Items / Lücken</h3><div id="mem-recent-items"><div class="docs-empty">Runtime Status laden.</div></div></div>
         </div>
       </div>
     </section>
@@ -778,7 +801,7 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
 
     <div class="sec">Identität &amp; Header</div>
     <div class="field"><div class="row">
-      <div><label>Version</label><input id="set-version" placeholder="v30.22"></div>
+      <div><label>Version</label><input id="set-version" placeholder="v30.21"></div>
       <div><label>Environment</label><input id="set-environment" placeholder="production"></div>
     </div></div>
     <div class="field"><div class="row">
@@ -848,29 +871,6 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       <div><label>Kontext-Chunks (1–20)</label><input id="set-assistant_context_chunks" type="number" min="1" max="20"></div>
     </div></div>
 
-    <div class="sec">P1 Runtime Truth</div>
-    <div class="field"><div class="row">
-      <div><label>DATABASE_URL ENV</label><input id="set-database_url_env" placeholder="DATABASE_URL"></div>
-      <div><label>GUI Truth Mode</label><input id="set-gui_truth_mode" placeholder="runtime"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Provider ENV</label><input id="set-embedding_provider_env" placeholder="SECONDBRAIN_EMBEDDING_PROVIDER"></div>
-      <div><label>OpenAI Key ENV</label><input id="set-openai_key_env" placeholder="OPENAI_API_KEY"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Model ENV</label><input id="set-embedding_model_env" placeholder="SECONDBRAIN_EMBEDDING_MODEL"></div>
-      <div><label>Dimensions ENV</label><input id="set-embedding_dimensions_env" placeholder="SECONDBRAIN_EMBEDDING_DIMENSIONS"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Golden Quality</label><input id="set-golden_quality_status" placeholder="not_run/pass/blocked"></div>
-      <div><label>Migration</label><input id="set-migration_status" placeholder="not_run/pass/blocked"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Parser/Ingest</label><input id="set-parser_ingest_status" placeholder="ready"></div>
-      <div><label>Secret Vault</label><input id="set-secret_vault_status" placeholder="missing"></div>
-    </div></div>
-    <div class="field"><label>Connector Runtime</label><input id="set-connector_runtime_status" placeholder="stub"></div>
-
     <div class="sec">Darstellung</div>
     <div class="field"><label>Akzentfarbe</label><input id="set-accent" type="color"></div>
 
@@ -898,8 +898,6 @@ const FIELDS = [
   "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
   "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",
   "backup_last","backup_next","vector_index",
-  "database_url_env","embedding_provider_env","embedding_model_env","embedding_dimensions_env","openai_key_env",
-  "golden_quality_status","migration_status","parser_ingest_status","secret_vault_status","connector_runtime_status","gui_truth_mode",
   "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks"
 ];
 const INT_FIELDS = new Set(["news_max","weather_min","embedding_dim","ollama_models","queue_pending",
@@ -1028,39 +1026,6 @@ async function loadStatus(){
   }catch(e){}
 }
 
-
-function statusClass(ok, warn){ return ok ? "ok" : (warn ? "warn" : "bad"); }
-function setTruthCard(cardId, valueId, text, cls){
-  const c=$(cardId), v=$(valueId); if(!c || !v) return;
-  c.className = "truth-card " + (cls || ""); v.textContent = text;
-}
-
-async function loadRuntimeTruth(){
-  try{
-    const r = await getJSON("/api/runtime-truth");
-    if(!r.ok) return;
-    const db = r.database || {}, emb = r.embedding || {}, rag = r.rag || {}, gates = r.gates || {}, sec = r.security || {};
-    const dbOk = db.status === "postgresql" && db.pgvector;
-    setTruthCard("truth-db-card", "truth-db", (db.status||"—") + (db.pgvector ? " + pgvector" : ""), dbOk ? "ok" : "warn");
-    setTruthCard("truth-emb-card", "truth-emb", (emb.provider||"—") + ":" + (emb.model||"—") + ":" + (emb.dimensions||"—"), emb.production_ready ? "ok" : "bad");
-    setTruthCard("truth-gate-card", "truth-gate", (gates.production_status||"not_run") + " / " + (gates.blocking||0) + " Blocker", (gates.blocking||0)===0 && gates.production_status!=="not_run" ? "ok" : "warn");
-    setTruthCard("truth-golden-card", "truth-golden", gates.golden_quality_status || "not_run", gates.golden_quality_status==="pass" ? "ok" : "warn");
-    setTruthCard("truth-migration-card", "truth-migration", gates.migration_status || "not_run", gates.migration_status==="pass" ? "ok" : "warn");
-    setTruthCard("truth-security-card", "truth-security", "vault="+(sec.secret_vault_status||"missing")+" / connector="+(sec.connector_runtime_status||"stub"), sec.secret_vault_status==="ready" ? "ok" : "bad");
-
-    const dim = emb.dimensions ?? "";
-    const embShort = (emb.provider || "—") + (dim!=="" ? " ("+dim+")" : "");
-    $("hdr-ver").textContent = r.version || "v30.22"; $("i-ver").textContent = r.version || "v30.22";
-    $("p-emb").textContent = embShort; $("a-emb").textContent = embShort;
-    $("p-gate").textContent = "BLOCKING " + (gates.blocking || 0); $("a-gate").textContent = (gates.blocking || 0) + " Blocker";
-    $("i-db").textContent = db.status || "—"; $("a-pg").textContent = db.status === "postgresql" ? "PostgreSQL" : "SQLite/default";
-    $("a-pgvector").textContent = db.pgvector ? "ready" : "missing";
-    $("i-emb").innerHTML = (emb.provider||"") + " " + (emb.model||"") + "<br><small>Dimension: " + (dim!==""?dim:"—") + "</small>";
-    $("sb-docs").textContent = fmt(rag.documents ?? 0); $("sb-vectors").textContent = fmt(rag.vectors ?? 0);
-    $("a-vindex").textContent = gates.vector_audit_status || "not_run";
-  }catch(e){ /* Runtime Truth ist ergänzend; HUD bleibt bedienbar. */ }
-}
-
 // --- Wetter ---
 async function loadWeather(){
   try{
@@ -1156,7 +1121,6 @@ document.querySelectorAll("[data-run]").forEach(btn=>{
   btn.addEventListener("click", ()=> runScript(btn.getAttribute("data-run")));
 });
 $("btn-logs").addEventListener("click", loadLogs);
-$("btn-runtime-truth").addEventListener("click", async()=>{ await loadRuntimeTruth(); printOut(JSON.stringify(await getJSON("/api/runtime-truth"), null, 2)); });
 $("btn-settings").addEventListener("click", openSettings);
 $("nav-settings").addEventListener("click", openSettings);
 $("m-details").addEventListener("click", loadLogs);
@@ -1297,6 +1261,49 @@ $("asst-model-sel").addEventListener("change", e=>setAssistantModel(e.target.val
 $("asst-engine-sel").addEventListener("change", e=>setAssistantEngine(e.target.value));
 
 // ===================== DOCUMENTS =====================
+
+async function loadDocumentCenterStatus(){
+  try{
+    const r=await getJSON("/api/document-center/status");
+    const sum=r.summary||{};
+    const set=(id,val)=>{ const el=$(id); if(el) el.textContent=val; };
+    set("doc-index-count", fmt(sum.indexed_documents||0));
+    set("doc-rt-index", fmt(sum.indexed_documents||0));
+    set("doc-rt-chunks", fmt(sum.chunks||0));
+    set("doc-rt-vectors", fmt(sum.vectors||0));
+    set("doc-rt-pending", fmt(sum.pending_imports||0));
+    set("doc-rt-ocr", fmt(sum.ocr_required||0));
+    set("doc-rt-gate", (r.status||"?").toUpperCase());
+    ["doc-rt-gate","doc-rt-pending","doc-rt-ocr"].forEach(id=>{ const e=$(id); if(!e) return; const c=e.parentElement; c.classList.remove("good","warn","bad"); });
+    const gate=$("doc-rt-gate"); if(gate){ gate.parentElement.classList.add(r.status==="pass"?"good":(r.status==="blocked"?"bad":"warn")); }
+    const pend=$("doc-rt-pending"); if(pend){ pend.parentElement.classList.add((sum.pending_imports||0)>0?"warn":"good"); }
+    const ocr=$("doc-rt-ocr"); if(ocr){ ocr.parentElement.classList.add((sum.ocr_required||0)>0?"warn":"good"); }
+    const pars=r.parsers||{};
+    const chips=[];
+    Object.entries(pars.by_parser||{}).slice(0,8).forEach(([k,v])=>chips.push("<span class='doc-chip'>"+docEsc(k)+": "+fmt(v)+"</span>"));
+    Object.entries(pars.by_mime_type||{}).slice(0,6).forEach(([k,v])=>chips.push("<span class='doc-chip'>"+docEsc(k)+": "+fmt(v)+"</span>"));
+    $("doc-parser-chips").innerHTML=chips.length?chips.join(""):"<span class='doc-chip'>Noch keine Parserdaten</span>";
+    const rt=r.runtime_truth||{};
+    $("doc-runtime-truth").innerHTML=[
+      "DB: "+docEsc(rt.database_kind||"unknown")+(rt.database_configured?" konfiguriert":" lokal/default"),
+      "Embedding: "+docEsc(rt.embedding_provider||"local")+(rt.embedding_model?" / "+docEsc(rt.embedding_model):""),
+      "Dim: "+(rt.embedding_dimensions||"—"),
+      "OpenAI Key: "+(rt.openai_key_configured?"gesetzt":"fehlt")
+    ].map(x=>"<span class='doc-chip'>"+x+"</span>").join("");
+    const box=$("doc-indexed-files"); box.innerHTML="";
+    const files=(r.indexed_files||[]).slice(0,20);
+    if(!files.length){ box.innerHTML="<div class='docs-empty'>Noch keine indexierten Dokumente.</div>"; }
+    files.forEach(f=>{
+      const row=document.createElement("div"); row.className="doc-file-row";
+      const status=f.ocr_required?"warn":((f.parse_errors||[]).length?"bad":"ok");
+      row.innerHTML="<b title='"+attrEsc(f.source||"")+"'>"+docEsc(f.title||f.source||f.document_id||"Dokument")+"</b>"
+        +"<span>"+fmt(f.chunks||0)+" ch</span>"
+        +"<span>"+docEsc(f.parser||"?")+"</span>"
+        +"<span class='"+status+"'>"+(f.ocr_required?"OCR":((f.parse_errors||[]).length?"Fehler":"OK"))+"</span>";
+      box.appendChild(row);
+    });
+  }catch(e){ const el=$("doc-runtime-truth"); if(el) el.innerHTML="<span class='doc-chip'>Fehler: "+docEsc(String(e))+"</span>"; }
+}
 let DOCS_LOADED=false;
 function fmtBytes(n){ n=Number(n)||0; if(n<1024) return n+" B"; if(n<1048576) return (n/1024).toFixed(1)+" KB"; return (n/1048576).toFixed(1)+" MB"; }
 function docEsc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -1352,8 +1359,8 @@ async function docsOpen(path, row){
     pv.innerHTML=mdRender(r.content);
   }catch(e){ pv.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
 }
-function docsInit(){ if(DOCS_LOADED) return; DOCS_LOADED=true; docsListInto($("docs-tree"), ""); }
-function docsRefresh(){ DOCS_LOADED=false; $("docs-tree").innerHTML="<div class='docs-empty'>… lädt</div>"; docsInit(); loadDocStats(); }
+function docsInit(){ if(DOCS_LOADED) return; DOCS_LOADED=true; docsListInto($("docs-tree"), ""); loadDocumentCenterStatus(); }
+function docsRefresh(){ DOCS_LOADED=false; $("docs-tree").innerHTML="<div class='docs-empty'>… lädt</div>"; docsInit(); loadDocStats(); loadDocumentCenterStatus(); }
 async function loadDocStats(){
   try{ const r=await getJSON("/api/documents/stats");
     if(r.ok){ $("docs-count").textContent=r.count; $("sb-docs").textContent=Number(r.count).toLocaleString("de-DE"); }
@@ -1361,9 +1368,52 @@ async function loadDocStats(){
 }
 $("nav-documents").addEventListener("click", ()=>showView("documents"));
 $("docs-refresh").addEventListener("click", docsRefresh);
+$("doc-center-refresh").addEventListener("click", loadDocumentCenterStatus);
 
 // ===================== MEMORY =====================
 let MEM_LOADED=false;
+async function loadMemoryCenterStatus(){
+  try{
+    const r=await getJSON("/api/memory-center/status");
+    const sum=r.summary||{}; const set=(id,val)=>{ const el=$(id); if(el) el.textContent=val; };
+    set("mem-rt-total", fmt(sum.total_memories||0));
+    set("mem-rt-vault", fmt(sum.vault_memories||0));
+    set("mem-rt-sqlite", fmt(sum.sqlite_memories||0));
+    set("mem-rt-semantic", fmt(sum.semantic_items||0));
+    set("mem-rt-lineage", fmt(sum.lineage_gaps||0));
+    set("mem-rt-gov", (r.status||"?").toUpperCase());
+    ["mem-rt-total","mem-rt-vault","mem-rt-sqlite","mem-rt-semantic","mem-rt-lineage","mem-rt-gov"].forEach(id=>{ const e=$(id); if(!e) return; const c=e.parentElement; c.classList.remove("good","warn","bad"); });
+    const gov=$("mem-rt-gov"); if(gov){ gov.parentElement.classList.add(r.status==="pass"?"good":(r.status==="blocked"?"bad":"warn")); }
+    const lin=$("mem-rt-lineage"); if(lin){ lin.parentElement.classList.add((sum.lineage_gaps||0)>0?"warn":"good"); }
+    const src=r.sources||{}, vault=(src.vault||{}), sql=(src.sqlite||{}), reg=(src.agent_registry||{});
+    $("mem-source-chips").innerHTML=[
+      "Vault: "+fmt(vault.total||0),
+      "SQLite: "+fmt(sql.count||0)+(sql.exists?" aktiv":" nicht gefunden"),
+      "Semantic: "+fmt(reg.semantic_items||0),
+      "Episodic: "+fmt(reg.episodic_items||0),
+      "Persistence: "+docEsc(reg.persistence||"unknown")
+    ].map(x=>"<span class='doc-chip'>"+x+"</span>").join("");
+    const g=r.governance||{};
+    const chips=[
+      "Privacy: "+(g.privacy_mode?"ON":"OFF"),
+      "Secret Encryption: "+(g.secret_encryption?"ON":"OFF"),
+      "Classification: "+(g.data_classification?"ON":"OFF"),
+      "Blocker: "+fmt((g.blockers||[]).length),
+      "Warnings: "+fmt((g.warnings||[]).length)
+    ];
+    $("mem-governance-chips").innerHTML=chips.map(x=>"<span class='doc-chip'>"+x+"</span>").join("");
+    const box=$("mem-recent-items"); if(box){ box.innerHTML=""; const recent=(vault.recent||[]).slice(0,20);
+      if(!recent.length){ box.innerHTML="<div class='docs-empty'>Keine Memory Items.</div>"; }
+      recent.forEach(m=>{ const row=document.createElement("div"); row.className="doc-file-row";
+        const status=!m.has_source?"warn":(!m.has_tags?"warn":"ok");
+        row.innerHTML="<b title='"+attrEsc(m.path||"")+"'>"+docEsc(m.name||m.file||"Memory")+"</b>"
+          +"<span>"+fmtBytes(m.size||0)+"</span><span>"+(m.has_source?"Quelle":"ohne Quelle")+"</span>"
+          +"<span class='"+status+"'>"+(m.has_tags?"Tags":"No Tags")+"</span>";
+        box.appendChild(row);
+      });
+    }
+  }catch(e){ const el=$("mem-governance-chips"); if(el) el.innerHTML="<span class='doc-chip'>Fehler: "+docEsc(String(e))+"</span>"; }
+}
 async function memLoad(){
   const box=$("mem-list");
   try{
@@ -1394,8 +1444,8 @@ async function memOpen(path, row){
     pv.innerHTML=mdRender(r.content);
   }catch(e){ pv.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
 }
-function memInit(){ if(MEM_LOADED) return; MEM_LOADED=true; memLoad(); }
-function memRefresh(){ MEM_LOADED=false; $("mem-list").innerHTML="<div class='docs-empty'>… lädt</div>"; memInit(); loadMemStats(); }
+function memInit(){ if(MEM_LOADED) return; MEM_LOADED=true; memLoad(); loadMemoryCenterStatus(); }
+function memRefresh(){ MEM_LOADED=false; $("mem-list").innerHTML="<div class='docs-empty'>… lädt</div>"; memInit(); loadMemStats(); loadMemoryCenterStatus(); }
 async function loadMemStats(){
   try{ const r=await getJSON("/api/memory/stats");
     if(r.ok){ $("mem-count").textContent=r.count; $("sb-mem").textContent=Number(r.count).toLocaleString("de-DE"); }
@@ -1606,7 +1656,6 @@ $("imp-zip").addEventListener("click", impZip);
 // --- Poll-Schleifen ---
 loadMetrics(); setInterval(loadMetrics, 2000);
 loadStatus();  setInterval(loadStatus, 15000);
-loadRuntimeTruth(); setInterval(loadRuntimeTruth, 15000);
 loadWeather(); setInterval(loadWeather, 15*60*1000);
 loadNews();    setInterval(loadNews, 15*60*1000);
 loadDocStats();

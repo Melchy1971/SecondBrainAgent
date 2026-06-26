@@ -1,0 +1,13 @@
+{
+  "version": "v30.23",
+  "name": "GUI Document Center Runtime Truth",
+  "files": [
+    "APPLY_DELTA_v30_23.md",
+    "launcher.py",
+    "secondbrain/gui/document_center_runtime.py",
+    "secondbrain/jarvis_hud_server.py",
+    "web/jarvis_hud/index.html",
+    "tests/test_v3023_document_center_runtime.py",
+    "docs/09_MASTERPLAN_STATUS.json"
+  ]
+}

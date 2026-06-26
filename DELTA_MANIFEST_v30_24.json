@@ -1,0 +1,19 @@
+{
+  "version": "v30.24",
+  "name": "GUI Memory Center Runtime Truth",
+  "type": "delta",
+  "files": [
+    "APPLY_DELTA_v30_24.md",
+    "DELTA_MANIFEST_v30_24.json",
+    "launcher.py",
+    "secondbrain/gui/memory_center_runtime.py",
+    "secondbrain/jarvis_hud_server.py",
+    "web/jarvis_hud/index.html",
+    "tests/test_v3024_memory_center_runtime.py",
+    "docs/09_MASTERPLAN_STATUS.json"
+  ],
+  "validation": {
+    "focus_tests": "4 PASS",
+    "collect_only": "1041 tests collected"
+  }
+}

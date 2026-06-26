@@ -193,6 +193,9 @@
   },
   "active": "3f5a0d5b72b23ec9",
   "lastOpenFiles": [
+    "gui/memory_center_runtime.py",
+    "gui",
+    "jarvis_hud_server.py",
     "123_PersonalKPIs/2026-06-26_personal-kpis.md",
     "122_WeeklyOperatingSystem/2026-06-26_weekly-os.md",
     "121_DailyOperatingSystem/2026-06-26_daily-os.md",
@@ -218,7 +221,6 @@
     "74_SelfImprovingKnowledge/2026-06-26_self-improvement-plan.md",
     "70_CalendarIntelligence/2026-06-26_calendar-intelligence.md",
     "69_MeetingIntelligence/2026-06-26_meeting-intelligence.md",
-    "67_ProjectIntelligence/2026-06-26_project-intelligence.md",
     "tests/test_v260_p8_foundation.py",
     "tests",
     "secondbrain/cli/p8_status.py",
@@ -226,8 +228,6 @@
     "secondbrain/privacy/gdpr_manager.py",
     "secondbrain/privacy",
     "secondbrain/security/approval_policies.py",
-    "secondbrain/security/rbac.py",
-    "secondbrain/security/secret_vault.py",
-    "secondbrain/security"
+    "secondbrain/security/rbac.py"
   ]
 }
