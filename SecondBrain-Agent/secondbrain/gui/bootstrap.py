@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "30.21"
+VERSION = "30.25"
 DEFAULT_ENV = {
     "SECONDBRAIN_PROFILE": "default",
     "SECONDBRAIN_EMBEDDING_PROVIDER": "local",
@@ -17,6 +17,8 @@ DEFAULT_ENV = {
     "SECONDBRAIN_EMBEDDING_DIMENSIONS": "64",
     "SECONDBRAIN_GUI_HOST": "127.0.0.1",
     "SECONDBRAIN_GUI_PORT": "8851",
+    "SECONDBRAIN_UI_MODE": "native",
+    "SECONDBRAIN_VOICE_LANGUAGE": "de-DE",
 }
 RUNTIME_DIRS = [
     "runtime",
@@ -64,7 +66,7 @@ def _read_env_file(path: Path) -> dict[str, str]:
 
 
 def _write_env_file(path: Path, values: dict[str, str]) -> None:
-    body = ["# SecondBrain Agent local configuration", "# generated/updated by v30.21 bootstrap"]
+    body = ["# SecondBrain Agent local configuration", "# generated/updated by v30.25 bootstrap"]
     for key in sorted(values):
         body.append(f"{key}={values[key]}")
     path.write_text("\n".join(body) + "\n", encoding="utf-8")
@@ -188,7 +190,7 @@ def bootstrap_text(root: str | Path | None = None, *, repair: bool = True) -> st
 def write_bootstrap_report(root: str | Path | None = None, *, repair: bool = True) -> dict[str, Any]:
     base = project_root(root)
     payload = bootstrap_status(base, repair=repair)
-    report_path = base / "runtime" / "reports" / "bootstrap_v30_21.json"
+    report_path = base / "runtime" / "reports" / "bootstrap_v30_25.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     payload["report_path"] = str(report_path)

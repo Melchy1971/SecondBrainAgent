@@ -10,3 +10,8 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/START_GUI.md`
 
 Aktueller Stand: v30.21 Unified Application Bootstrap.
+
+
+## v30.25
+
+Native Desktop ist jetzt der Primaerstart. Web-HUD bleibt nur noch Legacy-Kompatibilitaet. Deutsche Sprachsteuerung ist in `secondbrain.desktop_native.voice_de` verdrahtet.

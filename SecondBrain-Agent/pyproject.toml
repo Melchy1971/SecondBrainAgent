@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "secondbrain-agent"
-version = "18.11.0"
+version = "30.25.0"
 description = "Local modular SecondBrain/Jarvis runtime with RAG, desktop, mobile, voice and release gates."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -27,6 +27,18 @@ connectors = [
 openai = [
   "openai>=1.40.0",
 ]
+desktop = [
+  "psutil>=5.9.0",
+]
+voice = [
+  "SpeechRecognition>=3.10.0",
+  "pyttsx3>=2.90",
+  "sounddevice>=0.4.6",
+]
+voice-offline = [
+  "faster-whisper>=1.0.0",
+  "vosk>=0.3.45",
+]
 all = [
   "pytest>=8.0.0",
   "PyMuPDF>=1.24.0",
@@ -34,6 +46,10 @@ all = [
   "requests>=2.31.0",
   "python-dotenv>=1.0.0",
   "openai>=1.40.0",
+  "psutil>=5.9.0",
+  "SpeechRecognition>=3.10.0",
+  "pyttsx3>=2.90",
+  "sounddevice>=0.4.6",
 ]
 
 [project.scripts]

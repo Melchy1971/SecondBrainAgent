@@ -267,6 +267,9 @@
   .ctl select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff;
     border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px; max-width:260px}
   .ctl select:focus{outline:none; box-shadow:var(--glow)}
+  .ctl input{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff;
+    border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px; max-width:200px}
+  .ctl input:focus{outline:none; box-shadow:var(--glow)}
   .asst-refresh-btn{align-self:flex-end}
   .asst-status{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted);
     align-self:flex-end; padding-bottom:9px}
@@ -388,6 +391,46 @@
   .imp-upload select{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px}
   .imp-upload input[type=file]{color:var(--cyan-soft); font-size:11px; font-family:inherit; max-width:340px}
   .imp-upload input[type=file]::file-selector-button{background:rgba(47,230,255,.08); color:var(--cyan-soft); border:1px solid var(--line); border-radius:7px; padding:6px 10px; margin-right:8px; cursor:pointer; font-family:inherit; font-size:11px}
+
+  /* ===================== JOBS-ANSICHT ===================== */
+  .jobs-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; max-height:260px; overflow:auto}
+  .job-card{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:rgba(10,24,34,.4); display:flex; flex-direction:column; gap:7px}
+  .job-card .jn{font-size:11px; color:#eafcff; word-break:break-all}
+  .job-card .jm{font-size:9px; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .job-card .btn{align-self:flex-start; font-size:9px; padding:5px 10px}
+  .job-dot{width:7px; height:7px; border-radius:50%; background:var(--muted); flex:none}
+  .job-dot.ok{background:var(--good); box-shadow:0 0 5px var(--good)}
+  .job-dot.bad{background:var(--bad); box-shadow:0 0 5px var(--bad)}
+  .jobs-history .jh{font-size:11px; padding:6px 0; border-bottom:1px dashed rgba(47,230,255,.10); display:flex; gap:8px; align-items:center; color:var(--cyan-soft)}
+  .jobs-history .jh .t{color:var(--muted); font-size:9px; margin-left:auto}
+  .kg-tag.off{color:var(--muted); border-color:var(--side-line)}
+  .conn-detail{font-size:9px; color:var(--muted); line-height:1.5; word-break:break-word}
+  .agt-caps{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+  .agt-caps .kg-tag{margin-left:0}
+
+  /* ===================== DEVELOPER-ANSICHT ===================== */
+  .dev-kv{display:flex; gap:10px; font-size:11px; padding:4px 0; border-bottom:1px dashed rgba(47,230,255,.10)}
+  .dev-kv .k{color:var(--muted); min-width:110px; flex:none}
+  .dev-kv .v{color:#eafcff; word-break:break-all}
+  .dev-ep{font-size:11px; padding:5px 0; border-bottom:1px dashed rgba(47,230,255,.10)}
+  .dev-ep .m{font-size:8px; color:var(--warn); border:1px solid var(--line); border-radius:5px; padding:1px 5px; letter-spacing:.06em}
+  .dev-ep code{color:var(--cyan); font-size:10px}
+  .dev-ep .d{font-size:9px; color:var(--muted); margin-top:2px}
+  .dev-console{display:flex; gap:8px; margin-bottom:8px}
+  .dev-console input{flex:1; background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:8px 11px; font-family:inherit; font-size:12px}
+  .dev-console input:focus{outline:none; box-shadow:var(--glow)}
+  #dev-out pre, #dev-log pre{white-space:pre-wrap; font-size:10px; color:var(--cyan-soft); margin:0}
+
+  /* ===================== CODING-ANSICHT ===================== */
+  .cod-prompt{display:flex; gap:8px; margin-bottom:10px}
+  .cod-prompt textarea{flex:1; min-height:74px; max-height:220px; resize:vertical; background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:10px; padding:11px 13px; font-family:inherit; font-size:13px}
+  .cod-prompt textarea:focus{outline:none; box-shadow:var(--glow)}
+  .cod-bar{display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap}
+  .cod-bar input{background:rgba(0,8,12,.6); border:1px solid var(--line); color:#eafcff; border-radius:8px; padding:7px 10px; font-family:inherit; font-size:12px; width:200px}
+  .cod-bar .grow{margin-left:auto}
+  .cod-status{font-size:10px; color:var(--good)}
+  #cod-out{overflow:auto; flex:1; min-height:240px}
+  #cod-out pre{white-space:pre; overflow:auto; font-size:11px; color:#cfeefb; margin:0; font-family:"Consolas","Menlo",monospace; line-height:1.5}
 </style>
 </head>
 <body>
@@ -412,11 +455,12 @@
       <a class="nav-item" id="nav-knowledge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Knowledge</a>
       <a class="nav-item" id="nav-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search</a>
       <a class="nav-item" id="nav-imports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Imports</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>Jobs</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Connectoren</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>Agents<span class="badge">NEW</span></a>
+      <a class="nav-item" id="nav-jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>Jobs</a>
+      <a class="nav-item" id="nav-connectoren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Connectoren</a>
+      <a class="nav-item" id="nav-agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>Agents<span class="badge">NEW</span></a>
       <a class="nav-item" id="nav-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</a>
-      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Developer</a>
+      <a class="nav-item" id="nav-developer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Developer</a>
+      <a class="nav-item" id="nav-coding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3"/><path d="M13 15h4"/></svg>Coding<span class="badge">NEW</span></a>
     </nav>
     <div class="side-status">
       <div class="lbl">System Status</div>
@@ -532,11 +576,11 @@
           <button class="btn" data-run="import_ai_exports.py">Import AI</button>
           <button class="btn" data-run="build_vector_rag.py">RAG Index</button>
           <button class="btn" data-run="check_paths_v9.py">Path Check</button>
-          <button class="btn" data-run="health_check.py">Health Check</button>
+          <button class="btn" data-run="healthcheck.py">Health Check</button>
           <button class="btn warn" data-run="release_gate_v9.py">Release Gate</button>
           <button class="btn warn" data-run="run_regression_tests_v9.py">Regression</button>
-          <button class="btn" data-run="vector_audit.py">Vector Audit</button>
-          <button class="btn warn" data-run="repair_index.py">Repair Index</button>
+          <button class="btn" data-run="run_quality_report.py">Vector Audit</button>
+          <button class="btn warn" data-run="reindex.py">Repair Index</button>
           <button class="btn" id="btn-logs">Logs</button>
           <button class="btn" id="btn-settings">Einstellungen</button>
         </div>
@@ -612,7 +656,8 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
             <label>Engine</label>
             <select id="asst-engine-sel">
               <option value="ollama">Ollama (lokal)</option>
-              <option value="openai">OpenAI</option>
+              <option value="openai">OpenAI (ChatGPT)</option>
+              <option value="gemini">Gemini</option>
             </select>
           </div>
           <div class="ctl">
@@ -767,6 +812,105 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       </div>
     </section>
 
+    <!-- ===================== JOBS-ANSICHT ===================== -->
+    <section id="view-jobs" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>JOBS</h2>
+        <div class="docs-count" id="jobs-count"></div>
+        <button class="btn" id="jobs-refresh">↻ Neu laden</button>
+      </div>
+      <div class="jobs-grid" id="jobs-grid"><div class="docs-empty">… lädt</div></div>
+      <div class="docs-body" style="grid-template-columns:1fr 1fr">
+        <div class="docs-pane">
+          <div class="kg-col-h">Verlauf</div>
+          <div class="docs-tree jobs-history" id="jobs-history"><div class="docs-empty">…</div></div>
+        </div>
+        <div class="docs-pane">
+          <div class="kg-col-h">Ausgabe</div>
+          <div class="docs-preview imp-out" id="jobs-out"><div class="docs-empty">Noch kein Job ausgeführt.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONNECTOREN-ANSICHT ===================== -->
+    <section id="view-connectoren" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>CONNECTOREN</h2>
+        <div class="docs-count" id="conn-count">—</div>
+        <button class="btn" id="conn-refresh">↻ Neu laden</button>
+      </div>
+      <div class="jobs-grid" id="conn-grid"><div class="docs-empty">… lädt</div></div>
+    </section>
+
+    <!-- ===================== AGENTS-ANSICHT ===================== -->
+    <section id="view-agents" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>AGENTS</h2>
+        <div class="docs-count" id="agt-count">—</div>
+        <button class="btn" id="agt-refresh">↻ Neu laden</button>
+      </div>
+      <div class="jobs-grid" id="agt-grid"><div class="docs-empty">… lädt</div></div>
+    </section>
+
+    <!-- ===================== DEVELOPER-ANSICHT ===================== -->
+    <section id="view-developer" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>DEVELOPER</h2>
+        <div class="docs-count" id="dev-sub"></div>
+        <button class="btn" id="dev-refresh">↻ Neu laden</button>
+      </div>
+      <div class="docs-body" style="grid-template-columns:1fr 1fr">
+        <div class="docs-pane">
+          <div class="kg-col-h">Diagnose</div>
+          <div class="docs-tree" id="dev-info"><div class="docs-empty">… lädt</div></div>
+          <div class="kg-col-h" style="margin-top:10px">Endpunkte</div>
+          <div class="docs-tree" id="dev-endpoints" style="max-height:200px"></div>
+        </div>
+        <div class="docs-pane">
+          <div class="kg-col-h">API-Konsole (GET)</div>
+          <div class="dev-console">
+            <input id="dev-path" value="/api/status" placeholder="/api/status">
+            <button class="btn go" id="dev-call">GET</button>
+          </div>
+          <div class="docs-preview" id="dev-out" style="max-height:220px"><div class="docs-empty">Endpunkt eingeben und GET.</div></div>
+          <div class="kg-col-h" style="margin-top:10px">Log <small class="link" id="dev-logsmall">aktualisieren</small></div>
+          <div class="docs-preview" id="dev-log" style="max-height:240px"><div class="docs-empty">… lädt</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CODING-ANSICHT ===================== -->
+    <section id="view-coding" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>CODING</h2>
+        <div class="asst-controls" style="margin-left:auto">
+          <div class="ctl"><label>Engine</label><select id="cod-engine">
+            <option value="ollama">Ollama (lokal)</option>
+            <option value="openai">OpenAI (ChatGPT)</option>
+            <option value="gemini">Gemini</option>
+            <option value="anthropic">Claude</option>
+          </select></div>
+          <div class="ctl"><label>Modell</label><input id="cod-model" placeholder="deepseek-coder"></div>
+          <div class="ctl"><label>Sprache</label><select id="cod-lang">
+            <option>Python</option><option>JavaScript</option><option>TypeScript</option><option>HTML</option><option>CSS</option><option>Bash</option><option>PowerShell</option><option>SQL</option><option>Java</option><option>C#</option><option>Go</option><option>Rust</option>
+          </select></div>
+        </div>
+      </div>
+      <div class="cod-prompt">
+        <textarea id="cod-task" placeholder="Beschreibe, was programmiert werden soll…  (Strg+Enter generiert)"></textarea>
+        <button class="btn go" id="cod-gen">Generieren</button>
+      </div>
+      <div class="cod-bar">
+        <span class="kg-col-h" style="margin:0; border:0">Ergebnis</span>
+        <span class="grow"></span>
+        <input id="cod-file" placeholder="loesung.py">
+        <button class="btn" id="cod-copy">Kopieren</button>
+        <button class="btn go" id="cod-save">Speichern</button>
+        <span class="cod-status" id="cod-status"></span>
+      </div>
+      <div class="docs-preview" id="cod-out"><div class="docs-empty">Beschreibe oben die Aufgabe und klick „Generieren". Der Code wird lokal über Ollama erzeugt und NICHT ausgeführt — prüfe ihn vor Gebrauch selbst.</div></div>
+    </section>
+
     <!-- Statusleiste -->
     <footer class="statusbar">
       <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg><span class="k">Backup</span> <b class="ok" id="sb-backup">Aktiv</b></div>
@@ -871,6 +1015,18 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       <div><label>Kontext-Chunks (1–20)</label><input id="set-assistant_context_chunks" type="number" min="1" max="20"></div>
     </div></div>
 
+    <div class="sec">Coding</div>
+    <div class="field"><div class="row">
+      <div><label>Coding-Engine</label><input id="set-coding_engine" placeholder="ollama | openai | gemini | anthropic"></div>
+      <div><label>Coding-Modell</label><input id="set-coding_model" placeholder="deepseek-coder"></div>
+    </div></div>
+    <div class="field"><label>Coding-Temperatur (0–2)</label><input id="set-coding_temperature" type="number" min="0" max="2" step="0.1"></div>
+
+    <div class="sec">API-Keys (lokal gespeichert, Klartext)</div>
+    <div class="field"><label>OpenAI / ChatGPT</label><input id="set-openai_api_key" type="password" autocomplete="off" placeholder="sk-…"></div>
+    <div class="field"><label>Google Gemini</label><input id="set-gemini_api_key" type="password" autocomplete="off" placeholder="AIza…"></div>
+    <div class="field"><label>Anthropic / Claude</label><input id="set-anthropic_api_key" type="password" autocomplete="off" placeholder="sk-ant-…"></div>
+
     <div class="sec">Darstellung</div>
     <div class="field"><label>Akzentfarbe</label><input id="set-accent" type="color"></div>
 
@@ -898,11 +1054,13 @@ const FIELDS = [
   "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
   "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",
   "backup_last","backup_next","vector_index",
-  "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks"
+  "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks",
+  "coding_engine","coding_model","coding_temperature",
+  "openai_api_key","gemini_api_key","anthropic_api_key"
 ];
 const INT_FIELDS = new Set(["news_max","weather_min","embedding_dim","ollama_models","queue_pending",
   "release_blocking","connectors","agents_active","vectors","documents","memories","assistant_context_chunks"]);
-const FLOAT_FIELDS = new Set(["lat","lon","assistant_temperature"]);
+const FLOAT_FIELDS = new Set(["lat","lon","assistant_temperature","coding_temperature"]);
 
 let SS_ONLINE_TEXT = "All Systems Operational";
 
@@ -1146,13 +1304,23 @@ function showView(view){
   $("view-knowledge").hidden = (view!=="knowledge");
   $("view-search").hidden    = (view!=="search");
   $("view-imports").hidden   = (view!=="imports");
-  ["dashboard","assistant","documents","memory","knowledge","search","imports"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
+  $("view-jobs").hidden      = (view!=="jobs");
+  $("view-connectoren").hidden = (view!=="connectoren");
+  $("view-agents").hidden    = (view!=="agents");
+  $("view-developer").hidden = (view!=="developer");
+  $("view-coding").hidden    = (view!=="coding");
+  ["dashboard","assistant","documents","memory","knowledge","search","imports","jobs","connectoren","agents","developer","coding"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
   if(view==="assistant"){ loadAssistantModels(); $("asst-q").focus(); }
   if(view==="documents"){ docsInit(); }
   if(view==="memory"){ memInit(); }
   if(view==="knowledge"){ kgInit(); }
   if(view==="search"){ srchInit(); }
   if(view==="imports"){ impInit(); }
+  if(view==="jobs"){ jobsInit(); }
+  if(view==="connectoren"){ connInit(); }
+  if(view==="agents"){ agtInit(); }
+  if(view==="developer"){ devInit(); }
+  if(view==="coding"){ codInit(); }
 }
 function asstAppend(role, text, sources, isErr){
   const empty=$("asst-empty"); if(empty) empty.remove();
@@ -1653,6 +1821,193 @@ $("imp-run").addEventListener("click", impRun);
 $("imp-refresh").addEventListener("click", impLoad);
 $("imp-zip").addEventListener("click", impZip);
 
+// ===================== JOBS =====================
+let JOBS_LOADED=false;
+async function jobsLoad(){
+  try{
+    const r=await getJSON("/api/jobs");
+    $("jobs-count").textContent=(r.jobs||[]).length+" Jobs";
+    const g=$("jobs-grid"); g.innerHTML="";
+    (r.jobs||[]).forEach(j=>{
+      const cls=(j.last_ok===null)?"":(j.last_ok?"ok":"bad");
+      const c=document.createElement("div"); c.className="job-card";
+      c.innerHTML="<div class='jn'>"+docEsc(j.script)+"</div>"
+        +"<div class='jm'><span class='job-dot "+cls+"'></span>"
+        +(j.last_time?("zuletzt: "+docEsc(j.last_time)):"noch nie gelaufen")+"</div>";
+      const b=document.createElement("button"); b.className="btn go"; b.textContent="Ausführen";
+      b.addEventListener("click", ()=>jobRun(j.script, b));
+      c.appendChild(b); g.appendChild(c);
+    });
+    const h=$("jobs-history"); h.innerHTML="";
+    if(!(r.history||[]).length){ h.innerHTML="<div class='docs-empty'>Keine Läufe protokolliert.</div>"; }
+    else r.history.forEach(e=>{
+      const d=document.createElement("div"); d.className="jh";
+      d.innerHTML="<span class='job-dot "+(e.ok?"ok":"bad")+"'></span><span>"+docEsc(e.script)+"</span><span class='t'>"+docEsc(e.time)+"</span>";
+      h.appendChild(d);
+    });
+  }catch(e){ $("jobs-grid").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function jobRun(script, btn){
+  const out=$("jobs-out"); out.innerHTML="<div class='docs-empty'>„"+docEsc(script)+"“ läuft …</div>";
+  if(btn) btn.disabled=true;
+  try{
+    const r=await getJSON("/api/run?script="+encodeURIComponent(script));
+    out.innerHTML="<pre>"+(r.ok?"[OK] ":"[FEHLER] ")+docEsc(script)+"\n\n"+docEsc(r.output||"")+"</pre>";
+    jobsLoad();
+  }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  finally{ if(btn) btn.disabled=false; }
+}
+function jobsInit(){ if(JOBS_LOADED) return; JOBS_LOADED=true; jobsLoad(); }
+$("nav-jobs").addEventListener("click", ()=>showView("jobs"));
+$("jobs-refresh").addEventListener("click", jobsLoad);
+
+// ===================== CONNECTOREN =====================
+let CONN_LOADED=false;
+async function connLoad(){
+  try{
+    const r=await getJSON("/api/connectors");
+    $("conn-count").textContent = r.ok ? ((r.enabled_count)+" aktiv / "+(r.total)+" konfiguriert") : "";
+    const g=$("conn-grid"); g.innerHTML="";
+    if(!r.ok || !(r.connectors||[]).length){
+      g.innerHTML="<div class='docs-empty'>"+(r.error?("Fehler: "+docEsc(r.error)):"Keine Connectoren konfiguriert.")+"</div>"; return;
+    }
+    r.connectors.forEach(c=>{
+      const card=document.createElement("div"); card.className="job-card";
+      let h="<div class='jn'>"+docEsc(c.name)
+        +"<span class='kg-tag"+(c.enabled?"":" off")+"'>"+(c.enabled?"aktiv":"inaktiv")+"</span></div>";
+      if(c.detail) h+="<div class='conn-detail'>"+docEsc(c.detail)+"</div>";
+      if(c.live){ h+="<div class='jm'><span class='job-dot "+(c.live.reachable?"ok":"bad")+"'></span>"+docEsc(c.live.info)+"</div>"; }
+      card.innerHTML=h; g.appendChild(card);
+    });
+  }catch(e){ $("conn-grid").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function connInit(){ if(CONN_LOADED) return; CONN_LOADED=true; connLoad(); }
+$("nav-connectoren").addEventListener("click", ()=>showView("connectoren"));
+$("conn-refresh").addEventListener("click", connLoad);
+
+// ===================== AGENTS =====================
+let AGT_LOADED=false;
+async function agtLoad(){
+  try{
+    const r=await getJSON("/api/agents");
+    if(r.ok){ $("sb-agents").textContent=r.enabled_count+" aktiv"; }
+    if($("agt-count")) $("agt-count").textContent = r.ok ? (r.enabled_count+" aktiv / "+r.total) : "";
+    const g=$("agt-grid"); if(!g) return;
+    g.innerHTML="";
+    if(!r.ok || !(r.agents||[]).length){ g.innerHTML="<div class='docs-empty'>"+(r.error?("Fehler: "+docEsc(r.error)):"Keine Agenten.")+"</div>"; return; }
+    r.agents.forEach(a=>{
+      const card=document.createElement("div"); card.className="job-card";
+      let h="<div class='jn'>"+docEsc(a.name)
+        +"<span class='kg-tag"+(a.enabled?"":" off")+"'>"+(a.enabled?"aktiv":"inaktiv")+"</span></div>";
+      if(a.role) h+="<div class='conn-detail'>"+docEsc(a.role)+"</div>";
+      if((a.capabilities||[]).length){ h+="<div class='agt-caps'>"+a.capabilities.map(c=>"<span class='kg-tag'>"+docEsc(c)+"</span>").join("")+"</div>"; }
+      h+="<div class='jm'>Risiko: "+docEsc(String(a.risk_level))+"</div>";
+      card.innerHTML=h; g.appendChild(card);
+    });
+  }catch(e){ if($("agt-grid")) $("agt-grid").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function agtInit(){ if(AGT_LOADED) return; AGT_LOADED=true; agtLoad(); }
+$("nav-agents").addEventListener("click", ()=>showView("agents"));
+$("agt-refresh").addEventListener("click", agtLoad);
+
+// ===================== DEVELOPER =====================
+let DEV_LOADED=false;
+async function devLoad(){
+  try{
+    const r=await getJSON("/api/dev/info");
+    $("dev-sub").textContent = r.ok ? (r.version+" · "+r.environment+(r.reload?" · reload":"")) : "";
+    const rows=[
+      ["Version", r.version],["Environment", r.environment],["Log-Level", r.log_level],
+      ["Host:Port", (r.host||"")+":"+(r.port||"")],["Reload", r.reload?"an":"aus"],
+      ["Python", String(r.python||"").split(" ")[0]],["psutil", r.psutil?"ja":"nein"],
+      ["Root", (r.paths.root||"")+(r.paths.root_exists?"  ✓":"  ✗")],
+      ["Vault", (r.paths.vault||"")+(r.paths.vault_exists?"  ✓":"  ✗")],
+      ["Inbox", (r.paths.inbox||"")+(r.paths.inbox_exists?"  ✓":"  ✗")],
+      ["Markdown", r.markdown_files],["Datenbank", r.database],
+      ["Embedding", r.embedding],["Ollama", (r.ollama_url||"")+" ("+(r.ollama_models||0)+")"],
+      ["Allowlist", (r.allowed_scripts||0)+" Skripte"],["Settings-Keys", r.settings_keys||0],
+    ];
+    $("dev-info").innerHTML = rows.map(x=>"<div class='dev-kv'><span class='k'>"+docEsc(x[0])+"</span><span class='v'>"+docEsc(String(x[1]))+"</span></div>").join("");
+    $("dev-endpoints").innerHTML = (r.endpoints||[]).map(e=>"<div class='dev-ep'><span class='m'>"+docEsc(e.method)+"</span> <code>"+docEsc(e.path)+"</code><div class='d'>"+docEsc(e.desc)+"</div></div>").join("");
+  }catch(e){ $("dev-info").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function devLog(){
+  const box=$("dev-log"); box.innerHTML="<div class='docs-empty'>… lädt</div>";
+  try{ const r=await getJSON("/api/logs"); box.innerHTML="<pre>"+docEsc(r.log||"Keine Logs.")+"</pre>"; box.scrollTop=box.scrollHeight; }
+  catch(e){ box.innerHTML="<div class='docs-empty'>Fehler beim Laden der Logs.</div>"; }
+}
+async function devCall(){
+  let p=$("dev-path").value.trim(); if(!p) return;
+  if(!p.startsWith("/")) p="/"+p;
+  if(!p.startsWith("/api/")){ $("dev-out").innerHTML="<div class='docs-empty'>Nur /api/…-GET-Endpunkte erlaubt.</div>"; return; }
+  const out=$("dev-out"); out.innerHTML="<div class='docs-empty'>GET "+docEsc(p)+" …</div>";
+  try{ const r=await getJSON(p); out.innerHTML="<pre>"+docEsc(JSON.stringify(r,null,2))+"</pre>"; }
+  catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function devInit(){ if(DEV_LOADED) return; DEV_LOADED=true; devLoad(); devLog(); }
+$("nav-developer").addEventListener("click", ()=>showView("developer"));
+$("dev-refresh").addEventListener("click", ()=>{ devLoad(); devLog(); });
+$("dev-call").addEventListener("click", devCall);
+$("dev-path").addEventListener("keydown", e=>{ if(e.key==="Enter") devCall(); });
+$("dev-logsmall").addEventListener("click", devLog);
+
+// ===================== CODING =====================
+let COD_LOADED=false, COD_CODE="";
+const COD_EXT={Python:"py",JavaScript:"js",TypeScript:"ts",HTML:"html",CSS:"css",Bash:"sh",PowerShell:"ps1",SQL:"sql",Java:"java","C#":"cs",Go:"go",Rust:"rs"};
+const COD_DEF={ollama:"deepseek-coder", openai:"gpt-4o-mini", gemini:"gemini-1.5-flash", anthropic:"claude-3-5-sonnet-latest"};
+async function codModels(){
+  try{
+    const r=await getJSON("/api/coding/models");
+    if(r.engine && $("cod-engine")) $("cod-engine").value=r.engine;
+    if($("cod-model") && !$("cod-model").value) $("cod-model").value = r.active || COD_DEF[($("cod-engine").value)] || "";
+  }catch(e){}
+}
+function codEngineChange(){
+  const eng=$("cod-engine").value;
+  $("cod-model").value = COD_DEF[eng] || "";
+  saveSettingsPartial({coding_engine:eng});
+}
+async function saveSettingsPartial(obj){
+  try{ await getJSON("/api/settings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(obj)}); }catch(e){}
+}
+async function codGen(){
+  const task=$("cod-task").value.trim(); if(!task) return;
+  const eng=$("cod-engine").value;
+  const out=$("cod-out"); out.innerHTML="<div class='docs-empty'>… generiert über "+docEsc(eng)+" (kann dauern)</div>";
+  $("cod-gen").disabled=true; $("cod-status").textContent="";
+  try{
+    const r=await getJSON("/api/coding/generate",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:task, language:$("cod-lang").value, model:$("cod-model").value, engine:eng})});
+    if(!r.ok){ out.innerHTML="<div class='docs-empty'>"+docEsc(r.error||"Fehler")+"</div>"; return; }
+    COD_CODE=r.code||"";
+    out.innerHTML="<pre>"+docEsc(COD_CODE)+"</pre>";
+    $("cod-status").textContent=(r.engine||eng)+" · "+(r.model||"");
+    if(!$("cod-file").value){ const ext=COD_EXT[$("cod-lang").value]||"txt"; $("cod-file").value="loesung."+ext; }
+  }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  finally{ $("cod-gen").disabled=false; }
+}
+function codCopy(){
+  if(!COD_CODE){ $("cod-status").textContent="Nichts zu kopieren."; return; }
+  if(navigator.clipboard) navigator.clipboard.writeText(COD_CODE).then(()=>{$("cod-status").textContent="Kopiert.";},()=>{$("cod-status").textContent="Kopieren nicht möglich.";});
+  else $("cod-status").textContent="Clipboard nicht verfügbar.";
+}
+async function codSave(){
+  if(!COD_CODE){ $("cod-status").textContent="Nichts zu speichern."; return; }
+  try{
+    const r=await getJSON("/api/coding/save",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({filename:$("cod-file").value||"code.txt", content:COD_CODE})});
+    $("cod-status").textContent = r.ok ? ("Gespeichert: "+r.file) : ("Fehler: "+(r.error||""));
+  }catch(e){ $("cod-status").textContent="Speichern-Fehler: "+e; }
+}
+function codInit(){ if(COD_LOADED) return; COD_LOADED=true; codModels(); $("cod-task").focus(); }
+$("nav-coding").addEventListener("click", ()=>showView("coding"));
+$("cod-gen").addEventListener("click", codGen);
+$("cod-engine").addEventListener("change", codEngineChange);
+$("cod-model").addEventListener("change", ()=>saveSettingsPartial({coding_model:$("cod-model").value}));
+$("cod-task").addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.ctrlKey||e.metaKey)){ e.preventDefault(); codGen(); }});
+$("cod-copy").addEventListener("click", codCopy);
+$("cod-save").addEventListener("click", codSave);
+
 // --- Poll-Schleifen ---
 loadMetrics(); setInterval(loadMetrics, 2000);
 loadStatus();  setInterval(loadStatus, 15000);
@@ -1660,6 +2015,7 @@ loadWeather(); setInterval(loadWeather, 15*60*1000);
 loadNews();    setInterval(loadNews, 15*60*1000);
 loadDocStats();
 loadMemStats();
+agtLoad();
 </script>
 </body>
 </html>

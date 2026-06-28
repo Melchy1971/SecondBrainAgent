@@ -14,7 +14,7 @@ from secondbrain.gui.bootstrap import bootstrap_status, write_bootstrap_report
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8851
-GUI_COMMANDS = {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}
+GUI_COMMANDS = {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui", "native-gui", "native-status", "voice-status", "voice-parse", "gui-web", "hud"}
 
 
 def _print(payload: dict[str, Any]) -> None:
@@ -70,9 +70,13 @@ def gui_status(project_root: str | Path | None = None, host: str = DEFAULT_HOST,
     pid = read_pid(root)
     pid_alive = _pid_alive(pid) if pid is not None else False
     port_alive = _port_open(host, port)
+    from secondbrain.desktop_native.status import native_desktop_status
+    native = native_desktop_status(root, repair=False)
     return {
-        "ok": pid_alive or port_alive,
-        "status": "running" if pid_alive or port_alive else "stopped",
+        "ok": bool(native.get("ok")),
+        "status": "native_ready" if native.get("ok") else "native_blocked",
+        "mode": "native_desktop",
+        "web_primary": False,
         "project_root": str(root),
         "url": _url(host, port),
         "pid_file": str(_pidfile(root)),
@@ -80,6 +84,7 @@ def gui_status(project_root: str | Path | None = None, host: str = DEFAULT_HOST,
         "pid_alive": pid_alive,
         "port_alive": port_alive,
         "start_script": str(_server_script(root)),
+        "native": native,
     }
 
 
@@ -89,13 +94,14 @@ def gui_doctor(project_root: str | Path | None = None) -> dict[str, Any]:
     def check(name: str, ok: bool, detail: str) -> None:
         checks.append({"name": name, "ok": bool(ok), "detail": detail})
     check("launcher", (root / "launcher.py").exists(), "launcher.py vorhanden")
-    check("hud_start_script", _server_script(root).exists(), "scripts/start_hud.py vorhanden")
+    check("native_desktop", True, "Native Desktop ist Primärmodus")
+    check("hud_start_script", _server_script(root).exists(), "scripts/start_hud.py vorhanden (Kompatibilitätsmodus)")
     check("jarvis_bat", (root / "Jarvis.bat").exists(), "Jarvis.bat vorhanden")
     check("gui_ps1", (root / "Start-Jarvis-GUI.ps1").exists(), "Start-Jarvis-GUI.ps1 vorhanden")
     check("shortcut_installer", (root / "Install-Jarvis-Desktop.ps1").exists(), "Install-Jarvis-Desktop.ps1 vorhanden")
     check("python", bool(sys.executable), sys.executable)
     status = gui_status(root)
-    bootstrap = bootstrap_status(root, repair=False)
+    bootstrap = bootstrap_status(root, repair=True)
     ok = all(c["ok"] for c in checks) and bootstrap.get("ok", False)
     return {"ok": ok, "status": "pass" if ok else "blocked", "checks": checks, "runtime": status, "bootstrap": bootstrap}
 
@@ -107,31 +113,33 @@ def shortcut_manifest(project_root: str | Path | None = None) -> dict[str, Any]:
         "schema": "secondbrain.gui.shortcuts.v1",
         "project_root": str(root),
         "desktop_shortcuts": [
-            {"name": "Jarvis GUI", "target": str(root / "Jarvis.bat"), "arguments": "", "starts": "HUD + Browser"},
-            {"name": "Jarvis GUI Autostart", "target": str(root / "Jarvis.bat"), "arguments": "/quiet", "starts": "HUD ohne Browser"},
+            {"name": "Jarvis", "target": str(root / "Jarvis.bat"), "arguments": "", "starts": "Native Desktop App"},
+            {"name": "Jarvis Native Desktop", "target": str(root / "Start-Jarvis-Native.bat"), "arguments": "", "starts": "Native Desktop App"},
+            {"name": "Jarvis Web HUD", "target": str(root / "Jarvis.bat"), "arguments": "hud", "starts": "Legacy Web HUD"},
         ],
         "installer": str(root / "Install-Jarvis-Desktop.ps1"),
         "uninstaller": str(root / "uninstall_jarvis.ps1"),
         "manual_start": [
-            "python launcher.py gui-open",
+            "python launcher.py",
+            "python launcher.py jarvis",
+            "python launcher.py native-gui",
             "python launcher.py gui-status",
             "Jarvis.bat",
-            "powershell -ExecutionPolicy Bypass -File Start-Jarvis-GUI.ps1",
+            "powershell -ExecutionPolicy Bypass -File Start-Jarvis-Native.ps1",
         ],
     }
 
 
-def start_gui(project_root: str | Path | None = None, *, open_browser: bool = True, quiet: bool = False, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> dict[str, Any]:
+def start_web_gui(project_root: str | Path | None = None, *, open_browser: bool = True, quiet: bool = False, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> dict[str, Any]:
     root = _root(project_root)
     bootstrap = write_bootstrap_report(root, repair=True)
     if not bootstrap.get("ok"):
         return {"ok": False, "status": "blocked", "error": "bootstrap blocked", "bootstrap": bootstrap}
-    status = gui_status(root, host, port)
-    if status["ok"]:
+    pid = read_pid(root)
+    if (pid is not None and _pid_alive(pid)) or _port_open(host, port):
         if open_browser and not quiet:
-            webbrowser.open(status["url"])
-        status.update({"action": "already_running", "opened_browser": bool(open_browser and not quiet)})
-        return status
+            webbrowser.open(_url(host, port))
+        return {"ok": True, "status": "running", "mode": "web_hud", "action": "already_running", "url": _url(host, port)}
     script = _server_script(root)
     if not script.exists():
         return {"ok": False, "status": "blocked", "error": f"Startskript fehlt: {script}"}
@@ -143,7 +151,20 @@ def start_gui(project_root: str | Path | None = None, *, open_browser: bool = Tr
     proc = subprocess.Popen([python_exe, str(script)], **kwargs)
     if open_browser and not quiet:
         webbrowser.open(_url(host, port))
-    return {"ok": True, "status": "starting", "action": "started", "pid": proc.pid, "url": _url(host, port), "opened_browser": bool(open_browser and not quiet)}
+    return {"ok": True, "status": "starting", "mode": "web_hud", "action": "started", "pid": proc.pid, "url": _url(host, port), "opened_browser": bool(open_browser and not quiet)}
+
+
+def start_gui(project_root: str | Path | None = None, *, open_browser: bool = True, quiet: bool = False, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> dict[str, Any]:
+    root = _root(project_root)
+    bootstrap = write_bootstrap_report(root, repair=True)
+    if not bootstrap.get("ok"):
+        return {"ok": False, "status": "blocked", "mode": "native_desktop", "error": "bootstrap blocked", "bootstrap": bootstrap}
+    if quiet:
+        from secondbrain.desktop_native.status import write_native_status_report
+        return write_native_status_report(root)
+    from secondbrain.desktop_native.app import main as native_main
+    rc = native_main(root)
+    return {"ok": rc == 0, "status": "closed", "mode": "native_desktop", "returncode": rc}
 
 
 def _normalize_argv(raw: list[str]) -> list[str]:
@@ -164,8 +185,19 @@ def gui_command(argv: list[str] | None = None) -> int:
     parser.add_argument("--quiet", action="store_true")
     args, _ = parser.parse_known_args(raw)
 
-    if args.cmd in {"gui", "gui-start", "gui-open", "jarvis", "desktop-gui", "desktop16-gui"}:
+    if args.cmd in {"gui", "gui-start", "gui-open", "jarvis", "desktop-gui", "desktop16-gui", "native-gui"}:
         payload = start_gui(args.project_root, open_browser=not args.no_browser, quiet=args.quiet, host=args.host, port=args.port)
+    elif args.cmd in {"gui-web", "hud"}:
+        payload = start_web_gui(args.project_root, open_browser=not args.no_browser, quiet=args.quiet, host=args.host, port=args.port)
+    elif args.cmd == "native-status":
+        from secondbrain.desktop_native.status import write_native_status_report
+        payload = write_native_status_report(args.project_root)
+    elif args.cmd == "voice-status":
+        from secondbrain.desktop_native.voice_de import GermanVoiceController
+        payload = GermanVoiceController(args.project_root).status()
+    elif args.cmd == "voice-parse":
+        from secondbrain.desktop_native.voice_de import GermanVoiceController
+        payload = GermanVoiceController(args.project_root).parse(" ".join(raw[1:]))
     elif args.cmd == "gui-status":
         payload = gui_status(args.project_root, args.host, args.port)
     elif args.cmd == "gui-doctor":

@@ -19,8 +19,6 @@ from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
 from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
-from secondbrain.gui.document_center_runtime import document_center_status
-from secondbrain.gui.memory_center_runtime import memory_center_status
 
 
 def out(obj: Any) -> None:
@@ -308,25 +306,7 @@ def main(argv: list[str] | None = None) -> int:
             payload = p0_doctor(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
-    if cmd == "document-center-status":
-        parser = argparse.ArgumentParser(prog="secondbrain")
-        parser.add_argument("cmd")
-        parser.add_argument("--project-root", default=str(Path.cwd()))
-        parser.add_argument("--profile", default=None)
-        args, _ = parser.parse_known_args(raw)
-        payload = document_center_status(args.project_root, args.profile)
-        out(payload)
-        return 0 if payload.get("ok") else 1
-    if cmd == "memory-center-status":
-        parser = argparse.ArgumentParser(prog="secondbrain")
-        parser.add_argument("cmd")
-        parser.add_argument("--project-root", default=str(Path.cwd()))
-        parser.add_argument("--profile", default=None)
-        args, _ = parser.parse_known_args(raw)
-        payload = memory_center_status(args.project_root, args.profile)
-        out(payload)
-        return 0 if payload.get("ok") else 1
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui", "native-gui", "native-status", "voice-status", "voice-parse", "gui-web", "hud"}:
         return gui_command(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())

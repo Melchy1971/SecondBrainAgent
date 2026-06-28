@@ -1,0 +1,37 @@
+{
+  "version": "30.25",
+  "name": "Native Desktop + German Voice Control",
+  "base": "SecondBrainAgent current v30.21+ delta-compatible",
+  "files": [
+    "APPLY_DELTA_v30_25.md",
+    "INSTALLATION_BEGINNER.md",
+    "Jarvis.bat",
+    "README.md",
+    "README_PATCH.md",
+    "RELEASE_NOTES.md",
+    "Start-Jarvis-GUI.bat",
+    "Start-Jarvis-GUI.ps1",
+    "Start-Jarvis-Native.bat",
+    "Start-Jarvis-Native.ps1",
+    "Start-Jarvis-WebHUD.bat",
+    "docs/NATIVE_DESKTOP_v30_25.md",
+    "launcher.py",
+    "pyproject.toml",
+    "secondbrain/desktop_native/__init__.py",
+    "secondbrain/desktop_native/app.py",
+    "secondbrain/desktop_native/status.py",
+    "secondbrain/desktop_native/voice_de.py",
+    "secondbrain/gui/bootstrap.py",
+    "secondbrain/gui/launch.py",
+    "secondbrain/module_registry.py",
+    "tests/test_v3020_gui_startup_surface.py",
+    "tests/test_v3025_native_desktop_voice.py"
+  ],
+  "delete": [],
+  "validation": [
+    "pytest tests/test_v3025_native_desktop_voice.py tests/test_v3020_gui_startup_surface.py -q -> 9 PASS",
+    "pytest --collect-only -q -> 1035 tests collected",
+    "python launcher.py native-status -> ok true in test overlay",
+    "python launcher.py voice-parse \"Jarvis Status\" -> intent=status"
+  ]
+}

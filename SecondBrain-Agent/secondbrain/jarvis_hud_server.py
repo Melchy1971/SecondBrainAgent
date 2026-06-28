@@ -36,6 +36,13 @@ Endpoints:
     GET /api/search/facets     -> verfuegbare Typen + Tags
     GET /api/imports/status    -> Inbox-Quellen + letzte Import-Reports
     POST /api/imports/zip      -> ZIP-Upload (base64) + Import der gewaehlten Quelle
+    GET /api/jobs              -> Allowlist-Jobs + Lauf-Historie aus dem Log
+    GET /api/connectors        -> Connector-Konfig-Status + Ollama-Live-Check
+    GET /api/agents            -> Agent-Registry-Katalog (read-only)
+    GET /api/dev/info          -> Developer-Diagnose + Endpunkt-Katalog
+    GET /api/coding/models     -> verfuegbare Coding-Modelle
+    POST /api/coding/generate  -> Code generieren (Ollama, kein Ausfuehren)
+    POST /api/coding/save      -> generierten Code als Datei speichern
 """
 from __future__ import annotations
 
@@ -146,6 +153,14 @@ DEFAULT_SETTINGS = {
     "assistant_models": "llama3.1, qwen, deepseek-coder, gemma",  # Auswahl rechts (Komma-getrennt)
     "assistant_temperature": 0.2,
     "assistant_context_chunks": 5,
+    # --- Coding ---
+    "coding_engine": "ollama",             # ollama | openai | gemini | anthropic
+    "coding_model": "deepseek-coder",      # leer = erstes verfuegbares (bevorzugt coder)
+    "coding_temperature": 0.1,
+    # --- API-Keys (Klartext, lokal) ---
+    "openai_api_key": "",
+    "gemini_api_key": "",
+    "anthropic_api_key": "",
 }
 # Welche Zahlenfelder duerfen ueberschrieben werden + erlaubter Bereich.
 _NUM = {
@@ -156,6 +171,7 @@ _NUM = {
     "connectors": (0, 100000), "agents_active": (0, 100000),
     "vectors": (0, 10 ** 12), "documents": (0, 10 ** 12), "memories": (0, 10 ** 12),
     "assistant_temperature": (0, 2), "assistant_context_chunks": (1, 20),
+    "coding_temperature": (0, 2),
 }
 # Zahlenfelder, die als Ganzzahl gespeichert werden (Rest bleibt float).
 _INT = {
@@ -432,6 +448,16 @@ class Handler(BaseHTTPRequestHandler):
             self._json(search_facets())
         elif path == "/api/imports/status":
             self._json(imports_status())
+        elif path == "/api/jobs":
+            self._json(jobs_overview())
+        elif path == "/api/connectors":
+            self._json(connectors_overview())
+        elif path == "/api/agents":
+            self._json(agents_overview())
+        elif path == "/api/dev/info":
+            self._json(dev_info())
+        elif path == "/api/coding/models":
+            self._json(coding_models())
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -458,6 +484,12 @@ class Handler(BaseHTTPRequestHandler):
                                            str(body.get("content", ""))))
         elif path == "/api/imports/zip":
             self._json(imports_zip(body))
+        elif path == "/api/coding/generate":
+            self._json(coding_generate(str(body.get("prompt", "")),
+                                       str(body.get("language", "")), str(body.get("model", "")),
+                                       str(body.get("engine", ""))))
+        elif path == "/api/coding/save":
+            self._json(coding_save(str(body.get("filename", "")), str(body.get("content", ""))))
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -622,10 +654,10 @@ def _ollama_chat(base_url: str, model: str, prompt: str, temperature: float) -> 
 
 
 def _openai_chat(model: str, prompt: str, temperature: float) -> str:
-    """Generierung ueber OpenAI. Erfordert OPENAI_API_KEY."""
-    key = os.environ.get("OPENAI_API_KEY")
+    """Generierung ueber OpenAI (= ChatGPT). Key aus Settings oder OPENAI_API_KEY."""
+    key = load_settings().get("openai_api_key") or os.environ.get("OPENAI_API_KEY")
     if not key:
-        raise RuntimeError("OPENAI_API_KEY nicht gesetzt")
+        raise RuntimeError("Kein OpenAI-Key (Einstellungen oder OPENAI_API_KEY)")
     url = "https://api.openai.com/v1/chat/completions"
     payload = json.dumps({
         "model": model or "gpt-4o-mini",
@@ -637,6 +669,73 @@ def _openai_chat(model: str, prompt: str, temperature: float) -> str:
     with urllib.request.urlopen(req, timeout=120) as resp:
         data = json.loads(resp.read().decode("utf-8"))
     return data["choices"][0]["message"]["content"].strip()
+
+
+def _gemini_chat(model: str, prompt: str, temperature: float) -> str:
+    """Generierung ueber Google Gemini. Key aus Settings oder GEMINI_API_KEY."""
+    key = (load_settings().get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+           or os.environ.get("GOOGLE_API_KEY"))
+    if not key:
+        raise RuntimeError("Kein Gemini-Key (Einstellungen oder GEMINI_API_KEY)")
+    model = model or "gemini-1.5-flash"
+    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+           f"{model}:generateContent?key={key}")
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": float(temperature)},
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    cands = data.get("candidates") or []
+    if not cands:
+        raise RuntimeError("Gemini: keine Antwort")
+    parts = (cands[0].get("content") or {}).get("parts") or []
+    return "".join(p.get("text", "") for p in parts).strip()
+
+
+def _anthropic_chat(model: str, prompt: str, temperature: float) -> str:
+    """Generierung ueber Anthropic Claude. Key aus Settings oder ANTHROPIC_API_KEY."""
+    key = load_settings().get("anthropic_api_key") or os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        raise RuntimeError("Kein Anthropic-Key (Einstellungen oder ANTHROPIC_API_KEY)")
+    model = model or "claude-3-5-sonnet-latest"
+    url = "https://api.anthropic.com/v1/messages"
+    payload = json.dumps({
+        "model": model, "max_tokens": 4096, "temperature": float(temperature),
+        "messages": [{"role": "user", "content": prompt}],
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers={
+        "Content-Type": "application/json", "x-api-key": key,
+        "anthropic-version": "2023-06-01"})
+    with urllib.request.urlopen(req, timeout=180) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    blocks = data.get("content") or []
+    return "".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
+
+
+def _llm_chat(engine: str, model: str, prompt: str, temperature: float):
+    """Routet zur gewaehlten Engine. Liefert (text, model_used)."""
+    engine = (engine or "ollama").lower()
+    if engine == "openai":
+        m = model or "gpt-4o-mini"
+        return _openai_chat(m, prompt, temperature), m
+    if engine == "gemini":
+        m = model or "gemini-1.5-flash"
+        return _gemini_chat(m, prompt, temperature), m
+    if engine in ("anthropic", "claude"):
+        m = model or "claude-3-5-sonnet-latest"
+        return _anthropic_chat(m, prompt, temperature), m
+    # Ollama (Default)
+    cfg = load_settings()
+    base = cfg.get("ollama_url") or "http://localhost:11434"
+    m = model or ""
+    if not m:
+        avail = _ollama_models(base)
+        m = avail[0] if avail else ""
+    if not m:
+        raise RuntimeError("kein Ollama-Modell verfuegbar")
+    return _ollama_chat(base, m, prompt, temperature), m
 
 
 def _build_prompt(query: str, chunks: list, history: list) -> str:
@@ -681,16 +780,7 @@ def assistant_chat(query: str, history: list | None = None) -> dict:
     model = cfg.get("assistant_model") or ""
     llm_ok, answer = False, ""
     try:
-        if engine == "openai":
-            answer = _openai_chat(model, prompt, temp); llm_ok = True
-        else:
-            base = cfg.get("ollama_url") or "http://localhost:11434"
-            if not model:
-                avail = _ollama_models(base)
-                model = avail[0] if avail else ""
-            if not model:
-                raise RuntimeError("kein Ollama-Modell verfuegbar")
-            answer = _ollama_chat(base, model, prompt, temp); llm_ok = True
+        answer, model = _llm_chat(engine, model, prompt, temp); llm_ok = True
     except Exception as exc:
         log_event("hud.assistant_llm_error", {"engine": engine, "error": str(exc)})
         if sources:
@@ -1175,6 +1265,272 @@ def imports_zip(body: dict) -> dict:
                                   "ok": result.get("ok")})
     return {"ok": result.get("ok", False), "source": source, "script": script,
             "output": result.get("output", "")}
+
+
+# --- Jobs (ausfuehrbare Skripte + Lauf-Historie aus dem Log) ------------------
+# Ehrlich: kein Queue-Dienst, sondern die Allowlist als Jobliste plus die
+# script.run-Eintraege aus jarvis_gui.log. Ausgefuehrt wird ueber /api/run.
+
+def jobs_overview() -> dict:
+    logf = LOG_DIR / "jarvis_gui.log"
+    last, history = {}, []
+    try:
+        if logf.exists():
+            for line in logf.read_text(encoding="utf-8", errors="ignore").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except Exception:
+                    continue
+                if row.get("type") != "script.run":
+                    continue
+                p = row.get("payload", {}) or {}
+                sc = p.get("script", "")
+                ev = {"time": row.get("time", ""), "script": sc, "ok": bool(p.get("ok"))}
+                if sc:
+                    last[sc] = ev
+                history.append(ev)
+    except Exception as exc:
+        log_event("hud.jobs_error", {"error": str(exc)})
+    history = history[-25:][::-1]  # neueste zuerst
+    jobs = []
+    for sc in sorted(ALLOWED_SCRIPTS):
+        l = last.get(sc)
+        jobs.append({"script": sc,
+                     "last_time": l["time"] if l else "",
+                     "last_ok": l["ok"] if l else None})
+    return {"ok": True, "jobs": jobs, "history": history}
+
+
+# --- Connectoren (Konfig-Status + Live-Check, read-only) ---------------------
+# Liest config/connectors.yaml (dependency-frei via load_simple_yaml).
+# Secrets/Zugangsdaten werden NICHT ausgegeben. Live geprueft wird nur, was
+# wirklich pingbar ist (Ollama). Der Rest ist Konfig-Status, kein "verbunden".
+
+def _connector_detail(val: dict) -> str:
+    parts = []
+    for k, v in val.items():
+        kl = str(k).lower()
+        if k == "enabled" or "secret" in kl or "pass" in kl or "user" in kl or "token" in kl or "key" in kl:
+            continue
+        sv = str(v).strip().strip('"').strip("'")
+        if sv in ("", "None", "[]", "{}"):
+            continue
+        parts.append(f"{k}: {sv}")
+    return " · ".join(parts[:5])
+
+
+def connectors_overview() -> dict:
+    try:
+        from secondbrain.config import load_simple_yaml
+        cfg = load_simple_yaml(ROOT / "config" / "connectors.yaml") or {}
+    except Exception as exc:
+        log_event("hud.connectors_error", {"error": str(exc)})
+        return {"ok": False, "error": str(exc), "connectors": []}
+    if isinstance(cfg.get("connectors"), dict):  # production-Variante
+        cfg = cfg["connectors"]
+    out = []
+    for name, val in cfg.items():
+        if not isinstance(val, dict):
+            out.append({"name": name, "enabled": bool(val), "detail": "", "live": None})
+            continue
+        enabled = bool(val.get("enabled", False))
+        live = None
+        if name == "ollama" and enabled:
+            base = val.get("base_url") or "http://localhost:11434"
+            models = _ollama_models(base)
+            live = {"reachable": bool(models),
+                    "info": (f"{len(models)} Modelle erreichbar" if models else "nicht erreichbar")}
+        out.append({"name": name, "enabled": enabled,
+                    "detail": _connector_detail(val), "live": live})
+    return {"ok": True, "connectors": out,
+            "enabled_count": sum(1 for c in out if c["enabled"]), "total": len(out)}
+
+
+# --- Agents (Registry-Katalog, read-only) ------------------------------------
+# Quelle: persistierte swarm-Registry (runtime/swarm_v124/agents.json), sonst
+# der Default-Katalog aus secondbrain.swarm.registry. Kein Ausloesen.
+
+def agents_overview() -> dict:
+    agents = None
+    runtime_file = ROOT / "runtime" / "swarm_v124" / "agents.json"
+    source = "runtime"
+    try:
+        if runtime_file.exists():
+            data = json.loads(runtime_file.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                agents = data
+    except Exception:
+        agents = None
+    if not agents:
+        try:
+            from dataclasses import asdict
+            from secondbrain.swarm.registry import DEFAULT_AGENTS
+            agents = [asdict(a) for a in DEFAULT_AGENTS]
+            source = "default"
+        except Exception as exc:
+            log_event("hud.agents_error", {"error": str(exc)})
+            return {"ok": False, "error": str(exc), "agents": []}
+    out = []
+    for a in agents:
+        if not isinstance(a, dict):
+            continue
+        out.append({"name": a.get("name", ""), "role": a.get("role", ""),
+                    "capabilities": list(a.get("capabilities", []) or []),
+                    "risk_level": a.get("risk_level", 1),
+                    "enabled": bool(a.get("enabled", True))})
+    return {"ok": True, "source": source, "agents": out, "total": len(out),
+            "enabled_count": sum(1 for a in out if a["enabled"])}
+
+
+# --- Developer (Diagnose + Endpunkt-Katalog, read-only) ----------------------
+_API_ENDPOINTS = [
+    ("GET", "/api/metrics", "CPU/RAM/Swap/Disk/Uptime/Netz"),
+    ("GET", "/api/status", "Vault/Inbox/Markdown-Status"),
+    ("GET", "/api/weather", "Wetter (Open-Meteo)"),
+    ("GET", "/api/news", "Tagesschau-RSS"),
+    ("GET", "/api/dashboards", "Dashboard-Links"),
+    ("GET/POST", "/api/settings", "Einstellungen lesen/speichern"),
+    ("GET", "/api/logs", "Log-Tail"),
+    ("GET/POST", "/api/run?script=", "Allowlist-Skript ausfuehren"),
+    ("GET/POST", "/api/rag?q=", "Stichwortsuche im Vault"),
+    ("GET", "/api/assistant/models", "Ollama-Modelle"),
+    ("POST", "/api/assistant", "RAG-Chat"),
+    ("POST", "/api/assistant/note", "Antwort als Notiz speichern"),
+    ("GET", "/api/documents?path=", "Vault-Ordner listen"),
+    ("GET", "/api/document?path=", "Notiz lesen"),
+    ("GET", "/api/documents/stats", "Markdown-Bestand"),
+    ("GET", "/api/memory", "Memory-Ordner"),
+    ("GET", "/api/memory/stats", "Memory-Bestand"),
+    ("GET", "/api/knowledge/stats", "Graph-Kennzahlen"),
+    ("GET", "/api/knowledge/entities", "Entitaeten (Suche/Filter)"),
+    ("GET", "/api/knowledge/entity", "Entitaet-Detail"),
+    ("GET", "/api/search", "Volltextsuche mit Facetten"),
+    ("GET", "/api/search/facets", "Such-Facetten"),
+    ("GET", "/api/imports/status", "Inbox + Reports"),
+    ("POST", "/api/imports/zip", "ZIP-Upload + Import"),
+    ("GET", "/api/jobs", "Jobs + Lauf-Historie"),
+    ("GET", "/api/connectors", "Connector-Status"),
+    ("GET", "/api/agents", "Agent-Registry"),
+    ("GET", "/api/dev/info", "Developer-Diagnose"),
+    ("GET", "/api/coding/models", "Coding-Modelle"),
+    ("POST", "/api/coding/generate", "Code generieren (Ollama)"),
+    ("POST", "/api/coding/save", "Code als Datei speichern"),
+]
+
+
+def dev_info() -> dict:
+    s = load_settings()
+    st = system_status()
+    return {"ok": True,
+            "version": s.get("version", ""), "environment": s.get("environment", ""),
+            "log_level": s.get("log_level", ""),
+            "host": os.environ.get("HUD_HOST", "127.0.0.1"),
+            "port": int(os.environ.get("HUD_PORT", 8851)),
+            "reload": _reload_enabled(),
+            "python": st.get("python", ""), "psutil": _HAS_PSUTIL,
+            "paths": {"root": st.get("root", ""), "vault": st.get("vault", ""),
+                      "inbox": st.get("inbox", ""),
+                      "root_exists": st.get("root_exists"),
+                      "vault_exists": st.get("vault_exists"),
+                      "inbox_exists": st.get("inbox_exists")},
+            "markdown_files": st.get("markdown_files", 0),
+            "database": s.get("database", ""),
+            "embedding": f"{s.get('embedding_provider','')} {s.get('embedding_model','')} "
+                         f"({s.get('embedding_dim','')})",
+            "ollama_url": s.get("ollama_url", ""), "ollama_models": s.get("ollama_models", 0),
+            "allowed_scripts": len(ALLOWED_SCRIPTS), "settings_keys": len(DEFAULT_SETTINGS),
+            "endpoints": [{"method": me, "path": pa, "desc": de} for me, pa, de in _API_ENDPOINTS]}
+
+
+# --- Coding (LLM-Codegenerierung, review-first, KEIN Ausfuehren) --------------
+# Generiert Code ueber das lokale Ollama (Standard deepseek-coder) und speichert
+# ihn auf Wunsch als NEUE Datei unter data/coding_output. Ausgefuehrt wird nichts.
+
+def _strip_code_fences(text: str) -> str:
+    t = (text or "").strip()
+    if "```" not in t:
+        return t
+    import re
+    m = re.search(r"```[a-zA-Z0-9_+#-]*\n(.*?)```", t, re.S)
+    if m:
+        return m.group(1).strip()
+    return t.replace("```", "").strip()
+
+
+def coding_generate(prompt_text: str, language: str = "", model: str = "", engine: str = "") -> dict:
+    task = (prompt_text or "").strip()
+    if not task:
+        return {"ok": False, "error": "Keine Aufgabe angegeben.", "llm_ok": False}
+    cfg = load_settings()
+    language = (language or "").strip() or "Python"
+    temp = cfg.get("coding_temperature", 0.1)
+    engine = (engine or cfg.get("coding_engine") or "ollama").strip().lower()
+    model = (model or "").strip() or cfg.get("coding_model") or ""
+    if engine == "ollama" and not model:  # cod-bevorzugte Auto-Wahl
+        base = cfg.get("ollama_url") or "http://localhost:11434"
+        avail = _ollama_models(base)
+        model = next((m for m in avail if "cod" in m.lower()), avail[0] if avail else "")
+        if not model:
+            return {"ok": False, "error": "Kein Ollama-Modell verfuegbar.", "llm_ok": False}
+    sys_p = (f"Du bist ein praeziser Coding-Assistent. Erzeuge ausschliesslich "
+             f"lauffaehigen Quellcode in {language}. Keine Erklaerungen ausserhalb "
+             f"des Codes, nur kurze Inline-Kommentare.")
+    full = sys_p + "\n\nAufgabe:\n" + task + "\n\nCode:"
+    try:
+        raw, model = _llm_chat(engine, model, full, temp)
+    except Exception as exc:
+        log_event("hud.coding_error", {"error": str(exc), "engine": engine, "model": model})
+        return {"ok": False, "error": f"LLM nicht erreichbar: {exc}", "llm_ok": False}
+    code = _strip_code_fences(raw)
+    log_event("hud.coding", {"language": language, "engine": engine, "model": model, "chars": len(code)})
+    return {"ok": True, "code": code, "model": model, "engine": engine,
+            "language": language, "llm_ok": True}
+
+
+def coding_save(filename: str, content: str) -> dict:
+    content = content or ""
+    if not content.strip():
+        return {"ok": False, "error": "Kein Inhalt."}
+    folder = ROOT / "data" / "coding_output"
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:
+        return {"ok": False, "error": f"Ordner nicht beschreibbar: {exc}"}
+    base = "".join(c if (c.isalnum() or c in "._-") else "_" for c in (filename or "code.txt"))
+    base = base.strip("_")[:80] or "code.txt"
+    if "." not in base:
+        base += ".txt"
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    target = folder / f"{stamp}_{base}"
+    n = 1
+    while target.exists():  # niemals ueberschreiben
+        stem, dot, ext = base.rpartition(".")
+        target = folder / (f"{stamp}_{stem}_{n}.{ext}" if dot else f"{stamp}_{base}_{n}")
+        n += 1
+    try:
+        target.write_text(content, encoding="utf-8")
+    except Exception as exc:
+        return {"ok": False, "error": f"Schreibfehler: {exc}"}
+    try:
+        rel = str(target.relative_to(ROOT)).replace("\\", "/")
+    except Exception:
+        rel = str(target)
+    log_event("hud.coding_save", {"file": rel})
+    return {"ok": True, "file": rel}
+
+
+def coding_models() -> dict:
+    cfg = load_settings()
+    base = cfg.get("ollama_url") or "http://localhost:11434"
+    configured = [m.strip() for m in str(cfg.get("assistant_models", "")).split(",") if m.strip()]
+    live = _ollama_models(base)
+    merged = list(dict.fromkeys(configured + live))
+    return {"ok": True, "models": merged,
+            "active": cfg.get("coding_model", "") or "deepseek-coder",
+            "engine": cfg.get("coding_engine", "ollama")}
 
 
 # --- Auto-Reload (optionaler Dev-Modus) --------------------------------------

@@ -1,4 +1,4 @@
-# Installation v30.21 fuer Einsteiger
+# Installation v30.25 fuer Einsteiger
 
 ## 1. Projektordner oeffnen
 
@@ -94,4 +94,48 @@ Danach gezielt den passenden Importer oder RAG-Ingest ausfuehren, z. B.:
 ```powershell
 python launcher.py p1-rag-ingest-file .\sample_docs\demo.md
 python launcher.py p1-rag-search Jarvis
+```
+
+
+# v30.25 Native Desktop Start
+
+Jarvis wird jetzt als eigenständige Desktop-App gestartet:
+
+```powershell
+cd H:\SecondBrainAgent\SecondBrain-Agent
+python launcher.py
+```
+
+Alternativen:
+
+```powershell
+python launcher.py jarvis
+python launcher.py native-gui
+.\Jarvis.bat
+.\Start-Jarvis-Native.bat
+```
+
+Das alte Web-HUD ist nur noch Kompatibilitätsmodus:
+
+```powershell
+python launcher.py hud
+```
+
+## Deutsche Sprachsteuerung
+
+Textbefehle funktionieren direkt in der Desktop-App. Für Mikrofonsteuerung:
+
+```powershell
+pip install -e ".[voice]"
+python launcher.py voice-status
+```
+
+Beispiele:
+
+```text
+Jarvis Status
+Suche Vertrag PostgreSQL
+Frage was fehlt noch
+Öffne Dokumente
+Repariere Index
 ```

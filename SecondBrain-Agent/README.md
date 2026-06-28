@@ -1,8 +1,8 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.21
+# SecondBrain-Agent v30.25
 
-Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, GUI/HUD, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
+Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberflaeche, deutscher Sprachsteuerung, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
 
 ## Projektwurzel
 
@@ -48,15 +48,22 @@ python launcher.py gui-doctor
 python launcher.py
 ```
 
-`python launcher.py` startet seit v30.21 den Jarvis-GUI-Bootstrap und danach die lokale Oberflaeche.
+`python launcher.py` startet seit v30.25 die native Desktop-App. Der Browser ist nicht mehr die Hauptoberflaeche.
 
 Alternative Startbefehle:
 
 ```powershell
 python launcher.py jarvis
+python launcher.py native-gui
 python launcher.py gui
 python launcher.py gui-start
-python launcher.py gui-open
+```
+
+Legacy Web-HUD nur bei Bedarf:
+
+```powershell
+python launcher.py hud
+python launcher.py gui-web
 ```
 
 Nach editable install zusaetzlich:
@@ -70,23 +77,29 @@ secondbrain command-index
 
 ```powershell
 .\Jarvis.bat
+.\Start-Jarvis-Native.bat
 .\Start-Jarvis-GUI.bat
 powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Die Desktop-/Startmenue-Verknuepfungen zeigen auf den Jarvis-Launcher. Alte HUD-Verknuepfungen sind nicht mehr die primaere Startflaeche.
+Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Start-Jarvis-GUI.*` bleibt als Kompatibilitaetsdatei erhalten und startet ebenfalls nativ.
 
 ## Lokale Oberflaechen
 
 Primaer:
 
+```powershell
+python launcher.py native-gui
+```
+
+Optionaler Web-Kompatibilitaetsmodus:
+
 ```text
 http://127.0.0.1:8851
 ```
 
-Direkter HUD-Start bleibt kompatibel:
-
 ```powershell
+python launcher.py hud
 python scripts\start_hud.py
 ```
 
@@ -98,6 +111,28 @@ python scripts\web_dashboard.py
 
 ```text
 http://localhost:8765
+```
+
+
+## Deutsche Sprachsteuerung
+
+Textbefehle funktionieren direkt in der nativen App. Mikrofon/TTS sind optional.
+
+```powershell
+python launcher.py voice-status
+python launcher.py voice-parse "Jarvis Status"
+pip install -e ".[voice]"
+```
+
+Beispiele:
+
+```text
+Jarvis Status
+Suche PostgreSQL pgvector
+Frage was fehlt noch
+Öffne Dokumente
+Repariere Index
+Importiere Datei C:\Pfad\datei.pdf
 ```
 
 ## Release-Gate-Reihenfolge
