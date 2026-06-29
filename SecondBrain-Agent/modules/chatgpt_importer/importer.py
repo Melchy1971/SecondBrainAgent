@@ -27,6 +27,14 @@ TAG_RULES = {
     "verein": ["ttc", "zaberfeld", "verein", "turnier", "jedermann"],
 }
 
+OPENAI_API_KEY_PATTERN = re.compile(r"sk-(?:proj-)?[A-Za-z0-9_-]{20,}")
+REDACTED_OPENAI_API_KEY = "[REDACTED_OPENAI_API_KEY]"
+
+
+def redact_secrets(value: str) -> str:
+    """Remove API credentials that may occur in imported conversations."""
+    return OPENAI_API_KEY_PATTERN.sub(REDACTED_OPENAI_API_KEY, value)
+
 def slugify(value: str, max_len: int = 90) -> str:
     value = value.strip() or "Ohne Titel"
     value = re.sub(r"[^\w\sÄÖÜäöüß.-]", "-", value, flags=re.UNICODE)
@@ -37,11 +45,28 @@ def slugify(value: str, max_len: int = 90) -> str:
 def safe_read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8", errors="ignore"))
 
-def find_conversations_json(extracted: Path) -> Path:
-    candidates = list(extracted.rglob("conversations.json"))
-    if not candidates:
-        raise FileNotFoundError("conversations.json nicht gefunden.")
-    return candidates[0]
+def find_conversations_json(extracted: Path) -> list[Path]:
+    """Findet die Konversationsdatei(en) im Export.
+
+    Unterstuetzt das alte Einzelformat (conversations.json) und das aktuelle
+    OpenAI-Splitformat (conversations-000.json ... conversations-NNN.json).
+    Gibt eine sortierte Liste zurueck.
+    """
+    single = list(extracted.rglob("conversations.json"))
+    if single:
+        return sorted(single)
+
+    def split_key(p: Path):
+        match = re.search(r"conversations-(\d+)\.json$", p.name)
+        return int(match.group(1)) if match else 0
+
+    split = sorted(extracted.rglob("conversations-*.json"), key=split_key)
+    if split:
+        return split
+
+    raise FileNotFoundError(
+        "Weder conversations.json noch conversations-*.json gefunden."
+    )
 
 def message_text(message: dict[str, Any]) -> str:
     content = message.get("content") or {}
@@ -145,7 +170,7 @@ def conversation_to_markdown(conversation: dict[str, Any]) -> tuple[str, str]:
         heading = "Benutzer" if role == "user" else "Assistent" if role == "assistant" else role
         lines.append(f"### {i}. {heading}")
         lines.append("")
-        lines.append(msg["text"])
+        lines.append(redact_secrets(msg["text"]))
         lines.append("")
 
     return title, "\n".join(lines).strip() + "\n"
@@ -181,11 +206,15 @@ def import_chatgpt_zip(
         with ZipFile(zip_path, "r") as zf:
             zf.extractall(tmp_path)
 
-        conversations_path = find_conversations_json(tmp_path)
-        conversations = safe_read_json(conversations_path)
-
-        if not isinstance(conversations, list):
-            raise ValueError("conversations.json hat kein erwartetes Listenformat.")
+        conversation_files = find_conversations_json(tmp_path)
+        conversations: list[Any] = []
+        for conv_file in conversation_files:
+            part = safe_read_json(conv_file)
+            if not isinstance(part, list):
+                raise ValueError(
+                    f"{conv_file.name} hat kein erwartetes Listenformat."
+                )
+            conversations.extend(part)
 
         for index, conv in enumerate(conversations, start=1):
             try:

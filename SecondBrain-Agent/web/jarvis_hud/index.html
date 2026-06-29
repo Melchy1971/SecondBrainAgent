@@ -911,16 +911,13 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
       <div class="docs-preview" id="cod-out"><div class="docs-empty">Beschreibe oben die Aufgabe und klick „Generieren". Der Code wird lokal über Ollama erzeugt und NICHT ausgeführt — prüfe ihn vor Gebrauch selbst.</div></div>
     </section>
 
-    <!-- Statusleiste -->
+    <!-- Statusleiste (nur Echtdaten) -->
     <footer class="statusbar">
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg><span class="k">Backup</span> <b class="ok" id="sb-backup">Aktiv</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span class="k">Sync</span> <b class="ok" id="sb-sync">Aktiv</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg><span class="k">Connectoren</span> <b id="sb-conn">8 verbunden</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/></svg><span class="k">Agents</span> <b id="sb-agents">3 aktiv</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5"/></svg><span class="k">Vectors</span> <b id="sb-vectors">1.248.932</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="k">Documents</span> <b id="sb-docs">4.392</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg><span class="k">Memories</span> <b id="sb-mem">12.845</b></div>
-      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="k">Nächstes Backup</span> <b id="sb-next">Heute, 22:00</b></div>
+      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg><span class="k">Connectoren</span> <b id="sb-conn">—</b></div>
+      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4"/></svg><span class="k">Agents</span> <b id="sb-agents">—</b></div>
+      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="k">Documents</span> <b id="sb-docs">—</b></div>
+      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg><span class="k">Memories</span> <b id="sb-mem">—</b></div>
+      <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg><span class="k">Entitäten</span> <b id="sb-entities">—</b></div>
     </footer>
 
   </div>
@@ -1137,15 +1134,7 @@ function applySettings(s){
   // Queue-Ring (statisch, Skala 0–10)
   const qp = Number(s.queue_pending ?? 0);
   ring("r-queue", null, Math.min(qp,10)*10); $("t-queue").textContent = isNaN(qp)?"0":qp;
-  // Statusleiste
-  $("sb-backup").textContent  = s.backup_active ?? "—";
-  $("sb-sync").textContent    = s.sync_active ?? "—";
-  $("sb-conn").textContent    = (s.connectors ?? 0) + " verbunden";
-  $("sb-agents").textContent  = (s.agents_active ?? 0) + " aktiv";
-  $("sb-vectors").textContent = fmt(s.vectors ?? 0);
-  $("sb-docs").textContent    = fmt(s.documents ?? 0);
-  $("sb-mem").textContent     = fmt(s.memories ?? 0);
-  $("sb-next").textContent    = s.backup_next ?? "—";
+  // Statusleiste wird NICHT mehr aus Settings gespeist -> siehe loadStats() (Echtdaten)
 }
 
 // --- Metriken (live) ---
@@ -1530,9 +1519,7 @@ async function docsOpen(path, row){
 function docsInit(){ if(DOCS_LOADED) return; DOCS_LOADED=true; docsListInto($("docs-tree"), ""); loadDocumentCenterStatus(); }
 function docsRefresh(){ DOCS_LOADED=false; $("docs-tree").innerHTML="<div class='docs-empty'>… lädt</div>"; docsInit(); loadDocStats(); loadDocumentCenterStatus(); }
 async function loadDocStats(){
-  try{ const r=await getJSON("/api/documents/stats");
-    if(r.ok){ $("docs-count").textContent=r.count; $("sb-docs").textContent=Number(r.count).toLocaleString("de-DE"); }
-  }catch(e){}
+  try{ const r=await getJSON("/api/documents/stats"); if(r.ok) $("docs-count").textContent=r.count; }catch(e){}
 }
 $("nav-documents").addEventListener("click", ()=>showView("documents"));
 $("docs-refresh").addEventListener("click", docsRefresh);
@@ -1615,9 +1602,7 @@ async function memOpen(path, row){
 function memInit(){ if(MEM_LOADED) return; MEM_LOADED=true; memLoad(); loadMemoryCenterStatus(); }
 function memRefresh(){ MEM_LOADED=false; $("mem-list").innerHTML="<div class='docs-empty'>… lädt</div>"; memInit(); loadMemStats(); loadMemoryCenterStatus(); }
 async function loadMemStats(){
-  try{ const r=await getJSON("/api/memory/stats");
-    if(r.ok){ $("mem-count").textContent=r.count; $("sb-mem").textContent=Number(r.count).toLocaleString("de-DE"); }
-  }catch(e){}
+  try{ const r=await getJSON("/api/memory/stats"); if(r.ok) $("mem-count").textContent=r.count; }catch(e){}
 }
 $("nav-memory").addEventListener("click", ()=>showView("memory"));
 $("mem-refresh").addEventListener("click", memRefresh);
@@ -1890,7 +1875,6 @@ let AGT_LOADED=false;
 async function agtLoad(){
   try{
     const r=await getJSON("/api/agents");
-    if(r.ok){ $("sb-agents").textContent=r.enabled_count+" aktiv"; }
     if($("agt-count")) $("agt-count").textContent = r.ok ? (r.enabled_count+" aktiv / "+r.total) : "";
     const g=$("agt-grid"); if(!g) return;
     g.innerHTML="";
@@ -2008,6 +1992,19 @@ $("cod-task").addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.ctrlKey|
 $("cod-copy").addEventListener("click", codCopy);
 $("cod-save").addEventListener("click", codSave);
 
+// --- Statusleiste: nur Echtdaten ---
+async function loadStats(){
+  try{
+    const r=await getJSON("/api/stats"); if(!r.ok) return;
+    const setN=(id,v)=>{ if(v!=null && $(id)) $(id).textContent=Number(v).toLocaleString("de-DE"); };
+    if($("sb-conn"))   $("sb-conn").textContent   = (r.connectors_enabled ?? 0)+" aktiv";
+    if($("sb-agents")) $("sb-agents").textContent = (r.agents_enabled ?? 0)+" aktiv";
+    setN("sb-docs", r.documents);
+    setN("sb-mem", r.memories);
+    setN("sb-entities", r.entities);
+  }catch(e){}
+}
+
 // --- Poll-Schleifen ---
 loadMetrics(); setInterval(loadMetrics, 2000);
 loadStatus();  setInterval(loadStatus, 15000);
@@ -2015,7 +2012,7 @@ loadWeather(); setInterval(loadWeather, 15*60*1000);
 loadNews();    setInterval(loadNews, 15*60*1000);
 loadDocStats();
 loadMemStats();
-agtLoad();
+loadStats(); setInterval(loadStats, 60000);
 </script>
 </body>
 </html>

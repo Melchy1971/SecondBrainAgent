@@ -456,6 +456,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(agents_overview())
         elif path == "/api/dev/info":
             self._json(dev_info())
+        elif path == "/api/stats":
+            self._json(hud_stats())
         elif path == "/api/coding/models":
             self._json(coding_models())
         else:
@@ -1216,7 +1218,7 @@ _IMPORT_SCRIPTS = {
     "gemini": "import_gemini_export.py",
     "perplexity": "import_perplexity_export.py",
 }
-_ZIP_MAX = 200 * 1024 * 1024  # 200 MB
+_ZIP_MAX = 400 * 1024 * 1024  # 400 MB
 
 
 def imports_zip(body: dict) -> dict:
@@ -1237,7 +1239,7 @@ def imports_zip(body: dict) -> dict:
     except Exception as exc:
         return {"ok": False, "error": f"Base64-Fehler: {exc}"}
     if len(raw) > _ZIP_MAX:
-        return {"ok": False, "error": "Datei zu gross (max. 200 MB)."}
+        return {"ok": False, "error": "Datei zu gross (max. 400 MB)."}
     if raw[:2] != b"PK":
         return {"ok": False, "error": "Keine gueltige ZIP-Datei (PK-Signatur fehlt)."}
     updir = ROOT / "data" / "_zip_uploads"
@@ -1419,6 +1421,34 @@ _API_ENDPOINTS = [
     ("POST", "/api/coding/generate", "Code generieren (Ollama)"),
     ("POST", "/api/coding/save", "Code als Datei speichern"),
 ]
+
+
+def hud_stats() -> dict:
+    """Reale Kennzahlen fuer die untere Statusleiste (keine Platzhalter)."""
+    out = {"ok": True}
+    try:
+        co = connectors_overview()
+        out["connectors_enabled"] = co.get("enabled_count", 0)
+        out["connectors_total"] = co.get("total", 0)
+    except Exception:
+        out["connectors_enabled"] = 0
+    try:
+        out["agents_enabled"] = agents_overview().get("enabled_count", 0)
+    except Exception:
+        out["agents_enabled"] = 0
+    try:
+        out["documents"] = documents_stats().get("count", 0)
+    except Exception:
+        out["documents"] = 0
+    try:
+        out["memories"] = memory_stats().get("count", 0)
+    except Exception:
+        out["memories"] = 0
+    try:
+        out["entities"] = knowledge_stats().get("entities", 0)
+    except Exception:
+        out["entities"] = 0
+    return out
 
 
 def dev_info() -> dict:
