@@ -1,5 +1,5 @@
 # Semantic Index
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
-Notizen: 338
+Notizen: 1587

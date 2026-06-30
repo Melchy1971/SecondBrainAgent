@@ -1,13 +1,14 @@
 # Life Dashboard v10
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 | Bereich | Notizen | Offen | Erledigt | Risiken | Entscheidungen | Fokus |
 |---|---:|---:|---:|---:|---:|---|
-| Beruf | 23 | 0 | 0 | 29 | 12 | Risiko prüfen |
-| Finanzen | 1 | 0 | 0 | 0 | 0 | nächsten Schritt definieren |
-| Gesundheit | 1 | 0 | 0 | 0 | 0 | nächsten Schritt definieren |
-| Lernen | 3 | 2 | 0 | 78 | 1 | Risiko prüfen |
-| Projekte | 326 | 36 | 0 | 1053 | 425 | Risiko prüfen |
-| Reisen | 1 | 0 | 0 | 0 | 0 | nächsten Schritt definieren |
-| Verein | 6 | 0 | 0 | 7 | 0 | Risiko prüfen |
+| Beruf | 234 | 40 | 0 | 401 | 199 | Risiko prüfen |
+| Finanzen | 59 | 0 | 0 | 40 | 24 | Risiko prüfen |
+| Gesundheit | 45 | 0 | 0 | 130 | 44 | Risiko prüfen |
+| Lernen | 407 | 492 | 0 | 3338 | 809 | Risiko prüfen |
+| Privat | 48 | 0 | 0 | 82 | 58 | Risiko prüfen |
+| Projekte | 639 | 117 | 0 | 1647 | 818 | Risiko prüfen |
+| Reisen | 19 | 0 | 0 | 26 | 12 | Risiko prüfen |
+| Verein | 136 | 0 | 0 | 65 | 185 | Risiko prüfen |

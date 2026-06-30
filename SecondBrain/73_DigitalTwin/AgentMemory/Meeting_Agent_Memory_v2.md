@@ -1,63 +1,72 @@
 # Meeting Agent Memory v2
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 ## Relevante Notizen
 
+- [[2026-06-30_meeting-intelligence]] — Score 132
+- [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 81
+- [[Claude_Obsidian_Skill]] — Score 81
+- [[2026-06-30_meeting-agent]] — Score 74
+- [[2026-06-26_meeting-agent]] — Score 58
 - [[2026-06-25_meeting-agent]] — Score 55
 - [[2026-06-23_meeting-agent]] — Score 52
+- [[2026-06-26_meeting-intelligence]] — Score 48
 - [[2026-06-22_meeting-agent]] — Score 48
+- [[Temporal_Graph]] — Score 46
 - [[2026-06-25_meeting-intelligence]] — Score 43
 - [[2026-06-23_meeting-intelligence]] — Score 43
+- [[Transportprotokolle_Zuordnung_68516595-47dc-8007-9115]] — Score 42
+- [[Transportprotokolle_Zuordnung]] — Score 42
+- [[Outlook_Anhänge_speichern_Tool_67c6b9b3-873c-8007-a752]] — Score 42
+- [[Outlook_Anhänge_speichern_Tool]] — Score 42
+- [[Sitzungsprotokoll_Hauptversammlung_69fcf62c-4d58-8390-888a]] — Score 39
+- [[Sitzungsprotokoll_Hauptversammlung]] — Score 39
 - [[2026-06-19_meeting-agent]] — Score 39
+- [[Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427]] — Score 38
+- [[Protokoll_Vorlage_Tischtennisverein]] — Score 38
 - [[2026-06-22_meeting-intelligence]] — Score 38
 - [[2026-06-19_meeting-intelligence]] — Score 34
+- [[Turniermodi_im_Tischtennis_690dacc5-ab28-832e-9526]] — Score 30
+- [[Turniermodi_im_Tischtennis]] — Score 30
+- [[vault_index]] — Score 27
+- [[Übersetzung_Systemstabilität_68d64dec-d6b4-832f-aad0]] — Score 25
+- [[Übersetzung_Systemstabilität]] — Score 25
+- [[QoS_Anforderungen_und_Anwendungen_685124e6-6f68-8007-ba47]] — Score 23
+- [[QoS_Anforderungen_und_Anwendungen]] — Score 23
+- [[Meeting_Agent_Memory_v2]] — Score 21
+- [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 15
+- [[Masterplan_optimieren]] — Score 15
+- [[TT_Pro_69c5578e-dedc-8395-b663]] — Score 14
+- [[TT_Pro]] — Score 14
+- [[Jedermann-Turnier_TTC_Zaberfeld_697f36c0-e05c-8386-8116]] — Score 14
+- [[Jedermann-Turnier_TTC_Zaberfeld]] — Score 14
+- [[Blogthemen_finden_68b6dfa8-2510-8330-8079]] — Score 13
+- [[Blogthemen_finden]] — Score 13
+- [[New_chat_69847cae-9ab0-8385-bff3]] — Score 12
+- [[Netzwerk_Prüfungsvorbereitung_68b6a59e-0b24-8333-b6f4]] — Score 12
+- [[Netzwerk_Prüfungsvorbereitung]] — Score 12
+- [[Decision_Intelligence_v2]] — Score 12
+- [[2026-06-30_semantic-deduplication]] — Score 12
 - [[2026-06-18_meeting-intelligence]] — Score 12
-- [[Meeting_Agent_Memory_v2]] — Score 11
+- [[2026-06-26_knowledge-quality]] — Score 11
 - [[2026-06-25_knowledge-quality]] — Score 11
-- [[SecondBrain OS – Benutzerhandbuch für Einsteiger]] — Score 9
-- [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] — Score 9
-- [[2026-06-23_knowledge-quality]] — Score 9
-- [[Decision_Agent_Memory_v2]] — Score 8
-- [[2026-06-25_reasoning-map]] — Score 7
-- [[2026-06-25_decision-agent]] — Score 7
-- [[2026-06-23_reasoning-map]] — Score 7
-- [[2026-06-23_decision-agent]] — Score 7
-- [[2026-06-22_knowledge-quality]] — Score 7
-- [[weighted_edges]] — Score 6
-- [[2026-06-22_decision-agent]] — Score 6
-- [[2026-06-19_semantic-deduplication]] — Score 6
-- [[2026-06-19_quality-scores]] — Score 6
-- [[Memory_Engine_Profile]] — Score 5
-- [[2026-06-22_reasoning-map]] — Score 5
-- [[2026-06-19_refactoring-proposals]] — Score 5
-- [[2026-06-19_knowledge-quality]] — Score 5
-- [[Executive_Agent_Memory_v2]] — Score 4
-- [[2026-06-19_reasoning-map]] — Score 4
-- [[2026-06-19_decision-agent]] — Score 4
-- [[2026-06-18_semantic-deduplication]] — Score 4
-- [[Research_Memory]] — Score 3
-- [[Personal_CRM_Index]] — Score 3
-- [[Memory_Profile]] — Score 3
-- [[Executive_Memory]] — Score 3
-- [[2026-06-25_research-backlog-agent]] — Score 3
-- [[2026-06-23_research-backlog-agent]] — Score 3
-- [[2026-06-19_context-map]] — Score 3
-- [[2026-06-18_context-map]] — Score 3
-- [[SecondBrain OS v9.1 – Einsteigerhandbuch]] — Score 2
-- [[Meeting]] — Score 2
-- [[Knowledge_Intelligence_Dashboard_v99]] — Score 2
-- [[Digital_Twin_v6]] — Score 2
-- [[Calendar_Agent_Memory_v2]] — Score 2
-- [[2026-06-25_recommendations]] — Score 2
-- [[2026-06-25_chief-of-staff-v98]] — Score 2
-- [[2026-06-23_recommendations]] — Score 2
-- [[2026-06-22_research-backlog-agent]] — Score 2
-- [[2026-06-22_recommendations]] — Score 2
+- [[VPS_Architektur_mit_Docker_69e61ad5-ac00-838d-8e63]] — Score 10
+- [[VPS_Architektur_mit_Docker]] — Score 10
+- [[KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0]] — Score 10
 
 ## Gelernte Tags
 
-- #obsidian: 1
+- #chatgpt: 201
+- #import: 201
+- #ki: 191
+- #sap: 191
+- #projekt: 116
+- #code: 110
+- #verein: 91
+- #gesundheit: 66
+- #tischtennis: 62
+- #obsidian: 49
 - #pdf: 1
 - #email: 1
 - #meeting: 1

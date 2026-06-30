@@ -1,6 +1,6 @@
 # Plugin Ecosystem
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 | Plugin | Status |
 |---|---|

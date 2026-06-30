@@ -1,121 +1,127 @@
 # Entity Extraction v9.9
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 ## Häufigste Entitäten
 
-- **Obsidian** (technology): 111
-- **2026-06-18** (date): 88
-- **2026-06-19** (date): 88
-- **Benutzerhandbuch** (project_or_topic): 85
-- **Einsteiger** (project_or_topic): 85
-- **Einsteigerhandbuch** (project_or_topic): 79
-- **Risiken** (project_or_topic): 78
-- **Analyse** (project_or_topic): 72
-- **Score** (project_or_topic): 69
-- **Tool** (project_or_topic): 66
-- **Aufgaben** (project_or_topic): 64
-- **Entscheidungen** (project_or_topic): 63
-- **Meeting** (project_or_topic): 62
-- **Projekt** (project_or_topic): 60
-- **Risiko** (project_or_topic): 55
-- **Aktualisiert** (project_or_topic): 43
-- **2026-06-26** (date): 42
-- **Gemini** (technology): 40
-- **Aufgabe** (project_or_topic): 39
-- **Projekte** (project_or_topic): 38
-- **Aktualisiert** (person_or_topic): 34
-- **Agent** (organization): 33
-- **Empfehlung** (project_or_topic): 33
-- **Fragen** (organization): 32
-- **Was** (person_or_topic): 32
-- **Entscheidung** (project_or_topic): 32
-- **Simulation** (project_or_topic): 31
-- **2026-06-25** (date): 31
-- **Process** (project_or_topic): 30
-- **2026-06-23** (date): 30
-- **Ergebnis** (project_or_topic): 29
-- **Index** (project_or_topic): 28
-- **2026-06-22** (date): 28
-- **Decision** (project_or_topic): 27
-- **Notiz** (project_or_topic): 27
-- **Beispiel** (project_or_topic): 25
-- **Journal** (project_or_topic): 25
-- **Schritte** (project_or_topic): 24
-- **Anforderungen** (project_or_topic): 24
-- **Goal** (project_or_topic): 24
-- **Inbox** (project_or_topic): 23
-- **Wissen** (project_or_topic): 23
-- **Notizen** (project_or_topic): 23
-- **Testgrundlage** (organization): 21
-- **Beispieldaten** (project_or_topic): 21
-- **Concept** (project_or_topic): 21
-- **Proof** (project_or_topic): 21
-- **Python** (technology): 21
-- **Daily Digest** (project_or_topic): 21
-- **Watcher** (project_or_topic): 21
-- **Risiken** (person_or_topic): 20
-- **Prioritäten** (project_or_topic): 20
-- **Aufgaben** (person_or_topic): 19
-- **Notizen** (person_or_topic): 19
-- **Tags** (organization): 19
-- **Event** (project_or_topic): 19
-- **Signale** (project_or_topic): 19
-- **Lernen** (project_or_topic): 19
-- **Review** (project_or_topic): 19
-- **Schritt** (project_or_topic): 18
-- **Alternativen** (project_or_topic): 18
-- **Keine** (project_or_topic): 17
-- **Import** (project_or_topic): 17
-- **Dokumentation** (project_or_topic): 17
-- **Links** (project_or_topic): 17
-- **Markdown** (project_or_topic): 15
-- **Automatisierung** (project_or_topic): 15
-- **Agent Masterplan** (organization): 15
-- **Heute** (project_or_topic): 15
-- **Return** (person_or_topic): 15
-- **Quellen** (person_or_topic): 14
-- **Quellen** (project_or_topic): 14
-- **Arbeitsmuster** (project_or_topic): 14
-- **Priorität** (project_or_topic): 14
-- **Process Agent** (organization): 14
-- **Project Agent** (organization): 14
-- **Annahmen** (project_or_topic): 14
-- **Nächster Schritt** (project_or_topic): 14
-- **Vault** (project_or_topic): 13
-- **Blocker** (project_or_topic): 13
-- **Claude** (technology): 12
-- **Fokus** (project_or_topic): 12
-- **Gesundheit** (project_or_topic): 12
-- **Dateien** (project_or_topic): 11
-- **SAP** (technology): 11
-- **Entscheidungen** (person_or_topic): 11
-- **Risiko** (person_or_topic): 11
-- **Projektbezug** (project_or_topic): 11
-- **Offene Aufgaben** (project_or_topic): 11
-- **Dashboard** (project_or_topic): 11
-- **Finanzen** (project_or_topic): 11
-- **Schwache Notizen** (project_or_topic): 11
-- **Wirkung** (project_or_topic): 11
-- **Install** (project_or_topic): 11
-- **Decision Agent** (organization): 11
-- **Check** (project_or_topic): 11
-- **Details** (project_or_topic): 11
-- **Tasks** (project_or_topic): 10
-- **Nächste Schritte** (project_or_topic): 10
-- **Typ** (person_or_topic): 10
+- **ChatGPT** (technology): 1213
+- **Für** (person_or_topic): 1189
+- **SAP** (technology): 1048
+- **Review** (person_or_topic): 784
+- **Zusammenfassung** (person_or_topic): 778
+- **Export** (person_or_topic): 774
+- **Automatisch** (person_or_topic): 773
+- **Benutzer** (person_or_topic): 773
+- **Conversation** (person_or_topic): 773
+- **Kurzüberblick** (person_or_topic): 773
+- **Metadaten** (person_or_topic): 773
+- **Nachrichten** (person_or_topic): 773
+- **Unterhaltung** (person_or_topic): 773
+- **Assistent** (person_or_topic): 730
+- **Ich** (person_or_topic): 560
+- **Review** (project_or_topic): 435
+- **Zusammenfassung** (project_or_topic): 424
+- **Metadaten** (project_or_topic): 419
+- **Export** (project_or_topic): 417
+- **Unterhaltung** (project_or_topic): 417
+- **Automatisch** (project_or_topic): 415
+- **Conversation** (project_or_topic): 415
+- **Kurzüberblick** (project_or_topic): 415
+- **Nachrichten** (project_or_topic): 415
+- **Das** (person_or_topic): 414
+- **Benutzer** (project_or_topic): 413
+- **Assistent** (project_or_topic): 411
+- **Hier** (person_or_topic): 387
+- **Wenn** (person_or_topic): 380
+- **Was** (person_or_topic): 365
+- **Die** (person_or_topic): 333
+- **Wenn** (project_or_topic): 278
+- **Mit** (person_or_topic): 278
+- **Projekt** (project_or_topic): 264
+- **Obsidian** (technology): 254
+- **Ein** (person_or_topic): 247
+- **Sie** (person_or_topic): 242
+- **Python** (technology): 235
+- **Erstelle** (person_or_topic): 206
+- **Tool** (project_or_topic): 205
+- **Falls** (person_or_topic): 203
+- **Datei** (person_or_topic): 200
+- **Wie** (person_or_topic): 198
+- **Schritt** (project_or_topic): 197
+- **Beispiel** (project_or_topic): 196
+- **Hier** (project_or_topic): 195
+- **Code** (project_or_topic): 192
+- **Schritt** (person_or_topic): 188
+- **Beispiel** (person_or_topic): 187
+- **Der** (person_or_topic): 182
+- **Fragen** (organization): 180
+- **App** (person_or_topic): 178
+- **Analyse** (project_or_topic): 177
+- **Datei** (project_or_topic): 174
+- **Struktur** (project_or_topic): 170
+- **Dateien** (project_or_topic): 164
+- **Daten** (project_or_topic): 161
+- **Text** (person_or_topic): 161
+- **Text** (project_or_topic): 160
+- **Ziel** (project_or_topic): 157
+- **Docker** (technology): 154
+- **Risiken** (project_or_topic): 152
+- **Nur** (person_or_topic): 151
+- **Ziel** (person_or_topic): 149
+- **Schritte** (project_or_topic): 147
+- **Falls** (project_or_topic): 140
+- **Bei** (person_or_topic): 138
+- **Aufgaben** (project_or_topic): 137
+- **Seite** (person_or_topic): 136
+- **Bereich** (person_or_topic): 135
+- **Version** (person_or_topic): 134
+- **Tools** (project_or_topic): 133
+- **Dann** (person_or_topic): 133
+- **Code** (person_or_topic): 132
+- **Einstellungen** (person_or_topic): 132
+- **Version** (project_or_topic): 131
+- **Prompt** (project_or_topic): 131
+- **Projekte** (project_or_topic): 130
+- **Risiko** (project_or_topic): 127
+- **Auf** (person_or_topic): 125
+- **Möchtest** (person_or_topic): 125
+- **Fehler** (project_or_topic): 121
+- **System** (project_or_topic): 120
+- **Erstelle** (project_or_topic): 120
+- **Gib** (person_or_topic): 120
+- **Tag** (organization): 118
+- **Ergebnis** (project_or_topic): 117
+- **Daten** (person_or_topic): 117
+- **Vorlage** (organization): 116
+- **Damit** (person_or_topic): 116
+- **Alles** (person_or_topic): 115
+- **Bild** (person_or_topic): 115
+- **Mail** (project_or_topic): 114
+- **Struktur** (person_or_topic): 114
+- **Soll** (person_or_topic): 112
+- **Anleitung** (person_or_topic): 111
+- **Integration** (project_or_topic): 110
+- **Inhalte** (project_or_topic): 108
+- **Aufgabe** (project_or_topic): 107
+- **Fehler** (person_or_topic): 107
 
 ## Quellenverteilung
 
 ### vault
-- project_or_topic: 3650
-- person_or_topic: 1033
-- organization: 345
-- date: 307
-- technology: 218
+- project_or_topic: 4350
+- person_or_topic: 1128
+- date: 1101
+- organization: 381
+- technology: 291
 ### tags:
 - person_or_topic: 7
 - organization: 1
+### chatgpt
+- person_or_topic: 93825
+- project_or_topic: 74002
+- organization: 5228
+- technology: 3160
+- date: 1443
 ### gemini
 - date: 2
 - person_or_topic: 2

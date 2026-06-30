@@ -7,3 +7,6 @@ runtime/
 logs/
 .pytest_cache/
 .pytest_tmp/
+
+# Generated vector index; rebuilt locally and can exceed GitHub's blob limit.
+SecondBrain/99_System/vector_rag/vector_index.json

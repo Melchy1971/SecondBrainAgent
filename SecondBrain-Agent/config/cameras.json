@@ -1,0 +1,5 @@
+{
+  "gateway_webrtc": "http://127.0.0.1:8889",
+  "gateway_hls": "http://127.0.0.1:8888",
+  "cameras": []
+}

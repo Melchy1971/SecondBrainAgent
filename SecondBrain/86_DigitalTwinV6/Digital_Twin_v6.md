@@ -1,50 +1,52 @@
 # Digital Twin v6
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 ## Prioritätssignale
 
-- projekt: 697
-- risiko: 626
-- prozess: 386
-- entscheidung: 386
-- automatisierung: 309
-- gesundheit: 48
-- lernen: 30
-- lokal: 12
+- projekt: 5382
+- lokal: 2783
+- entscheidung: 2014
+- prozess: 1936
+- risiko: 1799
+- automatisierung: 983
+- stabilität: 382
+- gesundheit: 368
+- lernen: 357
+- wartbarkeit: 54
 
 ## Wissensschwerpunkte
 
-- #obsidian: 21
-- #email: 20
-- #pdf: 20
-- #secondbrain: 18
-- #decision: 18
-- #meeting: 17
-- #process: 17
-- #knowledge-gap: 17
-- #briefing: 16
-- #gemini: 16
-- #ki: 15
-- #import: 14
-- #Entscheidungen: 12
-- #Prioritäten: 12
-- #Risiken: 12
-- #copilot-conversation: 11
-- #Arbeitsmuster: 11
-- #evergreen: 9
-- #projects: 9
-- #travel: 9
-- #Fokuszeiten: 8
-- #Meeting-Vorbereitung: 8
-- #Nachbereitung: 7
-- #Tagesplanung: 7
-- #Wochenplanung: 7
-- #Empfehlungen: 5
-- #Keine.: 5
-- #konfigurieren: 4
-- #Aktivität: 4
-- #Alternativen: 4
+- #import: 1208
+- #chatgpt: 1198
+- #sap: 1036
+- #ki: 1025
+- #projekt: 424
+- #code: 386
+- #verein: 317
+- #tischtennis: 266
+- #gesundheit: 199
+- #obsidian: 157
+- #Risiken: 31
+- #Dashboard: 30
+- #pdf: 28
+- #Dokumente: 28
+- #Status: 25
+- #email: 24
+- #Tags: 24
+- #Embeddings: 24
+- #Import: 24
+- #Tests: 24
+- #name: 23
+- #decision: 21
+- #Titel: 21
+- #PDF: 21
+- #id: 21
+- #status: 21
+- #fff: 21
+- #secondbrain: 19
+- #Entscheidungen: 19
+- #Prioritäten: 19
 
 ## Kernfragen
 

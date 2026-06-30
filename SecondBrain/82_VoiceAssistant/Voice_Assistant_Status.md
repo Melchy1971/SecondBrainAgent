@@ -1,6 +1,6 @@
 # Voice Assistant
 
-Aktualisiert: 2026-06-26
+Aktualisiert: 2026-06-30
 
 ## Status
 

@@ -2,10 +2,17 @@
 
 | Tag | Anzahl |
 |---|---:|
+| import | 1187 |
+| chatgpt | 1185 |
+| sap | 1020 |
+| ki | 1001 |
+| projekt | 408 |
+| code | 373 |
+| verein | 304 |
+| tischtennis | 250 |
+| gesundheit | 186 |
+| obsidian | 134 |
 | gemini | 3 |
-| obsidian | 2 |
-| import | 2 |
-| ki | 2 |
 | pdf | 1 |
 | email | 1 |
 | secondbrain | 1 |

@@ -3,7 +3,7 @@
 | Typ | Anzahl |
 |---|---:|
 | project | 4 |
-| unknown | 343 |
+| unknown | 418 |
 | task | 3 |
 | email_analysis | 1 |
 | web_source | 1 |
@@ -17,4 +17,5 @@
 | graph_node | 1 |
 | inbox | 1 |
 | quick_capture | 4 |
+| chatgpt_conversation | 1185 |
 | gemini_conversation | 2 |

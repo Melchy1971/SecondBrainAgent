@@ -1,0 +1,86 @@
+# Decision Agent v9.8
+
+Datum: 2026-06-30
+
+| Reviewbedarf | Entscheidung | Qualität | Fehlende Felder |
+|---:|---|---:|---|
+| 100 | [[project]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[facts_tasks]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[facts_decisions]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[ZIP_Analyse_und_Optimierung_69ef43f6-47c0-8384-83d5]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[ZIP_Analyse_und_Optimierung]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Wärmepumpe_App_offline_6a23fb03-a0d4-83eb-aabc]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Wärmepumpe_App_offline]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Weekly_Plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Webseiten_Planung_und_Beratung_6794d15a-0f5c-8007-a5ee]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Webseiten_Planung_und_Beratung]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Voice_Assistant_Status]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Unraid_PXE_Install_Server_6819bc28-a324-8007-9169]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Unraid_PXE_Install_Server]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Semantic_OS_Status]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[SecondBrain OS v9.1 – Einsteigerhandbuch]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Sci-Fi_Kinderabenteuer_6799206a-058c-8007-811d]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Sci-Fi_Kinderabenteuer]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Quarterly_Plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[QoS_Anforderungen_und_Anwendungen_685124e6-6f68-8007-ba47]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[QoS_Anforderungen_und_Anwendungen]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Projekt]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Project_Status]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[PV_Integration_in_myGEKKO_6a11e9a1-7eb0-83eb-8fd1]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[PV_Integration_in_myGEKKO]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Obsidian_mit_Claude_verbinden_69ef2ac0-68f8-8395-a9cb]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Obsidian_mit_Claude_verbinden]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Monthly_Plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Meeting]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Lernen_ERP_Index]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[KI_Website_Erstellung_A11Y_682f0277-d6f0-8007-b012]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[KI_Website_Erstellung_A11Y]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Install]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Homepage_CMS_Auswahl_Gespräch_6793bdc8-ff50-8007-997f]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Homepage_CMS_Auswahl_Gespräch]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Homepage_CMS_Auswahl_Beratung_6794d0da-f2f0-8007-b8f3]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Homepage_CMS_Auswahl_Beratung]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Generierungsanfrage_69eb6046-9274-8385-b255]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Generierungsanfrage]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Executive_Dashboard]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Executive_Dashboard]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Email_Analysis]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Drucker_Papier_Einzug_Fehler_69e49d76-4c94-8389-b1f2]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Drucker_Papier_Einzug_Fehler]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Digital_Twin_v4]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Decision_Register]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Dateianalyse_und_Zusammenfassung_68c80ea6-daac-8333-a77e]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Dateianalyse_und_Zusammenfassung]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[ClaudeBot_Nutzung_Tipps_69df6df9-9ad8-8392-890d]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[ClaudeBot_Nutzung_Tipps]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Bewerbung_Verwaltungsfachangestellter_67585d19-2fa8-8007-9e94]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Bewerbung_Verwaltungsfachangestellter]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Banner_Design_KI_Kadence_68b838a0-4a18-8331-b0b7]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Banner_Design_KI_Kadence]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Automatisierung_von_WoW_TikTok_67adc242-8660-8007-9acb]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Automatisierung_von_WoW_TikTok]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[Agent_Collaboration_Protocol]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-30_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-30_process-agent]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-30_chief-of-staff-v2]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-26_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-26_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-26_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-25_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-25_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-25_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-23_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-23_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-23_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-22_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-22_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-22_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_weekly-os]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_daily-briefing]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_chief-of-staff-v2]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19_chief-of-staff]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-19]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-18_recommendations]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |
+| 100 | [[2026-06-18_learning-plan]] | 0 | Annahmen, Alternativen, Risiken, Ergebnis/Wirkung |

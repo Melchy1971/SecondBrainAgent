@@ -57,6 +57,23 @@
   .nav-item.active{background:rgba(47,230,255,.12); border-color:var(--line);
     color:#eafcff; box-shadow:inset 0 0 12px rgba(47,230,255,.10)}
   .nav-item.active svg{opacity:1; color:var(--cyan)}
+  /* --- Security / Kameras --- */
+  .cam-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; padding:4px}
+  .cam-card{background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .cam-card video{width:100%; aspect-ratio:16/9; background:#000; object-fit:cover; display:block}
+  .cam-card .cam-bar{display:flex; align-items:center; gap:8px; padding:8px 11px}
+  .cam-card .cam-name{font-size:13px; color:var(--cyan-soft); font-weight:600}
+  .cam-card .cam-loc{font-size:10px; color:var(--muted)}
+  .cam-card .cam-x{margin-left:auto; color:var(--muted); cursor:pointer; font-size:15px; line-height:1}
+  .cam-card .cam-x:hover{color:var(--bad)}
+  .cam-card .cam-msg{padding:10px 11px; font-size:11px; color:var(--muted)}
+  .sec-form{display:flex; flex-wrap:wrap; gap:8px; padding:6px 4px 12px}
+  .sec-form input,.sec-form select{background:rgba(4,11,18,.5); border:1px solid var(--line); border-radius:7px; color:var(--cyan-soft); padding:7px 9px; font-size:12px}
+  .sec-discovered{padding:0 4px 8px; font-size:11px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .sec-chip{border:1px solid var(--line); border-radius:14px; padding:4px 10px; cursor:pointer}
+  .sec-chip:hover{background:rgba(47,230,255,.08); color:var(--cyan-soft)}
+  .cam-dot{width:8px; height:8px; border-radius:50%; display:inline-block; flex:none}
+  .cam-dot.ok{background:var(--good)} .cam-dot.bad{background:var(--bad)} .cam-dot.na{background:var(--muted)}
   .badge{margin-left:auto; font-size:8px; letter-spacing:.12em; color:#04222b;
     background:var(--good); padding:2px 6px; border-radius:6px; font-weight:700}
   .side-status{margin-top:auto; border:1px solid var(--side-line); border-radius:10px;
@@ -457,6 +474,7 @@
       <a class="nav-item" id="nav-imports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Imports</a>
       <a class="nav-item" id="nav-jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>Jobs</a>
       <a class="nav-item" id="nav-connectoren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Connectoren</a>
+      <a class="nav-item" id="nav-security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 5v6c0 5 3.4 8.3 8 10 4.6-1.7 8-5 8-10V5z"/><circle cx="12" cy="11" r="2.2"/><path d="M9.2 15.2a4 4 0 0 1 5.6 0"/></svg>Security</a>
       <a class="nav-item" id="nav-agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>Agents<span class="badge">NEW</span></a>
       <a class="nav-item" id="nav-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</a>
       <a class="nav-item" id="nav-developer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Developer</a>
@@ -840,6 +858,26 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
         <button class="btn" id="conn-refresh">↻ Neu laden</button>
       </div>
       <div class="jobs-grid" id="conn-grid"><div class="docs-empty">… lädt</div></div>
+    </section>
+
+    <!-- ===================== SECURITY-ANSICHT ===================== -->
+    <section id="view-security" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>SECURITY</h2>
+        <div class="docs-count" id="sec-count">—</div>
+        <button class="btn" id="sec-refresh">↻ Neu laden</button>
+        <button class="btn" id="sec-discover">⦿ Im Netz suchen</button>
+      </div>
+      <div class="sec-form">
+        <input id="sec-name" placeholder="Name (z. B. Haustür)">
+        <input id="sec-location" placeholder="Ort (optional)">
+        <input id="sec-host" placeholder="IP / Host (z. B. 192.168.1.50)">
+        <input id="sec-path" placeholder="Gateway-Pfad (z. B. haustuer)">
+        <select id="sec-mode"><option value="hls">HLS</option><option value="webrtc">WebRTC</option></select>
+        <button class="btn" id="sec-add">+ Kamera</button>
+      </div>
+      <div class="sec-discovered" id="sec-discovered"></div>
+      <div class="cam-grid" id="sec-grid"><div class="docs-empty">… lädt</div></div>
     </section>
 
     <!-- ===================== AGENTS-ANSICHT ===================== -->
@@ -1295,10 +1333,11 @@ function showView(view){
   $("view-imports").hidden   = (view!=="imports");
   $("view-jobs").hidden      = (view!=="jobs");
   $("view-connectoren").hidden = (view!=="connectoren");
+  $("view-security").hidden  = (view!=="security");
   $("view-agents").hidden    = (view!=="agents");
   $("view-developer").hidden = (view!=="developer");
   $("view-coding").hidden    = (view!=="coding");
-  ["dashboard","assistant","documents","memory","knowledge","search","imports","jobs","connectoren","agents","developer","coding"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
+  ["dashboard","assistant","documents","memory","knowledge","search","imports","jobs","connectoren","security","agents","developer","coding"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
   if(view==="assistant"){ loadAssistantModels(); $("asst-q").focus(); }
   if(view==="documents"){ docsInit(); }
   if(view==="memory"){ memInit(); }
@@ -1307,6 +1346,7 @@ function showView(view){
   if(view==="imports"){ impInit(); }
   if(view==="jobs"){ jobsInit(); }
   if(view==="connectoren"){ connInit(); }
+  if(view==="security"){ secInit(); }
   if(view==="agents"){ agtInit(); }
   if(view==="developer"){ devInit(); }
   if(view==="coding"){ codInit(); }
@@ -1869,6 +1909,111 @@ async function connLoad(){
 function connInit(){ if(CONN_LOADED) return; CONN_LOADED=true; connLoad(); }
 $("nav-connectoren").addEventListener("click", ()=>showView("connectoren"));
 $("conn-refresh").addEventListener("click", connLoad);
+
+// ===================== SECURITY / KAMERAS =====================
+let SEC_LOADED=false, SEC_CFG={gateway_webrtc:"",gateway_hls:"",cameras:[]}, SEC_PLAYERS=[];
+function secInit(){ if(SEC_LOADED) return; SEC_LOADED=true; secLoad(); }
+function ensureHls(){
+  return new Promise(res=>{
+    if(window.Hls){ res(true); return; }
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js";
+    s.onload=()=>res(true); s.onerror=()=>res(false);
+    document.head.appendChild(s);
+  });
+}
+async function playHls(video, url){
+  video.muted=true; video.playsInline=true;
+  if(video.canPlayType("application/vnd.apple.mpegurl")){ video.src=url; try{await video.play();}catch(e){} return; }
+  const ok=await ensureHls();
+  if(ok && window.Hls && window.Hls.isSupported()){
+    const h=new Hls({lowLatencyMode:true}); h.loadSource(url); h.attachMedia(video); SEC_PLAYERS.push(h);
+    try{await video.play();}catch(e){}
+  } else { throw new Error("HLS nicht unterstützt"); }
+}
+async function playWhep(video, url){
+  video.muted=true; video.playsInline=true;
+  const pc=new RTCPeerConnection(); SEC_PLAYERS.push(pc);
+  pc.addTransceiver("video",{direction:"recvonly"});
+  pc.addTransceiver("audio",{direction:"recvonly"});
+  const ms=new MediaStream();
+  pc.ontrack=e=>{ ms.addTrack(e.track); video.srcObject=ms; };
+  const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
+  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/sdp"},body:offer.sdp});
+  if(!r.ok) throw new Error("WHEP "+r.status);
+  const ans=await r.text(); await pc.setRemoteDescription({type:"answer",sdp:ans});
+  try{await video.play();}catch(e){}
+}
+function secStopPlayers(){ SEC_PLAYERS.forEach(p=>{try{ p.destroy?p.destroy():(p.close&&p.close()); }catch(e){}}); SEC_PLAYERS=[]; }
+async function secLoad(){
+  secStopPlayers();
+  try{
+    const r=await getJSON("/api/security/cameras");
+    if($("sec-count")) $("sec-count").textContent = r.ok ? (r.active_count+" aktiv / "+r.total) : "";
+    if(r.ok){ SEC_CFG={gateway_webrtc:r.gateway_webrtc,gateway_hls:r.gateway_hls,cameras:r.cameras||[]}; }
+    const g=$("sec-grid"); if(!g) return; g.innerHTML="";
+    if(!r.ok){ g.innerHTML="<div class='docs-empty'>Fehler: "+docEsc(r.error||"unbekannt")+"</div>"; return; }
+    if(!(r.cameras||[]).length){ g.innerHTML="<div class='docs-empty'>Noch keine Kamera. Oben anlegen oder „Im Netz suchen“.</div>"; return; }
+    r.cameras.forEach(c=>{
+      const card=document.createElement("div"); card.className="cam-card";
+      const dot = c.reachable===true?"ok":(c.reachable===false?"bad":"na");
+      const vid=document.createElement("video"); vid.setAttribute("controls",""); vid.muted=true;
+      const bar=document.createElement("div"); bar.className="cam-bar";
+      bar.innerHTML="<span class='cam-dot "+dot+"'></span><span class='cam-name'>"+docEsc(c.name)+"</span>"
+        +(c.location?"<span class='cam-loc'>· "+docEsc(c.location)+"</span>":"")
+        +"<span class='cam-x' title='Entfernen'>✕</span>";
+      const msg=document.createElement("div"); msg.className="cam-msg"; msg.style.display="none";
+      card.appendChild(vid); card.appendChild(bar); card.appendChild(msg);
+      g.appendChild(card);
+      bar.querySelector(".cam-x").addEventListener("click",()=>secRemove(c.id));
+      if(!c.enabled){ msg.style.display=""; msg.textContent="Deaktiviert."; vid.style.display="none"; return; }
+      const su=c.stream_urls||{};
+      const url = c.mode==="webrtc" ? su.webrtc : su.hls;
+      const play = c.mode==="webrtc" ? playWhep : playHls;
+      play(vid, url).catch(()=>{ msg.style.display=""; vid.style.display="none";
+        msg.textContent="Kein Stream ("+(c.mode||"hls").toUpperCase()+"). Gateway prüfen: "+docEsc(url||""); });
+    });
+  }catch(e){ if($("sec-grid")) $("sec-grid").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+async function secSave(cfg){
+  try{
+    const r=await getJSON("/api/security/cameras",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(cfg)});
+    if(r && r.ok){ SEC_CFG={gateway_webrtc:r.gateway_webrtc,gateway_hls:r.gateway_hls,cameras:r.cameras||[]}; }
+  }catch(e){}
+  secLoad();
+}
+function secAdd(){
+  const name=($("sec-name").value||"").trim(); if(!name){ $("sec-name").focus(); return; }
+  const cam={name, location:$("sec-location").value, host:$("sec-host").value,
+    stream_path:(($("sec-path").value||"").trim()||name), mode:$("sec-mode").value, enabled:true};
+  const cfg={gateway_webrtc:SEC_CFG.gateway_webrtc, gateway_hls:SEC_CFG.gateway_hls, cameras:(SEC_CFG.cameras||[]).concat([cam])};
+  ["sec-name","sec-location","sec-host","sec-path"].forEach(id=>{ if($(id)) $(id).value=""; });
+  secSave(cfg);
+}
+function secRemove(id){
+  const cfg={gateway_webrtc:SEC_CFG.gateway_webrtc, gateway_hls:SEC_CFG.gateway_hls,
+    cameras:(SEC_CFG.cameras||[]).filter(c=>c.id!==id)};
+  secSave(cfg);
+}
+async function secDiscover(){
+  const box=$("sec-discovered"); if(box) box.textContent="Suche im Netz…";
+  try{
+    const r=await getJSON("/api/security/discover");
+    if(!box) return;
+    if(!r.ok){ box.textContent=(r.error||"Discovery nicht verfügbar")+(r.hint?(" — "+r.hint):""); return; }
+    const cams=(r.devices||[]).filter(d=>d.host);
+    if(!cams.length){ box.textContent="Keine ONVIF-Geräte gefunden."; return; }
+    box.innerHTML="Gefunden (klicken übernimmt Host): ";
+    cams.forEach(d=>{ const chip=document.createElement("span"); chip.className="sec-chip";
+      chip.textContent=(d.likely_camera?"📷 ":"")+d.host;
+      chip.addEventListener("click",()=>{ if($("sec-host")) $("sec-host").value=d.host; if($("sec-name")) $("sec-name").focus(); });
+      box.appendChild(chip); });
+  }catch(e){ if(box) box.textContent="Fehler: "+e; }
+}
+$("nav-security").addEventListener("click", ()=>showView("security"));
+$("sec-refresh").addEventListener("click", secLoad);
+$("sec-discover").addEventListener("click", secDiscover);
+$("sec-add").addEventListener("click", secAdd);
 
 // ===================== AGENTS =====================
 let AGT_LOADED=false;

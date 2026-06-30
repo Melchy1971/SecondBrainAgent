@@ -71,6 +71,11 @@ from secondbrain.hud_core import (  # noqa: E402
     run_script,
     system_status,
 )
+from secondbrain.security_cameras import (  # noqa: E402
+    cameras_overview,
+    cameras_save,
+    cameras_discover,
+)
 
 HUD_HTML = ROOT / "web" / "jarvis_hud" / "index.html"
 
@@ -460,6 +465,10 @@ class Handler(BaseHTTPRequestHandler):
             self._json(hud_stats())
         elif path == "/api/coding/models":
             self._json(coding_models())
+        elif path == "/api/security/cameras":
+            self._json(cameras_overview())
+        elif path == "/api/security/discover":
+            self._json(cameras_discover())
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -492,6 +501,8 @@ class Handler(BaseHTTPRequestHandler):
                                        str(body.get("engine", ""))))
         elif path == "/api/coding/save":
             self._json(coding_save(str(body.get("filename", "")), str(body.get("content", ""))))
+        elif path == "/api/security/cameras":
+            self._json(cameras_save(body))
         else:
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
@@ -1420,6 +1431,9 @@ _API_ENDPOINTS = [
     ("GET", "/api/coding/models", "Coding-Modelle"),
     ("POST", "/api/coding/generate", "Code generieren (Ollama)"),
     ("POST", "/api/coding/save", "Code als Datei speichern"),
+    ("GET", "/api/security/cameras", "Kameras + Stream-URLs"),
+    ("GET", "/api/security/discover", "ONVIF/WS-Discovery"),
+    ("POST", "/api/security/cameras", "Kamera-Konfig speichern"),
 ]
 
 
