@@ -18,6 +18,7 @@ env/
 config/hud_settings.json
 config/mediamtx.yml
 auto.key
+mediamtx.exe
 
 # Build artifacts
 build/

@@ -17,7 +17,6 @@ from secondbrain.p3_pgvector_foundation import pgvector_readiness
 from secondbrain.p3_rag_store import create_rag_store
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
-from secondbrain.env_loader import load_env_file
 from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
 
@@ -210,31 +209,7 @@ def _p3_p1_store_bridge_main(raw: list[str]) -> int:
     return 0 if payload.get("ok") else 1
 
 
-def _native_installer_main(raw: list[str]) -> int:
-    from secondbrain.native.installer_center import installer_status, installer_plan, write_installer_artifacts
-
-    parser = argparse.ArgumentParser(prog="secondbrain", description="Jarvis native installer center")
-    parser.add_argument("--project-root", default=str(Path.cwd()))
-    parser.add_argument("cmd")
-    parser.add_argument("--output-dir", default=None)
-    args, _ = parser.parse_known_args(raw)
-    if args.cmd == "native-installer-status":
-        payload = installer_status(args.project_root)
-    elif args.cmd == "native-installer-plan":
-        payload = installer_plan(args.project_root)
-    elif args.cmd == "native-installer-write":
-        payload = write_installer_artifacts(args.project_root, args.output_dir)
-    elif args.cmd == "native-installer-gui":
-        from secondbrain.native.installer_center_gui import run
-        return run(args.project_root)
-    else:
-        payload = {"ok": False, "status": "unknown_command", "cmd": args.cmd}
-    out(payload)
-    return 0 if payload.get("ok") else 1
-
-
 def main(argv: list[str] | None = None) -> int:
-    load_env_file()
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
     if cmd is None:
@@ -331,10 +306,20 @@ def main(argv: list[str] | None = None) -> int:
             payload = p0_doctor(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
+    if cmd in {"dashboard-center", "dashboard-center-gui", "dashboard-center-status", "dashboard-center-snapshot", "dashboard-center-activity", "dashboard-center-record"}:
+        from secondbrain.native.dashboard_center.cli import main as dashboard_center_main
+        return dashboard_center_main(raw)
+    if cmd in {"layout-center", "layout-center-gui", "layout-status", "layout-list", "layout-load", "layout-activate", "layout-save", "layout-reset", "layout-export", "layout-import", "layout-history"}:
+        from secondbrain.native.layout_center.cli import main as layout_center_main
+        return layout_center_main(raw)
+    if cmd in {"settings-center", "settings-center-gui", "settings-center-status", "settings-center-snapshot", "settings-center-write-defaults", "settings-center-set", "settings-center-history"}:
+        from secondbrain.native.settings_center.cli import main as settings_center_main
+        return settings_center_main(raw)
+    if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
+        from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
+        return ai_workspace_main(raw)
     if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
         return gui_command(raw)
-    if cmd in {"native-installer-status", "native-installer-plan", "native-installer-write", "native-installer-gui"}:
-        return _native_installer_main(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())
         return 0
