@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import launcher
+
 from secondbrain.gui.bootstrap import bootstrap_status, ensure_env, ensure_runtime_dirs, write_bootstrap_report
 from secondbrain.gui.launch import GUI_COMMANDS
 
@@ -29,6 +31,15 @@ def test_bootstrap_report_written(tmp_path: Path) -> None:
 def test_jarvis_alias_registered() -> None:
     assert "jarvis" in GUI_COMMANDS
     assert "gui-bootstrap" in GUI_COMMANDS
+
+
+def test_launcher_loads_local_env_before_start(monkeypatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(launcher, "load_env_file", lambda: calls.append("env"))
+    monkeypatch.setattr(launcher, "gui_command", lambda argv: calls.append(argv[0]) or 0)
+
+    assert launcher.main(["jarvis"]) == 0
+    assert calls == ["env", "jarvis"]
 
 
 def test_env_defaults_are_idempotent(tmp_path: Path) -> None:

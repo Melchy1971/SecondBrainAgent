@@ -17,6 +17,7 @@ from secondbrain.p3_pgvector_foundation import pgvector_readiness
 from secondbrain.p3_rag_store import create_rag_store
 from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
+from secondbrain.env_loader import load_env_file
 from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
 
@@ -233,6 +234,7 @@ def _native_installer_main(raw: list[str]) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    load_env_file()
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
     if cmd is None:
