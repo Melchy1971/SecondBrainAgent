@@ -1,0 +1,21 @@
+{
+  "version": "30.31",
+  "name": "Native Command Center",
+  "type": "delta",
+  "files_added": [
+    "SecondBrain-Agent/secondbrain/native/__init__.py",
+    "SecondBrain-Agent/secondbrain/native/command_center.py",
+    "SecondBrain-Agent/secondbrain/native/command_center_gui.py",
+    "SecondBrain-Agent/tests/test_v3031_native_command_center.py",
+    "SecondBrain-Agent/docs/releases/v30_31_native_command_center.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_31.md"
+  ],
+  "files_changed": [
+    "SecondBrain-Agent/launcher.py"
+  ],
+  "validation": [
+    "pytest tests/test_v3031_native_command_center.py -q",
+    "python launcher.py command-center-status",
+    "python launcher.py command-palette --query index"
+  ]
+}

@@ -10,9 +10,9 @@ Aktualisiert: 2026-06-30
 
 ## Häufigste Entitäten
 
-- **ChatGPT** (technology): 1213
+- **ChatGPT** (technology): 1214
 - **Für** (person_or_topic): 1189
-- **SAP** (technology): 1048
+- **SAP** (technology): 1049
 - **Review** (person_or_topic): 784
 - **Zusammenfassung** (person_or_topic): 778
 - **Export** (person_or_topic): 774
@@ -47,7 +47,7 @@ Aktualisiert: 2026-06-30
 - **Obsidian** (technology): 254
 - **Ein** (person_or_topic): 247
 - **Sie** (person_or_topic): 242
-- **Python** (technology): 235
+- **Python** (technology): 236
 - **Erstelle** (person_or_topic): 206
 - **Tool** (project_or_topic): 205
 - **Falls** (person_or_topic): 203
@@ -85,10 +85,10 @@ Aktualisiert: 2026-06-30
 
 | Beziehung | Anzahl |
 |---|---:|
-| blocks | 10276 |
+| blocks | 10328 |
 | mentions | 2562 |
 | decides | 2407 |
-| tagged_as | 1022 |
+| tagged_as | 1024 |
 | references | 663 |
 | influences | 13 |
 | creates_task | 10 |
@@ -328,7 +328,7 @@ Datum: 2026-06-30
 | chatgpt | 1185 |
 | gemini | 2 |
 | tags: | 3 |
-| vault | 396 |
+| vault | 398 |
 
 ## Quellenübergreifende Tags
 

@@ -3,8 +3,8 @@
 | Entscheidung | Quelle |
 |---|---|
 | ** Der Autostart öffnet keinen Browser. Bei jedem Login ein Browserfenster aufzureißen wäre lästig; der Server läuft, du öffnest die Seite bei Bedarf (oder per Desktop-Icon). Wenn du den Browser doch bei jedem Login willst, sag Bescheid — dann nehme ich das `/quiet` aus der Autostart-Verknüpfung. | [[Install]] |
-| 1959 | [[Digital_Twin_v6]] |
-| 1959 | [[Digital_Twin_v5]] |
+| 2014 | [[Digital_Twin_v6]] |
+| 2014 | [[Digital_Twin_v5]] |
 | „Ist dieses Bild relevant?“ | [[N8n_Barrierefreiheit_Bildanalyse]] |
 | Was nehmen wir realistisch? | [[Datenbankaufbau_mit_KI]] |
 | ** Kleinunternehmerregelung ja/nein → hier machen viele unbewusst Fehler. | [[Kleingewerbe_Anmeldung_Schritte]] |

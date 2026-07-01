@@ -4,9 +4,9 @@ Aktualisiert: 2026-06-30
 
 | Zielbereich | Notizen | Aufgaben | Risiken | Entscheidungen | Fokus |
 |---|---:|---:|---:|---:|---|
-| Beruf | 1254 | 648 | 3351 | 2020 | Risiko senken |
-| Projekte | 773 | 633 | 3152 | 1738 | Risiko senken |
-| Lernen | 1371 | 625 | 3437 | 2008 | Risiko senken |
-| Gesundheit | 267 | 376 | 1460 | 1060 | Risiko senken |
-| Verein | 461 | 540 | 1782 | 1291 | Risiko senken |
-| Privat | 295 | 324 | 520 | 574 | Risiko senken |
+| Beruf | 1255 | 648 | 3367 | 2024 | Risiko senken |
+| Projekte | 774 | 633 | 3172 | 1742 | Risiko senken |
+| Lernen | 1373 | 625 | 3457 | 2012 | Risiko senken |
+| Gesundheit | 267 | 376 | 1465 | 1064 | Risiko senken |
+| Verein | 462 | 539 | 1787 | 1295 | Risiko senken |
+| Privat | 296 | 324 | 523 | 574 | Risiko senken |

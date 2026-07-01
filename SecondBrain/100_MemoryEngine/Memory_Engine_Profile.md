@@ -15,12 +15,12 @@ Aktualisiert: 2026-06-30
 - [[Digital_Twin_v6]]
 - [[Voice_Assistant_Status]]
 - [[Plugin_Ecosystem]]
-- [[Personal_CRM_Index]]
 - [[Executive_Dashboard_v9]]
 - [[2026-06-30_monitoring]]
+- [[Personal_CRM_Index]]
 - [[2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
-- [[2026-06-30_recommendations]]
 - [[2026-06-30_learning-plan]]
+- [[2026-06-30_recommendations]]
 - [[Workflow_Catalog]]
 - [[SecondBrain_OS_Dashboard]]
 - [[Digital_Twin_v5]]
@@ -31,17 +31,17 @@ Aktualisiert: 2026-06-30
 - [[facts_documents]]
 - [[facts_decisions]]
 - [[MCP_Ecosystem_Status]]
+- [[Mainboard_Empfehlung_für_PC@20260630_114245]]
 - [[2026-06-30_meeting-intelligence]]
 - [[2026-06-30_calendar-intelligence]]
-- [[Decision_Intelligence_v2]]
 
 ## Langzeit-Signale
 
-- project: 5466
-- risk: 3524
-- decision: 2132
-- meeting: 1879
-- learning: 943
+- project: 5475
+- risk: 3544
+- decision: 2133
+- meeting: 1876
+- learning: 944
 
 ## Häufige Tags
 
@@ -70,7 +70,7 @@ Aktualisiert: 2026-06-30
 - #verein: 13
 - #1: 13
 - #FFFFFF: 13
-- #copilot-conversation: 9
+- #copilot-conversation: 11
 - #Risiken: 9
 - #evergreen: 8
 - #projects: 8
@@ -81,27 +81,27 @@ Aktualisiert: 2026-06-30
 - [[weighted_edges]]: 213
 - [[2026-06-19_chief-of-staff-v98]]: 166
 - [[Temporal_Graph]]: 143
+- [[Memory_Profile]]: 135
 - [[2026-06-18_context-map]]: 132
-- [[Memory_Profile]]: 131
 - [[2026-06-18_semantic-deduplication]]: 129
-- [[2026-06-18_prediction-report]]: 128
+- [[2026-06-18_prediction-report]]: 127
 - [[WDB_2026]]: 127
+- [[WDB_2026_69f8547b-d860-8394-8c04]]: 127
 - [[facts_tasks]]: 126
-- [[WDB_2026_69f8547b-d860-8394-8c04]]: 126
-- [[2026-06-18_https-obsidian-md]]: 112
-- [[Executive_Dashboard]]: 111
 - [[Masterplan_optimieren]]: 111
 - [[Masterplan_optimieren_69286aa7-5514-832b-956f]]: 111
+- [[2026-06-18_https-obsidian-md]]: 110
+- [[Executive_Dashboard]]: 110
 - [[2026-06-19_task-agent]]: 102
 - [[2026-06-18_daily-briefing]]: 102
 - [[PDF-Analyse-Tool]]: 99
-- [[Unraid_SQL_KI_Integration_698ef204-1cf0-838a-b7cb]]: 99
 - [[2026-06-18_projekt-secondbrain-agent-v0-3]]: 98
 - [[2026-06-19_reasoning-map]]: 97
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 96
 - [[Unraid_SQL_KI_Integration]]: 96
+- [[Unraid_SQL_KI_Integration_698ef204-1cf0-838a-b7cb]]: 96
 - [[2026-06-19_project-agent]]: 96
-- [[2026-06-22_chief-of-staff-v98]]: 93
+- [[2026-06-22_chief-of-staff-v98]]: 92
 - [[2026-06-18_prozesslandkarte]]: 88
 - [[2026-06-19_daily-briefing]]: 87
 - [[Knowledge_Intelligence_Dashboard_v99]]: 87

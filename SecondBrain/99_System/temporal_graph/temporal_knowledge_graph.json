@@ -8017,12 +8017,6 @@
   },
   {
     "date": "2026-06-19",
-    "note": "facts_documents",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_documents.md",
-    "source": "vault"
-  },
-  {
-    "date": "2026-06-19",
     "note": "facts_tasks",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_tasks.md",
     "source": "vault"
@@ -8367,12 +8361,6 @@
     "date": "2026-06-22",
     "note": "2026-06-22_personal-kpis",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\123_PersonalKPIs\\2026-06-22_personal-kpis.md",
-    "source": "vault"
-  },
-  {
-    "date": "2026-06-22",
-    "note": "Jarvis_Control_Center_GUI",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
     "source": "vault"
   },
   {
@@ -8797,12 +8785,6 @@
   },
   {
     "date": "2026-06-26",
-    "note": "2026-06-26_self-improvement-plan",
-    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-26_self-improvement-plan.md",
-    "source": "vault"
-  },
-  {
-    "date": "2026-06-26",
     "note": "2026-06-26_event-bus",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\93_RealtimeEventBus\\2026-06-26_event-bus.md",
     "source": "vault"
@@ -9157,6 +9139,12 @@
   },
   {
     "date": "2026-06-30",
+    "note": "2026-06-26_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-26_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-06-30",
     "note": "2026-06-30_self-improvement-plan",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-06-30_self-improvement-plan.md",
     "source": "vault"
@@ -9373,6 +9361,12 @@
   },
   {
     "date": "2026-06-30",
+    "note": "Jarvis_Control_Center_GUI",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\132_JarvisControlCenterGUI\\Jarvis_Control_Center_GUI.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-06-30",
     "note": "Lernen_ERP_Index",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\124_PersonalERP\\Learning\\Lernen_ERP_Index.md",
     "source": "vault"
@@ -9381,6 +9375,18 @@
     "date": "2026-06-30",
     "note": "2026-06-30_084833_production-ready-gate-v96",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\95_Operations\\ReleaseGates\\2026-06-30_084833_production-ready-gate-v96.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-06-30",
+    "note": "2026-06-30_113559_production-ready-gate-v96",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\95_Operations\\ReleaseGates\\2026-06-30_113559_production-ready-gate-v96.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-06-30",
+    "note": "facts_documents",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_documents.md",
     "source": "vault"
   },
   {
@@ -9423,6 +9429,12 @@
     "date": "2026-06-30",
     "note": "Executive_Agent_Memory_v2",
     "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Executive_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-06-30",
+    "note": "Mainboard_Empfehlung_für_PC@20260630_114245",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\copilot\\copilot-conversations\\Mainboard_Empfehlung_für_PC@20260630_114245.md",
     "source": "vault"
   },
   {

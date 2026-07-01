@@ -1,12 +1,12 @@
-# Quality Report 2026-06-30 08:50:11
+# Quality Report 2026-06-30 11:40:56
 
 ## Kennzahlen
 
-- Markdown-Dateien: 1601
-- Frontmatter-Quote: 76.64%
-- Fehlender Titel: 392
-- Fehlender Typ: 391
-- Fehlende Tags: 404
+- Markdown-Dateien: 1632
+- Frontmatter-Quote: 75.18%
+- Fehlender Titel: 423
+- Fehlender Typ: 422
+- Fehlende Tags: 435
 - Leere/kleine Notizen: 1
 - Große Notizen >250 KB: 12
 
@@ -112,7 +112,7 @@
 - [[2026-06-23_calendar-intelligence]]
 - [[2026-06-25_calendar-intelligence]]
 - [[2026-06-26_calendar-intelligence]]
-- [[Workflow_Catalog]]
+- [[2026-06-30_calendar-intelligence]]
 
 ### Fehlender Typ
 - [[PDF-Analyse-Tool]]

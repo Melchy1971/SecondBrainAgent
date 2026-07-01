@@ -30,6 +30,7 @@ Datum: 2026-06-30
 - [[2026-06-19_decision-intelligence]]
 - [[Decision_Register]]
 - [[2026-06-18_decision-intelligence]]
+- [[2026-06-30_decision-intelligence]]
 - [[2026-06-19_prozesslandkarte]]
 - [[2026-06-18_prozesslandkarte]]
 - [[2026-06-19_learning-report]]
@@ -50,22 +51,29 @@ Datum: 2026-06-30
 - [[Knowledge_Lineage]]
 - [[2026-06-19_knowledge-compression]]
 - [[2026-06-18_knowledge-compression]]
+- [[2026-06-30_knowledge-compression]]
 - [[2026-06-19_semantic-deduplication]]
 - [[2026-06-18_semantic-deduplication]]
+- [[2026-06-30_semantic-deduplication]]
 - [[2026-06-19_research-backlog]]
 - [[2026-06-18_research-backlog]]
+- [[2026-06-30_research-backlog]]
 - [[2026-06-19_prediction-report]]
 - [[2026-06-18_prediction-report]]
+- [[2026-06-30_prediction-report]]
 - [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 - [[2026-06-18_simulation_2]]
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
+- [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 - [[2026-06-19_process-mining]]
 - [[2026-06-18_process-mining]]
+- [[2026-06-30_process-mining]]
 - [[Process_Copilot_Commands]]
 - [[Executive_Dashboard]]
 - [[Agent_Swarm_Status]]
 - [[2026-06-19_chief-of-staff-v2]]
 - [[2026-06-18_chief-of-staff-v2]]
+- [[2026-06-30_chief-of-staff-v2]]
 - [[2026-06-19_event-summary]]
 - [[2026-06-18_event-summary]]
 - [[MCP_Hub_Status]]
@@ -95,15 +103,7 @@ Datum: 2026-06-30
 - [[2026-06-23_calendar-intelligence]]
 - [[2026-06-25_calendar-intelligence]]
 - [[2026-06-26_calendar-intelligence]]
-- [[Workflow_Catalog]]
-- [[2026-06-18_recommendations]]
-- [[2026-06-19_recommendations]]
-- [[2026-06-22_recommendations]]
-- [[2026-06-23_recommendations]]
-- [[2026-06-25_recommendations]]
-- [[2026-06-26_recommendations]]
-- [[2026-06-18_learning-plan]]
-- [[2026-06-19_learning-plan]]
+- [[2026-06-30_calendar-intelligence]]
 
 ## Potenziell kaputte Links
 
@@ -188,7 +188,13 @@ I thin
 - [[2026-06-25_chief-of-staff-v98]] → [[2026-06-23_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blo
 
 ]]
+- [[2026-06-30_chief-of-staff-v98]] → [[Unraid_SQL_KI_Integr
+
+]]
 - [[2026-06-22_knowledge-quality]] → [[Obsidian]]
+- [[Knowledge_Intelligence_Dashboard_v99]] → [[2026-06-23_simulation_Was_pas
+
+]]
 - [[Unraid_Immich_Backup_Script]] → [[ -f "${COMPOSE_DIR}/.env" ]]
 - [[n8n_Email_Spam_Filter]] → [["IMAP‑Read"]]
 - [[n8n_Email_Spam_Filter]] → [["IF‑Spam"]]
@@ -221,8 +227,6 @@ I thin
 - [[Claude_Obsidian_Skill]] → [[Obsidian]]
 - [[Claude_Obsidian_Skill]] → [[Projektplanung]]
 - [[Claude_Obsidian_Skill]] → [[Projekt Wissensdatenbank]]
-- [[Claude_Obsidian_Skill]] → [[Entscheidung]]
-- [[Unraid_Immich_Backup_Script_681a1022-10b0-8007-8df5]] → [[ -f "${COMPOSE_DIR}/.env" ]]
 
 ## Sicherheitsregel
 

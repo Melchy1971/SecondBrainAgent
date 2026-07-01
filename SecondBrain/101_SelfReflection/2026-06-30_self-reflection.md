@@ -4,18 +4,18 @@ Datum: 2026-06-30
 
 ## Was wurde gelernt?
 
-- Neue/aktive Wissensobjekte: 1587
+- Neue/aktive Wissensobjekte: 1589
 
 ## Was fehlt?
 
-- Schwache Notizen: 380
+- Schwache Notizen: 381
 - Offene Aufgabenbereiche: 39
 
 ## Welche Risiken bestehen?
 
 - [[WDB_2026_69f8547b-d860-8394-8c04]] — Risiko-Signale: 403
 - [[WDB_2026]] — Risiko-Signale: 403
-- [[2026-06-30_prediction-report]] — Risiko-Signale: 86
+- [[2026-06-30_prediction-report]] — Risiko-Signale: 90
 - [[2026-06-26_project-agent]] — Risiko-Signale: 83
 - [[2026-06-30_project-agent]] — Risiko-Signale: 80
 - [[2026-06-25_project-agent]] — Risiko-Signale: 79
@@ -42,11 +42,11 @@ Datum: 2026-06-30
 - [[Claude_Obsidian_Skill]] — Entscheidungs-Signale: 101
 - [[KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0]] — Entscheidungs-Signale: 44
 - [[KI-unterstützte_Wissensdatenbank]] — Entscheidungs-Signale: 44
+- [[Memory_Profile]] — Entscheidungs-Signale: 31
 - [[Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427]] — Entscheidungs-Signale: 30
 - [[Protokoll_Vorlage_Tischtennisverein]] — Entscheidungs-Signale: 30
 - [[DB_160426_69dcca9d-793c-838f-85d0]] — Entscheidungs-Signale: 28
 - [[DB_160426]] — Entscheidungs-Signale: 28
-- [[Memory_Profile]] — Entscheidungs-Signale: 27
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Entscheidungs-Signale: 26
 - [[Begrüßung_und_Einstieg]] — Entscheidungs-Signale: 26
 - [[Sitzungsprotokoll_Hauptversammlung_69fcf62c-4d58-8390-888a]] — Entscheidungs-Signale: 24

@@ -7,9 +7,9 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `README.md`
 - `INSTALLATION_BEGINNER.md`
 - `docs/README.md`
-- `docs/START_GUI.md`
+- `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.21 Unified Application Bootstrap.
+Aktueller Stand: v30.25 Native Desktop und deutsche Sprachsteuerung.
 
 
 ## v30.25

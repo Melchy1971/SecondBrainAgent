@@ -4,13 +4,13 @@ Aktualisiert: 2026-06-30
 
 ## Prioritätsmodell
 
-- projekt: 5382
-- lokal: 2783
+- projekt: 5401
+- lokal: 2785
 - entscheidung: 2014
 - prozess: 1936
-- risiko: 1799
-- tischtennis: 1540
-- automatisierung: 983
+- risiko: 1809
+- tischtennis: 1549
+- automatisierung: 989
 - stabilität: 382
 - gesundheit: 368
 - wartbarkeit: 54
@@ -28,6 +28,7 @@ Aktualisiert: 2026-06-30
 - #gesundheit: 186
 - #obsidian: 134
 - #gemini: 3
+- #copilot-conversation: 2
 - #pdf: 1
 - #email: 1
 - #secondbrain: 1
@@ -36,7 +37,6 @@ Aktualisiert: 2026-06-30
 - #meeting: 1
 - #process: 1
 - #knowledge-gap: 1
-- #"clippings": 1
 
 ## Simulationen
 

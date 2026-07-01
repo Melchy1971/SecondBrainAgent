@@ -53,7 +53,7 @@ import time
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 
@@ -76,6 +76,11 @@ from secondbrain.security_cameras import (  # noqa: E402
     cameras_save,
     cameras_discover,
 )
+from secondbrain.env_loader import load_env_file  # noqa: E402
+
+# .env in die Prozessumgebung laden, damit die Embedding-/RAG-Engine (os.getenv)
+# dieselben Werte sieht wie die Anzeige-Panels.
+load_env_file(ROOT)
 
 HUD_HTML = ROOT / "web" / "jarvis_hud" / "index.html"
 
@@ -184,6 +189,19 @@ _INT = {
     "queue_pending", "release_blocking", "connectors", "agents_active",
     "vectors", "documents", "memories", "assistant_context_chunks",
 }
+_SECRET_SETTING_KEYS = {
+    "openai_api_key",
+    "gemini_api_key",
+    "anthropic_api_key",
+}
+
+
+def _settings_for_log(settings: dict) -> dict:
+    """Redacts credentials before settings are written to the event log."""
+    return {
+        key: "[redacted]" if key in _SECRET_SETTING_KEYS and value else value
+        for key, value in settings.items()
+    }
 
 
 def load_settings() -> dict:
@@ -216,7 +234,7 @@ def save_settings(incoming: dict) -> dict:
     SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
     SETTINGS_FILE.write_text(json.dumps(current, ensure_ascii=False, indent=2),
                              encoding="utf-8")
-    log_event("hud.settings_saved", current)
+    log_event("hud.settings_saved", _settings_for_log(current))
     return current
 
 
@@ -335,8 +353,9 @@ def news() -> dict:
         items = []
         for item in root.iter("item"):
             title = item.findtext("title", "").strip()
+            link = (item.findtext("link", "") or "").strip()
             if title:
-                items.append(title)
+                items.append({"title": title, "link": link})
             if len(items) >= cfg["news_max"]:
                 break
         return {"ok": True, "source": cfg["news_rss"], "items": items}
@@ -364,9 +383,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _json(self, data):
+    def _json(self, data, code: int = 200):
         self._send(json.dumps(data, ensure_ascii=False).encode("utf-8"),
-                   "application/json; charset=utf-8")
+                   "application/json; charset=utf-8", code=code)
 
 
     # --- HTML / statische Auslieferung ------------------------------------
@@ -392,6 +411,31 @@ class Handler(BaseHTTPRequestHandler):
             return data if isinstance(data, dict) else {}
         except Exception:
             return {}
+
+    def _read_raw_body(self, max_bytes: int = 0) -> bytes:
+        """Liest den rohen Request-Body in 1-MB-Bloecken. Ueber max_bytes wird
+        der Rest verworfen und b"" zurueckgegeben (Aufrufer meldet 'zu gross').
+        Bewusst ohne JSON-Parsing: ein 260-MB-ZIP soll nicht als String im
+        Speicher dupliziert werden."""
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (TypeError, ValueError):
+            length = 0
+        if length <= 0:
+            return b""
+        remaining, total, over, chunks = length, 0, False, []
+        while remaining > 0:
+            chunk = self.rfile.read(min(remaining, 1024 * 1024))
+            if not chunk:
+                break
+            remaining -= len(chunk)
+            total += len(chunk)
+            if max_bytes and total > max_bytes:
+                over, chunks = True, []
+                continue
+            if not over:
+                chunks.append(chunk)
+        return b"" if over else b"".join(chunks)
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -475,10 +519,31 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         path = parsed.path
+
+        # ZIP-Import: rohen Binaer-Body lesen (kein JSON, kein Base64). Grosse
+        # Exporte als Base64-in-JSON sprengen sonst den Browser-Renderer
+        # (Weissbild). JSON-Fallback bleibt fuer aeltere Clients erhalten.
+        if path == "/api/imports/zip":
+            ctype = (self.headers.get("Content-Type") or "").lower()
+            if "application/json" in ctype:
+                self._json(imports_zip(self._read_body()))
+            else:
+                qs = parse_qs(parsed.query)
+                raw = self._read_raw_body(_ZIP_MAX)
+                self._json(imports_zip_raw(qs.get("source", [""])[0],
+                                           qs.get("filename", [""])[0], raw))
+            return
+
         body = self._read_body()
 
         if path == "/api/settings":
-            saved = save_settings(body)
+            try:
+                saved = save_settings(body)
+            except OSError as exc:
+                log_event("hud.settings_save_error", {"error": str(exc)})
+                self._json({"ok": False, "error": "Einstellungen konnten nicht gespeichert werden."},
+                           code=500)
+                return
             self._json({"ok": True, "settings": saved})
         elif path == "/api/rag":
             query = str(body.get("q", "")).strip()
@@ -493,8 +558,6 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/assistant/note":
             self._json(assistant_save_note(str(body.get("title", "")),
                                            str(body.get("content", ""))))
-        elif path == "/api/imports/zip":
-            self._json(imports_zip(body))
         elif path == "/api/coding/generate":
             self._json(coding_generate(str(body.get("prompt", "")),
                                        str(body.get("language", "")), str(body.get("model", "")),
@@ -774,6 +837,14 @@ def _build_prompt(query: str, chunks: list, history: list) -> str:
     return "\n".join(parts)
 
 
+def _configured_assistant_models(cfg: dict) -> list[str]:
+    return [
+        model.strip()
+        for model in str(cfg.get("assistant_models", "")).split(",")
+        if model.strip()
+    ]
+
+
 def assistant_chat(query: str, history: list | None = None) -> dict:
     """RAG-gestuetzte Chat-Antwort. Retrieval + Generierung, mit Fallback."""
     query = (query or "").strip()
@@ -791,6 +862,9 @@ def assistant_chat(query: str, history: list | None = None) -> dict:
     prompt = _build_prompt(query, chunks, history)
 
     model = cfg.get("assistant_model") or ""
+    if engine == "ollama" and not model:
+        configured = _configured_assistant_models(cfg)
+        model = configured[0] if configured else ""
     llm_ok, answer = False, ""
     try:
         answer, model = _llm_chat(engine, model, prompt, temp); llm_ok = True
@@ -841,11 +915,14 @@ def assistant_models() -> dict:
     Konfigurierte zuerst, damit die Auswahl auch ohne laufendes Ollama steht."""
     cfg = load_settings()
     base = cfg.get("ollama_url") or "http://localhost:11434"
-    configured = [m.strip() for m in str(cfg.get("assistant_models", "")).split(",") if m.strip()]
+    configured = _configured_assistant_models(cfg)
     live = _ollama_models(base)
     merged = list(dict.fromkeys(configured + live))
+    active = cfg.get("assistant_model", "")
+    if not active:
+        active = configured[0] if configured else (live[0] if live else "")
     return {"ok": True, "engine": cfg.get("assistant_engine", "ollama"),
-            "active": cfg.get("assistant_model", ""),
+            "active": active,
             "configured": configured, "live": live, "models": merged}
 
 
@@ -1232,23 +1309,17 @@ _IMPORT_SCRIPTS = {
 _ZIP_MAX = 400 * 1024 * 1024  # 400 MB
 
 
-def imports_zip(body: dict) -> dict:
-    """Nimmt ein base64-ZIP entgegen, validiert es, fuehrt den passenden
-    Export-Importer aus und entfernt die temporaere Datei wieder."""
-    import base64
-    body = body or {}
-    source = str(body.get("source", "")).strip().lower()
+def imports_zip_raw(source: str, filename: str, raw: bytes) -> dict:
+    """Validiert die rohen ZIP-Bytes, fuehrt den passenden Export-Importer aus
+    und entfernt die temporaere Datei wieder. Quelle des Wahrheit fuer den
+    Import; imports_zip() ist nur der Base64-Wrapper darum."""
+    source = str(source or "").strip().lower()
     script = _IMPORT_SCRIPTS.get(source)
     if not script:
         return {"ok": False, "error": f"Unbekannte Quelle: {source}. "
                 f"Erlaubt: {sorted(_IMPORT_SCRIPTS)}"}
-    data_b64 = body.get("data_b64", "")
-    if not data_b64:
-        return {"ok": False, "error": "Keine Datei empfangen."}
-    try:
-        raw = base64.b64decode(data_b64)
-    except Exception as exc:
-        return {"ok": False, "error": f"Base64-Fehler: {exc}"}
+    if not raw:
+        return {"ok": False, "error": "Keine Datei empfangen (oder groesser als 400 MB)."}
     if len(raw) > _ZIP_MAX:
         return {"ok": False, "error": "Datei zu gross (max. 400 MB)."}
     if raw[:2] != b"PK":
@@ -1258,7 +1329,7 @@ def imports_zip(body: dict) -> dict:
         updir.mkdir(parents=True, exist_ok=True)
     except Exception as exc:
         return {"ok": False, "error": f"Upload-Ordner nicht beschreibbar: {exc}"}
-    fname = str(body.get("filename", "") or f"{source}-export.zip")
+    fname = str(filename or "") or f"{source}-export.zip"
     safe = "".join(c if (c.isalnum() or c in "._-") else "_" for c in fname)[:80] or "export.zip"
     if not safe.lower().endswith(".zip"):
         safe += ".zip"
@@ -1276,8 +1347,28 @@ def imports_zip(body: dict) -> dict:
             pass
     log_event("hud.imports_zip", {"source": source, "bytes": len(raw),
                                   "ok": result.get("ok")})
+    # Ausgabe deckeln: ein riesiger Importer-Stdout darf den HUD-Renderer nicht
+    # ein zweites Mal ins Weissbild schicken.
+    out = result.get("output", "") or ""
+    if len(out) > 20000:
+        out = "[... gekuerzt ...]\n" + out[-20000:]
     return {"ok": result.get("ok", False), "source": source, "script": script,
-            "output": result.get("output", "")}
+            "output": out}
+
+
+def imports_zip(body: dict) -> dict:
+    """Base64-Wrapper (alter JSON-Pfad) um imports_zip_raw. Fuer grosse Exporte
+    nutzt das Frontend den rohen Binaer-Upload statt diesen Weg."""
+    import base64
+    body = body or {}
+    data_b64 = body.get("data_b64", "")
+    if not data_b64:
+        return {"ok": False, "error": "Keine Datei empfangen."}
+    try:
+        raw = base64.b64decode(data_b64)
+    except Exception as exc:
+        return {"ok": False, "error": f"Base64-Fehler: {exc}"}
+    return imports_zip_raw(body.get("source", ""), body.get("filename", ""), raw)
 
 
 # --- Jobs (ausfuehrbare Skripte + Lauf-Historie aus dem Log) ------------------
@@ -1648,7 +1739,7 @@ def run(host: str = "127.0.0.1", port: int = 8851) -> None:
         _start_reload_watch()
     port = int(os.environ.get("HUD_PORT", port))
     host = os.environ.get("HUD_HOST", host)
-    server = HTTPServer((host, port), Handler)
+    server = ThreadingHTTPServer((host, port), Handler)
     log_event("hud.start", {"host": host, "port": port})
     print(f"Jarvis HUD laeuft: http://{host}:{port}"
           + ("  [Auto-Reload]" if _reload_enabled() else ""))

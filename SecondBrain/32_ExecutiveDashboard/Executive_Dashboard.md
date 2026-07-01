@@ -19,7 +19,7 @@ Aktualisiert: 2026-06-30
 - quick_capture: 4
 - source: 1
 - task: 3
-- unknown: 389
+- unknown: 422
 - web_source: 1
 
 ## Führungsfragen

@@ -1,56 +1,38 @@
 # Release-Historie
 
-Diese Datei fasst die Hauptlinie zusammen. Vollstaendige Release-Artefakte liegen unter `docs/releases/`.
+Diese Datei beschreibt nur die Hauptlinie. Einzelne, auditierbare Release-Notizen bleiben unter [`releases/`](releases/).
 
-## v14.x bis v16.x Foundation
+## v6 bis v16: Foundations
 
-- Persistent Personal AGI, Production Core, Service Runtime und Installer/Update Layer aufgebaut.
-- Desktop App, Database Architecture, Connector Framework, Document Understanding, Multi-Agent Runtime, Knowledge Graph, Long-Term Memory, Hybrid RAG, Realtime Voice und Mobile Companion als modulare Foundations ergaenzt.
+- Import, lokales RAG, Connector-, Agent-, Desktop-, Voice- und Mobile-Grundlagen aufgebaut.
+- SQLite-Persistenz, Knowledge Graph, Long-Term Memory und Service-/Installer-Scaffolds ergaenzt.
+- Viele dieser Versionsmodule bleiben aus Kompatibilitaetsgruenden im Code, sind aber nicht mehr die aktuelle Bedienoberflaeche.
 
-## v17.x P0 Integration
+## v17 bis v18: Runtime und Reproduzierbarkeit
 
-- Gemeinsamer Launcher, Module Registry, Command Index und Runtime Healthchecks etabliert.
-- P0 Doctor, Smoke, Contract, Readiness, Bootstrap, Production und Audit Gate ergaenzt.
-- Repository-Hygiene, Runtime-Konfigurationssnapshots und Event-Bus-Proben eingefuehrt.
+- P0 Doctor, Readiness, Bootstrap, Production Gate und Artifact Audit eingefuehrt.
+- Repo Doctor, Dependency Inventory, Packaging und Release Workflow gehaertet.
+- P1 Parser/Ingest, Provider Health, Golden Retrieval und Production Gate aufgebaut.
 
-## v18.x Reproducibility und P1 Start
+## v19 bis v28: Stores und Produktbereiche
 
-- Packaging, Repo Doctor, Dependency Inventory und Release Workflow gehaertet.
-- P1 Parser/Ingest, Embedding Health, Golden Retrieval, Provider Guards und Production Golden Gate aufgebaut.
-- OpenAI/Ollama-Providergrenzen und striktes Fallback-Verhalten vorbereitet.
+- PostgreSQL/pgvector Foundation, Store Interface und Store-backed Ingest eingefuehrt.
+- Memory, Agent Runtime, Connector Runtime, GUI, Voice und Mobile iterativ erweitert.
+- GA-Hardening und GA-Artefakte dokumentiert.
 
-## v19.x P1 Store und Retrieval
+## v30.0 bis v30.18: Production- und Embedding-Schicht
 
-- PostgreSQL/pgvector Foundation, Live Readiness, Store Interface und Store-backed Ingest ergaenzt.
-- P1 Retrieval, Hybrid Gate, Maturity Candidate und Completion dokumentiert.
+- Provider Layer, PostgreSQL/pgvector Production und Connector-/Workflow-Fundament erweitert.
+- Provider Health, Golden Quality, Dimensionsvertrag und Index-Identitaet gehaertet.
+- Reparaturpfad fuer Provider-/Modell-/Dimensionsdrift eingefuehrt.
 
-## v20.x bis v28.x Produktbereiche und GA-Hardening
+## v30.19 bis v30.24: GUI und Runtime Truth
 
-- Memory, Agent Runtime, Connector Runtime, GUI, Voice, Mobile und weitere Produktbereiche iterativ erweitert.
-- GA-Hardening und GA 1.0 Artefakte dokumentiert.
+- P1-Oberflaechen, einheitlicher GUI-Start und Application Bootstrap umgesetzt.
+- Document und Memory Center an reale Runtime-Zustaende angebunden.
 
-## v30.0 bis v30.5 Production Layer
+## v30.25: Native Desktop und deutsche Sprachsteuerung
 
-- Provider Layer, PostgreSQL Production, pgvector Production, Agent Workflow Engine und Production Connectors dokumentiert.
-- Export- und Test-Collection-Hardening ergaenzt.
-
-## v30.11 bis v30.18 P1 Embedding und Vector Index
-
-- Vector Dimension Drift Guard, Provider Health Gate und Golden Quality Gate ergaenzt.
-- Embedding-Konfigurationsvertrag, Dimension Contract, HTTP Provider Boundary und Index Identity Guard eingefuehrt.
-- `p1-vector-index-repair` fuer provider/model/dimension Drift ergaenzt.
-
-## v30.19 P1 GUI Surface Update
-
-- P1 Runtime Surface fuer Desktop Views, Settings Center, RAG Import, Vector Index und Production Gate aktualisiert.
-
-## v30.20 GUI Startup Surface
-
-- GUI-Startbefehle vereinheitlicht.
-- `Jarvis.bat`, Shortcut-Installer und kompatible GUI-Aliase auf Launcher-Pfad ausgerichtet.
-
-## v30.21 Unified Application Bootstrap
-
-- `python launcher.py` startet Jarvis direkt.
-- `python launcher.py jarvis` und `python launcher.py gui-bootstrap` ergaenzt.
-- Bootstrap erzeugt lokale Defaults, Runtime-/Datenordner und `runtime/reports/bootstrap_v30_21.json`.
+- Native Desktop-App als Standardstart eingefuehrt.
+- Deutsche Text-/Sprachkommandos und Bestaetigungsgrenzen integriert.
+- Web-HUD als optionaler Kompatibilitaetsmodus beibehalten.

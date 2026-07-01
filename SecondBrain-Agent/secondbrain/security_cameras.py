@@ -73,7 +73,7 @@ def _clean_camera(raw: dict[str, Any]) -> dict[str, Any] | None:
     except (TypeError, ValueError):
         rtsp_port = 554
     mode = str(raw.get("mode", "hls")).lower()
-    if mode not in ("hls", "webrtc"):
+    if mode not in ("hls", "webrtc", "local"):
         mode = "hls"
     cam = {
         "id": cam_id,

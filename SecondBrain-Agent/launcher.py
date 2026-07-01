@@ -209,6 +209,29 @@ def _p3_p1_store_bridge_main(raw: list[str]) -> int:
     return 0 if payload.get("ok") else 1
 
 
+def _native_installer_main(raw: list[str]) -> int:
+    from secondbrain.native.installer_center import installer_status, installer_plan, write_installer_artifacts
+
+    parser = argparse.ArgumentParser(prog="secondbrain", description="Jarvis native installer center")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("cmd")
+    parser.add_argument("--output-dir", default=None)
+    args, _ = parser.parse_known_args(raw)
+    if args.cmd == "native-installer-status":
+        payload = installer_status(args.project_root)
+    elif args.cmd == "native-installer-plan":
+        payload = installer_plan(args.project_root)
+    elif args.cmd == "native-installer-write":
+        payload = write_installer_artifacts(args.project_root, args.output_dir)
+    elif args.cmd == "native-installer-gui":
+        from secondbrain.native.installer_center_gui import run
+        return run(args.project_root)
+    else:
+        payload = {"ok": False, "status": "unknown_command", "cmd": args.cmd}
+    out(payload)
+    return 0 if payload.get("ok") else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -306,8 +329,10 @@ def main(argv: list[str] | None = None) -> int:
             payload = p0_doctor(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui", "native-gui", "native-status", "voice-status", "voice-parse", "gui-web", "hud"}:
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
         return gui_command(raw)
+    if cmd in {"native-installer-status", "native-installer-plan", "native-installer-write", "native-installer-gui"}:
+        return _native_installer_main(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())
         return 0

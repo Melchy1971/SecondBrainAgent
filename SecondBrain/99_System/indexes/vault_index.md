@@ -2,7 +2,7 @@
 
 Aktualisiert: 2026-06-30
 
-Dateien: 1628
+Dateien: 1631
 
 
 ## 00_Handbuch
@@ -1977,6 +1977,7 @@ Dateien: 1628
 - [[2026-06-19_103241_production-ready-gate-v96]]
 - [[2026-06-22_160755_production-ready-gate-v96]]
 - [[2026-06-30_084833_production-ready-gate-v96]]
+- [[2026-06-30_113559_production-ready-gate-v96]]
 
 ## 95_Operations\Settings
 
@@ -2000,6 +2001,8 @@ Dateien: 1628
 - [[2026-06-29_090435_chatgpt_import_report]]
 - [[2026-06-30_084745_chatgpt_import_report]]
 - [[2026-06-30_084748_chatgpt_import_report]]
+- [[2026-06-30_113515_chatgpt_import_report]]
+- [[2026-06-30_113518_chatgpt_import_report]]
 
 ## 99_System\claude_review
 

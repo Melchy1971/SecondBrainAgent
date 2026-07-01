@@ -33,13 +33,13 @@ Datum: 2026-06-30
 | 42 | 4 | [[2026-06-19_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
 | 42 | 0 | [[VPS_Architektur_mit_Docker_69e61ad5-ac00-838d-8e63]] | hoch | Blocker/Risiken klären |
 | 42 | 0 | [[VPS_Architektur_mit_Docker]] | hoch | Blocker/Risiken klären |
-| 40 | 3 | [[2026-06-30_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
+| 40 | 2 | [[2026-06-30_chief-of-staff-v98]] | hoch | Blocker/Risiken klären |
 | 40 | 0 | [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] | hoch | Blocker/Risiken klären |
 | 40 | 0 | [[Begrüßung_und_Einstieg]] | hoch | Blocker/Risiken klären |
 | 37 | 0 | [[weighted_edges]] | hoch | Blocker/Risiken klären |
 | 37 | 0 | [[Diabetiker_Information_6963d5b8-fd78-8332-8ea6]] | hoch | Blocker/Risiken klären |
 | 37 | 0 | [[Diabetiker_Information]] | hoch | Blocker/Risiken klären |
-| 27 | 20 | [[2026-06-30_task-agent]] | hoch | Blocker/Risiken klären |
+| 35 | 21 | [[2026-06-30_task-agent]] | hoch | Blocker/Risiken klären |
 | 22 | 0 | [[2026-06-19_self-reflection]] | hoch | Blocker/Risiken klären |
 | 21 | 0 | [[2026-06-22_self-reflection]] | hoch | Blocker/Risiken klären |
 | 19 | 5 | [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] | hoch | Blocker/Risiken klären |
@@ -57,13 +57,16 @@ Datum: 2026-06-30
 | 14 | 85 | [[Unraid_SQL_KI_Integration]] | hoch | Blocker/Risiken klären |
 | 11 | 0 | [[Projektstruktur_Analyse_69e0b0df-376c-838a-b3ba]] | hoch | Blocker/Risiken klären |
 | 11 | 0 | [[Projektstruktur_Analyse]] | hoch | Blocker/Risiken klären |
+| 11 | 0 | [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | hoch | Blocker/Risiken klären |
+| 11 | 0 | [[2026-06-30_project-intelligence]] | hoch | Blocker/Risiken klären |
+| 10 | 0 | [[vault_index]] | hoch | Blocker/Risiken klären |
 | 10 | 0 | [[Wissensdatenbank_Masterplan_69a69e65-07c4-8395-823a]] | hoch | Blocker/Risiken klären |
 | 10 | 0 | [[Wissensdatenbank_Masterplan]] | hoch | Blocker/Risiken klären |
 | 10 | 0 | [[Entwicklungsplan_Agent-System_69f30f76-e880-8393-8600]] | hoch | Blocker/Risiken klären |
 | 10 | 0 | [[Entwicklungsplan_Agent-System]] | hoch | Blocker/Risiken klären |
-| 10 | 0 | [[2026-06-30_project-intelligence]] | hoch | Blocker/Risiken klären |
 | 9 | 91 | [[Masterplan_optimieren_69286aa7-5514-832b-956f]] | hoch | Blocker/Risiken klären |
 | 9 | 91 | [[Masterplan_optimieren]] | hoch | Blocker/Risiken klären |
+| 9 | 0 | [[facts_tasks]] | hoch | Blocker/Risiken klären |
 | 9 | 0 | [[Wissensdatenbank_mit_KI_6992cd70-8ab0-8388-85d8]] | hoch | Blocker/Risiken klären |
 | 9 | 0 | [[Wissensdatenbank_mit_KI]] | hoch | Blocker/Risiken klären |
 | 9 | 0 | [[Wissensdatenbank_Masterplan_erstellen_69f1df7b-6970-8396-8311]] | hoch | Blocker/Risiken klären |
@@ -72,10 +75,8 @@ Datum: 2026-06-30
 | 9 | 0 | [[Optimierung_von_2thBrain]] | hoch | Blocker/Risiken klären |
 | 9 | 0 | [[Code_Integration_Fehler_6a38f9a4-0f50-83eb-ab68]] | hoch | Blocker/Risiken klären |
 | 9 | 0 | [[Code_Integration_Fehler]] | hoch | Blocker/Risiken klären |
-| 9 | 0 | [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | hoch | Blocker/Risiken klären |
 | 8 | 7 | [[Roadmap_und_Dev-Setup_68ee0530-e67c-8329-aae3]] | hoch | Blocker/Risiken klären |
 | 8 | 7 | [[Roadmap_und_Dev-Setup]] | hoch | Blocker/Risiken klären |
-| 8 | 0 | [[vault_index]] | hoch | Blocker/Risiken klären |
 | 8 | 0 | [[Life_Dashboard_v10]] | hoch | Blocker/Risiken klären |
 | 8 | 0 | [[2026-06-26_project-intelligence]] | hoch | Blocker/Risiken klären |
 | 7 | 0 | [[Jarvis_mit_LLMs_planen_6927371a-3b88-8326-8781]] | hoch | Blocker/Risiken klären |
@@ -119,6 +120,7 @@ Datum: 2026-06-30
 | 4 | 0 | [[VPS_Sicherheitsrichtlinien_69eb3dfc-5134-8389-9e20]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[VPS_Sicherheitsrichtlinien]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Project_Memory]] | hoch | Blocker/Risiken klären |
+| 4 | 0 | [[Memory_Profile]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Koordination_Jedermannturnier_2026_69454220-a3cc-832d-9c78]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Koordination_Jedermannturnier_2026]] | hoch | Blocker/Risiken klären |
 | 4 | 0 | [[Hermes_KI_Agent_Installation_69e9bf96-aff0-8389-870e]] | hoch | Blocker/Risiken klären |
@@ -134,7 +136,6 @@ Datum: 2026-06-30
 | 3 | 0 | [[Process_Memory]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[PowerPoint_Erstellung_P02-Kette_695f8511-119c-8329-8d93]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[PowerPoint_Erstellung_P02-Kette]] | hoch | Blocker/Risiken klären |
-| 3 | 0 | [[Memory_Profile]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Logo_design_brief_692ebccc-f290-8328-9f5b]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Logo_design_brief]] | hoch | Blocker/Risiken klären |
 | 3 | 0 | [[Entwicklungsstand_und_Architektur_69b3dd71-8158-8397-bc4d]] | hoch | Blocker/Risiken klären |
@@ -239,7 +240,6 @@ Datum: 2026-06-30
 | 0 | 0 | [[myGEKKO_Integration_Anleitung]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[iMac_Mini_2014_Upgrades_67af47ae-b6e8-8007-9962]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[iMac_Mini_2014_Upgrades]] | niedrig | nächsten messbaren Schritt definieren |
-| 0 | 0 | [[facts_tasks]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[facts_tasks]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[facts_tags]] | niedrig | nächsten messbaren Schritt definieren |
 | 0 | 0 | [[facts_projects]] | niedrig | nächsten messbaren Schritt definieren |

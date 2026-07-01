@@ -4,17 +4,17 @@ Datum: 2026-06-30
 
 | Impact | Notiz | Risiko | Entscheidung | Links | Interpretation |
 |---:|---|---:|---:|---:|---|
-| 2061 | [[Temporal_Graph]] | 10 | 2 | 2027 | Review priorisieren |
+| 2122 | [[Temporal_Graph]] | 13 | 2 | 2079 | Review priorisieren |
 | 1481 | [[WDB_2026]] | 403 | 136 | 0 | Review priorisieren |
 | 1481 | [[WDB_2026_69f8547b-d860-8394-8c04]] | 403 | 136 | 0 | Review priorisieren |
 | 827 | [[weighted_edges]] | 37 | 0 | 716 | Review priorisieren |
-| 692 | [[facts_tasks]] | 8 | 9 | 650 | Review priorisieren |
+| 695 | [[facts_tasks]] | 9 | 9 | 650 | Review priorisieren |
 | 570 | [[2026-06-30_project-intelligence]] | 11 | 2 | 533 | Review priorisieren |
-| 343 | [[2026-06-30_meeting-intelligence]] | 1 | 1 | 338 | Review priorisieren |
+| 346 | [[2026-06-30_meeting-intelligence]] | 2 | 1 | 338 | Review priorisieren |
 | 331 | [[2026-06-26_project-agent]] | 83 | 1 | 80 | Review priorisieren |
 | 326 | [[2026-06-30_project-agent]] | 80 | 3 | 80 | Review priorisieren |
+| 320 | [[2026-06-30_prediction-report]] | 90 | 0 | 50 | Review priorisieren |
 | 319 | [[2026-06-25_project-agent]] | 79 | 1 | 80 | Review priorisieren |
-| 308 | [[2026-06-30_prediction-report]] | 86 | 0 | 50 | Review priorisieren |
 | 307 | [[2026-06-23_project-agent]] | 75 | 1 | 80 | Review priorisieren |
 | 304 | [[2026-06-22_project-agent]] | 74 | 1 | 80 | Review priorisieren |
 | 271 | [[2026-06-19_project-agent]] | 63 | 1 | 80 | Review priorisieren |
@@ -45,7 +45,8 @@ Datum: 2026-06-30
 | 197 | [[DB_160426]] | 47 | 28 | 0 | Review priorisieren |
 | 197 | [[DB_160426_69dcca9d-793c-838f-85d0]] | 47 | 28 | 0 | Review priorisieren |
 | 165 | [[facts_decisions]] | 6 | 1 | 145 | Review priorisieren |
-| 148 | [[Memory_Profile]] | 3 | 27 | 85 | Review priorisieren |
+| 164 | [[2026-06-30_task-agent]] | 35 | 10 | 39 | Review priorisieren |
+| 159 | [[Memory_Profile]] | 4 | 31 | 85 | Review priorisieren |
 | 148 | [[2026-06-19_self-reflection]] | 22 | 21 | 40 | Review priorisieren |
 | 148 | [[2026-06-23_self-reflection]] | 22 | 21 | 40 | Review priorisieren |
 | 145 | [[2026-06-22_self-reflection]] | 21 | 21 | 40 | Review priorisieren |
@@ -54,10 +55,9 @@ Datum: 2026-06-30
 | 143 | [[Code-Stand_vs._Masterplan_6a310127-f518-83eb-91f2]] | 43 | 7 | 0 | Review priorisieren |
 | 142 | [[2026-06-26_self-reflection]] | 20 | 21 | 40 | Review priorisieren |
 | 142 | [[2026-06-30_self-reflection]] | 20 | 21 | 40 | Review priorisieren |
-| 138 | [[2026-06-30_task-agent]] | 27 | 10 | 37 | Review priorisieren |
+| 133 | [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 11 | 0 | 100 | Review priorisieren |
 | 132 | [[2026-06-26_project-intelligence]] | 8 | 0 | 108 | Review priorisieren |
 | 130 | [[2026-06-30_contradictions]] | 10 | 0 | 100 | Review priorisieren |
-| 127 | [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 9 | 0 | 100 | Review priorisieren |
 | 124 | [[2026-06-23_project-intelligence]] | 7 | 0 | 103 | Review priorisieren |
 | 124 | [[2026-06-25_project-intelligence]] | 7 | 0 | 103 | Review priorisieren |
 | 124 | [[2026-06-26_contradictions]] | 8 | 0 | 100 | Review priorisieren |
@@ -76,7 +76,6 @@ Datum: 2026-06-30
 | 106 | [[2026-06-26_meeting-intelligence]] | 0 | 1 | 104 | Entscheidungskontext prüfen |
 | 104 | [[2026-06-19_project-intelligence]] | 5 | 0 | 89 | Review priorisieren |
 | 102 | [[2026-06-23_contradictions]] | 6 | 0 | 84 | Review priorisieren |
-| 101 | [[2026-06-30_reasoning-map]] | 3 | 6 | 80 | Review priorisieren |
 | 101 | [[VPS_Server]] | 25 | 13 | 0 | Review priorisieren |
 | 101 | [[VPS_Server_69e49760-eee0-8392-a8cb]] | 25 | 13 | 0 | Review priorisieren |
 | 100 | [[2026-06-18_self-improvement-plan]] | 0 | 0 | 100 | Kontextknoten |
@@ -84,3 +83,4 @@ Datum: 2026-06-30
 | 100 | [[2026-06-22_self-improvement-plan]] | 0 | 0 | 100 | Kontextknoten |
 | 100 | [[2026-06-23_self-improvement-plan]] | 0 | 0 | 100 | Kontextknoten |
 | 100 | [[2026-06-25_self-improvement-plan]] | 0 | 0 | 100 | Kontextknoten |
+| 100 | [[2026-06-26_self-improvement-plan]] | 0 | 0 | 100 | Kontextknoten |

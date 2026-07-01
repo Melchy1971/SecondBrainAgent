@@ -1,0 +1,16 @@
+{
+  "version": "30.33",
+  "name": "native_memory_explorer_center",
+  "files": [
+    "SecondBrain-Agent/secondbrain/native/memory_explorer.py",
+    "SecondBrain-Agent/secondbrain/native/memory_explorer_gui.py",
+    "SecondBrain-Agent/tests/test_v3033_native_memory_explorer.py",
+    "SecondBrain-Agent/docs/releases/v30_33_native_memory_explorer.md",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/APPLY_DELTA_v30_33.md"
+  ],
+  "validation": [
+    "python -m pytest tests/test_v3033_native_memory_explorer.py -q",
+    "python launcher.py memory-explorer-status"
+  ]
+}

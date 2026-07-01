@@ -18,7 +18,7 @@ Aktualisiert: 2026-06-30
 - [[Toolentwicklung_mit_KI-Prompts]] — Score 131
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 127
 - [[Claude_Obsidian_Skill]] — Score 127
-- [[2026-06-30_meeting-intelligence]] — Score 110
+- [[2026-06-30_meeting-intelligence]] — Score 112
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 99
 - [[Begrüßung_und_Einstieg]] — Score 99
 - [[2026-06-25_chief-of-staff-v98]] — Score 92
@@ -37,7 +37,7 @@ Aktualisiert: 2026-06-30
 - [[Prompt_optimieren]] — Score 58
 - [[Diabetiker_Information_6963d5b8-fd78-8332-8ea6]] — Score 53
 - [[Diabetiker_Information]] — Score 53
-- [[Decision_Intelligence_v2]] — Score 51
+- [[Decision_Intelligence_v2]] — Score 52
 - [[DB_160426_69dcca9d-793c-838f-85d0]] — Score 47
 - [[DB_160426]] — Score 47
 - [[Jarvis_6a22b309-3398-838d-8c9b]] — Score 40
@@ -48,12 +48,12 @@ Aktualisiert: 2026-06-30
 - [[Code-Stand_vs._Masterplan]] — Score 38
 - [[Prozessüberarbeitung_und_Dokumentation_68c93ceb-e48c-8324-ac7c]] — Score 37
 - [[Prozessüberarbeitung_und_Dokumentation]] — Score 37
+- [[Memory_Profile]] — Score 37
 - [[Logo_design_brief_692ebccc-f290-8328-9f5b]] — Score 37
 - [[Logo_design_brief]] — Score 37
 - [[2026-06-26_meeting-intelligence]] — Score 35
 - [[Bildanalyse_Barrierefreiheit_KI_67ff6468-3b88-8007-9be1]] — Score 32
 - [[Bildanalyse_Barrierefreiheit_KI]] — Score 32
-- [[2026-06-25_meeting-intelligence]] — Score 32
 
 ## Gelernte Tags
 

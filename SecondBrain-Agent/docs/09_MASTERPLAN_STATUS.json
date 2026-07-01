@@ -1,97 +1,29 @@
 {
-  "current_version": "v30.24",
-  "version": "30.24",
-  "last_delta": "v30.24 GUI Memory Center Runtime Truth",
-  "last_update": "2026-06-26",
-  "last_updated": "2026-06-26",
-  "status": "UNIFIED_APPLICATION_BOOTSTRAP_READY",
-  "gui_status": "DOCUMENT_CENTER_RUNTIME_TRUTH",
-  "p1_status": "IN_PROGRESS",
-  "product_maturity_estimate": "80-90% technical foundation, 65-75% local end-user product",
-  "current_sprint": {
-    "id": "sprint3-continuation-v30-21",
-    "name": "Unified Application Bootstrap",
-    "branch": "delta-v30-21-unified-application-bootstrap",
-    "status": "implemented_local_docs_updated",
-    "added": [
-      "python launcher.py starts Jarvis directly",
-      "jarvis alias added for explicit GUI start",
-      "gui-bootstrap validates and repairs local runtime defaults",
-      "Windows start scripts and shortcut installer point at the launcher",
-      "central documentation updated to v30.21"
-    ]
+  "version": "30.29",
+  "current_version": "v30.29",
+  "status": "IN_PROGRESS",
+  "focus": "Native Chat Center",
+  "last_delta": "SecondBrainAgent_delta_v30_29_native_chat_center.zip",
+  "native_desktop": {
+    "primary_start": true,
+    "web_hud": "secondary_only",
+    "german_voice": true,
+    "action_audit": true,
+    "approval_queue": true,
+    "chat_center": true
   },
-  "last_validation": {
-    "gui_bootstrap": "PASS ready with warnings for DATABASE_URL and local embedding provider",
-    "gui_doctor": "PASS",
-    "command_index": "PASS",
-    "full_pytest": "not run in this documentation update"
-  },
-  "modules": {
-    "launcher": "default_gui_start_v30_21",
-    "gui_bootstrap": "ready_with_local_defaults",
-    "gui_startup_surface": "implemented_v30_20",
-    "desktop_views": "p1_runtime_surface_updated",
-    "settings_center": "p1_runtime_surface_updated",
-    "rag_import_center": "p1_runtime_surface_updated",
-    "vector_index_center": "p1_runtime_surface_updated",
-    "production_gate_dashboard": "p1_runtime_surface_updated",
-    "p1_control_panel": "p1_runtime_surface_updated",
-    "document_understanding": "parser_registry_integrated_with_p1_ingest_and_structured_parse_events",
-    "p1_runtime_store_bridge": "implemented_search_sources_status_validation_reindex_store_backed",
-    "p1_store_backed_ingest": "implemented_for_configured_rag_store_sqlite_or_pgvector",
-    "p1_vector_search_store_path": "implemented",
-    "embedding_index_identity": "provider_model_dimension_key_enforced_for_ingest_reindex_search",
-    "embedding_dimension_contract": "implemented_provider_profile_enforced",
-    "embedding_provider_health": "production_gate_hard_blocker_with_report_command",
-    "openai_embedding_provider": "sdk_or_native_http_boundary_with_dimension_contract",
-    "ollama_embedding_provider": "http_endpoint_integrated_with_dimension_contract_and_timeout_config",
-    "pgvector_foundation": "config_readiness_sql_preview_live_check_apply_runner_implemented",
-    "pgvector_live_store": "upsert_sources_and_vector_search_implemented",
-    "connectors": "foundation_only",
-    "database": "sqlite_foundation_with_pgvector_live_store",
-    "desktop_app": "foundation",
-    "knowledge_graph": "foundation",
-    "long_term_memory": "foundation",
-    "mobile_companion": "backend_foundation",
-    "multi_agent": "foundation",
-    "realtime_voice": "foundation",
-    "repo_doctor": "hardened"
-  },
-  "recent_changes": [
-    "v30.23: Document Center zeigt P1-RAG-Index, Parser/OCR-Status, pending Imports, Validation und Runtime Truth.",
-    "v30.21: Unified application bootstrap makes python launcher.py start Jarvis directly.",
-    "v30.20: GUI startup commands and Windows scripts were unified around the launcher.",
-    "v30.19: P1 GUI runtime surfaces were updated.",
-    "v30.18: Vector audit uses full index identity and p1-vector-index-repair fixes provider/model/dimension drift through reindex.",
-    "v30.17: Vectors are keyed by provider:model:dimension to prevent silent model-migration drift.",
-    "v30.16: OpenAI embeddings can use native HTTPS transport without falling back to fake local vectors."
-  ],
-  "release_notes": [
-    "Current operating source of truth: README.md, INSTALLATION_BEGINNER.md, docs/README.md, docs/START_GUI.md.",
-    "Historical release artifacts remain under docs/releases/.",
-    "Production readiness remains blocked without live provider credentials, pgvector validation, real connectors and secure secret storage."
-  ],
-  "open_blockers": [
-    "live OpenAI/Ollama provider health against real credentials/endpoints",
-    "full pytest without timeout",
-    "live VPS pgvector migration/audit",
-    "production semantic embedding provider live credentials/endpoints",
-    "productive connector runtime with OAuth/API sync",
-    "secret vault/encryption",
-    "service lifecycle for safe stop/restart"
+  "new_commands": [
+    "native-chat-status",
+    "native-chat-ask",
+    "native-chat-search",
+    "native-chat-clear"
   ],
   "remaining_blockers": [
-    "full pytest without sandbox timeout",
-    "live VPS pgvector migration/audit",
-    "productive connector runtime",
-    "secret vault/encryption"
-  ],
-  "next_release": "Service lifecycle, full local release validation, live provider gate, pgvector production path, then connector runtime validation",
-  "memory_center_status": "RUNTIME_TRUTH_SURFACED",
-  "updated_components": [
-    "hud_memory_view",
-    "memory_center_runtime",
-    "memory_center_status_cli"
+    "native_gui_unified_layout_polish",
+    "document_preview_drag_drop",
+    "wake_word_and_streaming_stt_tts",
+    "real_connector_runtime",
+    "installer_exe_msi",
+    "secret_vault_encryption"
   ]
 }

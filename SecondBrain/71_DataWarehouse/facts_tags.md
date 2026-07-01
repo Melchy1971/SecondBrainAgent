@@ -13,6 +13,7 @@
 | gesundheit | 186 |
 | obsidian | 134 |
 | gemini | 3 |
+| copilot-conversation | 2 |
 | pdf | 1 |
 | email | 1 |
 | secondbrain | 1 |
@@ -22,4 +23,3 @@
 | process | 1 |
 | knowledge-gap | 1 |
 | "clippings" | 1 |
-| copilot-conversation | 1 |

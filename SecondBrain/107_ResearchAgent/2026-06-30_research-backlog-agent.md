@@ -32,9 +32,9 @@ Datum: 2026-06-30
 | 58 | [[2026-06-23_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 57 | [[DB_160426_69dcca9d-793c-838f-85d0]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 57 | [[DB_160426]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
+| 57 | [[2026-06-30_meeting-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 57 | [[2026-06-26_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 57 | [[2026-06-25_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
-| 56 | [[2026-06-30_meeting-agent]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 52 | [[Code-Stand_vs._Masterplan_6a310127-f518-83eb-91f2]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 52 | [[Code-Stand_vs._Masterplan]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |
 | 52 | [[2026-06-19_chief-of-staff-v98]] | Recherchefrage konkretisieren, Quellenbedarf festlegen |

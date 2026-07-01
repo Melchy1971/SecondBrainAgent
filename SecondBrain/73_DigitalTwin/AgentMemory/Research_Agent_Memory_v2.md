@@ -6,6 +6,8 @@ Aktualisiert: 2026-06-30
 
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 246
 - [[Begrüßung_und_Einstieg]] — Score 246
+- [[2026-06-30_113518_chatgpt_import_report]] — Score 201
+- [[2026-06-30_113515_chatgpt_import_report]] — Score 201
 - [[2026-06-30_084748_chatgpt_import_report]] — Score 201
 - [[2026-06-30_084745_chatgpt_import_report]] — Score 201
 - [[2026-06-29_090435_chatgpt_import_report]] — Score 201
@@ -14,7 +16,7 @@ Aktualisiert: 2026-06-30
 - [[VPS_Server_69e49760-eee0-8392-a8cb]] — Score 187
 - [[VPS_Server]] — Score 187
 - [[2026-06-22_knowledge-quality]] — Score 156
-- [[2026-06-30_knowledge-quality]] — Score 153
+- [[2026-06-30_knowledge-quality]] — Score 154
 - [[2026-06-23_knowledge-quality]] — Score 151
 - [[2026-06-26_knowledge-quality]] — Score 149
 - [[2026-06-25_knowledge-quality]] — Score 146
@@ -52,8 +54,6 @@ Aktualisiert: 2026-06-30
 - [[Blogthemen_finden]] — Score 56
 - [[myGEKKO_Video-Klingel_Integration_6a1c97ec-82d4-83eb-9f80]] — Score 52
 - [[myGEKKO_Video-Klingel_Integration]] — Score 52
-- [[DB_160426_69dcca9d-793c-838f-85d0]] — Score 52
-- [[DB_160426]] — Score 52
 
 ## Gelernte Tags
 
@@ -73,3 +73,4 @@ Aktualisiert: 2026-06-30
 - #secondbrain: 1
 - #decision: 1
 - #knowledge-gap: 1
+- #copilot-conversation: 1

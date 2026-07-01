@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "03fc4905e26907e1",
+        "id": "970d75c411409750",
         "type": "tabs",
         "children": [
           {
-            "id": "3f5a0d5b72b23ec9",
+            "id": "4f54224361e96709",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -164,8 +164,8 @@
             "state": {
               "type": "copilot-chat-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "copilot-chat-view"
+              "icon": "message-square",
+              "title": "Copilot"
             }
           }
         ],
@@ -173,8 +173,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -191,8 +190,22 @@
       "secondbrain-agent:SecondBrain Agent": false
     }
   },
-  "active": "3f5a0d5b72b23ec9",
+  "active": "4f54224361e96709",
   "lastOpenFiles": [
+    "copilot/copilot-conversations/9.11_and_9.8,_which_is_bigger@20260630_115436.md",
+    "05_Quellen/ChatGPT/Mainboard_Empfehlung_Vergleich.md",
+    "copilot/copilot-conversations/Mainboard_Empfehlung_für_PC@20260630_114245.md",
+    "74_SelfImprovingKnowledge/2026-06-26_self-improvement-plan.md",
+    "99_System/release_gates/2026-06-30_114022_release_gate_v9.md",
+    "95_Operations/ReleaseGates/2026-06-30_113559_production-ready-gate-v96.md",
+    "99_System/chatgpt_import/2026-06-30_113518_chatgpt_import_report.md",
+    "99_System/chatgpt_import/2026-06-30_113518_chatgpt_import_report.json",
+    "99_System/chatgpt_import/2026-06-30_113515_chatgpt_import_report.md",
+    "99_System/chatgpt_import/2026-06-30_113515_chatgpt_import_report.json",
+    "132_JarvisControlCenterGUI/Jarvis_Control_Center_GUI.md",
+    "00_Inbox/2026-06-18_nicht-unterstuetzter-dateityp-gemini-export-zip.md",
+    "59_DataWarehouse/Facts/facts_documents.md",
+    "110_DecisionAgent/2026-06-30_decision-agent.md",
     "123_PersonalKPIs/2026-06-30_personal-kpis.md",
     "122_WeeklyOperatingSystem/2026-06-30_weekly-os.md",
     "121_DailyOperatingSystem/2026-06-30_daily-os.md",
@@ -201,24 +214,12 @@
     "116_ContradictionDetection/2026-06-30_contradictions.md",
     "112_ChiefOfStaff/2026-06-30_chief-of-staff-v98.md",
     "111_ProcessAgent/2026-06-30_process-agent.md",
-    "110_DecisionAgent/2026-06-30_decision-agent.md",
     "109_ProjectAgent/2026-06-30_project-agent.md",
     "108_MeetingAgent/2026-06-30_meeting-agent.md",
     "107_ResearchAgent/2026-06-30_research-backlog-agent.md",
     "106_TaskAgent/2026-06-30_task-agent.md",
     "105_WeeklyReview/2026-06-30_weekly-review.md",
     "104_DailyAssistant/2026-06-30_daily-assistant.md",
-    "102_ReasoningEngine/2026-06-30_reasoning-map.md",
-    "101_SelfReflection/2026-06-30_self-reflection.md",
-    "93_RealtimeEventBus/2026-06-30_event-bus.md",
-    "84_MonitoringTelemetry/2026-06-30_monitoring.md",
-    "79_SimulationEngineV2/2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist.md",
-    "78_LearningEngine/2026-06-30_learning-plan.md",
-    "77_RecommendationEngine/2026-06-30_recommendations.md",
-    "99_System/sync/2026-06-30_sync-health.md",
-    "74_SelfImprovingKnowledge/2026-06-30_self-improvement-plan.md",
-    "70_CalendarIntelligence/2026-06-30_calendar-intelligence.md",
-    "69_MeetingIntelligence/2026-06-30_meeting-intelligence.md",
     "99_System/quality",
     "99_System/conflicts",
     "99_System/production",
@@ -226,8 +227,6 @@
     "99_System/chatgpt_import/2026-06-29_090435_chatgpt_import_report.json",
     "99_System/chatgpt_import/2026-06-29_090430_chatgpt_import_report.json",
     "99_System/chatgpt_import/2026-06-29_090416_chatgpt_import_report.json",
-    "gui/memory_center_runtime.py",
-    "gui",
-    "jarvis_hud_server.py"
+    "gui/memory_center_runtime.py"
   ]
 }

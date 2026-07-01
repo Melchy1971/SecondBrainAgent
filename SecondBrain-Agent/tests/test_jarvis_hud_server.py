@@ -1,8 +1,10 @@
 """Tests fuer den Jarvis-HUD-Server (Routing, RAG, Allowlist, Settings)."""
 import json
 import threading
+import urllib.error
 import urllib.request
 from http.server import ThreadingHTTPServer
+from pathlib import Path
 
 import pytest
 
@@ -46,6 +48,25 @@ def test_rag_answer_empty(hud):
     assert srv.rag_answer("")["ok"] is False
 
 
+def test_rag_source_path_can_be_opened_as_document(hud):
+    hit = srv.rag_answer("telekom prozess")["hits"][0]
+
+    document = srv.document_read(hit["note"])
+
+    assert document["ok"] is True
+    assert document["path"] == hit["note"].replace("\\", "/")
+    assert "Prozess SAP Abnahme" in document["content"]
+
+
+def test_assistant_source_chip_opens_document_center():
+    html = Path("web/jarvis_hud/index.html").read_text(encoding="utf-8")
+
+    assert 'document.createElement("button")' in html
+    assert 'openAssistantSource(s.note)' in html
+    assert 'showView("documents")' in html
+    assert 'await docsOpen(path, null)' in html
+
+
 def test_run_allowed_script_blocks_unknown(hud):
     r = srv.run_allowed_script("rm_everything.py")
     assert r["ok"] is False
@@ -62,6 +83,54 @@ def test_settings_roundtrip(hud):
     assert saved["news_max"] == 5
     assert "ignored" not in saved
     assert srv.load_settings()["place"] == "Bonn"
+
+
+def test_settings_log_redacts_api_keys(hud, monkeypatch):
+    events = []
+    monkeypatch.setattr(srv, "log_event", lambda event, payload: events.append((event, payload)))
+
+    secret = "test-secret-value"
+    saved = srv.save_settings({"place": "Bonn", "openai_api_key": secret})
+
+    assert saved["openai_api_key"] == secret
+    assert events == [
+        ("hud.settings_saved", {**saved, "openai_api_key": "[redacted]"})
+    ]
+    assert secret not in json.dumps(events)
+
+
+def test_assistant_uses_first_configured_model_when_active_model_is_empty(hud, monkeypatch):
+    srv.save_settings({
+        "assistant_engine": "ollama",
+        "assistant_model": "",
+        "assistant_models": "llama3.1, gemma4:31b",
+    })
+    selected = {}
+
+    def fake_llm_chat(engine, model, prompt, temperature):
+        selected.update(engine=engine, model=model)
+        return "Antwort", model
+
+    monkeypatch.setattr(srv, "_assistant_retrieve", lambda *_args: [])
+    monkeypatch.setattr(srv, "_llm_chat", fake_llm_chat)
+
+    result = srv.assistant_chat("Test")
+
+    assert selected == {"engine": "ollama", "model": "llama3.1"}
+    assert result["llm_ok"] is True
+    assert result["model"] == "llama3.1"
+
+
+def test_assistant_models_reports_same_default_as_chat(hud, monkeypatch):
+    srv.save_settings({
+        "assistant_model": "",
+        "assistant_models": "llama3.1, gemma4:31b",
+    })
+    monkeypatch.setattr(srv, "_ollama_models", lambda _base: ["gemma4:31b", "llama3.1:latest"])
+
+    result = srv.assistant_models()
+
+    assert result["active"] == "llama3.1"
 
 
 @pytest.fixture
@@ -122,3 +191,53 @@ def test_http_post_settings(server):
     assert data["ok"] is True
     assert data["settings"]["place"] == "Koeln"
     assert data["settings"]["news_max"] == 7
+
+
+def test_http_post_settings_returns_json_write_error(server, monkeypatch):
+    def fail_save(_body):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(srv, "save_settings", fail_save)
+    req = urllib.request.Request(
+        server + "/api/settings", data=b"{}",
+        headers={"Content-Type": "application/json"}, method="POST")
+
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
+        urllib.request.urlopen(req, timeout=10)
+
+    assert exc_info.value.code == 500
+    payload = json.loads(exc_info.value.read().decode("utf-8"))
+    assert payload == {
+        "ok": False,
+        "error": "Einstellungen konnten nicht gespeichert werden.",
+    }
+
+
+def test_run_uses_threading_http_server(hud, monkeypatch):
+    created = {}
+
+    class FakeThreadingServer:
+        def __init__(self, address, handler):
+            created["address"] = address
+            created["handler"] = handler
+
+        def serve_forever(self):
+            created["served"] = True
+
+        def server_close(self):
+            created["closed"] = True
+
+    monkeypatch.delenv("HUD_HOST", raising=False)
+    monkeypatch.delenv("HUD_PORT", raising=False)
+    monkeypatch.delenv("HUD_RELOAD", raising=False)
+    monkeypatch.setattr(srv, "ThreadingHTTPServer", FakeThreadingServer)
+    monkeypatch.setattr(srv, "log_event", lambda *_args: None)
+
+    srv.run("127.0.0.1", 9876)
+
+    assert created == {
+        "address": ("127.0.0.1", 9876),
+        "handler": srv.Handler,
+        "served": True,
+        "closed": True,
+    }

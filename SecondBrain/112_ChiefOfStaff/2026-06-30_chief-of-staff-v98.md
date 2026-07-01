@@ -14,7 +14,7 @@ Datum: 2026-06-30
 
 - Risiko prüfen: [[WDB_2026_69f8547b-d860-8394-8c04]] (403)
 - Risiko prüfen: [[WDB_2026]] (403)
-- Risiko prüfen: [[2026-06-30_prediction-report]] (86)
+- Risiko prüfen: [[2026-06-30_prediction-report]] (90)
 - Risiko prüfen: [[2026-06-26_project-agent]] (83)
 - Risiko prüfen: [[2026-06-30_project-agent]] (80)
 - Aufgaben prüfen: [[Masterplan_optimieren_69286aa7-5514-832b-956f]] (91)
@@ -31,10 +31,10 @@ Datum: 2026-06-30
 - [[Claude_Obsidian_Skill]]
 - [[KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0]]
 - [[KI-unterstützte_Wissensdatenbank]]
+- [[Memory_Profile]]
 - [[Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427]]
 - [[Protokoll_Vorlage_Tischtennisverein]]
 - [[DB_160426_69dcca9d-793c-838f-85d0]]
-- [[DB_160426]]
 
 ### 2026-06-30_task-agent
 
@@ -53,7 +53,7 @@ Datum: 2026-06-30
 | 140 | [[2026-06-19_chief-of-staff-v98]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung |<br>- [ ] Aufgabe | offene Aufgaben | | Risiko |
 | 138 | [[2026-06-25_chief-of-staff-v98]] | - [ ] Anforderungen konkretis | Risiko |
 | 137 | [[2026-06-22_chief-of-staff-v98]] | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben |<br>- [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben |<br>- [ ] Status prüfen<br>- [ ] nächs | Risiko |
-| 130 | [[2026-06-30_chief-of-staff-v98]] | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <b
+| 136 | [[2026-06-30_task-agent]] | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] 
 
 ### 2026-06-30_project-agent
 

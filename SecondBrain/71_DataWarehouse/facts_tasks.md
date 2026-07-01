@@ -35,6 +35,7 @@
 | - [ ] Aufgabe | offene Aufgaben | | [[2026-06-26_task-agent]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_task-agent]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_task-agent]] |
+| - [ ]  Projektsetup und Entwicklungsumgebung einrichten<br> | Risiko | | [[2026-06-30_task-agent]] |
 | - [ ] Unraid: Docker läuft, Shares/Volumes geplant (z.B. `appdata/mailknowledge/…`)<br>- [ ] VS Code + Claude Extension / Continue / Cursor eingerichtet<br>- [ ] Ports grob geplant:<br>- [ ] `docker compose version` funktioniert auf dem Host (oder Unraid Shell)<br>- [ ] Prompt A in Claude ausführen | Risiko | | [[2026-06-30_task-agent]] |
 | - [ ] Unraid: Docker läuft, Shares/Volumes geplant (z.B. `appdata/mailknowledge/…`)<br>- [ ] VS Code + Claude Extension / Continue / Cursor eingerichtet<br>- [ ] Ports grob geplant:<br>- [ ] `docker compose version` funktioniert auf dem Host (oder Unraid Shell)<br>- [ ] Prompt A in Claude ausführen | Risiko | | [[2026-06-30_task-agent]] |
 | - [ ]  Projektsetup und Entwicklungsumgebung einrichten<br> | [[2026-06-30_task-agent]] |
@@ -63,7 +64,6 @@
 | - [ ] Anforderungen konkretis | [[2026-06-25_chief-of-staff-v98]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_chief-of-staff-v98]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_chief-of-staff-v98]] |
-| - [ ] Unraid: Docker läuft, Shares/Volumes geplant (z.B. `appdata/mailknowledge/…`)<br>- [ ] VS Code + Claude Extension / Continue / Cursor eingerichtet<br>- [ ] Ports grob geplant:<br>- [ ] `docker compose version` funktioniert auf dem Host (oder Unr | [[2026-06-30_chief-of-staff-v98]] |
 | - [ ] Aufgabe 1 | [[Projekt_Dashboard_OneNote]] |
 | - [ ] Aufgabe 2 | [[Projekt_Dashboard_OneNote]] |
 | - [ ] Aufgabe 3 | [[Projekt_Dashboard_OneNote]] |

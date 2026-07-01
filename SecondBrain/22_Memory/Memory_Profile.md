@@ -64,6 +64,10 @@ Aktualisiert: 2026-06-30
 - [[2026-06-18_decision-intelligence]]: - Welche Entscheidungen haben kein Risiko?
 - [[2026-06-18_decision-intelligence]]: - Welche Entscheidungen haben kein Ergebnis?
 - [[2026-06-18_decision-intelligence]]: - Welche Entscheidungen betreffen mehrere Projekte?
+- [[2026-06-30_decision-intelligence]]: - Welche Entscheidungen haben keine dokumentierte Alternative?
+- [[2026-06-30_decision-intelligence]]: - Welche Entscheidungen haben kein Risiko?
+- [[2026-06-30_decision-intelligence]]: - Welche Entscheidungen haben kein Ergebnis?
+- [[2026-06-30_decision-intelligence]]: - Welche Entscheidungen betreffen mehrere Projekte?
 - [[2026-06-19_chief-of-staff]]: ## Priorität 1
 - [[2026-06-19_chief-of-staff]]: ## Priorität 2
 - [[2026-06-19_chief-of-staff]]: - Entscheidungen dokumentieren
@@ -103,10 +107,6 @@ Aktualisiert: 2026-06-30
 - [[2026-06-18_context-map]]: ### Wichtigste Notizen
 - [[2026-06-18_context-map]]: ### Wichtigste Notizen
 - [[2026-06-18_context-map]]: ### Wichtigste Notizen
-- [[2026-06-30_context-map]]: ### Wichtigste Notizen
-- [[2026-06-30_context-map]]: ### Wichtigste Notizen
-- [[2026-06-30_context-map]]: ### Wichtigste Notizen
-- [[2026-06-30_context-map]]: ### Wichtigste Notizen
 
 ## Abgeleitete Arbeitspräferenzen
 

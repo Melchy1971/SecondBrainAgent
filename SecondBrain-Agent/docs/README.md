@@ -1,54 +1,37 @@
-# SecondBrain OS / Jarvis Dokumentation v30.21
+# SecondBrain-Agent Dokumentation
 
-Stand: v30.21 Unified Application Bootstrap
+Stand: v30.25, 2026-06-30
 
-## Zielbild
+Dieser Ordner enthaelt die aktuelle Betriebs- und Architekturdokumentation. Historische Versionsdetails liegen ausschliesslich unter [`releases/`](releases/).
 
-SecondBrain OS ist ein lokaler Jarvis-/SecondBrain-Agent fuer Wissen, Dokumente, Aufgaben, RAG, Agenten, GUI, Voice, Mobile Companion und kontrollierte Automatisierung.
+## Einstieg
 
-## Aktueller Reifegrad
+1. [`04_STARTBEFEHLE.md`](04_STARTBEFEHLE.md) - Installation, Start, Diagnose und Fehlerbehebung.
+2. [`CLIENTS_AND_INTERFACES.md`](CLIENTS_AND_INTERFACES.md) - Native App, Web-HUD, Voice und Mobile.
+3. [`RAG_AND_DATA.md`](RAG_AND_DATA.md) - Dokumentimport, RAG, Embeddings, Datenbanken, Graph und Memory.
+4. [`AGENTS_AND_CONNECTORS.md`](AGENTS_AND_CONNECTORS.md) - Agenten, Automationen, Connectoren und Governance.
 
-- GUI/HUD: startfaehig ueber `python launcher.py`, `jarvis`, `gui` und Windows-Startskripte.
-- Bootstrap: prueft lokale Defaults, Runtime-Ordner, Python, Datenbank-URL und Embedding-Provider.
-- P1 RAG: lokale Entwicklung mit deterministischem Provider; produktive Provider bleiben Gate-relevant.
-- PostgreSQL/pgvector: Foundation und Live-Checks vorhanden, produktive Live-Validierung umgebungsabhaengig.
-- Connectoren: Produktionsnahe Strukturen vorhanden, echte OAuth/API-Laeufe bleiben offen.
-- Desktop/Voice/Mobile/Graph/Memory: modulare Foundations vorhanden, Produktreife je Modul unterschiedlich.
+## Betrieb und Entwicklung
 
-## Aktueller Startpunkt
+- [`01_ARCHITEKTUR_UEBERSICHT.md`](01_ARCHITEKTUR_UEBERSICHT.md) - Systemgrenzen und Datenfluss.
+- [`03_MODUL_MATRIX.md`](03_MODUL_MATRIX.md) - Reifegrad der aktiven Bereiche.
+- [`05_OFFENE_LUECKEN.md`](05_OFFENE_LUECKEN.md) - priorisierte Roadmap und bekannte Grenzen.
+- [`07_IMPLEMENTIERUNGSREGELN.md`](07_IMPLEMENTIERUNGSREGELN.md) - Entwicklungs- und Sicherheitsregeln.
+- [`RELEASE_WORKFLOW_v18_9.md`](RELEASE_WORKFLOW_v18_9.md) - verbindlicher Gate- und Release-Ablauf. Der Dateiname bleibt wegen Repo-Doctor-Kompatibilitaet bestehen.
+- [`08_RELEASE_GATE.md`](08_RELEASE_GATE.md) - zuletzt belegter Gate-Status.
+- [`09_MASTERPLAN_STATUS.json`](09_MASTERPLAN_STATUS.json) - maschinenlesbarer Projektstatus.
 
-Alle lokalen Befehle aus dem Projektordner starten:
+## Spezielle Funktionen
 
-```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
-```
+- [`VOICE_CONTROL_v20.md`](VOICE_CONTROL_v20.md) - aktuelle Voice-Pipeline; Dateiname bleibt wegen Code-Verweisen bestehen.
+- [`SECURITY_CAMERAS_v30.md`](SECURITY_CAMERAS_v30.md) - Kamera- und Stream-Gateway-Konfiguration.
 
-Bootstrap und Diagnose:
+## Quellen der Wahrheit
 
-```powershell
-python launcher.py gui-bootstrap
-python launcher.py gui-doctor
-```
+- Bedienung und Installation: Root-`README.md` und diese Dokumentation.
+- Aktuelle Befehle: `python launcher.py command-index`.
+- Packaging und Extras: `pyproject.toml`.
+- Release-Historie: [`02_RELEASE_HISTORY.md`](02_RELEASE_HISTORY.md), Git-History und [`releases/`](releases/).
+- Laufzeitstatus: generierte Reports unter `runtime/` und `release/`; diese werden nicht als statische Dokumentation gepflegt.
 
-Jarvis starten:
-
-```powershell
-python launcher.py
-```
-
-Browser: `http://127.0.0.1:8851`
-
-Weitere Startbefehle: `docs\04_STARTBEFEHLE.md` und `docs\START_GUI.md`.
-
-## Dokumentationsstruktur
-
-- `01_ARCHITEKTUR_UEBERSICHT.md`: System- und Datenfluss.
-- `02_RELEASE_HISTORY.md`: komprimierte Release-Historie.
-- `03_MODUL_MATRIX.md`: aktueller Modulstatus.
-- `04_STARTBEFEHLE.md`: verifizierte Start- und Diagnosebefehle.
-- `05_OFFENE_LUECKEN.md`: offene technische und produktive Luecken.
-- `06_NAECHSTER_ENTWICKLUNGSPLAN.md`: naechste sinnvolle Arbeitspakete.
-- `07_IMPLEMENTIERUNGSREGELN.md`: Regeln fuer Code, Persistenz und Gates.
-- `08_RELEASE_GATE.md`: aktueller Gate-Status.
-- `09_MASTERPLAN_STATUS.json`: maschinenlesbarer Status.
-- `releases/`: historische, auditierbare Release-Artefakte.
+Versionierte Feature-Snapshots aus v6 bis v18 wurden entfernt. Sie beschrieben ueberwiegend alte Launcher-Oberflaechen oder Foundations und waren keine verlaessliche Betriebsanleitung mehr.

@@ -1,7 +1,8 @@
-# Conflict Report 2026-06-30 08:49:00
+# Conflict Report 2026-06-30 11:40:23
 
-Konflikte: 20
+Konflikte: 21
 
+- `99_System\conflicts\2026-06-30_conflict-report.md`
 - `90_Templates\Executive_Dashboard.md`
 - `32_ExecutiveDashboard\Executive_Dashboard.md`
 - `90_Templates\Decision_Journal.md`

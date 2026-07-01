@@ -63,6 +63,7 @@ Datum: 2026-06-30
 | 127 | [[Projektstruktur_Analyse]] | 33 | 11 | Automatisierung prüfen |
 | 126 | [[Datenbankentwicklung_mit_Codex_69f1f03e-aab0-838d-bc69]] | 37 | 6 | Automatisierung prüfen |
 | 126 | [[Datenbankentwicklung_mit_Codex]] | 37 | 6 | Automatisierung prüfen |
+| 124 | [[Temporal_Graph]] | 25 | 13 | Automatisierung prüfen |
 | 123 | [[Wissensdatenbank_mit_KI_6992cd70-8ab0-8388-85d8]] | 21 | 9 | Automatisierung prüfen |
 | 123 | [[Wissensdatenbank_mit_KI]] | 21 | 9 | Automatisierung prüfen |
 | 123 | [[API_Keys_finden_69e9c540-c050-8397-a35e]] | 30 | 15 | Automatisierung prüfen |
@@ -73,7 +74,6 @@ Datum: 2026-06-30
 | 116 | [[Code_Fehleranalyse_und_Korrekturen]] | 38 | 0 | Automatisierung prüfen |
 | 114 | [[N8n_Barrierefreiheit_Bildanalyse_67fccfbb-3814-8007-bd8c]] | 12 | 0 | Automatisierung prüfen |
 | 114 | [[N8n_Barrierefreiheit_Bildanalyse]] | 12 | 0 | Automatisierung prüfen |
-| 109 | [[Temporal_Graph]] | 22 | 10 | Automatisierung prüfen |
 | 108 | [[2026-06-19_chief-of-staff-v98]] | 7 | 42 | Automatisierung prüfen |
 | 107 | [[Entwicklungsplan_und_Architektur_6a34fb76-1edc-83eb-a275]] | 18 | 6 | Automatisierung prüfen |
 | 107 | [[Entwicklungsplan_und_Architektur]] | 18 | 6 | Automatisierung prüfen |

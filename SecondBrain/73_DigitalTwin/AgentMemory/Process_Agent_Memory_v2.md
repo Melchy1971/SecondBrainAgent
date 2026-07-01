@@ -25,8 +25,8 @@ Aktualisiert: 2026-06-30
 - [[2026-06-26_process-agent]] — Score 34
 - [[2026-06-22_process-agent]] — Score 32
 - [[2026-06-19_process-agent]] — Score 27
-- [[Temporal_Graph]] — Score 25
-- [[vault_index]] — Score 23
+- [[Temporal_Graph]] — Score 26
+- [[vault_index]] — Score 24
 - [[weighted_edges]] — Score 22
 - [[Jack_der_kleine_Astronaut_67a4ed51-a148-8007-a1fb]] — Score 19
 - [[Jack_der_kleine_Astronaut]] — Score 19

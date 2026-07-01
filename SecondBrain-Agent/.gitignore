@@ -14,6 +14,11 @@ env/
 .env
 .env/
 
+# Local secrets / runtime config (enthaelt API-Keys / Kamera-Logins - nie committen)
+config/hud_settings.json
+config/mediamtx.yml
+auto.key
+
 # Build artifacts
 build/
 dist/

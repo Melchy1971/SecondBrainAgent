@@ -11,7 +11,7 @@ Aktualisiert: 2026-06-30
 | [[2026-06-30_daily-assistant]] | 0 | 5 | 1 |
 | [[2026-06-30_daily-os]] | 0 | 6 | 2 |
 | [[2026-06-30_decision-agent]] | 0 | 0 | 1 |
-| [[2026-06-30_prediction-report]] | 0 | 116 | 0 |
+| [[2026-06-30_prediction-report]] | 0 | 118 | 0 |
 | [[2026-06-30_project-intelligence]] | 0 | 11 | 2 |
 | [[2026-06-30_reasoning-map]] | 0 | 3 | 3 |
 | [[2026-06-30_research-backlog-agent]] | 0 | 0 | 0 |

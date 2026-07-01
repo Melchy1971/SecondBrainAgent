@@ -25,7 +25,7 @@ Datum: 2026-06-30
 | 140 | [[PDF_Rechnung_Converter]] |
 | 133 | [[Jarvis_6a22b309-3398-838d-8c9b]] |
 | 133 | [[Jarvis]] |
-| 117 | [[facts_tasks]] |
+| 118 | [[facts_tasks]] |
 | 109 | [[Instanzstatus_und_Monitoring_69e7795a-acd8-8390-99ab]] |
 | 109 | [[Instanzstatus_und_Monitoring]] |
 | 105 | [[DB_160426_69dcca9d-793c-838f-85d0]] |
@@ -46,13 +46,13 @@ Datum: 2026-06-30
 | 85 | [[Jarvis_mit_LLMs_planen]] |
 | 84 | [[Jack_der_kleine_Astronaut_67a4ed51-a148-8007-a1fb]] |
 | 84 | [[Jack_der_kleine_Astronaut]] |
+| 82 | [[Temporal_Graph]] |
 | 80 | [[Open_Archiver_einrichten_68d4f4c3-dc5c-8333-8f99]] |
 | 80 | [[Open_Archiver_einrichten]] |
 | 79 | [[Projektanalyse_und_Weiterentwicklung_68d11caa-0508-8333-abb7]] |
 | 79 | [[Projektanalyse_und_Weiterentwicklung]] |
+| 72 | [[vault_index]] |
 | 72 | [[2026-06-30_project-intelligence]] |
-| 69 | [[Temporal_Graph]] |
-| 63 | [[vault_index]] |
 | 59 | [[Tool_klonen_und_verbinden_68f726f0-7b90-832a-abaa]] |
 
 ## Analyse

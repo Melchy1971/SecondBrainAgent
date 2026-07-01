@@ -20,9 +20,7 @@ def test_gui_doctor_reports_required_start_files(tmp_path):
     (tmp_path / "launcher.py").write_text("", encoding="utf-8")
     (tmp_path / "scripts" / "start_hud.py").write_text("", encoding="utf-8")
     (tmp_path / "Jarvis.bat").write_text("", encoding="utf-8")
-    (tmp_path / "Start-Jarvis-GUI.ps1").write_text("", encoding="utf-8")
-    (tmp_path / "Start-Jarvis-Native.ps1").write_text("", encoding="utf-8")
-    (tmp_path / "Start-Jarvis-Native.bat").write_text("", encoding="utf-8")
+    (tmp_path / "HUD.bat").write_text("", encoding="utf-8")
     (tmp_path / "Install-Jarvis-Desktop.ps1").write_text("", encoding="utf-8")
 
     payload = gui_doctor(tmp_path)

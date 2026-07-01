@@ -77,12 +77,11 @@ secondbrain command-index
 
 ```powershell
 .\Jarvis.bat
-.\Start-Jarvis-Native.bat
-.\Start-Jarvis-GUI.bat
+.\HUD.bat
 powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Start-Jarvis-GUI.*` bleibt als Kompatibilitaetsdatei erhalten und startet ebenfalls nativ.
+Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Jarvis.bat` startet den nativen Desktop, `HUD.bat` das Web-HUD (127.0.0.1:8851).
 
 ## Lokale Oberflaechen
 

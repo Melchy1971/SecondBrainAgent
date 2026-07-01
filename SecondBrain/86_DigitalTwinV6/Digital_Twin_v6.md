@@ -4,15 +4,15 @@ Aktualisiert: 2026-06-30
 
 ## Prioritätssignale
 
-- projekt: 5382
-- lokal: 2783
+- projekt: 5401
+- lokal: 2785
 - entscheidung: 2014
 - prozess: 1936
-- risiko: 1799
-- automatisierung: 983
+- risiko: 1809
+- automatisierung: 989
 - stabilität: 382
 - gesundheit: 368
-- lernen: 357
+- lernen: 362
 - wartbarkeit: 54
 
 ## Wissensschwerpunkte
@@ -38,12 +38,12 @@ Aktualisiert: 2026-06-30
 - #Import: 24
 - #Tests: 24
 - #name: 23
+- #fff: 22
 - #decision: 21
 - #Titel: 21
 - #PDF: 21
 - #id: 21
 - #status: 21
-- #fff: 21
 - #secondbrain: 19
 - #Entscheidungen: 19
 - #Prioritäten: 19

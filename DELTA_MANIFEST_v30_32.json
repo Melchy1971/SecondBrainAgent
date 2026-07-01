@@ -1,0 +1,16 @@
+{
+  "version": "30.32",
+  "name": "Native Document Explorer Center",
+  "files": [
+    "SecondBrain-Agent/secondbrain/native/document_explorer.py",
+    "SecondBrain-Agent/secondbrain/native/document_explorer_gui.py",
+    "SecondBrain-Agent/tests/test_v3032_native_document_explorer.py",
+    "SecondBrain-Agent/docs/releases/v30_32_native_document_explorer.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_32.md",
+    "SecondBrain-Agent/launcher.py"
+  ],
+  "validation": [
+    "python -m pytest tests/test_v3032_native_document_explorer.py -q",
+    "python launcher.py document-explorer-status"
+  ]
+}

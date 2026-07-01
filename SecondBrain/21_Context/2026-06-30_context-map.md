@@ -264,7 +264,7 @@ I thin
 
 ## unknown
 
-- Notizen: 378
+- Notizen: 420
 
 ### Wichtigste Notizen
 - [[PDF-Analyse-Tool]]
@@ -291,16 +291,16 @@ I thin
 ### Häufige Tags
 
 ### Häufige Beziehungen
-- [[weighted_edges]]: 275
-- [[Memory_Profile]]: 154
-- [[2026-06-19_chief-of-staff-v98]]: 150
-- [[2026-06-18_context-map]]: 142
-- [[Temporal_Graph]]: 134
-- [[2026-06-18_semantic-deduplication]]: 128
-- [[2026-06-18_prediction-report]]: 126
-- [[facts_tasks]]: 121
-- [[2026-06-18_https-obsidian-md]]: 117
-- [[Executive_Dashboard]]: 107
+- [[weighted_edges]]: 280
+- [[2026-06-19_chief-of-staff-v98]]: 169
+- [[2026-06-18_context-map]]: 155
+- [[Temporal_Graph]]: 149
+- [[Memory_Profile]]: 138
+- [[2026-06-18_prediction-report]]: 136
+- [[2026-06-18_semantic-deduplication]]: 136
+- [[facts_tasks]]: 129
+- [[WDB_2026]]: 129
+- [[WDB_2026_69f8547b-d860-8394-8c04]]: 128
 
 ## web_source
 

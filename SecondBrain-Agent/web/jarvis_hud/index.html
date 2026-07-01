@@ -203,6 +203,8 @@
     border-bottom:1px dashed rgba(47,230,255,.12); position:relative; line-height:1.4}
   .news li:before{content:"›"; position:absolute; left:0; color:var(--cyan)}
   .news ul{margin:0; padding:0}
+  .news a.news-link{color:inherit; text-decoration:none; cursor:pointer; display:block}
+  .news a.news-link:hover{color:#eafcff; text-decoration:underline}
 
   /* Alerts */
   .alerts h2 small{color:var(--muted)}
@@ -303,7 +305,9 @@
   .msg.asst.err{border-color:rgba(255,93,108,.5)}
   .msg .sources{margin-top:9px; display:flex; flex-wrap:wrap; gap:6px}
   .msg .src{font-size:9px; color:var(--cyan); border:1px solid var(--line); border-radius:6px;
-    padding:3px 7px; background:rgba(47,230,255,.06); cursor:default}
+    padding:3px 7px; background:rgba(47,230,255,.06); cursor:pointer; font-family:inherit}
+  .msg .src:hover,.msg .src:focus-visible{background:rgba(47,230,255,.16); color:#eafcff;
+    outline:none; box-shadow:var(--glow)}
   .msg .msg-actions{margin-top:8px}
   .btn.mini{font-size:9px; padding:4px 9px}
   .asst-input{display:flex; gap:8px}
@@ -873,7 +877,7 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
         <input id="sec-location" placeholder="Ort (optional)">
         <input id="sec-host" placeholder="IP / Host (z. B. 192.168.1.50)">
         <input id="sec-path" placeholder="Gateway-Pfad (z. B. haustuer)">
-        <select id="sec-mode"><option value="hls">HLS</option><option value="webrtc">WebRTC</option></select>
+        <select id="sec-mode"><option value="hls">HLS</option><option value="webrtc">WebRTC</option><option value="local">Lokal (USB)</option></select>
         <button class="btn" id="sec-add">+ Kamera</button>
       </div>
       <div class="sec-discovered" id="sec-discovered"></div>
@@ -1126,7 +1130,14 @@ function tick(){
 setInterval(tick, 1000); tick();
 
 // --- Helper ---
-async function getJSON(url, opts){ const r = await fetch(url, opts); return r.json(); }
+async function getJSON(url, opts){
+  const r = await fetch(url, opts);
+  let data;
+  try{ data = await r.json(); }
+  catch(e){ throw new Error("Ungültige Serverantwort (HTTP "+r.status+")."); }
+  if(!r.ok) throw new Error(data.error || ("HTTP "+r.status));
+  return data;
+}
 function setConn(online){
   if(online){ $("dot").classList.add("on"); $("conn").lastChild.textContent="HUD ONLINE";
     $("ss-text").textContent=SS_ONLINE_TEXT; }
@@ -1236,7 +1247,17 @@ async function loadNews(){
     const n = await getJSON("/api/news");
     const ul = $("news-list"); ul.innerHTML = "";
     if(!n.ok || !(n.items||[]).length){ ul.innerHTML = "<li>Keine News.</li>"; return; }
-    n.items.forEach(t=>{ const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+    n.items.forEach(t=>{
+      const item = (typeof t==="string") ? {title:t, link:""} : (t||{});
+      const li = document.createElement("li");
+      if(item.link){
+        const a = document.createElement("a");
+        a.href = item.link; a.target = "_blank"; a.rel = "noopener noreferrer";
+        a.className = "news-link"; a.textContent = item.title || item.link;
+        li.appendChild(a);
+      } else { li.textContent = item.title || ""; }
+      ul.appendChild(li);
+    });
   }catch(e){ $("news-list").innerHTML = "<li>Fehler.</li>"; }
 }
 
@@ -1298,7 +1319,7 @@ async function saveSettings(){
     applySettings(s);
     $("set-status").textContent="Gespeichert.";
     loadWeather(); loadNews(); setTimeout(closeSettings, 600);
-  }catch(e){ $("set-status").textContent="Fehler."; }
+  }catch(e){ $("set-status").textContent="Fehler: "+(e.message || "Speichern fehlgeschlagen."); }
 }
 
 // --- Verdrahtung ---
@@ -1359,9 +1380,10 @@ function asstAppend(role, text, sources, isErr){
   m.textContent=text;
   if(sources && sources.length){
     const sx=document.createElement("div"); sx.className="sources";
-    sources.forEach((s,i)=>{ const c=document.createElement("span"); c.className="src";
+    sources.forEach((s,i)=>{ const c=document.createElement("button"); c.type="button"; c.className="src";
       c.textContent=`[${i+1}] ${s.note}`;
-      c.title=`Score ${s.score} · ${(s.preview||"").slice(0,180)}`; sx.appendChild(c); });
+      c.title=`Dokument öffnen · Score ${s.score} · ${(s.preview||"").slice(0,180)}`;
+      c.addEventListener("click",()=>openAssistantSource(s.note)); sx.appendChild(c); });
     m.appendChild(sx);
   }
   if(role==="asst" && !isErr){
@@ -1372,6 +1394,14 @@ function asstAppend(role, text, sources, isErr){
   }
   log.appendChild(m); log.scrollTop=log.scrollHeight;
   return m;
+}
+async function openAssistantSource(path){
+  if(!path) return;
+  showView("documents");
+  docsInit();
+  await docsOpen(path, null);
+  const preview=$("docs-preview");
+  if(preview){ preview.setAttribute("tabindex", "-1"); preview.focus(); }
 }
 async function sendAssistant(){
   const q=$("asst-q").value.trim(); if(!q) return;
@@ -1820,11 +1850,6 @@ async function impRun(){
   }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
   finally{ $("imp-run").disabled=false; }
 }
-function fileToB64(file){
-  return new Promise((res,rej)=>{ const r=new FileReader();
-    r.onload=()=>{ const s=String(r.result); res(s.slice(s.indexOf(",")+1)); };
-    r.onerror=rej; r.readAsDataURL(file); });
-}
 async function impZip(){
   const f=$("imp-file").files[0], src=$("imp-src").value, out=$("imp-out");
   if(!f){ out.innerHTML="<div class='docs-empty'>Bitte zuerst eine ZIP-Datei wählen.</div>"; return; }
@@ -1832,9 +1857,12 @@ async function impZip(){
   out.innerHTML="<div class='docs-empty'>Lade „"+docEsc(f.name)+"“ hoch und importiere …</div>";
   $("imp-zip").disabled=true;
   try{
-    const b64=await fileToB64(f);
-    const r=await getJSON("/api/imports/zip",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({source:src, filename:f.name, data_b64:b64})});
+    // Datei als rohen Binaer-Body senden. Kein Base64, kein JSON.stringify --
+    // sonst liegen bei grossen Exporten (260 MB+) mehrere String-Kopien im
+    // Renderer und der Browser stuerzt mit Weissbild ab.
+    const qs="source="+encodeURIComponent(src)+"&filename="+encodeURIComponent(f.name);
+    const r=await getJSON("/api/imports/zip?"+qs,{method:"POST",
+      headers:{"Content-Type":"application/octet-stream"}, body:f});
     out.innerHTML="<pre>"+(r.ok?"[OK] ":"[FEHLER] ")+docEsc(r.script||src)+"\n\n"+docEsc(r.output||r.error||"")+"</pre>";
     $("imp-file").value=""; impLoad();
   }catch(e){ out.innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
@@ -1944,6 +1972,14 @@ async function playWhep(video, url){
   const ans=await r.text(); await pc.setRemoteDescription({type:"answer",sdp:ans});
   try{await video.play();}catch(e){}
 }
+async function playLocal(video){
+  video.muted=true; video.playsInline=true;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ throw new Error("Browser unterstützt keinen Kamerazugriff"); }
+  const stream=await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+  video.srcObject=stream;
+  SEC_PLAYERS.push({close:()=>{ try{ stream.getTracks().forEach(t=>t.stop()); }catch(e){} }});
+  try{ await video.play(); }catch(e){}
+}
 function secStopPlayers(){ SEC_PLAYERS.forEach(p=>{try{ p.destroy?p.destroy():(p.close&&p.close()); }catch(e){}}); SEC_PLAYERS=[]; }
 async function secLoad(){
   secStopPlayers();
@@ -1967,11 +2003,16 @@ async function secLoad(){
       g.appendChild(card);
       bar.querySelector(".cam-x").addEventListener("click",()=>secRemove(c.id));
       if(!c.enabled){ msg.style.display=""; msg.textContent="Deaktiviert."; vid.style.display="none"; return; }
-      const su=c.stream_urls||{};
-      const url = c.mode==="webrtc" ? su.webrtc : su.hls;
-      const play = c.mode==="webrtc" ? playWhep : playHls;
-      play(vid, url).catch(()=>{ msg.style.display=""; vid.style.display="none";
-        msg.textContent="Kein Stream ("+(c.mode||"hls").toUpperCase()+"). Gateway prüfen: "+docEsc(url||""); });
+      if(c.mode==="local"){
+        playLocal(vid).catch(err=>{ msg.style.display=""; vid.style.display="none";
+          msg.textContent="USB-Kamera nicht verfügbar: "+((err&&err.message)||err)+". Im Browser Kamerazugriff erlauben; die Cam darf nicht von einer anderen App (z. B. Teams) belegt sein."; });
+      } else {
+        const su=c.stream_urls||{};
+        const url = c.mode==="webrtc" ? su.webrtc : su.hls;
+        const play = c.mode==="webrtc" ? playWhep : playHls;
+        play(vid, url).catch(()=>{ msg.style.display=""; vid.style.display="none";
+          msg.textContent="Kein Stream ("+(c.mode||"hls").toUpperCase()+"). Gateway prüfen: "+docEsc(url||""); });
+      }
     });
   }catch(e){ if($("sec-grid")) $("sec-grid").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
 }
@@ -2136,6 +2177,8 @@ $("cod-model").addEventListener("change", ()=>saveSettingsPartial({coding_model:
 $("cod-task").addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.ctrlKey||e.metaKey)){ e.preventDefault(); codGen(); }});
 $("cod-copy").addEventListener("click", codCopy);
 $("cod-save").addEventListener("click", codSave);
+
+// ---
 
 // --- Statusleiste: nur Echtdaten ---
 async function loadStats(){

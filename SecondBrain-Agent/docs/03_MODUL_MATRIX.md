@@ -1,21 +1,21 @@
-# Modulmatrix v30.21
+# Modulstatus v30.25
 
-| Modul | Status | Persistenz | Produktreife | Hauptluecke |
-|---|---:|---|---:|---|
-| Launcher / GUI Bootstrap | startfaehig | `.env`, `runtime/` | 75% | Start/Stop-Lifecycle ueber alle Services |
-| Jarvis GUI / HUD | startfaehig | JSON/Runtime | 70% | vollstaendige Cross-Module Workflows |
-| P0 Runtime Gates | stabil | Reports | 75% | Produktive Secrets und Live-Umgebungen |
-| P1 RAG Runtime | fortgeschritten | SQLite/pgvector-ready | 70% | produktive Embeddings und Live-pgvector |
-| Embedding Provider Boundary | gehaertet | Config/Reports | 70% | echte Credentials/Endpoints im Gate |
-| PostgreSQL / pgvector | foundation/live-checks | PostgreSQL optional | 60% | produktiver Default, Migration, Betrieb |
-| Connector Framework | production-nahe Foundation | SQLite/Config | 55% | echte OAuth/API-Laeufe |
-| Document Understanding | Foundation | SQLite | 50% | produktive PDF/OCR/Tabellenqualitaet |
-| Multi-Agent Runtime | Foundation | SQLite/JSON | 55% | LLM-Planung, Tool Policy, Review UI |
-| Knowledge Graph | Foundation | SQLite/Export | 55% | produktiver Graph Store |
-| Long-Term Memory | Foundation | SQLite | 60% | Konsolidierung, Privacy, Vergessen |
-| Desktop Commands | Foundation | JSON/Runtime | 60% | Approval Inbox, robuste UI-Integration |
-| Voice Runtime | Foundation | SQLite/Config | 45% | Mikrofon, STT/TTS, Wake Word produktiv |
-| Mobile Companion | Backend Foundation | SQLite | 40% | native App/PWA und Push produktiv |
-| Production Core | Foundation | JSON/Reports | 60% | echte Verschluesselung und Rollenmodell |
-| Service Runtime | Foundation | JSON/HTTP | 60% | echter Windows-Dienst und Supervisor |
-| Installer / Update | Foundation | Scripts/Manifest | 60% | signierte Updates und Rollback im Betrieb |
+Die Einstufung trennt vorhandene Foundation von belegter Produktreife.
+
+| Bereich | Aktiver Einstieg | Reifegrad | Hauptgrenze |
+|---|---|---|---|
+| Launcher / Bootstrap | `python launcher.py` | betriebsfaehig lokal | kein vollstaendiger Service-Lifecycle |
+| Native Desktop | `native-gui`, `native-status` | primaere UI | Hardware-/End-to-End-Abnahme offen |
+| Web-HUD | `hud`, `gui-web` | optionaler Kompatibilitaetsmodus | kein produktiver Remote-Betrieb |
+| P0 Gates | `p0-*`, `repo-doctor` | stabil lokal | externe Produktionsumgebung separat pruefen |
+| P1 RAG | `p1-rag-*`, `p1-gate` | fortgeschritten | echte Provider- und Qualitaetsabnahme offen |
+| PostgreSQL/pgvector | `p3-*` | Foundation mit Live-Checks | deaktiviert ohne DSN; Migration nicht automatisch produktiv |
+| Knowledge Graph | `graph-*` | lokale Foundation | kein produktiver Graph-Store |
+| Desktop Backend | `desktop-*` | lokale Foundation | Approval-Inbox und Lifecycle fehlen |
+| Voice | `voice-*`, `VOICE_CONTROL_v20.md` | Textpfad nutzbar | Mikrofon, STT und TTS nicht live abgenommen |
+| Mobile | `mobile16-*` | Backend-Foundation | keine native App, Push/OCR teilweise simuliert |
+| Connectoren | Runtime-Module / HUD | Foundation | echte OAuth/API-Synchronisation fehlt |
+| Agenten / Automation | Runtime-Module | deterministische Foundation | keine vollstaendige LLM-/Tool-Produktionskette |
+| Security Cameras | Web-HUD API | lokale Integration | Gateway und echte Kamera muessen live validiert werden |
+
+Den aktuellen, maschinenlesbaren Befehlskatalog liefert `python launcher.py command-index`.

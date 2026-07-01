@@ -1,78 +1,62 @@
-# Architekturuebersicht v30.21
+# Architekturuebersicht
+
+## Systemgrenzen
 
 ```text
-SecondBrain OS / Jarvis
-|-- Launcher und GUI Bootstrap
-|-- Jarvis HUD / lokale GUI
-|-- P0 Runtime und Hygiene Gates
-|-- P1 RAG Runtime
-|-- Embedding Provider Boundary
-|-- SQLite / PostgreSQL / pgvector Foundations
-|-- Desktop Commands und Dashboard
-|-- Connector Framework
-|-- Document Understanding
-|-- Multi-Agent Runtime
-|-- Knowledge Graph
-|-- Long-Term Memory
-|-- Voice Runtime
-|-- Mobile Companion
-|-- Production Core
-|-- Service Runtime
-`-- Installer / Update Layer
+Native Desktop / Voice / Web-HUD / CLI / Mobile Backend
+                         |
+                         v
+              Launcher und Runtime-Gates
+                         |
+        +----------------+----------------+
+        |                |                |
+        v                v                v
+     P1 RAG        Agent Runtime      Connectoren
+        |                |                |
+        +----------------+----------------+
+                         |
+                         v
+     SQLite / PostgreSQL-pgvector / JSON Runtime State
+                         |
+                         v
+            Audit, Reports und Approval-Grenzen
 ```
 
-## Start- und Kontrollfluss
+Die native Desktop-App ist seit v30.25 die primaere Oberflaeche. Das Web-HUD auf Port 8851 bleibt ein optionaler Kompatibilitaetsmodus.
+
+## Kontrollfluss
 
 ```text
 python launcher.py
-  -> gui-bootstrap
-  -> lokale Konfigurations- und Runtime-Pruefung
-  -> GUI/HUD Start
-  -> Browser: http://127.0.0.1:8851
+  -> Umgebungs- und GUI-Bootstrap
+  -> Runtime-Diagnose
+  -> native Desktop-App
 ```
 
-Kompatible Aliase:
-
-```text
-jarvis
-gui
-gui-start
-gui-open
-desktop-gui
-desktop16-gui
-```
+Schreibende oder systemnahe Aktionen werden nicht direkt aus der UI ausgefuehrt. Sie laufen ueber registrierte Launcher-/Tool-Grenzen und benoetigen je nach Risiko eine Bestaetigung.
 
 ## Datenfluss
 
 ```text
-Input
-|-- GUI / Desktop
-|-- Voice
-|-- Mobile
-|-- Connectoren
-`-- Dokumente
-      |
-      v
-Ingestion / Parser / Source Records
-      |
-      v
-RAG Store / Memory / Graph / Runtime State
-      |
-      v
-Agents / Commands / Gates
-      |
-      v
-Review / Approval / Reports
-      |
-      v
-Output
-|-- GUI
-|-- Notifications
-|-- Voice
-|-- Tasks
-`-- Recommendations
+Dateien / Inbox / Connectoren / Voice / Mobile
+  -> Parser und Normalisierung
+  -> Source Records und Chunks
+  -> Embeddings / RAG Store / Memory / Graph
+  -> Suche, Antworten, Agenten und Workflows
+  -> UI, Reports, Benachrichtigungen und Review
 ```
 
-## Hauptentscheidung
+## Persistenz
 
-v30.21 macht Jarvis ueber den Launcher direkt startbar. Die Architektur bleibt modular; produktive Reife haengt weiter an echten Provider-Credentials, PostgreSQL/pgvector-Livebetrieb, Secret-Verschluesselung und Connector-OAuth.
+- SQLite und JSON dienen als lokale, deterministische Basis.
+- PostgreSQL/pgvector ist vorbereitet, aber nur bei aktivierter Konfiguration und erfolgreichem Live-Gate produktiv.
+- Laufzeitdaten liegen unter `runtime/` und `data/` und gehoeren nicht in Git.
+- Secrets gehoeren in lokale Umgebungsvariablen oder ignorierte Konfigurationsdateien und nie in Dokumentation, Reports oder Kamera-Metadaten.
+
+## Kompatibilitaet
+
+Viele historische Module bleiben im Repository, sind aber nicht Teil der aktuellen Hauptoberflaeche. Der verbindliche Befehlskatalog ist die Ausgabe von:
+
+```powershell
+python launcher.py command-index
+```

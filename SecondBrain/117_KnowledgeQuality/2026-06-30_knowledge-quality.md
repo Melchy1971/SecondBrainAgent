@@ -64,6 +64,7 @@ Datum: 2026-06-30
 | 20 | [[2026-06-26_cross-source-intelligence]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[2026-06-26_event-bus]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-30_084833_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
+| 20 | [[2026-06-30_113559_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-30_calendar-intelligence]] | Frontmatter, Inhalt, Tags, Links |
 | 20 | [[2026-06-30_event-bus]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[Agent_Swarm_Status]] | Frontmatter, Tags, Links, Struktur |
@@ -203,4 +204,3 @@ Datum: 2026-06-30
 | 40 | [[2026-06-23_reasoning-map]] | Frontmatter, Tags, Struktur |
 | 40 | [[2026-06-23_self-improvement-plan]] | Frontmatter, Tags, Struktur |
 | 40 | [[2026-06-23_weekly-os]] | Frontmatter, Tags, Links |
-| 40 | [[2026-06-23_weekly-review]] | Frontmatter, Tags, Links |

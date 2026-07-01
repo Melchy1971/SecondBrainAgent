@@ -1,20 +1,11 @@
-# Release Workflow v18.11
+# Release Workflow
 
-## Ziel
+Der historische Dateiname bleibt erhalten, weil Repo Doctor ihn als Pflichtdatei prueft. Der Inhalt gilt fuer den aktuellen Projektstand.
 
-Diese Datei definiert den verbindlichen lokalen Release- und Entwicklungsablauf für SecondBrain-Agent v18.x.
-
-Sprint 1 verschärft den Ablauf auf reproduzierbare Installation und Packaging.
-
-## Arbeitsverzeichnis
+## Arbeitsverzeichnis und Installation
 
 ```powershell
 cd H:\SecondBrainAgent\SecondBrain-Agent
-```
-
-## Installation vor Gate-Lauf
-
-```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
@@ -26,104 +17,60 @@ pip install -e ".[dev]"
 ```powershell
 python launcher.py repo-doctor --execute-runtime-checks
 python launcher.py dependency-inventory
+python launcher.py gui-bootstrap
+python launcher.py gui-doctor
 python launcher.py p0-gate
 python launcher.py p1-gate
 pytest -q
 ```
 
-## Bedeutung der Gates
+## Zweck
 
-| Gate | Zweck | Blockiert bei |
-|---|---|---|
-| `repo-doctor` | Repository-Struktur, Packaging, Requirements-Policy, Artefakthygiene | fehlenden Pflichtdateien, fehlendem `pyproject.toml`, kaputter pytest-Konfiguration, veralteten Root-Artefakten |
-| `dependency-inventory` | statisches Import-/Dependency-Inventar | unbekannten Imports, fehlender Projektwurzel |
-| `p0-gate` | Runtime-Basisfähigkeit | blockierenden P0-Problemen |
-| `p1-gate` | RAG-/Retrieval-Fähigkeit | blockierenden P1-Problemen |
-| `pytest -q` | Testregressionen | fehlschlagenden Tests |
+| Gate | Prueft |
+|---|---|
+| Repo Doctor | Repository-Struktur, Packaging, Artefakthygiene und Pflichtdateien |
+| Dependency Inventory | statische Import- und Dependency-Klassen |
+| GUI Bootstrap/Doctor | Startpfade, lokale Defaults und Runtime-Voraussetzungen |
+| P0 Gate | Runtime-Basisfaehigkeit |
+| P1 Gate | RAG-, Provider- und Retrieval-Faehigkeit |
+| pytest | Regressionen und Vertraege |
 
-## Report-Artefakte
+## Reports
 
 ```powershell
 python launcher.py repo-doctor --write-report
 python launcher.py dependency-inventory --write-report
+python launcher.py p0-production --write-report
+python launcher.py p1-production --write-report
 ```
 
-Erzeugt:
-
-```text
-release/repo_doctor_latest.json
-release/dependency_inventory_latest.json
-```
-
-Diese `*_latest.json` Dateien sind lokale Laufzeitartefakte und werden über `.gitignore` ausgeschlossen.
+Generierte `*_latest.json`-Dateien sind Laufzeitartefakte und keine statische Dokumentation.
 
 ## Source of Truth
 
 | Thema | Quelle |
 |---|---|
-| aktuelle Bedienung | `README.md` |
-| Packaging / Entry Point / Extras | `pyproject.toml` |
-| Befehlskatalog | `python launcher.py command-index` |
-| Modul-/Command-Zuordnung | `secondbrain/module_registry.py` |
+| Bedienung | Root-`README.md`, `docs/README.md` und `docs/04_STARTBEFEHLE.md` |
+| Packaging | `pyproject.toml` |
+| Befehle | `python launcher.py command-index` |
+| Module | `secondbrain/module_registry.py` |
 | Repo-Hygiene | `secondbrain/release/repo_doctor.py` |
-| Dependency-Inventar | `secondbrain/release/dependency_inventory.py` |
-| Release-/Entwicklungsablauf | `docs/RELEASE_WORKFLOW_v18_9.md` |
-| Detaildoku | `docs/` |
-| Paketverlauf | Git-History und `docs/releases/` |
+| Release-Historie | Git und `docs/releases/` |
 
-## Merge-Regel
+## Merge-Regeln
 
-Vor Merge in `main`:
+1. Nur beabsichtigte Dateien aufnehmen; fremde Working-Tree-Aenderungen erhalten.
+2. Keine Secrets, Runtime-Daten, Caches, Logs oder PID-Dateien committen.
+3. Neue Logik mit fokussierten Tests und relevanten Gates absichern.
+4. Dokumentation aktualisieren, wenn sich Bedienung, Architektur oder Gates aendern.
+5. Nicht ausgefuehrte Checks und Restrisiken explizit dokumentieren.
 
-1. Branch gegen aktuellen `main` prüfen.
-2. Laufzeit-/Cache-Dateien nicht mergen.
-3. Editable install prüfen.
-4. Gate-Kette ausführen.
-5. README nur ändern, wenn sich Bedienung, Packaging oder Gate-Reihenfolge ändert.
+## Produktive Datenbankaenderungen
 
-## Nicht ins Repository committen
+Schema-Apply, Migration und Reindex brauchen vorab:
 
-```text
-runtime/
-logs/
-__pycache__/
-.pytest_cache/
-release/*_latest.json
-*.pid
-*.log
-PATCH_*.md
-CHANGELOG_*.md
-VALIDATION_*.md
-```
-
-## CI Smoke
-
-GitHub Actions Workflow:
-
-```text
-.github/workflows/p0-reproducibility.yml
-```
-
-Prüft Python 3.11 und 3.12:
-
-```powershell
-pip install -e ".[dev]"
-python launcher.py repo-doctor --execute-runtime-checks
-python launcher.py dependency-inventory
-pytest -q tests/test_repo_doctor_v18_7.py
-pytest -q tests/test_dependency_inventory_v18_8.py
-```
-
-## Entwicklungsregel für neue Pakete
-
-Jedes Paket muss liefern:
-
-- Codeänderung
-- Testabdeckung oder begründete Testgrenze
-- Dokuänderung, wenn Bedienung/Gates/Architektur betroffen sind
-- lokale Validierungsbefehle
-- bekannte Risiken
-
-## Entscheidung
-
-Ab Sprint 1 ist `pyproject.toml` die Packaging-Quelle. Historische Root-Dateien `PATCH_*`, `CHANGELOG_*` und `VALIDATION_*` sind keine Source of Truth mehr und werden durch RepoDoctor blockiert.
+- gepruefte Zielkonfiguration ohne Secret-Ausgabe,
+- SQL-/Migrationsreview,
+- Backup und Restore-Plan,
+- Live-Readiness ohne Blocker,
+- dokumentierte Dimensionen und Provider-Identitaet.

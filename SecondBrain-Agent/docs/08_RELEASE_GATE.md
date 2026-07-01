@@ -1,41 +1,22 @@
-# Release Gate v30.21
+# Release Gate v30.25
 
-## Bewertung
+## Aktuelle Bewertung
 
-| Bereich | Status |
-|---|---|
-| Launcher Default Start | PASS |
-| GUI Bootstrap | PASS |
-| GUI Doctor | PASS |
-| Windows Startskripte | PASS |
-| P0 Runtime Gates | PASS mit umgebungsabhaengiger Validierung |
-| P1 RAG Foundation | PASS fuer lokale Entwicklung |
-| Embedding Provider Production Readiness | CONDITIONAL |
-| PostgreSQL/pgvector Livebetrieb | CONDITIONAL |
-| Echte Connectoren/OAuth | BLOCKER fuer Produktivbetrieb |
-| Secret-Verschluesselung | BLOCKER fuer Produktivbetrieb |
+| Bereich | Status | Evidenz |
+|---|---|---|
+| Packaging / Version | PASS | `pyproject.toml` meldet 30.25.0 |
+| Command Index | PASS | am 2026-06-30 erfolgreich ausgefuehrt |
+| Native Desktop v30.25 | PASS laut Release-Artefakt | fokussierte Tests im v30.25-Manifest dokumentiert |
+| P0/P1 Vollgate | NICHT NEU AUSGEFUEHRT | fuer diese Dokumentationsbereinigung nicht erforderlich |
+| PostgreSQL/pgvector Apply | BLOCKED | pgvector deaktiviert, DSN fehlt; nichts angewendet |
+| Produktive Embeddings | CONDITIONAL | echte Provider-Konfiguration umgebungsabhaengig |
+| Connectoren/OAuth | BLOCKER | keine belegte produktive Live-Synchronisation |
+| Secret-Verschluesselung | BLOCKER | produktiver Secret Store offen |
+| Vollstaendiger Testlauf | NICHT AUSGEFUEHRT | Dokumentationsaenderung; Link-/Strukturchecks laufen separat |
 
 ## Ergebnis
 
-CONDITIONAL PASS fuer lokale Entwicklung und GUI-Start.
-
-Kein Production PASS ohne produktive Provider, sichere Secrets, Live-Datenbankvalidierung und echte Connectoren.
-
-## Verifizierte lokale Checks
-
-```powershell
-python launcher.py gui-bootstrap
-python launcher.py gui-doctor
-python launcher.py command-index
-```
-
-Beobachteter lokaler Bootstrap-Status:
-
-- Status `ready`
-- Python 3.13.8 erkannt
-- Runtime- und Datenordner vorhanden und beschreibbar
-- Warnung: `DATABASE_URL` fehlt, lokaler SQLite/RAG-Prototyp bleibt aktiv
-- Warnung: lokaler deterministischer Embedding-Provider aktiv, Production Gate bleibt blockiert
+Lokale Entwicklung und die v30.25-Oberflaeche sind dokumentiert. Ein Production PASS ist nicht belegt.
 
 ## Pflichtchecks vor Release
 
@@ -49,10 +30,11 @@ python launcher.py p1-gate
 pytest -q
 ```
 
-## Blocker fuer Produktivbetrieb
+Produktive pgvector-Freigabe erfordert zusaetzlich eine gepruefte Ziel-DSN, Backup/Restore-Plan und:
 
-1. Keine produktive Secret-Verschluesselung.
-2. Keine echte OAuth/API-Connectorvalidierung.
-3. Keine abgeschlossene PostgreSQL/pgvector-Livevalidierung.
-4. Keine produktive Embedding-Provider-Validierung mit echten Credentials/Endpoints.
-5. Kein vollstaendiger Service-Lifecycle mit sicherem Stop/Restart.
+```powershell
+python launcher.py p3-pgvector-readiness --live
+python launcher.py p3-pgvector-readiness --live --apply
+```
+
+Der zweite Befehl darf erst nach Review des SQL-Previews ausgefuehrt werden.

@@ -1,0 +1,17 @@
+{
+  "version": "v30.34",
+  "name": "Native Agent Control Center",
+  "type": "delta",
+  "files": [
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/secondbrain/native/agent_control_center.py",
+    "SecondBrain-Agent/secondbrain/native/agent_control_center_gui.py",
+    "SecondBrain-Agent/tests/test_v3034_native_agent_control_center.py",
+    "SecondBrain-Agent/docs/releases/v30_34_native_agent_control_center.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_34.md"
+  ],
+  "runtime_files_created": [
+    "runtime/native/agent_tasks.jsonl",
+    "runtime/native/agent_activity.jsonl"
+  ]
+}

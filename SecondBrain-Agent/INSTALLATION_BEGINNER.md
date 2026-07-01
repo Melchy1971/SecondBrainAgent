@@ -54,7 +54,6 @@ Alternativen:
 python launcher.py jarvis
 python launcher.py gui
 .\Jarvis.bat
-.\Start-Jarvis-GUI.bat
 ```
 
 Browser:
@@ -112,10 +111,9 @@ Alternativen:
 python launcher.py jarvis
 python launcher.py native-gui
 .\Jarvis.bat
-.\Start-Jarvis-Native.bat
 ```
 
-Das alte Web-HUD ist nur noch Kompatibilitätsmodus:
+Das Web-HUD startest du separat mit `.\HUD.bat` (oder `python launcher.py hud`):
 
 ```powershell
 python launcher.py hud

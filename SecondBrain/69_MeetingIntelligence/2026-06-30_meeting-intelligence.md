@@ -4,8 +4,8 @@ Datum: 2026-06-30
 
 | Meeting | Aufgaben | Entscheidungen | Risiken | Empfehlung |
 |---|---:|---:|---:|---|
-| [[facts_tasks]] | 702 | 6 | 0 | Nachbereitung erzeugen |
-| [[2026-06-30_task-agent]] | 239 | 10 | 27 | Nachbereitung erzeugen |
+| [[facts_tasks]] | 766 | 9 | 9 | Nachbereitung erzeugen |
+| [[2026-06-30_task-agent]] | 270 | 10 | 35 | Nachbereitung erzeugen |
 | [[Jarvis_6a22b309-3398-838d-8c9b]] | 185 | 17 | 41 | Nachbereitung erzeugen |
 | [[Jarvis]] | 185 | 17 | 41 | Nachbereitung erzeugen |
 | [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] | 100 | 101 | 9 | Nachbereitung erzeugen |
@@ -20,7 +20,7 @@ Datum: 2026-06-30
 | [[2026-06-22_chief-of-staff-v98]] | 73 | 11 | 34 | Nachbereitung erzeugen |
 | [[2026-06-23_chief-of-staff-v98]] | 72 | 10 | 37 | Nachbereitung erzeugen |
 | [[2026-06-22_task-agent]] | 71 | 6 | 5 | Nachbereitung erzeugen |
-| [[2026-06-30_chief-of-staff-v98]] | 57 | 7 | 39 | Nachbereitung erzeugen |
+| [[2026-06-30_chief-of-staff-v98]] | 58 | 7 | 39 | Nachbereitung erzeugen |
 | [[2026-06-19_chief-of-staff-v98]] | 54 | 10 | 35 | Nachbereitung erzeugen |
 | [[2026-06-19_task-agent]] | 46 | 4 | 3 | Nachbereitung erzeugen |
 | [[2026-06-19_daily-briefing]] | 43 | 2 | 1 | Nachbereitung erzeugen |
@@ -75,7 +75,7 @@ Datum: 2026-06-30
 | [[Prozessüberarbeitung_und_Dokumentation_68c93ceb-e48c-8324-ac7c]] | 8 | 1 | 0 | Nachbereitung erzeugen |
 | [[Prozessüberarbeitung_und_Dokumentation]] | 8 | 1 | 0 | Nachbereitung erzeugen |
 | [[2026-06-18_semantic-deduplication]] | 8 | 0 | 0 | Nachbereitung erzeugen |
-| [[Memory_Profile]] | 7 | 27 | 2 | Nachbereitung erzeugen |
+| [[Memory_Profile]] | 7 | 31 | 3 | Nachbereitung erzeugen |
 | [[Sitzungsprotokoll_Hauptversammlung_69fcf62c-4d58-8390-888a]] | 7 | 24 | 1 | Nachbereitung erzeugen |
 | [[Sitzungsprotokoll_Hauptversammlung]] | 7 | 24 | 1 | Nachbereitung erzeugen |
 | [[Koordination_Jedermannturnier_2026_69454220-a3cc-832d-9c78]] | 7 | 5 | 4 | Nachbereitung erzeugen |
@@ -127,7 +127,6 @@ Datum: 2026-06-30
 | [[Optimierung_von_2thBrain]] | 1 | 11 | 1 | Nachbereitung erzeugen |
 | [[Vorlage_Kinderschutzkonzept_693d7a40-90e4-832b-a567]] | 1 | 8 | 3 | Nachbereitung erzeugen |
 | [[Vorlage_Kinderschutzkonzept]] | 1 | 8 | 3 | Nachbereitung erzeugen |
-| [[Digital_Twin_v6]] | 1 | 2 | 1 | Nachbereitung erzeugen |
 | [[vault_index]] | 1 | 2 | 0 | Nachbereitung erzeugen |
 | [[Was_ist_ChatGPT_Pulse_68d85225-d5f8-8327-a0a1]] | 1 | 1 | 11 | Nachbereitung erzeugen |
 | [[Was_ist_ChatGPT_Pulse]] | 1 | 1 | 11 | Nachbereitung erzeugen |
@@ -172,6 +171,7 @@ Datum: 2026-06-30
 | [[Intelligente_Dokumentenverwaltung_Lösung_67a22517-e40c-8007-85a7]] | 1 | 0 | 0 | Nachbereitung erzeugen |
 | [[Intelligente_Dokumentenverwaltung_Lösung]] | 1 | 0 | 0 | Nachbereitung erzeugen |
 | [[Agent_Swarm_Status]] | 1 | 0 | 0 | Nachbereitung erzeugen |
+| [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] | 1 | 0 | 0 | Nachbereitung erzeugen |
 | [[2026-06-30_recommendations]] | 1 | 0 | 0 | Nachbereitung erzeugen |
 | [[2026-06-30_knowledge-quality]] | 1 | 0 | 0 | Nachbereitung erzeugen |
 | [[2026-06-30_context-map]] | 1 | 0 | 0 | Nachbereitung erzeugen |
@@ -200,9 +200,9 @@ Datum: 2026-06-30
 | [[2026-06-22_reasoning-map]] | 0 | 9 | 1 | Nachbereitung erzeugen |
 | [[2026-06-25_reasoning-map]] | 0 | 8 | 1 | Nachbereitung erzeugen |
 | [[2026-06-23_reasoning-map]] | 0 | 8 | 1 | Nachbereitung erzeugen |
-| [[2026-06-30_reasoning-map]] | 0 | 6 | 1 | Nachbereitung erzeugen |
 | [[Übersetzung_der_Anfrage_68ac4366-08b4-832b-9495]] | 0 | 5 | 0 | Nachbereitung erzeugen |
 | [[Übersetzung_der_Anfrage]] | 0 | 5 | 0 | Nachbereitung erzeugen |
+| [[2026-06-30_reasoning-map]] | 0 | 3 | 1 | Nachbereitung erzeugen |
 | [[2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] | 0 | 3 | 0 | Nachbereitung erzeugen |
 | [[Temporal_Graph]] | 0 | 2 | 0 | Nachbereitung erzeugen |
 | [[PowerPoint_Management_Optimierung_67c1bf80-6800-8007-a85f]] | 0 | 2 | 0 | Nachbereitung erzeugen |
@@ -315,9 +315,9 @@ Datum: 2026-06-30
 | [[Abschiedsschreiben_Marlene]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-30_semantic-deduplication]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-30_self-improvement-plan]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
-| [[2026-06-30_search_chatgpt-import]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-30_research-backlog-agent]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-30_knowledge-compression]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
+| [[2026-06-30_contradictions]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-30_calendar-intelligence]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-29_search_chatgpt-import]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |
 | [[2026-06-26_self-improvement-plan]] | 0 | 0 | 0 | Agenda/Ergebnis ergänzen |

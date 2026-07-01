@@ -2556,13 +2556,6 @@
   },
   {
     "source": "2026-06-30_context-map",
-    "target": "Memory_Profile",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_context-map",
     "target": "2026-06-19_chief-of-staff-v98",
     "type": "mentions",
     "source_origin": "vault",
@@ -2584,7 +2577,7 @@
   },
   {
     "source": "2026-06-30_context-map",
-    "target": "2026-06-18_semantic-deduplication",
+    "target": "Memory_Profile",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -2598,6 +2591,13 @@
   },
   {
     "source": "2026-06-30_context-map",
+    "target": "2026-06-18_semantic-deduplication",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_context-map",
     "target": "facts_tasks",
     "type": "mentions",
     "source_origin": "vault",
@@ -2605,14 +2605,14 @@
   },
   {
     "source": "2026-06-30_context-map",
-    "target": "2026-06-18_https-obsidian-md",
+    "target": "WDB_2026",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_context-map",
-    "target": "Executive_Dashboard",
+    "target": "WDB_2026_69f8547b-d860-8394-8c04",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -3620,6 +3620,34 @@
   },
   {
     "source": "Memory_Profile",
+    "target": "2026-06-30_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-06-30_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-06-30_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-06-30_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
     "target": "2026-06-19_chief-of-staff",
     "type": "blocks",
     "source_origin": "vault",
@@ -3887,34 +3915,6 @@
   {
     "source": "Memory_Profile",
     "target": "2026-06-18_context-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Profile",
-    "target": "2026-06-30_context-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Profile",
-    "target": "2026-06-30_context-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Profile",
-    "target": "2026-06-30_context-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Profile",
-    "target": "2026-06-30_context-map",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -4502,6 +4502,20 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Google_Suchstatistik_anzeigen",
     "type": "blocks",
     "source_origin": "vault",
@@ -4524,6 +4538,34 @@
   {
     "source": "Temporal_Graph",
     "target": "PST_Email_Anhang_Speichern_681a4aef-ee44-8007-8ea4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -4664,6 +4706,41 @@
   {
     "source": "Temporal_Graph",
     "target": "Sitzungsprotokoll_Hauptversammlung_69fcf62c-4d58-8390-888a",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Decision_Intelligence_v2",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -5552,6 +5629,20 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Prozessdokumentation_überarbeiten",
     "type": "blocks",
     "source_origin": "vault",
@@ -5560,6 +5651,13 @@
   {
     "source": "Temporal_Graph",
     "target": "Prozessdokumentation_überarbeiten_688725cb-4614-8322-8b88",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -5594,6 +5692,20 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Netzwerk_Schaubild_erstellen",
     "type": "blocks",
     "source_origin": "vault",
@@ -5602,6 +5714,27 @@
   {
     "source": "Temporal_Graph",
     "target": "Netzwerk_Schaubild_erstellen_50882fe3-6c3f-4029-b45a",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -5622,6 +5755,13 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Kostenlose_Collage-Programme",
     "type": "blocks",
     "source_origin": "vault",
@@ -5630,6 +5770,13 @@
   {
     "source": "Temporal_Graph",
     "target": "Kostenlose_Collage-Programme_67449bb2-f700-8007-a0fc",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -5692,6 +5839,20 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "WoW_Banner_Design",
     "type": "blocks",
     "source_origin": "vault",
@@ -5734,6 +5895,13 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Kinder_im_Garten_spielen",
     "type": "blocks",
     "source_origin": "vault",
@@ -5762,6 +5930,13 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Bewerbung_um_Ausbildungsplatz",
     "type": "blocks",
     "source_origin": "vault",
@@ -5770,6 +5945,13 @@
   {
     "source": "Temporal_Graph",
     "target": "Bewerbung_um_Ausbildungsplatz_675ed3ff-4e0c-8007-9c93",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -14358,6 +14540,13 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "2026-06-30_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Hermes_Konfiguration_Docker",
     "type": "blocks",
     "source_origin": "vault",
@@ -15520,7 +15709,42 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Agent_Swarm_Status",
+    "target": "2026-06-30_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -15639,20 +15863,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Entity_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Executive_Dashboard",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "Federation_Index",
     "type": "blocks",
     "source_origin": "vault",
@@ -15744,20 +15954,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Knowledge_Lineage",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "MCP_Hub_Status",
     "type": "blocks",
     "source_origin": "vault",
@@ -15800,13 +15996,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Process_Copilot_Commands",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "Projects_Index",
     "type": "blocks",
     "source_origin": "vault",
@@ -15829,83 +16018,6 @@
   {
     "source": "Temporal_Graph",
     "target": "SecondBrain-Agent Dashboard",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -16654,6 +16766,48 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "2026-06-30_decision-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_knowledge-quality",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Agent_Collaboration_Protocol",
     "type": "blocks",
     "source_origin": "vault",
@@ -16710,13 +16864,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Entity_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "Entwicklungsplan_und_Architektur",
     "type": "blocks",
     "source_origin": "vault",
@@ -16739,13 +16886,6 @@
   {
     "source": "Temporal_Graph",
     "target": "Goal_Map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -16823,13 +16963,6 @@
   {
     "source": "Temporal_Graph",
     "target": "Semantic_OS_Status",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -17095,27 +17228,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Entity_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "2026-06-23_calendar-intelligence",
     "type": "blocks",
     "source_origin": "vault",
@@ -17320,48 +17432,6 @@
   {
     "source": "Temporal_Graph",
     "target": "2026-06-23_weekly-review",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Connector_Foundation_Status",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Dashboard_Catalog",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Entity_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -17578,27 +17648,6 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Entity_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
     "target": "2026-06-26_calendar-intelligence",
     "type": "blocks",
     "source_origin": "vault",
@@ -17809,6 +17858,349 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "2026-06-29_search_chatgpt-import",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_calendar-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_conflict-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_contradictions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_cross-source-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_daily-os",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_decision-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_governance-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_knowledge-quality",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_meeting-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_monitoring",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_process-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_production-gate",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_research-backlog-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_search_chatgpt-import",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_sync-health",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_task-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_weekly-os",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-06-30_weekly-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Autonomous_Agents_Status",
     "type": "blocks",
     "source_origin": "vault",
@@ -17817,6 +18209,20 @@
   {
     "source": "Temporal_Graph",
     "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Connector_Foundation_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Dashboard_Catalog",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -17858,14 +18264,14 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Entity_Index",
+    "target": "Executive_Agent_Memory_v2",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "Temporal_Graph",
-    "target": "Executive_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -17921,7 +18327,7 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Knowledge_Intelligence_Dashboard_v99",
+    "target": "Knowledge_Lineage",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -17963,6 +18369,13 @@
   },
   {
     "source": "Temporal_Graph",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
     "target": "Personal_CRM_Index",
     "type": "blocks",
     "source_origin": "vault",
@@ -17978,6 +18391,13 @@
   {
     "source": "Temporal_Graph",
     "target": "Process_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Process_Copilot_Commands",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -18033,7 +18453,7 @@
   },
   {
     "source": "Temporal_Graph",
-    "target": "Temporal_Knowledge_Graph",
+    "target": "Temporal_Graph",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -18048,62 +18468,6 @@
   {
     "source": "Temporal_Graph",
     "target": "Voice_Assistant_Status",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-29_search_chatgpt-import",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_autonomy-report",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_conflict-report",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_context-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_governance-report",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_production-gate",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "2026-06-30_search_chatgpt-import",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Temporal_Graph",
-    "target": "Memory_Profile",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -22387,6 +22751,34 @@
   },
   {
     "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_084833_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-22_160755_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-22_160755_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
@@ -22395,6 +22787,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-30_084833_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_103241_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22423,6 +22829,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-22_160755_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_103237_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22465,6 +22885,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_103241_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_102747_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22521,6 +22955,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_103237_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_102623_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22591,6 +23039,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_102747_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_101106_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22675,6 +23137,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_102623_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_090433_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22773,6 +23249,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_101106_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_090426_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_113559_production-ready-gate-v96",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22885,6 +23375,34 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-19_090433_production-ready-gate-v96",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-26_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-25_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22899,6 +23417,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-26_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-23_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22927,6 +23459,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-25_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-22_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -22969,6 +23515,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-23_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23025,6 +23585,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-22_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-18_monitoring",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_monitoring",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23227,6 +23801,34 @@
   },
   {
     "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-26_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-25_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-25_calendar-intelligence",
     "type": "mentions",
     "source_origin": "vault",
@@ -23235,6 +23837,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-26_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-23_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23263,6 +23879,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-25_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-22_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23305,6 +23935,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-23_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-19_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23361,6 +24005,20 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-22_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-18_calendar-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_semantic-deduplication",
+    "target": "2026-06-30_calendar-intelligence",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -23487,300 +24145,6 @@
   {
     "source": "2026-06-30_semantic-deduplication",
     "target": "2026-06-26_meeting-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_meeting-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_meeting-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_meeting-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-23_meeting-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-26_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-26_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-23_project-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-29_search_chatgpt-import",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-30_search_chatgpt-import",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_software-factory",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_software-factory",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_life-os-dashboard",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_life-os-dashboard",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_agent-economy",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_agent-economy",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_chief-of-staff-v2",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_chief-of-staff-v2",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "CRM_Index",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "DMS_Index",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_research-backlog",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_research-backlog",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_chief-of-staff",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_chief-of-staff",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_jarvis-idee",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_jarvis-idee_2",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_decision-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-18_decision-intelligence",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-23_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-22_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-23_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-19_personal-kpis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_semantic-deduplication",
-    "target": "2026-06-25_personal-kpis",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -24368,6 +24732,13 @@
   },
   {
     "source": "2026-06-30_prediction-report",
+    "target": "2026-06-30_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_prediction-report",
     "target": "DB_160426_69dcca9d-793c-838f-85d0",
     "type": "blocks",
     "source_origin": "vault",
@@ -24438,6 +24809,13 @@
   },
   {
     "source": "2026-06-30_prediction-report",
+    "target": "2026-06-30_contradictions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_prediction-report",
     "target": "2026-06-26_contradictions",
     "type": "blocks",
     "source_origin": "vault",
@@ -24501,6 +24879,13 @@
   },
   {
     "source": "2026-06-30_prediction-report",
+    "target": "2026-06-30_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_prediction-report",
     "target": "2026-06-25_project-agent",
     "type": "blocks",
     "source_origin": "vault",
@@ -24551,6 +24936,13 @@
   {
     "source": "2026-06-30_prediction-report",
     "target": "PDF_Rechnung_Converter",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_prediction-report",
+    "target": "2026-06-30_task-agent",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -24620,6 +25012,13 @@
   },
   {
     "source": "2026-06-30_prediction-report",
+    "target": "2026-06-30_chief-of-staff-v98",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_prediction-report",
     "target": "Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276",
     "type": "blocks",
     "source_origin": "vault",
@@ -24649,41 +25048,6 @@
   {
     "source": "2026-06-30_prediction-report",
     "target": "TTR_Werte_auslesen_68c983e8-75a0-8324-acb1",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_prediction-report",
-    "target": "TTR_Werte_auslesen",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_prediction-report",
-    "target": "Weiterentwicklung_der_Anwendung_69e9fc63-2868-8395-873b",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_prediction-report",
-    "target": "Weiterentwicklung_der_Anwendung",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_prediction-report",
-    "target": "TT_Pro_69c5578e-dedc-8395-b663",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_prediction-report",
-    "target": "TT_Pro",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -25859,6 +26223,13 @@
   },
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "target": "2026-06-19_process-mining",
     "type": "blocks",
     "source_origin": "vault",
@@ -25867,6 +26238,13 @@
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "target": "2026-06-18_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_process-mining",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -26013,6 +26391,20 @@
   },
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "target": "2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
     "type": "blocks",
     "source_origin": "vault",
@@ -26049,6 +26441,13 @@
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "target": "2026-06-26_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -26237,6 +26636,13 @@
   },
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-06-30_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "target": "Decision_Intelligence_v2",
     "type": "blocks",
     "source_origin": "vault",
@@ -26244,49 +26650,7 @@
   },
   {
     "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "facts_tasks",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "facts_decisions",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "facts_projects",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "2026-06-19_090550_rag_answer",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "2026-06-22_152059_rag_answer",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "SecondBrain_v9_5_Control_Center",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "target": "Memory_Engine_Profile",
+    "target": "2026-06-30_meeting-intelligence",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -26783,6 +27147,13 @@
   },
   {
     "source": "2026-06-30_process-mining",
+    "target": "2026-06-30_process-mining",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_process-mining",
     "target": "Personal_AGI_OS",
     "type": "references",
     "source_origin": "vault",
@@ -26791,13 +27162,6 @@
   {
     "source": "2026-06-30_process-mining",
     "target": "2026-06-19_research-backlog-agent",
-    "type": "references",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_process-mining",
-    "target": "2026-06-22_research-backlog-agent",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -26825,14 +27189,14 @@
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "2026-06-19_chief-of-staff-v2",
+    "target": "2026-06-30_process-mining",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "2026-06-18_chief-of-staff-v2",
+    "target": "2026-06-19_chief-of-staff-v2",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -26860,6 +27224,13 @@
   },
   {
     "source": "2026-06-30_process-mining",
+    "target": "2026-06-30_process-mining",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_process-mining",
     "target": "SolarEdge_myGEKKO_Integration_Hilfe",
     "type": "references",
     "source_origin": "vault",
@@ -26867,7 +27238,7 @@
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "API_Key_in_WordPress",
+    "target": "2026-06-30_process-mining",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -26902,13 +27273,6 @@
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "Dokumentation_redaktionell_überarbeiten",
-    "type": "references",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_process-mining",
     "target": "2026-06-19_process-mining",
     "type": "references",
     "source_origin": "vault",
@@ -26917,6 +27281,13 @@
   {
     "source": "2026-06-30_process-mining",
     "target": "2026-06-18_process-mining",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_process-mining",
+    "target": "2026-06-30_process-mining",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -26937,7 +27308,7 @@
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "Ablageort_bei_Amazon_hinzufügen",
+    "target": "2026-06-30_process-mining",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -26972,7 +27343,7 @@
   },
   {
     "source": "2026-06-30_process-mining",
-    "target": "ChatGPT_Atlas_Übersetzung",
+    "target": "2026-06-30_process-mining",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -27001,13 +27372,6 @@
   {
     "source": "2026-06-30_process-mining",
     "target": "DB_Fehlerbehebung_Tipps",
-    "type": "references",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_process-mining",
-    "target": "WDB_2026",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -36520,6 +36884,13 @@
   },
   {
     "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
     "target": "Open_Archiver_einrichten_68d4f4c3-dc5c-8333-8f99",
     "type": "blocks",
     "source_origin": "vault",
@@ -36548,21 +36919,14 @@
   },
   {
     "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-    "target": "2026-06-30_project-intelligence",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
-    "target": "Temporal_Graph",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
     "target": "vault_index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-06-30_project-intelligence",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -37010,140 +37374,140 @@
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Connector_Foundation_Status",
+    "target": "QR_Code_Anfrage",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Workflow_Catalog",
+    "target": "QR_Code_Anfrage_69ed04b7-8aa8-8388-a0cc",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Index",
+    "target": "Text_erkennen",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-19_090418_settings-report",
+    "target": "Text_erkennen_6b909c8e-2a00-8007-91a5",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-19_090431_settings-report",
+    "target": "Button_erstellen",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Import aus Chat Gpt",
+    "target": "Button_erstellen_68ea6419-04ac-8329-a6e1",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-18_search_gemini-import",
+    "target": "RL_Bild_erstellen",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "facts_tags",
+    "target": "Danke_für_Glückwünsche",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Email_Connector_Status",
+    "target": "RL_Bild_erstellen_69550cea-a3a8-8327-adc7",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Calendar_Connector_Status",
+    "target": "Danke_für_Glückwünsche_6a017646-6c94-838d-9018",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-18_calendar-intelligence",
+    "target": "Familienseite_erstellen",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-19_calendar-intelligence",
+    "target": "Familienseite_erstellen_6798adc4-2be4-8007-975f",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-22_calendar-intelligence",
+    "target": "ChatGPT_Nutzung_Anleitung",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-23_calendar-intelligence",
+    "target": "ChatGPT_Nutzung_Anleitung_67cac937-bb9c-8007-b16c",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-25_calendar-intelligence",
+    "target": "QR_Code_erstellen",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Meeting_Transcription_Status",
+    "target": "QR_Code_erstellen_6a2cfae9-4cc4-83ed-ba2c",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "2026-06-19_learning-report",
+    "target": "Humanize_AI_Text",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Voice_Layer_Status_v103",
+    "target": "Logo_erstellen_für_IT",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Digital_Twin_v5",
+    "target": "Humanize_AI_Text_67a5b6e6-9b60-8007-ba65",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_search_chatgpt-import",
-    "target": "Knowledge_Lineage",
+    "target": "Logo_erstellen_für_IT_68d2b69e-20a4-8325-868f",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -37172,6 +37536,13 @@
   {
     "source": "Digital_Twin_v5",
     "target": "#code",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v5",
+    "target": "#copilot-conversation",
     "type": "tagged_as",
     "source_origin": "vault",
     "weight": 1
@@ -43758,6 +44129,27 @@
   },
   {
     "source": "2026-06-30_project-intelligence",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-intelligence",
+    "target": "2026-06-30_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-intelligence",
+    "target": "vault_index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-intelligence",
     "target": "Wissensdatenbank_Masterplan_69a69e65-07c4-8395-823a",
     "type": "blocks",
     "source_origin": "vault",
@@ -43786,13 +44178,6 @@
   },
   {
     "source": "2026-06-30_project-intelligence",
-    "target": "2026-06-30_project-intelligence",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-intelligence",
     "target": "Masterplan_optimieren_69286aa7-5514-832b-956f",
     "type": "blocks",
     "source_origin": "vault",
@@ -43801,6 +44186,13 @@
   {
     "source": "2026-06-30_project-intelligence",
     "target": "Masterplan_optimieren",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-intelligence",
+    "target": "facts_tasks",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -43863,13 +44255,6 @@
   },
   {
     "source": "2026-06-30_project-intelligence",
-    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-intelligence",
     "target": "Roadmap_und_Dev-Setup_68ee0530-e67c-8329-aae3",
     "type": "blocks",
     "source_origin": "vault",
@@ -43878,13 +44263,6 @@
   {
     "source": "2026-06-30_project-intelligence",
     "target": "Roadmap_und_Dev-Setup",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-intelligence",
-    "target": "vault_index",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -44192,6 +44570,13 @@
   },
   {
     "source": "2026-06-30_project-intelligence",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-intelligence",
     "target": "Koordination_Jedermannturnier_2026_69454220-a3cc-832d-9c78",
     "type": "blocks",
     "source_origin": "vault",
@@ -44291,13 +44676,6 @@
   {
     "source": "2026-06-30_project-intelligence",
     "target": "PowerPoint_Erstellung_P02-Kette",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-intelligence",
-    "target": "Memory_Profile",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -45026,13 +45404,6 @@
   {
     "source": "2026-06-30_project-intelligence",
     "target": "iMac_Mini_2014_Upgrades",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-intelligence",
-    "target": "facts_tasks",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -52312,13 +52683,6 @@
   },
   {
     "source": "2026-06-30_meeting-intelligence",
-    "target": "Digital_Twin_v6",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_meeting-intelligence",
     "target": "vault_index",
     "type": "blocks",
     "source_origin": "vault",
@@ -52627,6 +52991,13 @@
   },
   {
     "source": "2026-06-30_meeting-intelligence",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_meeting-intelligence",
     "target": "2026-06-30_recommendations",
     "type": "blocks",
     "source_origin": "vault",
@@ -52823,13 +53194,6 @@
   },
   {
     "source": "2026-06-30_meeting-intelligence",
-    "target": "2026-06-30_reasoning-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_meeting-intelligence",
     "target": "Übersetzung_der_Anfrage_68ac4366-08b4-832b-9495",
     "type": "blocks",
     "source_origin": "vault",
@@ -52838,6 +53202,13 @@
   {
     "source": "2026-06-30_meeting-intelligence",
     "target": "Übersetzung_der_Anfrage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_meeting-intelligence",
+    "target": "2026-06-30_reasoning-map",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -53628,13 +53999,6 @@
   },
   {
     "source": "2026-06-30_meeting-intelligence",
-    "target": "2026-06-30_search_chatgpt-import",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_meeting-intelligence",
     "target": "2026-06-30_research-backlog-agent",
     "type": "blocks",
     "source_origin": "vault",
@@ -53643,6 +54007,13 @@
   {
     "source": "2026-06-30_meeting-intelligence",
     "target": "2026-06-30_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_meeting-intelligence",
+    "target": "2026-06-30_contradictions",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -54174,6 +54545,13 @@
   },
   {
     "source": "facts_tasks",
+    "target": "2026-06-30_task-agent",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "facts_tasks",
     "target": "2026-06-19_chief-of-staff-v98",
     "type": "decides",
     "source_origin": "vault",
@@ -54224,13 +54602,6 @@
   {
     "source": "facts_tasks",
     "target": "2026-06-25_chief-of-staff-v98",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "facts_tasks",
-    "target": "2026-06-30_chief-of-staff-v98",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -64541,13 +64912,6 @@
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "Personal_CRM_Index",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Engine_Profile",
     "target": "Executive_Dashboard_v9",
     "type": "blocks",
     "source_origin": "vault",
@@ -64562,6 +64926,13 @@
   },
   {
     "source": "Memory_Engine_Profile",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
     "target": "2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
     "type": "blocks",
     "source_origin": "vault",
@@ -64569,14 +64940,14 @@
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "2026-06-30_recommendations",
+    "target": "2026-06-30_learning-plan",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "2026-06-30_learning-plan",
+    "target": "2026-06-30_recommendations",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64653,6 +65024,13 @@
   },
   {
     "source": "Memory_Engine_Profile",
+    "target": "Mainboard_Empfehlung_für_PC@20260630_114245",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
     "target": "2026-06-30_meeting-intelligence",
     "type": "blocks",
     "source_origin": "vault",
@@ -64661,13 +65039,6 @@
   {
     "source": "Memory_Engine_Profile",
     "target": "2026-06-30_calendar-intelligence",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Engine_Profile",
-    "target": "Decision_Intelligence_v2",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64695,14 +65066,14 @@
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "2026-06-18_context-map",
+    "target": "Memory_Profile",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "Memory_Profile",
+    "target": "2026-06-18_context-map",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64730,13 +65101,6 @@
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "facts_tasks",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Engine_Profile",
     "target": "WDB_2026_69f8547b-d860-8394-8c04",
     "type": "blocks",
     "source_origin": "vault",
@@ -64744,14 +65108,7 @@
   },
   {
     "source": "Memory_Engine_Profile",
-    "target": "2026-06-18_https-obsidian-md",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Engine_Profile",
-    "target": "Executive_Dashboard",
+    "target": "facts_tasks",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64766,6 +65123,20 @@
   {
     "source": "Memory_Engine_Profile",
     "target": "Masterplan_optimieren_69286aa7-5514-832b-956f",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-06-18_https-obsidian-md",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Executive_Dashboard",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64787,13 +65158,6 @@
   {
     "source": "Memory_Engine_Profile",
     "target": "PDF-Analyse-Tool",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Memory_Engine_Profile",
-    "target": "Unraid_SQL_KI_Integration_698ef204-1cf0-838a-b7cb",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -64822,6 +65186,13 @@
   {
     "source": "Memory_Engine_Profile",
     "target": "Unraid_SQL_KI_Integration",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Unraid_SQL_KI_Integration_698ef204-1cf0-838a-b7cb",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -66676,6 +67047,13 @@
   },
   {
     "source": "2026-06-30_self-reflection",
+    "target": "Memory_Profile",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_self-reflection",
     "target": "Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427",
     "type": "decides",
     "source_origin": "vault",
@@ -66698,13 +67076,6 @@
   {
     "source": "2026-06-30_self-reflection",
     "target": "DB_160426",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_self-reflection",
-    "target": "Memory_Profile",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -69637,14 +70008,14 @@
   },
   {
     "source": "2026-06-30_reasoning-map",
-    "target": "2026-06-25_project-agent",
+    "target": "2026-06-30_prediction-report",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_reasoning-map",
-    "target": "2026-06-30_prediction-report",
+    "target": "2026-06-25_project-agent",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -69861,6 +70232,13 @@
   },
   {
     "source": "2026-06-30_reasoning-map",
+    "target": "2026-06-30_task-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_reasoning-map",
     "target": "Memory_Profile",
     "type": "blocks",
     "source_origin": "vault",
@@ -69924,7 +70302,7 @@
   },
   {
     "source": "2026-06-30_reasoning-map",
-    "target": "2026-06-30_task-agent",
+    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -69939,13 +70317,6 @@
   {
     "source": "2026-06-30_reasoning-map",
     "target": "2026-06-30_contradictions",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_reasoning-map",
-    "target": "2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -70078,13 +70449,6 @@
   },
   {
     "source": "2026-06-30_reasoning-map",
-    "target": "2026-06-30_reasoning-map",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_reasoning-map",
     "target": "VPS_Server",
     "type": "blocks",
     "source_origin": "vault",
@@ -70128,6 +70492,13 @@
   {
     "source": "2026-06-30_reasoning-map",
     "target": "2026-06-25_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_reasoning-map",
+    "target": "2026-06-26_self-improvement-plan",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -70946,6 +71317,13 @@
   },
   {
     "source": "2026-06-30_daily-assistant",
+    "target": "Memory_Profile",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_daily-assistant",
     "target": "Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427",
     "type": "decides",
     "source_origin": "vault",
@@ -70961,13 +71339,6 @@
   {
     "source": "2026-06-30_daily-assistant",
     "target": "DB_160426_69dcca9d-793c-838f-85d0",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_daily-assistant",
-    "target": "DB_160426",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -71366,6 +71737,13 @@
   },
   {
     "source": "2026-06-30_task-agent",
+    "target": "2026-06-30_task-agent",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_task-agent",
     "target": "2026-06-30_chief-of-staff-v98",
     "type": "decides",
     "source_origin": "vault",
@@ -71395,13 +71773,6 @@
   {
     "source": "2026-06-30_task-agent",
     "target": "Masterplan_optimieren",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_task-agent",
-    "target": "2026-06-30_task-agent",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -73886,6 +74257,13 @@
   },
   {
     "source": "2026-06-30_research-backlog-agent",
+    "target": "2026-06-30_meeting-agent",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_research-backlog-agent",
     "target": "2026-06-26_chief-of-staff-v98",
     "type": "references",
     "source_origin": "vault",
@@ -73894,13 +74272,6 @@
   {
     "source": "2026-06-30_research-backlog-agent",
     "target": "2026-06-25_chief-of-staff-v98",
-    "type": "references",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_research-backlog-agent",
-    "target": "2026-06-30_meeting-agent",
     "type": "references",
     "source_origin": "vault",
     "weight": 1
@@ -76434,14 +76805,14 @@
   },
   {
     "source": "2026-06-30_meeting-agent",
-    "target": "2026-06-30_meeting-agent",
+    "target": "Temporal_Graph",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_meeting-agent",
-    "target": "Temporal_Graph",
+    "target": "2026-06-30_meeting-agent",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -79675,6 +80046,13 @@
   },
   {
     "source": "2026-06-30_project-agent",
+    "target": "2026-06-30_task-agent",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-agent",
     "target": "VPS_Architektur_mit_Docker_69e61ad5-ac00-838d-8e63",
     "type": "decides",
     "source_origin": "vault",
@@ -79683,13 +80061,6 @@
   {
     "source": "2026-06-30_project-agent",
     "target": "VPS_Architektur_mit_Docker",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-agent",
-    "target": "2026-06-30_task-agent",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -79815,6 +80186,13 @@
   },
   {
     "source": "2026-06-30_project-agent",
+    "target": "Memory_Profile",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-agent",
     "target": "Decision_Intelligence_v2",
     "type": "decides",
     "source_origin": "vault",
@@ -79851,13 +80229,6 @@
   {
     "source": "2026-06-30_project-agent",
     "target": "Wissensdatenbank_Masterplan_erstellen",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-agent",
-    "target": "Memory_Profile",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -79920,7 +80291,7 @@
   },
   {
     "source": "2026-06-30_project-agent",
-    "target": "2026-06-26_task-agent",
+    "target": "Temporal_Graph",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -79928,6 +80299,13 @@
   {
     "source": "2026-06-30_project-agent",
     "target": "facts_tasks",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_project-agent",
+    "target": "2026-06-26_task-agent",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -79977,13 +80355,6 @@
   {
     "source": "2026-06-30_project-agent",
     "target": "Roadmap_und_Dev-Setup_68ee0530-e67c-8329-aae3",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_project-agent",
-    "target": "Roadmap_und_Dev-Setup",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -86199,6 +86570,13 @@
   },
   {
     "source": "2026-06-30_process-agent",
+    "target": "Temporal_Graph",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_process-agent",
     "target": "Wissensdatenbank_mit_KI_6992cd70-8ab0-8388-85d8",
     "type": "decides",
     "source_origin": "vault",
@@ -86263,13 +86641,6 @@
   {
     "source": "2026-06-30_process-agent",
     "target": "N8n_Barrierefreiheit_Bildanalyse",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_process-agent",
-    "target": "Temporal_Graph",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -90406,6 +90777,13 @@
   },
   {
     "source": "2026-06-30_chief-of-staff-v98",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_chief-of-staff-v98",
     "target": "Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427",
     "type": "blocks",
     "source_origin": "vault",
@@ -90421,13 +90799,6 @@
   {
     "source": "2026-06-30_chief-of-staff-v98",
     "target": "DB_160426_69dcca9d-793c-838f-85d0",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_chief-of-staff-v98",
-    "target": "DB_160426",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -90483,7 +90854,7 @@
   },
   {
     "source": "2026-06-30_chief-of-staff-v98",
-    "target": "2026-06-30_chief-of-staff-v98",
+    "target": "2026-06-30_task-agent",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -94193,6 +94564,13 @@
   },
   {
     "source": "2026-06-30_contradictions",
+    "target": "2026-06-30_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_contradictions",
     "target": "facts_tasks",
     "type": "blocks",
     "source_origin": "vault",
@@ -94466,6 +94844,13 @@
   },
   {
     "source": "2026-06-30_contradictions",
+    "target": "2026-06-30_contradictions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_contradictions",
     "target": "2026-06-19_knowledge-quality",
     "type": "blocks",
     "source_origin": "vault",
@@ -94522,28 +94907,14 @@
   },
   {
     "source": "2026-06-30_contradictions",
+    "target": "2026-06-30_weekly-os",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_contradictions",
     "target": "2026-06-19_personal-kpis",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_contradictions",
-    "target": "2026-06-22_personal-kpis",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_contradictions",
-    "target": "2026-06-23_personal-kpis",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "2026-06-30_contradictions",
-    "target": "2026-06-25_personal-kpis",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -101613,6 +101984,13 @@
   },
   {
     "source": "2026-06-30_knowledge-quality",
+    "target": "2026-06-30_personal-kpis",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-06-30_knowledge-quality",
     "target": "Calendar_Connector_Status",
     "type": "mentions",
     "source_origin": "vault",
@@ -102942,13 +103320,6 @@
     "weight": 1
   },
   {
-    "source": "2026-06-30_knowledge-quality",
-    "target": "2026-06-25_decision-agent",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
     "source": "2026-06-30_cross-source-intelligence",
     "target": "#1",
     "type": "tagged_as",
@@ -103307,6 +103678,13 @@
   },
   {
     "source": "Knowledge_Intelligence_Dashboard_v99",
+    "target": "2026-06-30_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Knowledge_Intelligence_Dashboard_v99",
     "target": "Calendar_Connector_Status",
     "type": "blocks",
     "source_origin": "vault",
@@ -103441,13 +103819,6 @@
   {
     "source": "Knowledge_Intelligence_Dashboard_v99",
     "target": "2026-06-19_090431_settings-report",
-    "type": "blocks",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Knowledge_Intelligence_Dashboard_v99",
-    "target": "2026-06-19_090433_production-ready-gate-v96",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -104266,14 +104637,14 @@
   },
   {
     "source": "2026-06-30_daily-os",
-    "target": "Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427",
+    "target": "Memory_Profile",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
   },
   {
     "source": "2026-06-30_daily-os",
-    "target": "Protokoll_Vorlage_Tischtennisverein",
+    "target": "Protokoll_Vorlage_Tischtennisverein_6970f921-d2a0-832e-a427",
     "type": "blocks",
     "source_origin": "vault",
     "weight": 1
@@ -104337,6 +104708,13 @@
   {
     "source": "Lernen_ERP_Index",
     "target": "2026-06-30_project-intelligence",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Lernen_ERP_Index",
+    "target": "2026-06-30_reasoning-map",
     "type": "decides",
     "source_origin": "vault",
     "weight": 1
@@ -105672,13 +106050,6 @@
     "weight": 1
   },
   {
-    "source": "Lernen_ERP_Index",
-    "target": "Kennwortverwaltung_mit_Passwortgenerator",
-    "type": "decides",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
     "source": "facts_tasks",
     "target": "2026-06-18_https-obsidian-md",
     "type": "decides",
@@ -105842,6 +106213,20 @@
   {
     "source": "Research_Agent_Memory_v2",
     "target": "Begrüßung_und_Einstieg",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-06-30_113518_chatgpt_import_report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-06-30_113515_chatgpt_import_report",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -106170,20 +106555,6 @@
   },
   {
     "source": "Research_Agent_Memory_v2",
-    "target": "DB_160426_69dcca9d-793c-838f-85d0",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Research_Agent_Memory_v2",
-    "target": "DB_160426",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Research_Agent_Memory_v2",
     "target": "#chatgpt",
     "type": "tagged_as",
     "source_origin": "vault",
@@ -106192,6 +106563,13 @@
   {
     "source": "Research_Agent_Memory_v2",
     "target": "#code",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "#copilot-conversation",
     "type": "tagged_as",
     "source_origin": "vault",
     "weight": 1
@@ -106352,6 +106730,13 @@
   },
   {
     "source": "Project_Agent_Memory_v2",
+    "target": "facts_tasks",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
     "target": "Jarvis_6a22b309-3398-838d-8c9b",
     "type": "mentions",
     "source_origin": "vault",
@@ -106360,13 +106745,6 @@
   {
     "source": "Project_Agent_Memory_v2",
     "target": "Jarvis",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Project_Agent_Memory_v2",
-    "target": "facts_tasks",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -106555,6 +106933,27 @@
   },
   {
     "source": "Project_Agent_Memory_v2",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "vault_index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-06-30_task-agent",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
     "target": "Datenbankaufbau_mit_KI_691ae148-0a44-832f-8a5f",
     "type": "mentions",
     "source_origin": "vault",
@@ -106583,20 +106982,6 @@
   },
   {
     "source": "Project_Agent_Memory_v2",
-    "target": "Temporal_Graph",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Project_Agent_Memory_v2",
-    "target": "vault_index",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Project_Agent_Memory_v2",
     "target": "2026-06-30_project-intelligence",
     "type": "mentions",
     "source_origin": "vault",
@@ -106605,13 +106990,6 @@
   {
     "source": "Project_Agent_Memory_v2",
     "target": "2026-06-30_chief-of-staff-v98",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Project_Agent_Memory_v2",
-    "target": "2026-06-30_task-agent",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -107045,6 +107423,13 @@
   },
   {
     "source": "Decision_Agent_Memory_v2",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
     "target": "Logo_design_brief_692ebccc-f290-8328-9f5b",
     "type": "mentions",
     "source_origin": "vault",
@@ -107074,13 +107459,6 @@
   {
     "source": "Decision_Agent_Memory_v2",
     "target": "Bildanalyse_Barrierefreiheit_KI",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Decision_Agent_Memory_v2",
-    "target": "2026-06-25_meeting-intelligence",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -107234,6 +107612,13 @@
   },
   {
     "source": "Meeting_Agent_Memory_v2",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Meeting_Agent_Memory_v2",
     "target": "2026-06-26_meeting-intelligence",
     "type": "mentions",
     "source_origin": "vault",
@@ -107242,13 +107627,6 @@
   {
     "source": "Meeting_Agent_Memory_v2",
     "target": "2026-06-22_meeting-agent",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Meeting_Agent_Memory_v2",
-    "target": "Temporal_Graph",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
@@ -107486,13 +107864,6 @@
   },
   {
     "source": "Meeting_Agent_Memory_v2",
-    "target": "2026-06-30_semantic-deduplication",
-    "type": "mentions",
-    "source_origin": "vault",
-    "weight": 1
-  },
-  {
-    "source": "Meeting_Agent_Memory_v2",
     "target": "2026-06-18_meeting-intelligence",
     "type": "mentions",
     "source_origin": "vault",
@@ -107529,6 +107900,13 @@
   {
     "source": "Meeting_Agent_Memory_v2",
     "target": "KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Meeting_Agent_Memory_v2",
+    "target": "KI-unterstützte_Wissensdatenbank",
     "type": "mentions",
     "source_origin": "vault",
     "weight": 1
