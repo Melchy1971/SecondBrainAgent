@@ -1,0 +1,24 @@
+{
+  "build": {
+    "build_id": "31fe45d3c2e6fe08",
+    "created_at_utc": "2026-07-01T15:11:38+00:00",
+    "environment": "local",
+    "git_commit": null,
+    "source_hash": "939059331c27cc16445e81ef249129a23147f2e790770e4dc8f816a5de829a99",
+    "version": "P1.4.2"
+  },
+  "highest_passed": 519,
+  "patch_count": 1,
+  "patches": [
+    {
+      "collected": null,
+      "duration_seconds": 19.05,
+      "key": "P1_3_7",
+      "passed": 519,
+      "path": "PATCH_P1_3_7_REPORT.md",
+      "title": "Ingestion Index Bridge"
+    }
+  ],
+  "status": "CONDITIONAL_PASS",
+  "version": "P1.4.2"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "2ec0b155-f37e-4f1c-b01d-cf53bb229c09",
+    "source": "GitHub",
+    "target": "Gmail",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b69201be-b536-488a-9ed7-6e36c759218e"
+  },
+  {
+    "id": "d02497d0-5024-4595-85a3-233c3df863a0",
+    "source": "GitHub",
+    "target": "Jarvis",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b69201be-b536-488a-9ed7-6e36c759218e"
+  },
+  {
+    "id": "ac394b58-a239-4bad-a790-5fb44b65baef",
+    "source": "Gmail",
+    "target": "Jarvis",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b69201be-b536-488a-9ed7-6e36c759218e"
+  }
+]

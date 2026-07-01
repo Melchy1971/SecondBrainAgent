@@ -1,0 +1,32 @@
+{
+  "checks": {
+    "answer_composer": {
+      "status": "PASS"
+    },
+    "drift_detection": {
+      "status": "PASS"
+    },
+    "e2e_benchmark": {
+      "status": "PASS"
+    },
+    "evidence_policy": {
+      "status": "PASS"
+    },
+    "hybrid_retrieval": {
+      "status": "PASS"
+    },
+    "kpi_store": {
+      "status": "PASS"
+    },
+    "query_rewriting": {
+      "status": "PASS"
+    },
+    "retrieval_kpis": {
+      "status": "PASS"
+    },
+    "rrf": {
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}

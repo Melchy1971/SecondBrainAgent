@@ -1,0 +1,14 @@
+[
+  {
+    "approval_id": "b6d236f3-8931-4e6e-a5cc-b47ccb4f143a",
+    "device_id": "2f849eb7-a4ca-4127-8608-1c6c5e4c6b11",
+    "action": "system.restart",
+    "payload": {},
+    "reason": "Restart?",
+    "risk_level": 4,
+    "created_at": 1782919198.0851967,
+    "status": "approved",
+    "decided_at": 1782919198.1178386,
+    "decision_note": ""
+  }
+]

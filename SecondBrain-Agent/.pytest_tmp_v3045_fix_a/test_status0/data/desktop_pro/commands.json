@@ -1,0 +1,32 @@
+[
+  {
+    "id": "open_dashboard",
+    "title": "Open Dashboard",
+    "target": "desktop.dashboard"
+  },
+  {
+    "id": "open_knowledge",
+    "title": "Open Knowledge Explorer",
+    "target": "desktop.knowledge"
+  },
+  {
+    "id": "open_memory",
+    "title": "Open Memory Explorer",
+    "target": "desktop.memory"
+  },
+  {
+    "id": "open_kanban",
+    "title": "Open Kanban",
+    "target": "desktop.kanban"
+  },
+  {
+    "id": "quick_capture",
+    "title": "Quick Capture",
+    "target": "capture.quick"
+  },
+  {
+    "id": "run_agent",
+    "title": "Run Agent",
+    "target": "agent.run"
+  }
+]

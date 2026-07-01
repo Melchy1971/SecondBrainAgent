@@ -1,0 +1,22 @@
+[
+  {
+    "task": "a",
+    "outcome": "fail",
+    "success": false,
+    "capability": "connector",
+    "duration_seconds": 1,
+    "error": "timeout",
+    "id": "b6c3fa80-bcce-492f-914e-481fc5a9ecab",
+    "created_at": "2026-07-01T15:08:46.032681+00:00"
+  },
+  {
+    "task": "b",
+    "outcome": "fail",
+    "success": false,
+    "capability": "connector",
+    "duration_seconds": 2,
+    "error": "timeout",
+    "id": "eb1e2c79-ab5f-460d-bd06-5970b5109a1b",
+    "created_at": "2026-07-01T15:08:46.033869+00:00"
+  }
+]

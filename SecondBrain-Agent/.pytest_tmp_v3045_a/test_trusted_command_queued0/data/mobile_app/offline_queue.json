@@ -1,0 +1,11 @@
+[
+  {
+    "id": "79555efd-3b7a-4373-831c-8bd134d8704a",
+    "device_id": "iphone",
+    "command": "capture",
+    "payload": {
+      "text": "test"
+    },
+    "status": "queued"
+  }
+]

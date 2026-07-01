@@ -1,0 +1,10 @@
+{
+  "service_name": "SecondBrainOS",
+  "display_name": "SecondBrain OS Runtime",
+  "methods": [
+    "pywin32",
+    "nssm"
+  ],
+  "entrypoint": "python launcher.py svc-run",
+  "autostart": true
+}

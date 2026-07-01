@@ -1,0 +1,16 @@
+{
+  "vs_42900d135de8": {
+    "id": "vs_42900d135de8",
+    "status": "active",
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Jarvis Status",
+        "event_id": "vevt_7b93bee4b667"
+      }
+    ],
+    "created_at": "2026-07-01T15:19:51.660554+00:00",
+    "updated_at": "2026-07-01T15:19:51.660571+00:00",
+    "interrupted": false
+  }
+}

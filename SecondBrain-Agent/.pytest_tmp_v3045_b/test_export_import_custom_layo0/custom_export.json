@@ -1,0 +1,20 @@
+{
+  "name": "custom",
+  "title": "Custom",
+  "description": "Test layout",
+  "version": "v30.41",
+  "left_width": 260,
+  "right_width": 340,
+  "bottom_height": 180,
+  "panels": [
+    {
+      "id": "one",
+      "title": "One",
+      "module": "dashboard",
+      "region": "center",
+      "visible": true,
+      "weight": 1,
+      "command": "dashboard-center-status"
+    }
+  ]
+}

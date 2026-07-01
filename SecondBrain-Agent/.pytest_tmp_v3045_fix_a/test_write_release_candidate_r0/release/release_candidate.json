@@ -1,0 +1,80 @@
+{
+  "blocker_count": 0,
+  "blockers": [],
+  "checklist": [
+    {
+      "id": "release_gate",
+      "label": "Release gate executed",
+      "owner": "release",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "id": "test_threshold",
+      "label": "Minimum regression test count reached",
+      "owner": "release",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "id": "deployment_package",
+      "label": "Deployment package validated",
+      "owner": "release",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "id": "upgrade_pipeline",
+      "label": "Upgrade pipeline validated",
+      "owner": "release",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "id": "known_blockers",
+      "label": "Known blocker list triaged",
+      "owner": "release",
+      "required": true,
+      "status": "PASS"
+    }
+  ],
+  "created_at": "2026-07-01T15:16:21Z",
+  "criteria": [
+    {
+      "description": "Release gate must not be failed or blocked.",
+      "evidence": "PASS",
+      "id": "gate_status",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "description": "Regression test count must meet RC threshold.",
+      "evidence": "520",
+      "id": "test_count",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "description": "Deployment package must be valid.",
+      "evidence": "READY",
+      "id": "packaging",
+      "required": true,
+      "status": "PASS"
+    },
+    {
+      "description": "Upgrade plan must be ready or pass candidate.",
+      "evidence": "READY",
+      "id": "upgrade",
+      "required": true,
+      "status": "PASS"
+    }
+  ],
+  "gate_status": "PASS",
+  "min_tests_passed": 500,
+  "rc_id": "P1.4.5-RC1",
+  "status": "PASS",
+  "tests_passed": 520,
+  "version": "P1.4.5",
+  "warning_count": 0,
+  "warnings": []
+}

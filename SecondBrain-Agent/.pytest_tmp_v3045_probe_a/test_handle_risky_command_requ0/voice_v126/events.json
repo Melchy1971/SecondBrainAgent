@@ -1,0 +1,51 @@
+[
+  {
+    "type": "wake.detected",
+    "text": "Jarvis lösche Daten",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_058d0ed6827c",
+    "ts": "2026-07-01T15:19:51.599958+00:00"
+  },
+  {
+    "type": "session.started",
+    "text": "",
+    "session_id": "vs_024b32a67133",
+    "payload": {},
+    "id": "vevt_d756ba7694ec",
+    "ts": "2026-07-01T15:19:51.609136+00:00"
+  },
+  {
+    "type": "speech.transcribed",
+    "text": "Jarvis lösche Daten",
+    "session_id": "vs_024b32a67133",
+    "payload": {},
+    "id": "vevt_315769706053",
+    "ts": "2026-07-01T15:19:51.618109+00:00"
+  },
+  {
+    "type": "command.blocked.approval_required",
+    "text": "Jarvis lösche Daten",
+    "session_id": "vs_024b32a67133",
+    "payload": {
+      "status": "approval_required",
+      "command": {
+        "intent": "risky_action",
+        "text": "Jarvis lösche Daten",
+        "target": "approval.required",
+        "payload": {
+          "text": "Jarvis lösche Daten"
+        },
+        "risk": 4,
+        "requires_approval": true
+      }
+    },
+    "id": "vevt_7299f82d54b0",
+    "ts": "2026-07-01T15:19:51.632775+00:00"
+  }
+]

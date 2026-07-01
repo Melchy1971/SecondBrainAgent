@@ -1,0 +1,14 @@
+[
+  {
+    "name": "demo.ok",
+    "description": "OK",
+    "input_schema": {},
+    "output_schema": {},
+    "scopes": [
+      "demo"
+    ],
+    "risk_level": 1,
+    "requires_approval": false,
+    "enabled": true
+  }
+]

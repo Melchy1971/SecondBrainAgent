@@ -1,0 +1,73 @@
+[
+  {
+    "id": "f5fe70c7-9487-4d7c-8ca2-5373883bcb0c",
+    "signal": "Prüfe Tageslage",
+    "observation": {
+      "id": "4620e0a7-a5c6-4ce0-8303-9246bf9823cf",
+      "phase": "observe",
+      "signal": "Prüfe Tageslage",
+      "source": "manual"
+    },
+    "thought": {
+      "id": "450a1103-9fe3-4a55-b18f-5267827ff981",
+      "phase": "think",
+      "summary": "Interpreted: Prüfe Tageslage",
+      "intent": "assist"
+    },
+    "plan": {
+      "id": "49a3fa0f-f358-4510-86c2-143e4336f6a5",
+      "phase": "plan",
+      "steps": [
+        {
+          "id": "step_1",
+          "action": "recommend",
+          "risk": "low"
+        },
+        {
+          "id": "step_2",
+          "action": "notify_user",
+          "risk": "low"
+        }
+      ]
+    },
+    "action": {
+      "id": "564bc16f-040e-465e-816a-2713ff16a1a6",
+      "phase": "act",
+      "results": [
+        {
+          "id": "step_1",
+          "action": "recommend",
+          "risk": "low",
+          "policy": {
+            "allowed": true,
+            "requires_approval": false,
+            "reason": "allowed"
+          },
+          "status": "executed"
+        },
+        {
+          "id": "step_2",
+          "action": "notify_user",
+          "risk": "low",
+          "policy": {
+            "allowed": true,
+            "requires_approval": false,
+            "reason": "allowed"
+          },
+          "status": "executed"
+        }
+      ]
+    },
+    "verification": {
+      "id": "183c469e-e5fa-442e-a240-d2df2272cfff",
+      "phase": "verify",
+      "status": "success"
+    },
+    "learning": {
+      "id": "e06066e2-cb12-480f-aed8-df1763e0fb9c",
+      "phase": "learn",
+      "lesson": "Continue strategy"
+    },
+    "created_at": "2026-07-01T15:08:47.792873+00:00"
+  }
+]

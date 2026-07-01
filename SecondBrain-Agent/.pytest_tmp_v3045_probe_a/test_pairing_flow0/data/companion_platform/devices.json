@@ -1,0 +1,15 @@
+[
+  {
+    "id": "eebbc89b-2be0-4f30-baf0-176f8a9e7731",
+    "name": "iPhone",
+    "platform": "ios",
+    "capabilities": [
+      "sync",
+      "push",
+      "capture"
+    ],
+    "trust_level": "trusted",
+    "paired": true,
+    "last_seen": "2026-07-01T15:19:41.982636+00:00"
+  }
+]

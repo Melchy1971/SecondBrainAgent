@@ -1,0 +1,10 @@
+{
+  "cycles": 0,
+  "failed_or_pending": 0,
+  "recommendations": [
+    {
+      "type": "continue",
+      "priority": "low"
+    }
+  ]
+}

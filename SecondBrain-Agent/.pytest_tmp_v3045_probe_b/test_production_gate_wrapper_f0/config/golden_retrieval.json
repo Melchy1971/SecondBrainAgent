@@ -1,0 +1,1 @@
+{"dataset_id": "strict_eval", "queries": [{"query": "absent evaluation phrase", "expected_terms": ["missingterm"], "min_recall_at_k": 1.0, "min_mrr": 1.0, "min_ndcg": 1.0}]}

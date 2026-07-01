@@ -1,0 +1,14 @@
+{
+  "profiles": [
+    {
+      "enabled": false,
+      "kind": "ocr",
+      "profile_id": "ocr",
+      "provider": "tesseract",
+      "values": {
+        "enabled": false,
+        "language": "eng"
+      }
+    }
+  ]
+}

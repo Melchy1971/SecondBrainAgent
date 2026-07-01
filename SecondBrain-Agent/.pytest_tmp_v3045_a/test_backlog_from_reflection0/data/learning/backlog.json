@@ -1,0 +1,31 @@
+[
+  {
+    "id": "6c344799-8f9f-4beb-bffc-c58b6f190a0e",
+    "title": "Improve agent",
+    "source": "learning_reflection",
+    "priority": "high",
+    "status": "open",
+    "details": {
+      "type": "skill_improvement",
+      "capability": "agent",
+      "reason": "low_success_rate",
+      "priority": "high"
+    },
+    "created_at": "2026-07-01T15:08:46.067293+00:00"
+  },
+  {
+    "id": "8cecd4ab-3019-4b99-b9ea-b42a68b08f28",
+    "title": "Improve agent",
+    "source": "learning_reflection",
+    "priority": "medium",
+    "status": "open",
+    "details": {
+      "type": "failure_pattern",
+      "capability": "agent",
+      "error": "bad_plan",
+      "count": 2,
+      "priority": "medium"
+    },
+    "created_at": "2026-07-01T15:08:46.067315+00:00"
+  }
+]

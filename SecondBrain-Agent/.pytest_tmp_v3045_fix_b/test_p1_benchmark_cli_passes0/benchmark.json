@@ -1,0 +1,39 @@
+{
+  "averages": {
+    "mrr": 0.75,
+    "ndcg_at_3": 0.8154648767857288,
+    "recall_at_3": 1.0
+  },
+  "cases": 2,
+  "per_case": [
+    {
+      "metrics": {
+        "mrr": 1.0,
+        "ndcg_at_3": 1.0,
+        "recall_at_3": 1.0
+      },
+      "query": "baseline retrieval",
+      "query_id": "baseline-1",
+      "ranked_ids": [
+        "doc1",
+        "doc2",
+        "doc3"
+      ]
+    },
+    {
+      "metrics": {
+        "mrr": 0.5,
+        "ndcg_at_3": 0.6309297535714575,
+        "recall_at_3": 1.0
+      },
+      "query": "secondary retrieval",
+      "query_id": "baseline-2",
+      "ranked_ids": [
+        "doc1",
+        "doc2",
+        "doc3"
+      ]
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,1 @@
+{"event_type": "decision", "payload": {"action": "note.create", "approval_id": "0cb75d33d29644499cc21f8290c97d0d", "decision": "approval_required", "payload": {"api_key": "***REDACTED***", "title": "x"}, "risk": {"action": "note.create", "blocked": false, "level": 2, "reasons": ["level:2", "secret_detected"], "requires_approval": true, "score": 75}}, "ts": 1782919179.0644288}

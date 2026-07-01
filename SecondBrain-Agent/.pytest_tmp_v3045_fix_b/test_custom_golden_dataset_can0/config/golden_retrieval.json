@@ -1,0 +1,1 @@
+{"dataset_id": "strict_test", "queries": [{"query": "nicht vorhandene frage", "expected_terms": ["unauffindbar"], "min_recall_at_k": 1.0, "min_mrr": 1.0, "min_ndcg": 1.0}]}

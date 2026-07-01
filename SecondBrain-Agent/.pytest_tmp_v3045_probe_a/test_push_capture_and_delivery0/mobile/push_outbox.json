@@ -1,0 +1,13 @@
+[
+  {
+    "message_id": "58048eb1-7d24-4169-b798-908db4a40ac5",
+    "device_id": "a1d904cb-3ad7-4114-b31a-fded03805b82",
+    "kind": "notification",
+    "title": "Hallo",
+    "body": "Test",
+    "payload": {},
+    "created_at": 1782919197.983621,
+    "status": "delivered",
+    "delivered_at": 1782919198.0139315
+  }
+]

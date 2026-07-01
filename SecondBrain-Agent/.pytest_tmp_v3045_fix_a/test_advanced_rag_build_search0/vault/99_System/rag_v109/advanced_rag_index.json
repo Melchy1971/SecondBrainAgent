@@ -1,0 +1,49 @@
+{
+  "version": "10.9",
+  "created_at": "2026-07-01T15:16:07Z",
+  "vault": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_advanced_rag_build_search0\\vault",
+  "documents": 2,
+  "chunks": [
+    {
+      "chunk_id": "95845573c49d9173:0:06c15357",
+      "source_id": "95845573c49d9173",
+      "path": "Projektplan.md",
+      "title": "Jarvis Projektplan",
+      "ordinal": 0,
+      "text": "Connector Runtime, Event Bus und Agent Kernel bilden die Basis.",
+      "tokens": [
+        "agent",
+        "basis",
+        "bilden",
+        "bus",
+        "connector",
+        "event",
+        "kernel",
+        "runtime"
+      ],
+      "fingerprint": "06c15357ab6ad01a",
+      "mtime": 1782918968.0,
+      "quality_score": 0.0548,
+      "trust_score": 0.8,
+      "freshness_score": 1.0
+    },
+    {
+      "chunk_id": "c1ebcdd508531dee:0:56318616",
+      "source_id": "c1ebcdd508531dee",
+      "path": "Tischtennis.md",
+      "title": "Training",
+      "ordinal": 0,
+      "text": "Topspin, Block und Rückschlagtraining.",
+      "tokens": [
+        "block",
+        "rückschlagtraining",
+        "topspin"
+      ],
+      "fingerprint": "56318616c9be051f",
+      "mtime": 1782918968.0,
+      "quality_score": 0.0277,
+      "trust_score": 0.8,
+      "freshness_score": 1.0
+    }
+  ]
+}

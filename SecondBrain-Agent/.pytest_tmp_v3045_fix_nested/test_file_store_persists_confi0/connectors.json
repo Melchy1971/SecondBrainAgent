@@ -1,0 +1,10 @@
+{
+  "gmail": {
+    "connector_id": "gmail",
+    "enabled": true,
+    "secrets_ref": "vault:gmail",
+    "settings": {
+      "scope": "readonly"
+    }
+  }
+}

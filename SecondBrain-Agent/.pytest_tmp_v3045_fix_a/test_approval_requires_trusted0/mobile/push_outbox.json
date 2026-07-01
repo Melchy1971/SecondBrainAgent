@@ -1,0 +1,17 @@
+[
+  {
+    "message_id": "1789bd38-c6e3-45a1-b941-a2e95876078d",
+    "device_id": "37704b51-c1ab-44be-b269-ed3c84c74dc6",
+    "kind": "approval",
+    "title": "Approval required",
+    "body": "Restart?",
+    "payload": {
+      "approval_id": "766e2b9a-ac6e-448d-b11c-556dfa09a537",
+      "action": "system.restart",
+      "risk_level": 4
+    },
+    "created_at": 1782918976.724216,
+    "status": "queued",
+    "delivered_at": null
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "e8ed7e0a9c274c2e8592423e41f7efa8": {
+    "created_at": 1782919192.3107631,
+    "goal": {
+      "constraints": [],
+      "context": {},
+      "max_steps": 3,
+      "objective": "Bitte sync Connectoren"
+    },
+    "learnings": [
+      "Tool connectors.sync ended with failed: missing_tool"
+    ],
+    "observations": [
+      {
+        "constraints": [],
+        "objective": "Bitte sync Connectoren",
+        "ts": 1782919192.313316,
+        "type": "goal_received"
+      }
+    ],
+    "run_id": "e8ed7e0a9c274c2e8592423e41f7efa8",
+    "status": "failed",
+    "steps": [
+      {
+        "action": "connectors.sync",
+        "created_at": 1782919192.3150105,
+        "error": "missing_tool",
+        "payload": {},
+        "phase": "execute",
+        "result": {
+          "action": "connectors.sync",
+          "ok": false,
+          "reason": "missing_tool"
+        },
+        "status": "failed",
+        "step_id": "36952869d90d4e66acdeae87f527cf7a",
+        "updated_at": 1782919192.3179677
+      },
+      {
+        "action": "agent.verify",
+        "created_at": 1782919192.3150203,
+        "error": "",
+        "payload": {
+          "objective": "Bitte sync Connectoren"
+        },
+        "phase": "verify",
+        "result": {},
+        "status": "planned",
+        "step_id": "ffecac36b8df4fbda25762d612405a7f",
+        "updated_at": 1782919192.3150208
+      }
+    ],
+    "updated_at": 1782919192.3184237,
+    "verification": {
+      "failed_step": "connectors.sync",
+      "ok": false,
+      "reason": "missing_tool"
+    }
+  }
+}

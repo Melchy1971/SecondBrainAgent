@@ -1,0 +1,38 @@
+{
+  "88ba04a8-2b2d-469a-b534-5368113b2990": {
+    "session_id": "88ba04a8-2b2d-469a-b534-5368113b2990",
+    "created_at": 1782918683.9872513,
+    "updated_at": 1782918684.0740838,
+    "turns": [
+      {
+        "turn_id": "547d292c-5733-4aba-be8b-ae3500910810",
+        "role": "user",
+        "text": "Jarvis agent Plane mein Projekt",
+        "timestamp": 1782918684.0608974,
+        "metadata": {}
+      },
+      {
+        "turn_id": "d42b3352-8c21-47fc-823f-6594ca363c7e",
+        "role": "assistant",
+        "text": "Freigabe erforderlich: agent.run",
+        "timestamp": 1782918684.0740838,
+        "metadata": {
+          "command": {
+            "command_id": "a42b4ac4-e4ff-48cb-9077-55b9a720ded8",
+            "raw_text": "Jarvis agent Plane mein Projekt",
+            "intent": "agent.run",
+            "confidence": 0.82,
+            "args": {
+              "objective": "Plane mein Projekt",
+              "max_steps": 5
+            },
+            "requires_approval": true
+          },
+          "executed": false,
+          "blocked": true
+        }
+      }
+    ],
+    "status": "open"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "SecondBrain OS",
+  "version": "15.0",
+  "targets": [
+    "portable",
+    "windows_service",
+    "docker_future"
+  ],
+  "entrypoints": {
+    "cli": "python launcher.py",
+    "service": "python launcher.py prod-service-run",
+    "health": "python launcher.py prod-health"
+  },
+  "required_files": [
+    "launcher.py",
+    "secondbrain/",
+    "config/",
+    "requirements.txt"
+  ]
+}

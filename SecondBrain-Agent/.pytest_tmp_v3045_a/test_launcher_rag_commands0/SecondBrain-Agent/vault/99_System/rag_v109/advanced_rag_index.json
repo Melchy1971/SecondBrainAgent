@@ -1,0 +1,29 @@
+{
+  "version": "10.9",
+  "created_at": "2026-07-01T15:11:02Z",
+  "vault": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_launcher_rag_commands0\\SecondBrain-Agent\\vault",
+  "documents": 1,
+  "chunks": [
+    {
+      "chunk_id": "566641477b9ae169:0:5c180f8e",
+      "source_id": "566641477b9ae169",
+      "path": "SecondBrain.md",
+      "title": "SecondBrain",
+      "ordinal": 0,
+      "text": "Advanced RAG findet lokale Quellen mit Zitaten.",
+      "tokens": [
+        "advanced",
+        "findet",
+        "lokale",
+        "quellen",
+        "rag",
+        "zitaten"
+      ],
+      "fingerprint": "5c180f8e0017cbbb",
+      "mtime": 1782918664.0,
+      "quality_score": 0.041,
+      "trust_score": 0.8,
+      "freshness_score": 1.0
+    }
+  ]
+}

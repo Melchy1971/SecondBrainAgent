@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ff87cfd0-83fe-4265-94b7-e5d68d182fa1",
+    "source": "Jarvis",
+    "target": "Neo4j",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "d0561c47-419b-4056-a637-33b9517ec7c8"
+  }
+]

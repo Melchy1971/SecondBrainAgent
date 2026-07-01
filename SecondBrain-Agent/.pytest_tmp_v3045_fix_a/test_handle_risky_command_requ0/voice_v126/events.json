@@ -1,0 +1,51 @@
+[
+  {
+    "type": "wake.detected",
+    "text": "Jarvis lösche Daten",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_f188bd9a66da",
+    "ts": "2026-07-01T15:16:06.993755+00:00"
+  },
+  {
+    "type": "session.started",
+    "text": "",
+    "session_id": "vs_8b899c1ce70e",
+    "payload": {},
+    "id": "vevt_400f5bd911df",
+    "ts": "2026-07-01T15:16:07.012536+00:00"
+  },
+  {
+    "type": "speech.transcribed",
+    "text": "Jarvis lösche Daten",
+    "session_id": "vs_8b899c1ce70e",
+    "payload": {},
+    "id": "vevt_483bc524ca15",
+    "ts": "2026-07-01T15:16:07.037445+00:00"
+  },
+  {
+    "type": "command.blocked.approval_required",
+    "text": "Jarvis lösche Daten",
+    "session_id": "vs_8b899c1ce70e",
+    "payload": {
+      "status": "approval_required",
+      "command": {
+        "intent": "risky_action",
+        "text": "Jarvis lösche Daten",
+        "target": "approval.required",
+        "payload": {
+          "text": "Jarvis lösche Daten"
+        },
+        "risk": 4,
+        "requires_approval": true
+      }
+    },
+    "id": "vevt_3d5e725a171e",
+    "ts": "2026-07-01T15:16:07.077808+00:00"
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "metrics": [
+    {
+      "capability": "agent",
+      "attempts": 2,
+      "successes": 0,
+      "failures": 2,
+      "success_rate": 0.0,
+      "avg_duration_seconds": 1.5
+    }
+  ],
+  "failure_patterns": [
+    {
+      "capability": "agent",
+      "error": "bad_plan",
+      "count": 2
+    }
+  ],
+  "success_patterns": [],
+  "recommendations": [
+    {
+      "type": "skill_improvement",
+      "capability": "agent",
+      "reason": "low_success_rate",
+      "priority": "high"
+    },
+    {
+      "type": "failure_pattern",
+      "capability": "agent",
+      "error": "bad_plan",
+      "count": 2,
+      "priority": "medium"
+    }
+  ]
+}

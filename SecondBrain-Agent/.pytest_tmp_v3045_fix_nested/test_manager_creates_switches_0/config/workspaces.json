@@ -1,0 +1,23 @@
+{
+  "active_workspace_id": "default",
+  "workspaces": [
+    {
+      "created_at": "2026-07-01T15:15:48+00:00",
+      "is_default": true,
+      "last_opened_at": "2026-07-01T15:15:48+00:00",
+      "metadata": {},
+      "name": "Default",
+      "root_path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_nested\\test_manager_creates_switches_0\\config\\workspaces\\default",
+      "workspace_id": "default"
+    },
+    {
+      "created_at": "2026-07-01T15:15:48+00:00",
+      "is_default": false,
+      "last_opened_at": null,
+      "metadata": {},
+      "name": "Project A",
+      "root_path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_nested\\test_manager_creates_switches_0\\project-a",
+      "workspace_id": "project-a"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "41770ea7-9c39-4830-893e-986e29a98cc8": {
+    "device_id": "41770ea7-9c39-4830-893e-986e29a98cc8",
+    "name": "iPhone",
+    "platform": "ios",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782918976.5707934,
+    "last_seen_at": 1782918976.5707934,
+    "trusted": true,
+    "status": "active"
+  }
+}

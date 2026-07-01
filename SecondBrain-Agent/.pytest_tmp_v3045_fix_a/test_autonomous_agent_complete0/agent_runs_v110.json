@@ -1,0 +1,67 @@
+{
+  "d260ff0e9c324910b1fd05f7d9992437": {
+    "created_at": 1782918967.5558567,
+    "goal": {
+      "constraints": [],
+      "context": {},
+      "max_steps": 3,
+      "objective": "Erstelle eine kurze Analyse"
+    },
+    "learnings": [
+      "Completed objective with 2 steps: ai.ask, agent.verify"
+    ],
+    "observations": [
+      {
+        "constraints": [],
+        "objective": "Erstelle eine kurze Analyse",
+        "ts": 1782918967.5584486,
+        "type": "goal_received"
+      }
+    ],
+    "run_id": "d260ff0e9c324910b1fd05f7d9992437",
+    "status": "completed",
+    "steps": [
+      {
+        "action": "ai.ask",
+        "created_at": 1782918967.5612807,
+        "error": "",
+        "payload": {
+          "prompt": "Erstelle eine kurze Analyse",
+          "task": "agent"
+        },
+        "phase": "execute",
+        "result": {
+          "ok": true,
+          "result": {
+            "answer": "ok:Erstelle eine kurze Analyse"
+          }
+        },
+        "status": "done",
+        "step_id": "61f7bad5a72341b3834bbb287b7c86c7",
+        "updated_at": 1782918967.5660121
+      },
+      {
+        "action": "agent.verify",
+        "created_at": 1782918967.5612953,
+        "error": "",
+        "payload": {
+          "objective": "Erstelle eine kurze Analyse"
+        },
+        "phase": "verify",
+        "result": {
+          "objective": "Erstelle eine kurze Analyse",
+          "ok": true
+        },
+        "status": "done",
+        "step_id": "e93b61e5730948b2b46f0d055c5cc416",
+        "updated_at": 1782918967.5716305
+      }
+    ],
+    "updated_at": 1782918967.5746005,
+    "verification": {
+      "objective": "Erstelle eine kurze Analyse",
+      "ok": true,
+      "steps": 2
+    }
+  }
+}

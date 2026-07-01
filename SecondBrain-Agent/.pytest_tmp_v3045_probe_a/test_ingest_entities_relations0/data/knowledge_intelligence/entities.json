@@ -1,0 +1,30 @@
+[
+  {
+    "id": "878a8747-7e68-4c37-8bd1-f9de4fbdf106",
+    "name": "GitHub",
+    "kind": "system",
+    "confidence": 0.6,
+    "mentions": 1
+  },
+  {
+    "id": "4bd8143e-a625-490e-be71-2b6a57570cd8",
+    "name": "Gmail",
+    "kind": "system",
+    "confidence": 0.6,
+    "mentions": 1
+  },
+  {
+    "id": "b8c47602-3b2a-432d-b81b-d72500c3a84d",
+    "name": "Jarvis",
+    "kind": "concept",
+    "confidence": 0.6,
+    "mentions": 1
+  },
+  {
+    "id": "6baf2214-f061-4a03-95ec-af3ec3025bb4",
+    "name": "SecondBrain",
+    "kind": "concept",
+    "confidence": 0.6,
+    "mentions": 1
+  }
+]

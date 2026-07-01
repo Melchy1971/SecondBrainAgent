@@ -1,0 +1,9 @@
+{
+  "blocker_count": 0,
+  "consistency_status": "PASS",
+  "manifest_status": "PASS_CANDIDATE",
+  "status": "PASS",
+  "tests_passed": 519,
+  "version": "P1.4.2",
+  "warning_count": 0
+}

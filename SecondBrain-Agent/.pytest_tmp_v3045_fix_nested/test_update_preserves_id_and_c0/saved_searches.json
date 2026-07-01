@@ -1,0 +1,15 @@
+[
+  {
+    "created_at": "2026-07-01T15:15:48+00:00",
+    "limit": 50,
+    "metadata": {},
+    "name": "New",
+    "query_text": "new query",
+    "search_id": "ss_f7ee24405a394c5abf01eb0238883fd0",
+    "sources": [],
+    "status": [],
+    "tags": [],
+    "updated_at": "2026-07-01T15:15:48+00:00",
+    "workspace_id": null
+  }
+]

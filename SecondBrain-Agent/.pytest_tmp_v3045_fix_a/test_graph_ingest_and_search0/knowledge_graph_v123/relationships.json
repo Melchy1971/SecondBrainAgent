@@ -1,0 +1,32 @@
+[
+  {
+    "confidence": 0.62,
+    "created_at": "2026-07-01T15:15:49Z",
+    "evidence": "Jarvis nutzt Gmail am 2026-06-19",
+    "id": "uses:date:0ecc729a80fec9ea:concept:576ba7c2e4abb718:20a2b44f2f28fe29",
+    "source": "date:0ecc729a80fec9ea",
+    "source_id": "demo",
+    "target": "concept:576ba7c2e4abb718",
+    "type": "uses"
+  },
+  {
+    "confidence": 0.62,
+    "created_at": "2026-07-01T15:15:49Z",
+    "evidence": "Jarvis nutzt Gmail am 2026-06-19",
+    "id": "uses:concept:576ba7c2e4abb718:concept:dda820158d142a0b:20a2b44f2f28fe29",
+    "source": "concept:576ba7c2e4abb718",
+    "source_id": "demo",
+    "target": "concept:dda820158d142a0b",
+    "type": "uses"
+  },
+  {
+    "confidence": 0.62,
+    "created_at": "2026-07-01T15:15:49Z",
+    "evidence": "Markus verwendet Jarvis",
+    "id": "uses:concept:dda820158d142a0b:concept:24d9c7b19834aa27:db27fbe843baf78a",
+    "source": "concept:dda820158d142a0b",
+    "source_id": "demo",
+    "target": "concept:24d9c7b19834aa27",
+    "type": "uses"
+  }
+]

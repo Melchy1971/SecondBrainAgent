@@ -1,0 +1,10 @@
+[
+  {
+    "id": "iphone",
+    "name": "iPhone Markus",
+    "platform": "ios",
+    "trusted": true,
+    "biometric_enabled": true,
+    "last_seen": "2026-07-01T15:19:41.666281+00:00"
+  }
+]

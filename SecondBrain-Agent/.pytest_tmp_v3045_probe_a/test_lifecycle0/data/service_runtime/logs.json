@@ -1,0 +1,18 @@
+[
+  {
+    "id": "db8879f0-952b-46ec-815c-44c95c117cae",
+    "timestamp": "2026-07-01T15:19:43.067639+00:00",
+    "level": "INFO",
+    "component": "service",
+    "message": "runtime started",
+    "fields": {}
+  },
+  {
+    "id": "8d8a9c76-3b4c-4190-b7a7-db977f239bb1",
+    "timestamp": "2026-07-01T15:19:43.073820+00:00",
+    "level": "INFO",
+    "component": "service",
+    "message": "runtime stopped",
+    "fields": {}
+  }
+]

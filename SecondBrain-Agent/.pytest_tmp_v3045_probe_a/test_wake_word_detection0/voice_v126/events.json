@@ -1,0 +1,26 @@
+[
+  {
+    "type": "wake.detected",
+    "text": "Jarvis bitte Status",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_9d26d2614c2f",
+    "ts": "2026-07-01T15:19:51.575668+00:00"
+  },
+  {
+    "type": "wake.missed",
+    "text": "Hallo Welt",
+    "session_id": "",
+    "payload": {
+      "detected": false,
+      "wake_words": []
+    },
+    "id": "vevt_49cf4c88cb89",
+    "ts": "2026-07-01T15:19:51.579501+00:00"
+  }
+]

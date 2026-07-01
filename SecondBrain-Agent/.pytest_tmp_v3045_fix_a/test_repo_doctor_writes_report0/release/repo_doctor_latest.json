@@ -1,0 +1,340 @@
+{
+  "checks": [
+    {
+      "details": {
+        "path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_repo_doctor_writes_report0"
+      },
+      "key": "project-root",
+      "message": "project root exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "launcher.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pytest.ini",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "requirements.txt",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "requirements-dev.txt",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "requirements-runtime.txt",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "README.md",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "secondbrain/module_registry.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "secondbrain/launcher_runtime_v126.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "secondbrain/p0_runtime.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "secondbrain/p1_rag_runtime.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "secondbrain/release/dependency_inventory.py",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "docs/RELEASE_WORKFLOW_v18_9.md",
+      "message": "required path exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pytest.ini:testpaths = tests",
+      "message": "expected pytest setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pytest.ini:pythonpath = .",
+      "message": "expected pytest setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:[build-system]",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:[project]",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:name = \"secondbrain-agent\"",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:requires-python = \">=3.11\"",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:[project.optional-dependencies]",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:[project.scripts]",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:secondbrain = \"launcher:main\"",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:[tool.setuptools.packages.find]",
+      "message": "expected pyproject setting present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:extra:dev",
+      "message": "expected optional extra present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:extra:pdf",
+      "message": "expected optional extra present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:extra:connectors",
+      "message": "expected optional extra present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:extra:openai",
+      "message": "expected optional extra present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "pyproject.toml:extra:all",
+      "message": "expected optional extra present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "details": {
+        "version": "18.11.0"
+      },
+      "key": "pyproject.toml:version",
+      "message": "project version declared",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "details": {
+        "entries": 0
+      },
+      "key": "requirements.txt:readable",
+      "message": "requirements file readable",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "details": {
+        "entries": 2
+      },
+      "key": "requirements-dev.txt:readable",
+      "message": "requirements file readable",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "details": {
+        "entries": 0
+      },
+      "key": "requirements-runtime.txt:readable",
+      "message": "requirements file readable",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "requirements-runtime.txt:policy",
+      "message": "runtime dependency policy is explicit",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "requirements-dev.txt:pytest",
+      "message": "pytest declared for dev/test path",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:present",
+      "message": "README is present",
+      "severity": "documentation",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:current-runtime",
+      "message": "README exposes current runtime version",
+      "severity": "documentation",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:health-command",
+      "message": "health command documented",
+      "severity": "documentation",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:deleted-changelog-reference",
+      "message": "README does not reference deleted CHANGELOG_*.md files",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:editable-install",
+      "message": "editable install documented",
+      "severity": "documentation",
+      "status": "ok"
+    },
+    {
+      "key": "README.md:release-doc-source",
+      "message": "release documentation source is explicit",
+      "severity": "documentation",
+      "status": "ok"
+    },
+    {
+      "details": {
+        "count": 1,
+        "latest": [
+          "docs/releases/v18_11_P0_REPRODUCIBILITY.md"
+        ]
+      },
+      "key": "docs/releases:md",
+      "message": "release documentation exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml",
+      "message": "GitHub Actions P0 smoke workflow exists",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml:cd SecondBrain-Agent",
+      "message": "expected CI command present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml:pip install -e \".[dev]\"",
+      "message": "expected CI command present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml:python launcher.py repo-doctor --execute-runtime-checks",
+      "message": "expected CI command present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml:python launcher.py dependency-inventory",
+      "message": "expected CI command present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "ci:secondbrain-ci.yml:pytest -q",
+      "message": "expected CI command present",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "repo:forbidden-artifacts",
+      "message": "no forbidden runtime/log/pid/obsolete artifacts found",
+      "severity": "blocking",
+      "status": "ok"
+    },
+    {
+      "key": "repo:cache-artifacts",
+      "message": "no python/test cache artifacts found",
+      "severity": "diagnostic",
+      "status": "ok"
+    },
+    {
+      "key": "launcher:runtime-smoke",
+      "message": "runtime smoke skipped; pass --execute-runtime-checks to enable",
+      "severity": "diagnostic",
+      "status": "skipped"
+    }
+  ],
+  "executed_runtime_checks": false,
+  "ok": true,
+  "project_root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_repo_doctor_writes_report0",
+  "summary": {
+    "error": 0,
+    "ok": 50,
+    "skipped": 1,
+    "warning": 0
+  }
+}

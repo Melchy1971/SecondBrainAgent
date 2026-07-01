@@ -1,0 +1,67 @@
+{
+  "efcc44957342402a81da1269d053814f": {
+    "created_at": 1782919192.3320146,
+    "goal": {
+      "constraints": [],
+      "context": {},
+      "max_steps": 2,
+      "objective": "Analyse"
+    },
+    "learnings": [
+      "Completed objective with 2 steps: ai.ask, agent.verify"
+    ],
+    "observations": [
+      {
+        "constraints": [],
+        "objective": "Analyse",
+        "ts": 1782919192.3337297,
+        "type": "goal_received"
+      }
+    ],
+    "run_id": "efcc44957342402a81da1269d053814f",
+    "status": "completed",
+    "steps": [
+      {
+        "action": "ai.ask",
+        "created_at": 1782919192.335291,
+        "error": "",
+        "payload": {
+          "prompt": "Analyse",
+          "task": "agent"
+        },
+        "phase": "execute",
+        "result": {
+          "ok": true,
+          "result": {
+            "answer": "ok"
+          }
+        },
+        "status": "done",
+        "step_id": "654b2ee2241f49bd80d7dfef019231ef",
+        "updated_at": 1782919192.3383226
+      },
+      {
+        "action": "agent.verify",
+        "created_at": 1782919192.335299,
+        "error": "",
+        "payload": {
+          "objective": "Analyse"
+        },
+        "phase": "verify",
+        "result": {
+          "objective": "Analyse",
+          "ok": true
+        },
+        "status": "done",
+        "step_id": "166f2bcf1b7e4f4b930aa9841f1b3fb7",
+        "updated_at": 1782919192.3403447
+      }
+    ],
+    "updated_at": 1782919192.3421016,
+    "verification": {
+      "objective": "Analyse",
+      "ok": true,
+      "steps": 2
+    }
+  }
+}

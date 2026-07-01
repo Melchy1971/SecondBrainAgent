@@ -1,0 +1,14 @@
+[
+  {
+    "data": {
+      "green": 3
+    },
+    "enabled": true,
+    "error": null,
+    "last_refresh": "2026-07-01T15:15:48.065672+00:00",
+    "refresh_interval": 60,
+    "status": "ready",
+    "title": "Health",
+    "widget_id": "health"
+  }
+]

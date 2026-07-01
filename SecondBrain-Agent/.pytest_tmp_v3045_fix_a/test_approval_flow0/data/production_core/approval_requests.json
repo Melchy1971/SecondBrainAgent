@@ -1,0 +1,13 @@
+[
+  {
+    "id": "ba24fe6e-d003-44eb-b096-8266982e8859",
+    "actor": "agent",
+    "action": "file_write",
+    "risk": "high",
+    "payload": {},
+    "status": "approved",
+    "created_at": "2026-07-01T15:15:54.256880+00:00",
+    "decided_by": "user",
+    "decided_at": "2026-07-01T15:15:54.262084+00:00"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "0eda1beb-be3a-46fa-8c11-855aa0022cd6": {
+    "device_id": "0eda1beb-be3a-46fa-8c11-855aa0022cd6",
+    "name": "iPhone",
+    "platform": "ios",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782919197.9326763,
+    "last_seen_at": 1782919197.9326763,
+    "trusted": true,
+    "status": "active"
+  }
+}

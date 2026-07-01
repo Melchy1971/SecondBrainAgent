@@ -1,0 +1,12 @@
+[
+  {
+    "created_at": "2026-07-01T15:11:33Z",
+    "event": "created",
+    "task_id": "swarm_ab3fe39883a2"
+  },
+  {
+    "created_at": "2026-07-01T15:11:33Z",
+    "event": "completed",
+    "task_id": "swarm_ab3fe39883a2"
+  }
+]

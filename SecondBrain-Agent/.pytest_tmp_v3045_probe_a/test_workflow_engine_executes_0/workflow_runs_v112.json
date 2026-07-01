@@ -1,0 +1,70 @@
+{
+  "f10e15c757d2431cadc7f27fb24118f3": {
+    "created_at": 1782919198.653952,
+    "outputs": {
+      "first": {
+        "echo": {
+          "a": 1
+        },
+        "ok": true
+      },
+      "second": {
+        "echo": {
+          "b": 2
+        },
+        "ok": true
+      }
+    },
+    "run_id": "f10e15c757d2431cadc7f27fb24118f3",
+    "status": "completed",
+    "updated_at": 1782919198.6815557,
+    "workflow": {
+      "description": "",
+      "metadata": {},
+      "name": "Test",
+      "steps": [
+        {
+          "action": "workflow.noop",
+          "depends_on": [],
+          "error": "",
+          "finished_at": 1782919198.672009,
+          "name": "first",
+          "payload": {
+            "a": 1
+          },
+          "result": {
+            "echo": {
+              "a": 1
+            },
+            "ok": true
+          },
+          "started_at": 1782919198.6689694,
+          "status": "done",
+          "step_id": "ef096fb5d4694d9c903e816e2bcbeba3"
+        },
+        {
+          "action": "workflow.noop",
+          "depends_on": [
+            "ef096fb5d4694d9c903e816e2bcbeba3"
+          ],
+          "error": "",
+          "finished_at": 1782919198.678262,
+          "name": "second",
+          "payload": {
+            "b": 2
+          },
+          "result": {
+            "echo": {
+              "b": 2
+            },
+            "ok": true
+          },
+          "started_at": 1782919198.6750693,
+          "status": "done",
+          "step_id": "43f1fe514b0346c692a6e749f552107e"
+        }
+      ],
+      "workflow_id": "wf.test"
+    }
+  }
+}

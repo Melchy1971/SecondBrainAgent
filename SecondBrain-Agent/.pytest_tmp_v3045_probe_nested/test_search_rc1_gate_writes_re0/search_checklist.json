@@ -1,0 +1,48 @@
+{
+  "complete": true,
+  "items": [
+    {
+      "done": true,
+      "key": "foundation",
+      "label": "Search Foundation",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "hybrid_search_ui",
+      "label": "Hybrid Search UI",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "preview_highlighting",
+      "label": "Preview and Highlighting",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "saved_searches",
+      "label": "Saved Searches",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "persistence",
+      "label": "Persistence",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "tests",
+      "label": "Tests",
+      "required": true
+    },
+    {
+      "done": true,
+      "key": "no_critical_blockers",
+      "label": "No Critical Blockers",
+      "required": true
+    }
+  ],
+  "missing_required": []
+}

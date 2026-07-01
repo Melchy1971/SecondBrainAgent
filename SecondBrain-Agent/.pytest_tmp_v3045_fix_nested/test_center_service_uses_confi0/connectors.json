@@ -1,0 +1,14 @@
+{
+  "drive": {
+    "connector_id": "drive",
+    "enabled": true,
+    "secrets_ref": null,
+    "settings": {
+      "folder": "Inbox",
+      "limit": 100,
+      "mode": "delta",
+      "recursive": true,
+      "token": "secret://token"
+    }
+  }
+}

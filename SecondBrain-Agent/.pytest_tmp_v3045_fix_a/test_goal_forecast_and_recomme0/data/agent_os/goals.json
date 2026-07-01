@@ -1,0 +1,12 @@
+[
+  {
+    "id": "48644846-8ed1-48cc-892f-a36ac36fa392",
+    "name": "TTR 1200",
+    "target": 1200,
+    "current": 1147,
+    "unit": "points",
+    "deadline_days": 10,
+    "priority": 1,
+    "created_at": "2026-07-01T15:15:52.581463+00:00"
+  }
+]

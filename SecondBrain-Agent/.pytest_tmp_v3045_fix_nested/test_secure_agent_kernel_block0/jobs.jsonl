@@ -1,0 +1,1 @@
+{"action": "email.send", "payload": {"to": "a@example.com", "body": "hi"}, "job_id": "8e6f9d4d43d9442a8d6531b5908dc103", "status": "blocked", "attempts": 1, "created_at": 1782918947.8400738, "updated_at": 1782918947.8458617, "last_error": "approval_required:9d84eeb692744d88995b4434143d2586"}

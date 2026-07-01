@@ -1,0 +1,16 @@
+{
+  "2f849eb7-a4ca-4127-8608-1c6c5e4c6b11": {
+    "device_id": "2f849eb7-a4ca-4127-8608-1c6c5e4c6b11",
+    "name": "Web",
+    "platform": "web",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782919198.045981,
+    "last_seen_at": 1782919198.0981865,
+    "trusted": true,
+    "status": "active"
+  }
+}

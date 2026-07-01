@@ -1,0 +1,2 @@
+{"event_type": "decision", "payload": {"action": "note.create", "approval_id": null, "decision": "allowed", "payload": {"title": "Test"}, "risk": {"action": "note.create", "blocked": false, "level": 2, "reasons": ["level:2"], "requires_approval": false, "score": 30}}, "ts": 1782918522.221268}
+{"event_type": "executed", "payload": {"action": "note.create", "result": {"ok": "Test"}}, "ts": 1782918522.2217495}

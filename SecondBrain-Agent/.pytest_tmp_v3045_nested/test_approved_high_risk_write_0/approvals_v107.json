@@ -1,0 +1,22 @@
+{
+  "33afb36d7d674e039187d7d6e02a9fa5": {
+    "action": "email.send",
+    "approval_id": "33afb36d7d674e039187d7d6e02a9fa5",
+    "approved_at": 1782918522.2503166,
+    "created_at": 1782918522.248895,
+    "payload_hash": "a98b52b5de174b432a687b3b5905472e7bd409ad344400989801b82f11a25a89",
+    "risk": {
+      "action": "email.send",
+      "blocked": false,
+      "level": 2,
+      "reasons": [
+        "level:2",
+        "external_side_effect",
+        "pii_detected"
+      ],
+      "requires_approval": true,
+      "score": 65
+    },
+    "status": "approved"
+  }
+}

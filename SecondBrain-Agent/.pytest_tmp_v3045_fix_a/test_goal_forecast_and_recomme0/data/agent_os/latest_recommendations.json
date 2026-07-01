@@ -1,0 +1,35 @@
+[
+  {
+    "id": "6ff2fc21-a497-4642-a00a-9742419b7c97",
+    "type": "runtime_recovery",
+    "title": "Runtime reparieren",
+    "priority": "critical",
+    "data": {
+      "status": "degraded",
+      "running": 0,
+      "total": 11,
+      "critical_down": [
+        "event_bus",
+        "tool_registry",
+        "memory"
+      ]
+    },
+    "created_at": "2026-07-01T15:15:52.588706+00:00"
+  },
+  {
+    "id": "484b11c6-69f1-4a8e-844c-eb6b6a57551e",
+    "type": "goal_risk",
+    "title": "Ziel gefährdet: TTR 1200",
+    "priority": "high",
+    "data": {
+      "goal_id": "48644846-8ed1-48cc-892f-a36ac36fa392",
+      "name": "TTR 1200",
+      "remaining": 53.0,
+      "estimated_days": 371,
+      "deadline_days": 10,
+      "success_probability": 0.05,
+      "on_track": false
+    },
+    "created_at": "2026-07-01T15:15:52.590869+00:00"
+  }
+]

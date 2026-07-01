@@ -1,0 +1,13 @@
+[
+  {
+    "id": "9f5fddbf-3aae-46c9-b741-180c84a52a27",
+    "actor": "user",
+    "action": "test",
+    "target": "target",
+    "metadata": {
+      "token": "***REDACTED***"
+    },
+    "result": "success",
+    "created_at": "2026-07-01T15:19:43.188219+00:00"
+  }
+]

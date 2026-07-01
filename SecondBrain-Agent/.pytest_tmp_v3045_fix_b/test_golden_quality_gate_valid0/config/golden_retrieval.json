@@ -1,0 +1,1 @@
+{"dataset_id": "quality_contract", "quality_policy": {"min_pass_rate": 1.0}, "queries": [{"query": "Jarvis Quellen", "expected_terms": ["jarvis", "quellen"], "expected_sources": ["trusted-source"], "min_recall_at_k": 1.0, "min_mrr": 1.0, "min_ndcg": 1.0, "min_hit_count": 1, "k": 5}]}

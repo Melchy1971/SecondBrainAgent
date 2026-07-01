@@ -1,0 +1,74 @@
+{
+  "capabilities": [
+    {
+      "implemented": true,
+      "name": "repository",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "filters",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "selection",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "actions",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "detail_view",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "preview",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "bulk_workflows",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    },
+    {
+      "implemented": true,
+      "name": "persistence",
+      "notes": "",
+      "ready": true,
+      "tested": true,
+      "user_safe": true
+    }
+  ],
+  "checked_at": "2026-07-01T15:19:39.623402+00:00",
+  "findings": [],
+  "readiness_ratio": 1.0,
+  "ready_count": 8,
+  "status": "PASS",
+  "total_count": 8
+}

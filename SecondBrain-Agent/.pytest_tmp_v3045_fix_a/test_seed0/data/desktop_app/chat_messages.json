@@ -1,0 +1,14 @@
+[
+  {
+    "id": "b9d07e18-b18d-46af-af86-085bb0b996ab",
+    "role": "user",
+    "text": "Systemstatus",
+    "created_at": "2026-07-01T15:15:54.462868+00:00"
+  },
+  {
+    "id": "0e5194cf-3e03-458c-b4d5-428658a3705b",
+    "role": "assistant",
+    "text": "Echo: Systemstatus",
+    "created_at": "2026-07-01T15:15:54.462890+00:00"
+  }
+]

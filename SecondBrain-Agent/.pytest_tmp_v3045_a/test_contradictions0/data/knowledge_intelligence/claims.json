@@ -1,0 +1,16 @@
+[
+  {
+    "id": "8dace4b9-437b-4b7d-bcb9-7c7e7f6c279a",
+    "subject": "Jarvis",
+    "negated": false,
+    "predicate": "aktiv",
+    "source": "manual"
+  },
+  {
+    "id": "5f4c3455-e9f6-43db-968e-72f204fbd7b8",
+    "subject": "Jarvis",
+    "negated": true,
+    "predicate": "aktiv",
+    "source": "manual"
+  }
+]

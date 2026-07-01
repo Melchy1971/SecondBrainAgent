@@ -1,0 +1,6 @@
+{
+  "name": "SecondBrain Agent",
+  "status": "idle",
+  "last_task": "{\"processed\": 1, \"failed\": 0, \"blocked\": 0}",
+  "cycles": 1
+}

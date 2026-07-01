@@ -1,0 +1,21 @@
+{
+  "4680a3ef9ad64a0eb4450b542ab4ab84": {
+    "action": "email.send",
+    "approval_id": "4680a3ef9ad64a0eb4450b542ab4ab84",
+    "created_at": 1782918522.2727199,
+    "payload_hash": "ede6e6f401c6e8068d0a690f591fdad5455e632bcb5ad324ba80f3d66d35db8c",
+    "risk": {
+      "action": "email.send",
+      "blocked": false,
+      "level": 2,
+      "reasons": [
+        "level:2",
+        "external_side_effect",
+        "pii_detected"
+      ],
+      "requires_approval": true,
+      "score": 65
+    },
+    "status": "pending"
+  }
+}

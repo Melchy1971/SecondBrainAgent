@@ -1,0 +1,1 @@
+Enough searchable text for the ingestion quality gate.

@@ -1,0 +1,106 @@
+{
+  "1de1aa728a0a478ea9b1ad33baa1f0ee": {
+    "created_at": 1782918967.5883121,
+    "goal": {
+      "constraints": [],
+      "context": {},
+      "max_steps": 5,
+      "objective": "Schreibe eine Dokumentation zu v11"
+    },
+    "learnings": [
+      "Completed objective with 4 steps: rag.search, rag.answer, desktop.quick_capture, agent.verify"
+    ],
+    "observations": [
+      {
+        "constraints": [],
+        "objective": "Schreibe eine Dokumentation zu v11",
+        "ts": 1782918967.5905595,
+        "type": "goal_received"
+      }
+    ],
+    "run_id": "1de1aa728a0a478ea9b1ad33baa1f0ee",
+    "status": "completed",
+    "steps": [
+      {
+        "action": "rag.search",
+        "created_at": 1782918967.592254,
+        "error": "",
+        "payload": {
+          "limit": 5,
+          "query": "Schreibe eine Dokumentation zu v11"
+        },
+        "phase": "observe",
+        "result": {
+          "ok": true,
+          "result": {
+            "hits": []
+          }
+        },
+        "status": "done",
+        "step_id": "3588a79b1e194b88845630a99ef2e610",
+        "updated_at": 1782918967.595808
+      },
+      {
+        "action": "rag.answer",
+        "created_at": 1782918967.5922616,
+        "error": "",
+        "payload": {
+          "limit": 5,
+          "query": "Schreibe eine Dokumentation zu v11"
+        },
+        "phase": "execute",
+        "result": {
+          "ok": true,
+          "result": {
+            "answer": "Antwort",
+            "citations": []
+          }
+        },
+        "status": "done",
+        "step_id": "d3609e7b790a4cc393e3fb8d882e18ca",
+        "updated_at": 1782918967.5992208
+      },
+      {
+        "action": "desktop.quick_capture",
+        "created_at": 1782918967.5922687,
+        "error": "",
+        "payload": {
+          "text": "Ziel: Schreibe eine Dokumentation zu v11\n\nErgebnis wird nach Ausführung ergänzt.",
+          "title": "Agent Ergebnis"
+        },
+        "phase": "execute",
+        "result": {
+          "ok": true,
+          "result": {
+            "path": "capture.md"
+          }
+        },
+        "status": "done",
+        "step_id": "7b5ff4c2273b4cb89c0f6a9b72789230",
+        "updated_at": 1782918967.6027277
+      },
+      {
+        "action": "agent.verify",
+        "created_at": 1782918967.5922742,
+        "error": "",
+        "payload": {
+          "objective": "Schreibe eine Dokumentation zu v11"
+        },
+        "phase": "verify",
+        "result": {
+          "objective": "Schreibe eine Dokumentation zu v11",
+          "ok": true
+        },
+        "status": "done",
+        "step_id": "d3ce155560be415a9345990697120609",
+        "updated_at": 1782918967.6063156
+      }
+    ],
+    "updated_at": 1782918967.6087337,
+    "verification": {
+      "objective": "Schreibe eine Dokumentation zu v11",
+      "ok": true,
+      "steps": 4
+    }
+  }
+}

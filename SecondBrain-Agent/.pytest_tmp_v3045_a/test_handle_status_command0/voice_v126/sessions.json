@@ -1,0 +1,16 @@
+{
+  "vs_a6f2451bedd6": {
+    "id": "vs_a6f2451bedd6",
+    "status": "active",
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Jarvis Status",
+        "event_id": "vevt_4e73c58cca1e"
+      }
+    ],
+    "created_at": "2026-07-01T15:10:59.513938+00:00",
+    "updated_at": "2026-07-01T15:10:59.513949+00:00",
+    "interrupted": false
+  }
+}

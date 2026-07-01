@@ -1,0 +1,9 @@
+[
+  {
+    "ts": "2026-07-01T17:20:05",
+    "heard": "frage: test",
+    "intent": "rag",
+    "ok": true,
+    "speech": "ok"
+  }
+]

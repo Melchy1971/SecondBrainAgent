@@ -1,0 +1,49 @@
+[
+  {
+    "type": "wake.detected",
+    "text": "Jarvis Status",
+    "session_id": "",
+    "payload": {
+      "detected": true,
+      "wake_words": [
+        "jarvis"
+      ]
+    },
+    "id": "vevt_20813742dbaa",
+    "ts": "2026-07-01T15:19:51.654281+00:00"
+  },
+  {
+    "type": "session.started",
+    "text": "",
+    "session_id": "vs_42900d135de8",
+    "payload": {},
+    "id": "vevt_9ce0bbd37f38",
+    "ts": "2026-07-01T15:19:51.664774+00:00"
+  },
+  {
+    "type": "speech.transcribed",
+    "text": "Jarvis Status",
+    "session_id": "vs_42900d135de8",
+    "payload": {},
+    "id": "vevt_7b93bee4b667",
+    "ts": "2026-07-01T15:19:51.675108+00:00"
+  },
+  {
+    "type": "command.accepted",
+    "text": "Jarvis Status",
+    "session_id": "vs_42900d135de8",
+    "payload": {
+      "status": "accepted",
+      "command": {
+        "intent": "status",
+        "text": "Jarvis Status",
+        "target": "core-status",
+        "payload": {},
+        "risk": 1,
+        "requires_approval": false
+      }
+    },
+    "id": "vevt_750882e79b3c",
+    "ts": "2026-07-01T15:19:51.692351+00:00"
+  }
+]

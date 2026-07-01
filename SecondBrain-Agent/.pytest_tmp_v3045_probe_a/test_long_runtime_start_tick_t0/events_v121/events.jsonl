@@ -1,0 +1,7 @@
+{"correlation_id": null, "created_at": 1782919199.555018, "event_id": "evt_556e9badcaa5", "payload": {"service": "event_bus"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.service_started"}
+{"correlation_id": null, "created_at": 1782919199.5559907, "event_id": "evt_60d387fd7df1", "payload": {"service": "tool_registry"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.service_started"}
+{"correlation_id": null, "created_at": 1782919199.556573, "event_id": "evt_10160ebb7a49", "payload": {"service": "agent_runtime"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.service_started"}
+{"correlation_id": null, "created_at": 1782919199.5570455, "event_id": "evt_bf4f1e6310f4", "payload": {"service": "api_bridge"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.service_started"}
+{"correlation_id": null, "created_at": 1782919199.5575476, "event_id": "evt_84ad8b94e5c5", "payload": {"service": "scheduler"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.service_started"}
+{"correlation_id": null, "created_at": 1782919199.5589237, "event_id": "evt_93e8d5228697", "payload": {"running": ["agent_runtime", "api_bridge", "event_bus", "scheduler", "tool_registry"]}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.tick"}
+{"correlation_id": null, "created_at": 1782919199.5621216, "event_id": "evt_52a84f06f1a2", "payload": {"run_id": "rt_1e192578d3", "tool": "demo.ok"}, "risk_level": 1, "source": "long_runtime_v121", "topic": "runtime.tool_executed"}

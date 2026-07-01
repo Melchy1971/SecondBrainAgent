@@ -1,0 +1,16 @@
+{
+  "active_layout": "default",
+  "enabled_widgets": [
+    "recent_imports",
+    "running_jobs",
+    "connector_health",
+    "rag_status",
+    "system_health",
+    "storage_usage",
+    "recent_errors",
+    "workspace_summary"
+  ],
+  "last_update": "2026-07-01T15:19:39.380047+00:00",
+  "refresh_enabled": true,
+  "selected_workspace": "default"
+}

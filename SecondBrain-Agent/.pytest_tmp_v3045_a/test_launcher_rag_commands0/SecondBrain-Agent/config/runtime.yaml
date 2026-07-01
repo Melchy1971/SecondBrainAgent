@@ -1,0 +1,10 @@
+
+runtime:
+  profile: test
+  paths:
+    vault: vault
+    runtime: runtime
+    events: events/runtime
+  services:
+    connectors: false
+    advanced_rag: true

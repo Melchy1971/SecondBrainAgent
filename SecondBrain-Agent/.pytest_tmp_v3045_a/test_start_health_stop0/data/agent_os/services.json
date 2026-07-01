@@ -1,0 +1,78 @@
+[
+  {
+    "name": "event_bus",
+    "dependencies": [],
+    "critical": true
+  },
+  {
+    "name": "tool_registry",
+    "dependencies": [
+      "event_bus"
+    ],
+    "critical": true
+  },
+  {
+    "name": "memory",
+    "dependencies": [
+      "event_bus"
+    ],
+    "critical": true
+  },
+  {
+    "name": "rag",
+    "dependencies": [
+      "memory"
+    ],
+    "critical": false
+  },
+  {
+    "name": "knowledge_graph",
+    "dependencies": [
+      "memory"
+    ],
+    "critical": false
+  },
+  {
+    "name": "swarm",
+    "dependencies": [
+      "tool_registry",
+      "rag"
+    ],
+    "critical": false
+  },
+  {
+    "name": "learning",
+    "dependencies": [
+      "memory"
+    ],
+    "critical": false
+  },
+  {
+    "name": "digital_twin",
+    "dependencies": [
+      "learning"
+    ],
+    "critical": false
+  },
+  {
+    "name": "desktop",
+    "dependencies": [
+      "event_bus"
+    ],
+    "critical": false
+  },
+  {
+    "name": "mobile",
+    "dependencies": [
+      "event_bus"
+    ],
+    "critical": false
+  },
+  {
+    "name": "voice",
+    "dependencies": [
+      "event_bus"
+    ],
+    "critical": false
+  }
+]

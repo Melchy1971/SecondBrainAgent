@@ -1,0 +1,58 @@
+[
+  {
+    "detail": "available",
+    "key": "center_service",
+    "label": "Center Service",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "connector_registry",
+    "label": "Connector Registry",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "configuration",
+    "label": "Configuration",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "secret_references",
+    "label": "Secret References",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "sync_actions",
+    "label": "Sync Actions",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "job_monitoring",
+    "label": "Job Monitoring",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "health_snapshot",
+    "label": "Health Snapshot",
+    "required": true,
+    "status": "PASS"
+  },
+  {
+    "detail": "available",
+    "key": "error_reporting",
+    "label": "Error Reporting",
+    "required": true,
+    "status": "PASS"
+  }
+]

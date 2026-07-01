@@ -1,0 +1,117 @@
+{
+  "checklist": {
+    "complete": true,
+    "items": [
+      {
+        "done": true,
+        "key": "foundation",
+        "label": "Search Foundation",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "hybrid_search_ui",
+        "label": "Hybrid Search UI",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "preview_highlighting",
+        "label": "Preview and Highlighting",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "saved_searches",
+        "label": "Saved Searches",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "persistence",
+        "label": "Persistence",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "tests",
+        "label": "Tests",
+        "required": true
+      },
+      {
+        "done": true,
+        "key": "no_critical_blockers",
+        "label": "No Critical Blockers",
+        "required": true
+      }
+    ],
+    "missing_required": []
+  },
+  "generated_at": "2026-07-01T15:19:39.818731+00:00",
+  "metrics": {
+    "history_size": 0,
+    "metadata": {},
+    "preview_latency_ms": 0.0,
+    "result_count": 0,
+    "saved_search_load_ms": 0.0,
+    "search_latency_ms": 0.0
+  },
+  "passed": true,
+  "status": "PASS",
+  "validation": {
+    "blockers": [],
+    "checks": [
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "search_service",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "hybrid_search",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "preview",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "highlighting",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "saved_searches",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "persistence",
+        "status": "PASS"
+      },
+      {
+        "critical": true,
+        "message": "available",
+        "metadata": {},
+        "name": "history",
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS"
+  },
+  "version": "p2.4.5"
+}

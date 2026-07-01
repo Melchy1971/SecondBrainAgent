@@ -1,0 +1,51 @@
+{
+  "services": {
+    "event_bus": {
+      "name": "event_bus",
+      "status": "running",
+      "heartbeat_at": 1782919199.5588894,
+      "restarts": 0,
+      "dependencies": []
+    },
+    "tool_registry": {
+      "name": "tool_registry",
+      "status": "running",
+      "heartbeat_at": 1782919199.5588894,
+      "restarts": 0,
+      "dependencies": [
+        "event_bus"
+      ]
+    },
+    "scheduler": {
+      "name": "scheduler",
+      "status": "running",
+      "heartbeat_at": 1782919199.5588894,
+      "restarts": 0,
+      "dependencies": [
+        "event_bus",
+        "tool_registry"
+      ]
+    },
+    "agent_runtime": {
+      "name": "agent_runtime",
+      "status": "running",
+      "heartbeat_at": 1782919199.5588894,
+      "restarts": 0,
+      "dependencies": [
+        "event_bus",
+        "tool_registry"
+      ]
+    },
+    "api_bridge": {
+      "name": "api_bridge",
+      "status": "running",
+      "heartbeat_at": 1782919199.5588894,
+      "restarts": 0,
+      "dependencies": [
+        "event_bus",
+        "tool_registry"
+      ]
+    }
+  },
+  "updated_at": 1782919199.5594952
+}

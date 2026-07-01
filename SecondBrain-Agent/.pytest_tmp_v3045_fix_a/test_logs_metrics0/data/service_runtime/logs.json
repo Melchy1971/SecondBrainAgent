@@ -1,0 +1,10 @@
+[
+  {
+    "id": "a9739253-94c3-4f7c-9bf0-f222c8aec7aa",
+    "timestamp": "2026-07-01T15:15:54.115461+00:00",
+    "level": "WARNING",
+    "component": "service",
+    "message": "test",
+    "fields": {}
+  }
+]

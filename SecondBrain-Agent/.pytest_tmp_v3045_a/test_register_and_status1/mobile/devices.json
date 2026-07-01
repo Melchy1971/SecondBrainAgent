@@ -1,0 +1,16 @@
+{
+  "572fd2b8-e835-4771-8a67-911e4098e4d2": {
+    "device_id": "572fd2b8-e835-4771-8a67-911e4098e4d2",
+    "name": "iPhone",
+    "platform": "ios",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782918688.0916014,
+    "last_seen_at": 1782918688.0916014,
+    "trusted": true,
+    "status": "active"
+  }
+}

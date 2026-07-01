@@ -1,0 +1,2 @@
+{"created_at": 1782919205.5088894, "metrics": {"mrr": 1.0}, "query": "test", "query_id": "q1"}
+{"created_at": 1782919205.5096257, "metrics": {"mrr": 0.5}, "query": "test2", "query_id": "q2"}
