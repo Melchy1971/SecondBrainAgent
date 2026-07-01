@@ -97,49 +97,90 @@ def _mobile_main(argv: list[str] | None = None) -> int:
     sub.add_parser("mobile16-migrate")
     sub.add_parser("mobile16-status")
     sub.add_parser("mobile16-manifest")
-    p = sub.add_parser("mobile16-pair-request"); p.add_argument("device_name"); p.add_argument("platform")
-    p = sub.add_parser("mobile16-pair-approve"); p.add_argument("request_id")
+    p = sub.add_parser("mobile16-pair-request")
+    p.add_argument("device_name")
+    p.add_argument("platform")
+    p = sub.add_parser("mobile16-pair-approve")
+    p.add_argument("request_id")
     sub.add_parser("mobile16-pairing-requests")
     sub.add_parser("mobile16-devices")
-    p = sub.add_parser("mobile16-capture"); p.add_argument("kind"); p.add_argument("payload_json"); p.add_argument("--device-id", default=None)
-    p = sub.add_parser("mobile16-voice-note"); p.add_argument("text"); p.add_argument("--device-id", default=None)
-    p = sub.add_parser("mobile16-camera-ocr"); p.add_argument("image_ref"); p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-capture")
+    p.add_argument("kind")
+    p.add_argument("payload_json")
+    p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-voice-note")
+    p.add_argument("text")
+    p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-camera-ocr")
+    p.add_argument("image_ref")
+    p.add_argument("--device-id", default=None)
     sub.add_parser("mobile16-offline-queue")
     sub.add_parser("mobile16-offline-replay")
-    p = sub.add_parser("mobile16-push"); p.add_argument("title"); p.add_argument("body"); p.add_argument("--device-id", default=None); p.add_argument("--priority", default="normal")
+    p = sub.add_parser("mobile16-push")
+    p.add_argument("title")
+    p.add_argument("body")
+    p.add_argument("--device-id", default=None)
+    p.add_argument("--priority", default="normal")
     sub.add_parser("mobile16-push-outbox")
     sub.add_parser("mobile16-push-deliver")
     sub.add_parser("mobile16-widgets")
-    p = sub.add_parser("mobile16-widget-enable"); p.add_argument("widget_id"); p.add_argument("enabled", choices=["true", "false"])
-    p = sub.add_parser("mobile16-sync"); p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-widget-enable")
+    p.add_argument("widget_id")
+    p.add_argument("enabled", choices=["true", "false"])
+    p = sub.add_parser("mobile16-sync")
+    p.add_argument("--device-id", default=None)
     sub.add_parser("mobile16-sync-runs")
-    p = sub.add_parser("mobile16-session-create"); p.add_argument("title"); p.add_argument("--device-id", default=None)
+    p = sub.add_parser("mobile16-session-create")
+    p.add_argument("title")
+    p.add_argument("--device-id", default=None)
     sub.add_parser("mobile16-sessions")
 
     args = parser.parse_args(argv)
     rt = MobileCompanionRuntime(args.project_root, args.db_path)
-    if args.cmd == "mobile16-migrate": out(rt.migrate())
-    elif args.cmd == "mobile16-status": out(rt.status())
-    elif args.cmd == "mobile16-manifest": out(rt.app_manifest())
-    elif args.cmd == "mobile16-pair-request": out(rt.pair_request(args.device_name, args.platform))
-    elif args.cmd == "mobile16-pair-approve": out(rt.approve_pairing(args.request_id))
-    elif args.cmd == "mobile16-pairing-requests": out(rt.pairing_requests())
-    elif args.cmd == "mobile16-devices": out(rt.devices())
-    elif args.cmd == "mobile16-capture": out(rt.capture(args.kind, json.loads(args.payload_json), args.device_id))
-    elif args.cmd == "mobile16-voice-note": out(rt.voice_note(args.text, args.device_id))
-    elif args.cmd == "mobile16-camera-ocr": out(rt.camera_ocr(args.image_ref, args.device_id))
-    elif args.cmd == "mobile16-offline-queue": out(rt.offline_queue())
-    elif args.cmd == "mobile16-offline-replay": out(rt.replay_offline())
-    elif args.cmd == "mobile16-push": out(rt.push(args.title, args.body, args.device_id, args.priority))
-    elif args.cmd == "mobile16-push-outbox": out(rt.push_outbox())
-    elif args.cmd == "mobile16-push-deliver": out(rt.deliver_push())
-    elif args.cmd == "mobile16-widgets": out(rt.widgets())
-    elif args.cmd == "mobile16-widget-enable": out(rt.widget_enable(args.widget_id, args.enabled == "true"))
-    elif args.cmd == "mobile16-sync": out(rt.sync(args.device_id))
-    elif args.cmd == "mobile16-sync-runs": out(rt.sync_runs())
-    elif args.cmd == "mobile16-session-create": out(rt.session_create(args.title, args.device_id))
-    elif args.cmd == "mobile16-sessions": out(rt.sessions())
-    else: return 2
+    if args.cmd == "mobile16-migrate":
+        out(rt.migrate())
+    elif args.cmd == "mobile16-status":
+        out(rt.status())
+    elif args.cmd == "mobile16-manifest":
+        out(rt.app_manifest())
+    elif args.cmd == "mobile16-pair-request":
+        out(rt.pair_request(args.device_name, args.platform))
+    elif args.cmd == "mobile16-pair-approve":
+        out(rt.approve_pairing(args.request_id))
+    elif args.cmd == "mobile16-pairing-requests":
+        out(rt.pairing_requests())
+    elif args.cmd == "mobile16-devices":
+        out(rt.devices())
+    elif args.cmd == "mobile16-capture":
+        out(rt.capture(args.kind, json.loads(args.payload_json), args.device_id))
+    elif args.cmd == "mobile16-voice-note":
+        out(rt.voice_note(args.text, args.device_id))
+    elif args.cmd == "mobile16-camera-ocr":
+        out(rt.camera_ocr(args.image_ref, args.device_id))
+    elif args.cmd == "mobile16-offline-queue":
+        out(rt.offline_queue())
+    elif args.cmd == "mobile16-offline-replay":
+        out(rt.replay_offline())
+    elif args.cmd == "mobile16-push":
+        out(rt.push(args.title, args.body, args.device_id, args.priority))
+    elif args.cmd == "mobile16-push-outbox":
+        out(rt.push_outbox())
+    elif args.cmd == "mobile16-push-deliver":
+        out(rt.deliver_push())
+    elif args.cmd == "mobile16-widgets":
+        out(rt.widgets())
+    elif args.cmd == "mobile16-widget-enable":
+        out(rt.widget_enable(args.widget_id, args.enabled == "true"))
+    elif args.cmd == "mobile16-sync":
+        out(rt.sync(args.device_id))
+    elif args.cmd == "mobile16-sync-runs":
+        out(rt.sync_runs())
+    elif args.cmd == "mobile16-session-create":
+        out(rt.session_create(args.title, args.device_id))
+    elif args.cmd == "mobile16-sessions":
+        out(rt.sessions())
+    else:
+        return 2
     return 0
 
 
