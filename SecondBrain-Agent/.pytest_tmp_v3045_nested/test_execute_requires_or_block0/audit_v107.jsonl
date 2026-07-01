@@ -1,0 +1,1 @@
+{"event_type": "decision", "payload": {"action": "system.shell", "approval_id": null, "decision": "level_exceeds_policy", "payload": {"cmd": "echo hi"}, "risk": {"action": "system.shell", "blocked": false, "level": 3, "reasons": ["level:3", "destructive_or_execution_action"], "requires_approval": true, "score": 80}}, "ts": 1782918522.2303634}

@@ -1,0 +1,9 @@
+{
+  "connectors.sync_enabled": true,
+  "desktop.sidebar_collapsed": false,
+  "desktop.theme": "system",
+  "general.default_workspace": "default",
+  "rag.max_results": 10,
+  "rag.provider": "deterministic",
+  "security.vault_ref": ""
+}

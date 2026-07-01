@@ -4,6 +4,7 @@ import json
 import os
 import socket
 import sys
+import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -87,9 +88,15 @@ def ensure_env(root: str | Path | None = None, *, repair: bool = True) -> dict[s
 def _can_write(path: Path) -> bool:
     try:
         path.mkdir(parents=True, exist_ok=True)
-        probe = path / ".write_probe"
-        probe.write_text("ok", encoding="utf-8")
-        probe.unlink(missing_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            prefix=".write_probe_",
+            dir=path,
+            delete=True,
+        ) as probe:
+            probe.write("ok")
+            probe.flush()
         return True
     except OSError:
         return False

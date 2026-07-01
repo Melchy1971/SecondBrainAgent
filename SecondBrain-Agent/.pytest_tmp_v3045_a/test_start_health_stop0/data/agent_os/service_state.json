@@ -1,0 +1,79 @@
+{
+  "event_bus": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.180951+00:00",
+    "heartbeat": "2026-07-01T15:08:46.180966+00:00",
+    "instance_id": "0446d5a2-fa83-4a20-859b-c239abdc3e8b",
+    "stopped_at": "2026-07-01T15:08:46.186065+00:00"
+  },
+  "tool_registry": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181005+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181009+00:00",
+    "instance_id": "b9a842a2-4f63-4b77-8de7-1ed292c7d813",
+    "stopped_at": "2026-07-01T15:08:46.186585+00:00"
+  },
+  "memory": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181021+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181024+00:00",
+    "instance_id": "451b8bb9-5dc6-46eb-9df1-8b6e83fd1b95",
+    "stopped_at": "2026-07-01T15:08:46.186593+00:00"
+  },
+  "rag": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181032+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181034+00:00",
+    "instance_id": "d92ade68-ccf2-432b-905d-d4d29bd42ff1",
+    "stopped_at": "2026-07-01T15:08:46.186596+00:00"
+  },
+  "knowledge_graph": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181042+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181045+00:00",
+    "instance_id": "5bb4fac3-b64a-4a0a-8c81-e5edea597ab9",
+    "stopped_at": "2026-07-01T15:08:46.186600+00:00"
+  },
+  "swarm": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181054+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181056+00:00",
+    "instance_id": "6a0670e9-16ff-4f84-a502-ad0838069cab",
+    "stopped_at": "2026-07-01T15:08:46.186604+00:00"
+  },
+  "learning": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181062+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181065+00:00",
+    "instance_id": "17d1e980-b659-434c-a1bf-2a94640237d4",
+    "stopped_at": "2026-07-01T15:08:46.186607+00:00"
+  },
+  "digital_twin": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181070+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181073+00:00",
+    "instance_id": "8688fc85-eb44-40b5-827c-e934ce1790ac",
+    "stopped_at": "2026-07-01T15:08:46.186610+00:00"
+  },
+  "desktop": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181078+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181081+00:00",
+    "instance_id": "93b23652-8585-4578-aac0-7a80580fea7d",
+    "stopped_at": "2026-07-01T15:08:46.186613+00:00"
+  },
+  "mobile": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181087+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181089+00:00",
+    "instance_id": "31a43749-2561-4a37-8940-d2adf2045647",
+    "stopped_at": "2026-07-01T15:08:46.186617+00:00"
+  },
+  "voice": {
+    "status": "stopped",
+    "started_at": "2026-07-01T15:08:46.181095+00:00",
+    "heartbeat": "2026-07-01T15:08:46.181097+00:00",
+    "instance_id": "5c322295-3b71-4a30-b4a9-bbbdb762d640",
+    "stopped_at": "2026-07-01T15:08:46.186620+00:00"
+  }
+}

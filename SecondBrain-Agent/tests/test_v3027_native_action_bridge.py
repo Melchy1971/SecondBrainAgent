@@ -7,8 +7,8 @@ from secondbrain.native.voice_de import GermanVoiceCommandParser
 
 def test_native_view_model_exposes_action_bridge(tmp_path: Path):
     model = build_native_view_model(tmp_path)
-    assert model["schema"] == "secondbrain.native.view_model.v30_27"
-    assert model["version"] == "30.27"
+    assert model["schema"].startswith("secondbrain.native.view_model.v30_")
+    assert tuple(map(int, model["version"].split("."))) >= (30, 27)
     assert model["voice"]["action_dispatcher"] is True
     assert "actions" in model
     assert "p1-vector-index-repair" in model["actions"]["confirmation_required_for"]

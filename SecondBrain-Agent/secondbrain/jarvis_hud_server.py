@@ -60,6 +60,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 # Geteilte, GUI-neutrale Logik aus dem Kernmodul (Phase 2).
 from secondbrain.gui.document_center_runtime import document_center_status  # noqa: E402
 from secondbrain.gui.memory_center_runtime import memory_center_status  # noqa: E402
+from secondbrain.native.runtime_snapshot import build_native_view_model  # noqa: E402
 from secondbrain.hud_core import (  # noqa: E402
     INBOX,
     LOG_DIR,
@@ -71,6 +72,20 @@ from secondbrain.hud_core import (  # noqa: E402
     run_script,
     system_status,
 )
+
+
+def runtime_truth(project_root: str | Path = ROOT) -> dict:
+    """Return a stable, read-only summary for legacy HUD consumers."""
+    model = build_native_view_model(project_root)
+    return {
+        "ok": True,
+        "schema": "secondbrain.gui.runtime_truth.v1",
+        "version": "v30.22",
+        "database": model.get("rag", {}).get("store", {}),
+        "embedding": model.get("provider", {}),
+        "gates": model.get("production", {}),
+        "security": model.get("audit", {}),
+    }
 from secondbrain.security_cameras import (  # noqa: E402
     cameras_overview,
     cameras_save,
@@ -455,6 +470,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(news())
         elif path == "/api/status":
             self._json(system_status())
+        elif path == "/api/runtime-truth":
+            self._json(runtime_truth(ROOT))
         elif path == "/api/dashboards":
             self._json({"ok": True, "links": dashboard_links()})
         elif path == "/api/settings":

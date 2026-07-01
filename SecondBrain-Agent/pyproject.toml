@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "secondbrain-agent"
-version = "30.25.0"
+version = "30.46.0"
 description = "Local modular SecondBrain/Jarvis runtime with RAG, desktop, mobile, voice and release gates."
 readme = "README.md"
 requires-python = ">=3.11"

@@ -1,0 +1,55 @@
+{
+  "blockers": [],
+  "checks": [
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "search_service",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "hybrid_search",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "preview",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "highlighting",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "saved_searches",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "persistence",
+      "status": "PASS"
+    },
+    {
+      "critical": true,
+      "message": "available",
+      "metadata": {},
+      "name": "history",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

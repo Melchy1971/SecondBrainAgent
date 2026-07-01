@@ -1,0 +1,24 @@
+[
+  {
+    "id": "ffb25625-84e3-4b50-a760-dd417dd253d3",
+    "actor": "agent",
+    "action": "approval.request",
+    "target": "file_write",
+    "metadata": {
+      "risk": "high"
+    },
+    "result": "success",
+    "created_at": "2026-07-01T15:08:48.142662+00:00"
+  },
+  {
+    "id": "c281b504-c8ed-46a0-b6a2-ccddcbf821be",
+    "actor": "user",
+    "action": "approval.decide",
+    "target": "cf92a6e8-82f0-4fda-a89f-d95c04ba33da",
+    "metadata": {
+      "decision": "approved"
+    },
+    "result": "success",
+    "created_at": "2026-07-01T15:08:48.145381+00:00"
+  }
+]

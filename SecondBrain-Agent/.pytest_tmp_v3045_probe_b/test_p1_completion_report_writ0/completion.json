@@ -1,0 +1,27 @@
+{
+  "completed_capabilities": [
+    "rag_ingestion_foundation",
+    "chunk_metadata",
+    "source_inventory",
+    "query_rewriting",
+    "hybrid_retrieval_v2",
+    "rrf_fusion",
+    "retrieval_kpis",
+    "kpi_store",
+    "drift_detection",
+    "evidence_policy",
+    "grounded_answer_composer",
+    "e2e_benchmark_suite",
+    "p1_production_gate",
+    "p1_maturity_gate"
+  ],
+  "maturity": "P1_RELEASE_CANDIDATE",
+  "next_phase": "P3_MEMORY_SYSTEM",
+  "remaining_limitations": [
+    "external_embedding_providers_require_environment_configuration",
+    "pgvector_repository_requires_live_database_migration",
+    "llm_generation_intentionally_not_part_of_p1",
+    "agent_tool_orchestration_moves_to_p2_or_p3_scope"
+  ],
+  "status": "PASS"
+}

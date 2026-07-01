@@ -1,0 +1,14 @@
+[
+  {
+    "id": "66ca3897-54d1-4e50-8799-8ac90d1003e4",
+    "role": "user",
+    "text": "Hallo",
+    "created_at": "2026-07-01T15:15:54.482362+00:00"
+  },
+  {
+    "id": "c95af653-66dd-4963-920a-428090eacf9e",
+    "role": "assistant",
+    "text": "Echo: Hallo",
+    "created_at": "2026-07-01T15:15:54.482389+00:00"
+  }
+]

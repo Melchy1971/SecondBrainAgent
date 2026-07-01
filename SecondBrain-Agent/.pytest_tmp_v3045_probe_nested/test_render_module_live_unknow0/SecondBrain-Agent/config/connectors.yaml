@@ -1,0 +1,4 @@
+imap:
+  enabled: false
+ollama:
+  enabled: true

@@ -1,0 +1,23 @@
+[
+  {
+    "created_at": "2026-07-01T15:15:48+00:00",
+    "limit": 10,
+    "metadata": {
+      "ui_color": "blue"
+    },
+    "name": "PDFs",
+    "query_text": "rechnung",
+    "search_id": "ss_709e8c3736ea4ba9857300fdff0105d9",
+    "sources": [
+      "upload"
+    ],
+    "status": [
+      "INDEXED"
+    ],
+    "tags": [
+      "finance"
+    ],
+    "updated_at": "2026-07-01T15:15:48+00:00",
+    "workspace_id": "ws1"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "event_bus": {
+    "status": "running",
+    "recovered_at": "2026-07-01T15:19:41.880705+00:00",
+    "heartbeat": "2026-07-01T15:19:41.880718+00:00",
+    "instance_id": "0dc82cea-5a28-4391-9f34-aec615ae5f07"
+  },
+  "tool_registry": {
+    "status": "running",
+    "recovered_at": "2026-07-01T15:19:41.880755+00:00",
+    "heartbeat": "2026-07-01T15:19:41.880759+00:00",
+    "instance_id": "b6498570-7ef0-4c82-965d-0f4accefa2e2"
+  },
+  "memory": {
+    "status": "running",
+    "recovered_at": "2026-07-01T15:19:41.880769+00:00",
+    "heartbeat": "2026-07-01T15:19:41.880838+00:00",
+    "instance_id": "05ecec83-da43-4a64-9500-6b0120713320"
+  },
+  "rag": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873721+00:00"
+  },
+  "knowledge_graph": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873724+00:00"
+  },
+  "swarm": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873727+00:00"
+  },
+  "learning": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873730+00:00"
+  },
+  "digital_twin": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873733+00:00"
+  },
+  "desktop": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873736+00:00"
+  },
+  "mobile": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873739+00:00"
+  },
+  "voice": {
+    "status": "stopped",
+    "stopped_at": "2026-07-01T15:19:41.873742+00:00"
+  }
+}

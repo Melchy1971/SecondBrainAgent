@@ -1,0 +1,32 @@
+[
+  {
+    "id": "today",
+    "name": "Today",
+    "kind": "summary",
+    "enabled": true
+  },
+  {
+    "id": "capture",
+    "name": "Quick Capture",
+    "kind": "action",
+    "enabled": true
+  },
+  {
+    "id": "approvals",
+    "name": "Approvals",
+    "kind": "inbox",
+    "enabled": true
+  },
+  {
+    "id": "tasks",
+    "name": "Tasks",
+    "kind": "list",
+    "enabled": true
+  },
+  {
+    "id": "voice",
+    "name": "Voice Capture",
+    "kind": "action",
+    "enabled": true
+  }
+]

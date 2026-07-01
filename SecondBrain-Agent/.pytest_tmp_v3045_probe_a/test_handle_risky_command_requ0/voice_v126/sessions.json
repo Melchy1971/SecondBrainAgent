@@ -1,0 +1,16 @@
+{
+  "vs_024b32a67133": {
+    "id": "vs_024b32a67133",
+    "status": "active",
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Jarvis lösche Daten",
+        "event_id": "vevt_315769706053"
+      }
+    ],
+    "created_at": "2026-07-01T15:19:51.604100+00:00",
+    "updated_at": "2026-07-01T15:19:51.604199+00:00",
+    "interrupted": false
+  }
+}

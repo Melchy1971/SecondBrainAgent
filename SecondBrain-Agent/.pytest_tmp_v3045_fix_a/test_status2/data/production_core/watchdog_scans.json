@@ -1,0 +1,19 @@
+[
+  {
+    "id": "b42d8018-773e-406c-b719-29b4a2edd1a5",
+    "status": "degraded",
+    "issues": [
+      {
+        "component": "runtime",
+        "issue": "not_running",
+        "severity": "critical"
+      },
+      {
+        "component": "watchdog",
+        "issue": "no_heartbeats",
+        "severity": "warning"
+      }
+    ],
+    "created_at": "2026-07-01T15:15:54.185647+00:00"
+  }
+]

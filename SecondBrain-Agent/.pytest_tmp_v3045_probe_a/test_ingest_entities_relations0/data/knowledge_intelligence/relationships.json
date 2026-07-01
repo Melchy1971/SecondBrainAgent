@@ -1,0 +1,50 @@
+[
+  {
+    "id": "b892de8b-1540-428b-bfa3-51d21c4bb7f9",
+    "source": "GitHub",
+    "target": "Gmail",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  },
+  {
+    "id": "5b3f4b1a-4187-4487-bfb4-3704b65126f5",
+    "source": "GitHub",
+    "target": "Jarvis",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  },
+  {
+    "id": "9e5d7f9c-4c7b-43af-baee-67a8765107de",
+    "source": "GitHub",
+    "target": "SecondBrain",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  },
+  {
+    "id": "2cc0c429-473c-406b-a962-d5f50d07eecf",
+    "source": "Gmail",
+    "target": "Jarvis",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  },
+  {
+    "id": "8d79c216-d459-4755-9f93-3923f5b590e5",
+    "source": "Gmail",
+    "target": "SecondBrain",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  },
+  {
+    "id": "133d7331-6495-4755-ac6b-cc6f204169f9",
+    "source": "Jarvis",
+    "target": "SecondBrain",
+    "type": "co_occurs_with",
+    "weight": 0.5,
+    "doc_id": "b1d17f2b-0a6b-435b-99e5-f2ce7919307f"
+  }
+]

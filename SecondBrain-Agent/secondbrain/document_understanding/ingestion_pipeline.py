@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
 from .orchestrator import MultiFormatParserOrchestrator, ParseOrchestrationResult, default_multi_format_orchestrator
-from .quality_gate import IngestionQualityGate, QualityDecision, QualityGateResult
+from .quality_gate import IngestionQualityGate, QualityDecision, QualityGatePolicy, QualityGateResult
 
 
 class IngestionPipelineStatus(str, Enum):
@@ -96,7 +96,10 @@ class DocumentIngestionPipeline:
             raise TypeError("runtime_must_expose_ingest_text")
         self.runtime = runtime
         self.orchestrator = orchestrator or default_multi_format_orchestrator()
-        self.quality_gate = quality_gate or IngestionQualityGate()
+        # File ingestion is intentionally more conservative than the generic
+        # quality gate: short standalone documents remain ingestible, but are
+        # surfaced for operator review.
+        self.quality_gate = quality_gate or IngestionQualityGate(QualityGatePolicy(review_below_chars=80))
 
     def ingest_file(self, path: str | Path, mime_type: str | None = None) -> IngestionPipelineResult:
         source_path = str(path)

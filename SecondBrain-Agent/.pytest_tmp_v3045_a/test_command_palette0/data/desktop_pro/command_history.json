@@ -1,0 +1,10 @@
+[
+  {
+    "ok": true,
+    "command": {
+      "id": "open_dashboard",
+      "title": "Open Dashboard",
+      "target": "desktop.dashboard"
+    }
+  }
+]

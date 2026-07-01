@@ -1,0 +1,13 @@
+
+runtime:
+  profile: test
+  paths:
+    vault: vault
+    runtime: runtime
+    events: events/runtime
+  services:
+    connectors: true
+    ai_runtime: true
+    agent_kernel: true
+    desktop_commands: true
+    security: true

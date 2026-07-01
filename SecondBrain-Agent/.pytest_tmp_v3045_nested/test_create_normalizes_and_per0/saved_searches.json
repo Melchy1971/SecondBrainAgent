@@ -1,0 +1,18 @@
+[
+  {
+    "created_at": "2026-07-01T15:08:42+00:00",
+    "limit": 25,
+    "metadata": {},
+    "name": "Fehler   Suche",
+    "query_text": "connector failed",
+    "search_id": "ss_163ce9dc8bf4463aabde76d84fc27fd6",
+    "sources": [],
+    "status": [],
+    "tags": [
+      "A",
+      "B"
+    ],
+    "updated_at": "2026-07-01T15:08:42+00:00",
+    "workspace_id": null
+  }
+]

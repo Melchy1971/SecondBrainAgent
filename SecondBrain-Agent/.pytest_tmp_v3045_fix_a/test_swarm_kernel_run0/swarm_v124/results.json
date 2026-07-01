@@ -1,0 +1,72 @@
+[
+  {
+    "completed_at": "2026-07-01T15:16:19Z",
+    "consensus": {
+      "created_at": "2026-07-01T15:16:19Z",
+      "decision": "accepted",
+      "id": "consensus_8d3937be8a6d",
+      "quality_score": 0.85,
+      "rationale": "review_passed",
+      "task_id": "swarm_629e22fd042d"
+    },
+    "execution": {
+      "agent": "executor",
+      "mode": "deterministic_safe_execution",
+      "output": "Ausführung vorbereitet: Analysiere Jarvis Knowledge Graph und erstelle einen sicheren Plan",
+      "status": "completed",
+      "used_tools": []
+    },
+    "memory": {
+      "agent": "memory_curator",
+      "graph_result": null,
+      "persisted": false,
+      "summary": "Swarm bearbeitete Aufgabe: Analysiere Jarvis Knowledge Graph und erstelle einen sicheren Plan"
+    },
+    "objective": "Analysiere Jarvis Knowledge Graph und erstelle einen sicheren Plan",
+    "plan": {
+      "complexity": 1,
+      "created_at": "2026-07-01T15:16:19Z",
+      "plan_id": "plan_17ba5b56ff4e",
+      "steps": [
+        {
+          "action": "execute",
+          "agent": "executor",
+          "depends_on": [],
+          "id": "execute"
+        },
+        {
+          "action": "review",
+          "agent": "reviewer",
+          "depends_on": [
+            "execute"
+          ],
+          "id": "review"
+        },
+        {
+          "action": "curate",
+          "agent": "memory_curator",
+          "depends_on": [
+            "review"
+          ],
+          "id": "memorize"
+        }
+      ],
+      "task": "Analysiere Jarvis Knowledge Graph und erstelle einen sicheren Plan",
+      "task_id": "swarm_629e22fd042d"
+    },
+    "research": {
+      "agent": "researcher",
+      "confidence": 0.4,
+      "findings": [],
+      "summary": "Recherchekontext für: Analysiere Jarvis Knowledge Graph und erstelle einen sicheren Plan"
+    },
+    "review": {
+      "agent": "reviewer",
+      "issues": [],
+      "passed": true,
+      "quality_score": 0.85
+    },
+    "status": "completed",
+    "task_id": "swarm_629e22fd042d"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "vs_c45eeb9e2c03": {
+    "id": "vs_c45eeb9e2c03",
+    "status": "active",
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Jarvis lösche Daten",
+        "event_id": "vevt_ad7f73666e3b"
+      }
+    ],
+    "created_at": "2026-07-01T15:10:59.176790+00:00",
+    "updated_at": "2026-07-01T15:10:59.176808+00:00",
+    "interrupted": false
+  }
+}

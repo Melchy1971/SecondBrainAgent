@@ -1,0 +1,35 @@
+{
+  "a0afa3d8-44a5-4d3f-bd18-588ce9cec7fb": {
+    "session_id": "a0afa3d8-44a5-4d3f-bd18-588ce9cec7fb",
+    "created_at": 1782918684.106731,
+    "updated_at": 1782918684.1715226,
+    "turns": [
+      {
+        "turn_id": "28310474-2438-4d01-8466-8406bb9b6354",
+        "role": "user",
+        "text": "Jarvis status",
+        "timestamp": 1782918684.1601346,
+        "metadata": {}
+      },
+      {
+        "turn_id": "e36a53b8-5b51-4155-a88f-8b345c1e96b6",
+        "role": "assistant",
+        "text": "runtime.status: ok",
+        "timestamp": 1782918684.1715226,
+        "metadata": {
+          "command": {
+            "command_id": "f2409939-844d-425a-8764-1582df0c1703",
+            "raw_text": "Jarvis status",
+            "intent": "runtime.status",
+            "confidence": 0.82,
+            "args": {},
+            "requires_approval": false
+          },
+          "executed": true,
+          "blocked": false
+        }
+      }
+    ],
+    "status": "open"
+  }
+}

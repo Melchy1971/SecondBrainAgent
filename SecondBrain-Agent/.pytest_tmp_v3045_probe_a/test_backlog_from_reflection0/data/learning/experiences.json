@@ -1,0 +1,22 @@
+[
+  {
+    "task": "a",
+    "outcome": "fail",
+    "success": false,
+    "capability": "agent",
+    "duration_seconds": 1,
+    "error": "bad_plan",
+    "id": "f5acdcb2-b0d5-42ae-8807-c2d84845aa98",
+    "created_at": "2026-07-01T15:19:41.791081+00:00"
+  },
+  {
+    "task": "b",
+    "outcome": "fail",
+    "success": false,
+    "capability": "agent",
+    "duration_seconds": 2,
+    "error": "bad_plan",
+    "id": "a3ae73a7-5cd1-404f-a02a-2ad57355b7e8",
+    "created_at": "2026-07-01T15:19:41.792624+00:00"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "goals": [],
+  "preferences": {},
+  "profile_id": "default",
+  "projects": [
+    {
+      "metadata": {},
+      "name": "A",
+      "priority": 3,
+      "project_id": "f61fe25758a9487faea496da6afcb4aa",
+      "risk_level": 1,
+      "status": "active",
+      "weekly_hours": 8.0
+    }
+  ],
+  "time_budget": {
+    "fixed_commitments_hours": 5.0,
+    "recovery_buffer_hours": 5.0,
+    "weekly_capacity_hours": 20.0
+  },
+  "updated_at": 1782919198.866924
+}

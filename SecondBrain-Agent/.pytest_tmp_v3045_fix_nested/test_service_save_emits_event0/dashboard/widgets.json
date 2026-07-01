@@ -1,0 +1,82 @@
+[
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Recent Imports",
+    "widget_id": "recent_imports"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Running Jobs",
+    "widget_id": "running_jobs"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Connector Health",
+    "widget_id": "connector_health"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "RAG Status",
+    "widget_id": "rag_status"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "System Health",
+    "widget_id": "system_health"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Storage Usage",
+    "widget_id": "storage_usage"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Recent Errors",
+    "widget_id": "recent_errors"
+  },
+  {
+    "data": {},
+    "enabled": true,
+    "error": null,
+    "last_refresh": null,
+    "refresh_interval": 60,
+    "status": "idle",
+    "title": "Workspace Summary",
+    "widget_id": "workspace_summary"
+  }
+]

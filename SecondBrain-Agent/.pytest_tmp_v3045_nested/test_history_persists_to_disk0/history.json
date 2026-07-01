@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "created_at": "2026-07-01T15:08:42+00:00",
+      "error": null,
+      "finished_at": "2026-07-01T15:08:42+00:00",
+      "job_id": "c4302a80-56fa-4285-9347-daa4719c77ec",
+      "metadata": {},
+      "name": "diagnostics",
+      "progress": 100,
+      "started_at": null,
+      "state": "completed"
+    }
+  ],
+  "max_entries": 200
+}

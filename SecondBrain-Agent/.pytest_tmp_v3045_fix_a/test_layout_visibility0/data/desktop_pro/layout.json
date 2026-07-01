@@ -1,0 +1,29 @@
+{
+  "theme": "dark",
+  "windows": [
+    {
+      "id": "dashboard",
+      "title": "Dashboard",
+      "dock": "center",
+      "visible": true
+    },
+    {
+      "id": "knowledge",
+      "title": "Knowledge Explorer",
+      "dock": "left",
+      "visible": true
+    },
+    {
+      "id": "memory",
+      "title": "Memory Explorer",
+      "dock": "right",
+      "visible": true
+    },
+    {
+      "id": "kanban",
+      "title": "Kanban",
+      "dock": "bottom",
+      "visible": true
+    }
+  ]
+}

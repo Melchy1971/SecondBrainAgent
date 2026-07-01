@@ -1,0 +1,54 @@
+[
+  {
+    "item_id": "imp_08df214e17a9",
+    "title": "ux: docs unclear",
+    "source": "feedback",
+    "category": "ux",
+    "severity": 3,
+    "impact": 3,
+    "effort": 2,
+    "confidence": 0.65,
+    "status": "open",
+    "evidence": [
+      {
+        "feedback_id": "fb_52a21e72f905",
+        "source": "user",
+        "target_type": "doc",
+        "target_id": "readme",
+        "rating": -1,
+        "text": "docs unclear",
+        "tags": [],
+        "created_at": "2026-07-01T15:11:29.840169+00:00"
+      }
+    ],
+    "created_at": "2026-07-01T15:11:29.841947+00:00",
+    "updated_at": "2026-07-01T15:11:29.841958+00:00",
+    "score": 1.525
+  },
+  {
+    "item_id": "imp_74cb0a38892f",
+    "title": "security: security permission token approval problem",
+    "source": "feedback",
+    "category": "security",
+    "severity": 5,
+    "impact": 4,
+    "effort": 3,
+    "confidence": 0.65,
+    "status": "open",
+    "evidence": [
+      {
+        "feedback_id": "fb_a23e4a24a55e",
+        "source": "user",
+        "target_type": "feature",
+        "target_id": "api",
+        "rating": -2,
+        "text": "security permission token approval problem",
+        "tags": [],
+        "created_at": "2026-07-01T15:11:29.833261+00:00"
+      }
+    ],
+    "created_at": "2026-07-01T15:11:29.835156+00:00",
+    "updated_at": "2026-07-01T15:11:29.835167+00:00",
+    "score": 1.4
+  }
+]

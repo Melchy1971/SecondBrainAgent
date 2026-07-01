@@ -1,0 +1,19 @@
+[
+  {
+    "id": "a16fbf12-af48-4dd9-a7c0-e78f6f70294c",
+    "device_id": "phone",
+    "domains": [
+      "memories",
+      "projects",
+      "tasks",
+      "notifications",
+      "knowledge_graph",
+      "agent_state",
+      "settings",
+      "sessions"
+    ],
+    "status": "success",
+    "strategy": "timestamp_then_semantic_merge_queue",
+    "created_at": "2026-07-01T15:08:46.494101+00:00"
+  }
+]

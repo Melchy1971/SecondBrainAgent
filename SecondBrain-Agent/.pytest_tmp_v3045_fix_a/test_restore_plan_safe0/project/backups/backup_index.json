@@ -1,0 +1,14 @@
+[
+  {
+    "backup_id": "backup_20260701T151617Z",
+    "created_at": "2026-07-01T15:16:17.428674+00:00",
+    "project_root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_restore_plan_safe0\\project",
+    "runtime_dir": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_restore_plan_safe0\\runtime",
+    "include_runtime": true,
+    "file_count": 1,
+    "size_bytes": 486,
+    "sha256": "47baeecfae1e372e86d12d835e3ab481a7010c6334a7f61bf1639792928fa1e0",
+    "version": "11.9",
+    "path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_fix_a\\test_restore_plan_safe0\\project\\backups\\backup_20260701T151617Z.zip"
+  }
+]

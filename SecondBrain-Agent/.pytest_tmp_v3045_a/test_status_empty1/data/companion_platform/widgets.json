@@ -1,0 +1,37 @@
+[
+  {
+    "id": "today",
+    "name": "Today",
+    "enabled": true
+  },
+  {
+    "id": "tasks",
+    "name": "Tasks",
+    "enabled": true
+  },
+  {
+    "id": "projects",
+    "name": "Projects",
+    "enabled": true
+  },
+  {
+    "id": "calendar",
+    "name": "Calendar",
+    "enabled": true
+  },
+  {
+    "id": "approvals",
+    "name": "Approvals",
+    "enabled": true
+  },
+  {
+    "id": "recommendations",
+    "name": "Recommendations",
+    "enabled": true
+  },
+  {
+    "id": "quick_capture",
+    "name": "Quick Capture",
+    "enabled": true
+  }
+]

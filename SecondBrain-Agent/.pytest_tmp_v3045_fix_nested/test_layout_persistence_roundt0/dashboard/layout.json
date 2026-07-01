@@ -1,0 +1,14 @@
+{
+  "columns": 4,
+  "layout_id": "main",
+  "metadata": {},
+  "positions": [
+    {
+      "height": 1,
+      "widget_id": "jobs",
+      "width": 2,
+      "x": 0,
+      "y": 0
+    }
+  ]
+}

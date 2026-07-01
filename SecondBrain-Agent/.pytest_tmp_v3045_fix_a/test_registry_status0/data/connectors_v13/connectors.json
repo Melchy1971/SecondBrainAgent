@@ -1,0 +1,37 @@
+[
+  {
+    "id": "gmail",
+    "name": "Gmail",
+    "kind": "email",
+    "enabled": false,
+    "auth": "oauth2"
+  },
+  {
+    "id": "google_calendar",
+    "name": "Google Calendar",
+    "kind": "calendar",
+    "enabled": false,
+    "auth": "oauth2"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "kind": "code",
+    "enabled": false,
+    "auth": "oauth2"
+  },
+  {
+    "id": "paperless",
+    "name": "Paperless-ngx",
+    "kind": "documents",
+    "enabled": false,
+    "auth": "api_token"
+  },
+  {
+    "id": "obsidian",
+    "name": "Obsidian Vault",
+    "kind": "files",
+    "enabled": false,
+    "auth": "local_path"
+  }
+]

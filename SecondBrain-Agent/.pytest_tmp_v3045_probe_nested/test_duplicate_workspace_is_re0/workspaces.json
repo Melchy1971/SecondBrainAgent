@@ -1,0 +1,23 @@
+{
+  "active_workspace_id": "default",
+  "workspaces": [
+    {
+      "created_at": "2026-07-01T15:19:39+00:00",
+      "is_default": true,
+      "last_opened_at": null,
+      "metadata": {},
+      "name": "Default",
+      "root_path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_probe_nested\\test_duplicate_workspace_is_re0\\default",
+      "workspace_id": "default"
+    },
+    {
+      "created_at": "2026-07-01T15:19:39+00:00",
+      "is_default": false,
+      "last_opened_at": null,
+      "metadata": {},
+      "name": "Work",
+      "root_path": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_probe_nested\\test_duplicate_workspace_is_re0\\w1",
+      "workspace_id": "w1"
+    }
+  ]
+}

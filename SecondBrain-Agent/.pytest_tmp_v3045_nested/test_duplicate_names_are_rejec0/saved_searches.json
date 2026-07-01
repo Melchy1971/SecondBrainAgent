@@ -1,0 +1,15 @@
+[
+  {
+    "created_at": "2026-07-01T15:08:42+00:00",
+    "limit": 25,
+    "metadata": {},
+    "name": "Invoices",
+    "query_text": "invoice",
+    "search_id": "ss_976bd756b4b64c598231be6ce455aa83",
+    "sources": [],
+    "status": [],
+    "tags": [],
+    "updated_at": "2026-07-01T15:08:42+00:00",
+    "workspace_id": null
+  }
+]

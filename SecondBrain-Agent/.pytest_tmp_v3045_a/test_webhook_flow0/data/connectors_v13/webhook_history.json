@@ -1,0 +1,13 @@
+[
+  {
+    "id": "e3485861-afeb-4662-9985-98880b95b02b",
+    "connector_id": "gmail",
+    "event_type": "message.created",
+    "payload": {
+      "id": "1"
+    },
+    "status": "processed",
+    "created_at": "2026-07-01T15:08:46.667105+00:00",
+    "processed_at": "2026-07-01T15:08:46.669290+00:00"
+  }
+]

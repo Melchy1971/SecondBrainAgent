@@ -1,0 +1,12 @@
+{
+  "degraded_connectors": 0,
+  "disabled_connectors": 0,
+  "enabled_connectors": 0,
+  "failed_jobs": 0,
+  "has_blocking_failures": false,
+  "health_ratio": 1.0,
+  "healthy_connectors": 0,
+  "running_jobs": 0,
+  "total_connectors": 0,
+  "unavailable_connectors": 0
+}

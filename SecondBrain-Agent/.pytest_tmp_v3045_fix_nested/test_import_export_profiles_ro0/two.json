@@ -1,0 +1,14 @@
+{
+  "profiles": [
+    {
+      "enabled": true,
+      "kind": "storage",
+      "profile_id": "storage",
+      "provider": "local",
+      "values": {
+        "max_mb": 512,
+        "root_path": "/data"
+      }
+    }
+  ]
+}

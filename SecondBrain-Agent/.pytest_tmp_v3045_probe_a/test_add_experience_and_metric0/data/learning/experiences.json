@@ -1,0 +1,12 @@
+[
+  {
+    "task": "task",
+    "outcome": "ok",
+    "success": true,
+    "capability": "rag",
+    "duration_seconds": 1.2,
+    "error": null,
+    "id": "cc9d339c-c812-4aec-9e3e-1ce72de29a4f",
+    "created_at": "2026-07-01T15:19:41.756795+00:00"
+  }
+]

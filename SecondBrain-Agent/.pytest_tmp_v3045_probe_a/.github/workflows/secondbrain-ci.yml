@@ -1,0 +1,5 @@
+cd SecondBrain-Agent
+pip install -e ".[dev]"
+python launcher.py repo-doctor --execute-runtime-checks
+python launcher.py dependency-inventory
+pytest -q

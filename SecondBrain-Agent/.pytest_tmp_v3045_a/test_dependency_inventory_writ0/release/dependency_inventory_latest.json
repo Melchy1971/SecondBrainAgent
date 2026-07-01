@@ -1,0 +1,34 @@
+{
+  "external": [],
+  "internal": [],
+  "internal_roots": [
+    "main"
+  ],
+  "occurrences": [
+    {
+      "file": "main.py",
+      "line": 1,
+      "module": "json"
+    }
+  ],
+  "ok": true,
+  "optional_provider": [],
+  "optional_requirements_suggestion": [],
+  "project_root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_dependency_inventory_writ0",
+  "python_version": "3.13.8",
+  "requirements_suggestion": [],
+  "scanned_files": 1,
+  "standard_library": [
+    "json"
+  ],
+  "summary": {
+    "external": 0,
+    "internal": 0,
+    "optional_provider": 0,
+    "standard_library": 1,
+    "unknown": 0,
+    "warnings": 0
+  },
+  "unknown": [],
+  "warnings": []
+}

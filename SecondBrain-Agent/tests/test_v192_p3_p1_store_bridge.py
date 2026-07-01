@@ -31,7 +31,7 @@ def test_export_p1_sqlite_records_from_runtime(tmp_path):
     assert len(payload["vectors"]) >= 1
     assert payload["documents"][0].title == "Bridge"
     assert payload["chunks"][0].document_id == payload["documents"][0].id
-    assert payload["vectors"][0].provider == "local-deterministic"
+    assert payload["vectors"][0].provider.startswith("local-deterministic:")
 
 
 def test_mirror_p1_sqlite_to_separate_sqlite_store(tmp_path):

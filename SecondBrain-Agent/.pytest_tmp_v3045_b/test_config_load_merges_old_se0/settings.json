@@ -1,0 +1,1 @@
+{"wake_word": "jarvis", "mode": "push_to_talk", "stt_provider": "manual", "tts_provider": "console", "allow_system_actions": false}

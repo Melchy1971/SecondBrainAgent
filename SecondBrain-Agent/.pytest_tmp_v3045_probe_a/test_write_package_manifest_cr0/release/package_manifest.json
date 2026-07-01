@@ -1,0 +1,25 @@
+{
+  "excluded_count": 0,
+  "file_count": 3,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d9fe83e37c4b4b26c1d41ad60f79a82a79a7ab942db3179137d28da5ed181cd9",
+      "size_bytes": 17
+    },
+    {
+      "path": "secondbrain/core.py",
+      "sha256": "5d51eb2857a20ccf636f995d626569aa5237da347cf4c682e5d83611db36e189",
+      "size_bytes": 11
+    },
+    {
+      "path": "tests/test_core.py",
+      "sha256": "1fb205d8ce04df8dcffa9624c2f451021f07e2e81b87030cd92fea775bc8e2f1",
+      "size_bytes": 28
+    }
+  ],
+  "issues": [],
+  "status": "PASS",
+  "total_size_bytes": 56,
+  "version": "P1.4.3"
+}

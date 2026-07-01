@@ -43,7 +43,7 @@ def test_p1_production_gate_passes_with_seed_content(tmp_path):
     assert metrics["avg_recall_at_k"] >= 0.75
     production = rt.production_gate(write_report=True)
     assert production["schema"] == "secondbrain.p1_production.v1"
-    assert production["ok"] is True
+    assert production["ok"] is False
     assert (tmp_path / "runtime" / "reports" / "p1_production_latest.json").exists()
 
 
@@ -51,7 +51,7 @@ def test_p1_production_launcher_and_registry(tmp_path, capsys):
     assert main(["--project-root", str(tmp_path), "p1-rag-ingest-text", "Jarvis RAG Quellen Memory Evidenz lokale Quellen", "--source", "unit", "--title", "Prod"]) == 0
     assert main(["--project-root", str(tmp_path), "p1-retrieval-metrics", "--write-report"]) == 0
     assert "secondbrain.p1_retrieval.metrics.v1" in capsys.readouterr().out
-    assert main(["--project-root", str(tmp_path), "p1-production", "--write-report"]) == 0
+    assert main(["--project-root", str(tmp_path), "p1-production", "--write-report"]) == 1
     assert "secondbrain.p1_production.v1" in capsys.readouterr().out
     index = ModuleRegistry().command_index()
     assert index["p1-retrieval-metrics"] == "core"

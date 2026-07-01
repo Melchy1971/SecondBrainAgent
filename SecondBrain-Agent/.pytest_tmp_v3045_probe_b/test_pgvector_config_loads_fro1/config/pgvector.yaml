@@ -1,0 +1,6 @@
+enabled: true
+dsn: postgresql://app:pw@localhost:5432/secondbrain
+schema_name: secondbrain_custom
+table_prefix: rag
+vector_dimensions: 1536
+provider: openai

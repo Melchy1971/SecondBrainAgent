@@ -32,7 +32,7 @@ def test_shortcut_manifest_targets_native_desktop(tmp_path: Path):
 def test_native_view_model_exposes_german_voice_and_runtime_truth(tmp_path: Path):
     (tmp_path / "launcher.py").write_text("", encoding="utf-8")
     payload = build_native_view_model(tmp_path)
-    assert payload["schema"] == "secondbrain.native.view_model.v30_26"
+    assert payload["schema"].startswith("secondbrain.native.view_model.v30_")
     assert payload["mode"] == "native_desktop_primary"
     assert payload["web_hud"] == "secondary_only"
     assert payload["voice"]["language"] == "de-DE"

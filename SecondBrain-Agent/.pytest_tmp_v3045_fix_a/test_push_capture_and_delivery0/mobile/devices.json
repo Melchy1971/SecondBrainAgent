@@ -1,0 +1,16 @@
+{
+  "8bd2f82b-7f39-44dd-b439-8d47a4412d7d": {
+    "device_id": "8bd2f82b-7f39-44dd-b439-8d47a4412d7d",
+    "name": "Pixel",
+    "platform": "android",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782918976.6108372,
+    "last_seen_at": 1782918976.639653,
+    "trusted": false,
+    "status": "active"
+  }
+}

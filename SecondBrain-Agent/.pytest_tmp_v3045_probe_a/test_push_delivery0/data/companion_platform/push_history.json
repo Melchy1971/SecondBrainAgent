@@ -1,0 +1,13 @@
+[
+  {
+    "id": "94c2cb91-d3ee-4663-aff8-6391656f769a",
+    "title": "A",
+    "body": "B",
+    "channel": "desktop",
+    "priority": "info",
+    "device_id": null,
+    "status": "delivered",
+    "created_at": "2026-07-01T15:19:42.017475+00:00",
+    "delivered_at": "2026-07-01T15:19:42.020794+00:00"
+  }
+]

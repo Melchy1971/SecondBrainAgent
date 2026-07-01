@@ -51,6 +51,12 @@ def test_env_defaults_are_idempotent(tmp_path: Path) -> None:
 
 
 def test_runtime_dirs_are_writable(tmp_path: Path) -> None:
+    tracked_probe = tmp_path / "data" / ".write_probe"
+    tracked_probe.parent.mkdir(parents=True)
+    tracked_probe.write_text("tracked", encoding="utf-8")
+
     result = ensure_runtime_dirs(tmp_path, repair=True)
+
     assert result["ok"] is True
     assert all(item["writable"] for item in result["checks"])
+    assert tracked_probe.read_text(encoding="utf-8") == "tracked"

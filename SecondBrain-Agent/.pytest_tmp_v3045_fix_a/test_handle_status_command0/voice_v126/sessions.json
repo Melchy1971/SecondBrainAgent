@@ -1,0 +1,16 @@
+{
+  "vs_f3b89bc3cf3c": {
+    "id": "vs_f3b89bc3cf3c",
+    "status": "active",
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Jarvis Status",
+        "event_id": "vevt_b7d3783e167c"
+      }
+    ],
+    "created_at": "2026-07-01T15:16:07.111053+00:00",
+    "updated_at": "2026-07-01T15:16:07.111066+00:00",
+    "interrupted": false
+  }
+}

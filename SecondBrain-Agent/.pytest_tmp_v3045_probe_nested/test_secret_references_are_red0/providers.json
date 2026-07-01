@@ -1,0 +1,15 @@
+{
+  "profiles": [
+    {
+      "enabled": true,
+      "kind": "llm",
+      "profile_id": "openai-main",
+      "provider": "openai",
+      "values": {
+        "api_key_ref": "vault://openai",
+        "model": "gpt-4.1-mini",
+        "temperature": 0.2
+      }
+    }
+  ]
+}

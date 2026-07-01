@@ -1,0 +1,8 @@
+
+runtime:
+  profile: safe
+  services:
+    connectors: true
+    gui: false
+  paths:
+    runtime: runtime

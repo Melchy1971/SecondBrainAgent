@@ -1,0 +1,16 @@
+[
+  {
+    "cluster": "concept",
+    "items": [
+      "Jarvis"
+    ],
+    "size": 1
+  },
+  {
+    "cluster": "system",
+    "items": [
+      "Neo4j"
+    ],
+    "size": 1
+  }
+]

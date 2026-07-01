@@ -1,0 +1,17 @@
+[
+  {
+    "memory_id": "mem_f5b43f28bc59",
+    "kind": "working",
+    "content": "Exportierbare Erinnerung",
+    "source": "manual",
+    "created_at": 1782919290.3381107,
+    "tags": [
+      "export"
+    ],
+    "importance": 0.5,
+    "confidence": 0.8,
+    "archived": false,
+    "favorite": false,
+    "lineage": "manual:native_memory_explorer"
+  }
+]

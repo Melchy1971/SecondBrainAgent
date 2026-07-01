@@ -55,7 +55,7 @@ def test_vector_provider_guard_uses_active_rag_store_snapshot_not_sqlite(tmp_pat
     assert audit["stale_vectors"] == 2
     assert audit["missing_vectors"] == 1
     assert audit["orphan_vectors"] == 1
-    assert set(audit["blockers"]) == {"stale_vector_provider", "missing_vectors", "orphan_vectors"}
+    assert set(audit["blockers"]) == {"stale_vector_provider", "dimension_mismatch_vectors", "missing_vectors", "orphan_vectors"}
 
 
 def test_vector_provider_guard_report_uses_v2_schema(tmp_path):

@@ -1,0 +1,16 @@
+{
+  "37704b51-c1ab-44be-b269-ed3c84c74dc6": {
+    "device_id": "37704b51-c1ab-44be-b269-ed3c84c74dc6",
+    "name": "Web",
+    "platform": "web",
+    "capabilities": [
+      "capture",
+      "push",
+      "approval"
+    ],
+    "registered_at": 1782918976.6788795,
+    "last_seen_at": 1782918976.7200336,
+    "trusted": true,
+    "status": "active"
+  }
+}

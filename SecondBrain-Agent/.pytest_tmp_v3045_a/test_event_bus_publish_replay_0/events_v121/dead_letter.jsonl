@@ -1,0 +1,1 @@
+{"correlation_id": null, "created_at": 1782918693.1588864, "error": "boom", "event_id": "evt_158874a4795b", "failed_at": 1782918693.1600504, "payload": {"x": 1}, "risk_level": 1, "source": "test", "subscriber": "bad", "topic": "demo.created"}

@@ -1,0 +1,128 @@
+{
+  "backup": {
+    "backup_id": "backup-20260701T151139Z",
+    "issues": [],
+    "items": [
+      {
+        "required": true,
+        "sha256": "d9fe83e37c4b4b26c1d41ad60f79a82a79a7ab942db3179137d28da5ed181cd9",
+        "size_bytes": 17,
+        "source": "README.md",
+        "target": "backups/backup-20260701T151139Z/README.md"
+      },
+      {
+        "required": false,
+        "sha256": null,
+        "size_bytes": 0,
+        "source": "pyproject.toml",
+        "target": "backups/backup-20260701T151139Z/pyproject.toml"
+      },
+      {
+        "required": true,
+        "sha256": "5419bcfb3ea35dd66f9841ad76fd2320a024088acbf622a73f6ba9c8d4efdc81",
+        "size_bytes": 27,
+        "source": "pytest.ini",
+        "target": "backups/backup-20260701T151139Z/pytest.ini"
+      }
+    ],
+    "root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+    "status": "READY"
+  },
+  "from_version": "P1.4.3",
+  "migration": {
+    "from_version": "P1.4.3",
+    "status": "READY",
+    "steps": [
+      {
+        "description": "Validate project root, required paths and metadata target.",
+        "id": "preflight",
+        "required": true,
+        "reversible": true,
+        "status": "PENDING"
+      },
+      {
+        "description": "Create rollback metadata for mutable release files.",
+        "id": "backup",
+        "required": true,
+        "reversible": true,
+        "status": "PENDING"
+      },
+      {
+        "description": "Apply validated delta files to the project tree.",
+        "id": "apply_delta",
+        "required": true,
+        "reversible": true,
+        "status": "PENDING"
+      },
+      {
+        "description": "Write upgrade manifest and build metadata.",
+        "id": "write_metadata",
+        "required": true,
+        "reversible": true,
+        "status": "PENDING"
+      },
+      {
+        "description": "Run pytest after delta application.",
+        "id": "run_tests",
+        "required": true,
+        "reversible": false,
+        "status": "PENDING"
+      },
+      {
+        "description": "Mark upgrade complete only after all required steps pass.",
+        "id": "finalize",
+        "required": true,
+        "reversible": true,
+        "status": "PENDING"
+      }
+    ],
+    "to_version": "P1.4.4"
+  },
+  "preflight": {
+    "checks": [
+      {
+        "message": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+        "name": "root_exists",
+        "status": "PASS"
+      },
+      {
+        "message": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+        "name": "root_is_directory",
+        "status": "PASS"
+      },
+      {
+        "message": "README.md",
+        "name": "required:README.md",
+        "status": "PASS"
+      },
+      {
+        "message": "secondbrain",
+        "name": "required:secondbrain",
+        "status": "PASS"
+      },
+      {
+        "message": "tests",
+        "name": "required:tests",
+        "status": "PASS"
+      },
+      {
+        "message": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+        "name": "metadata_target_writable",
+        "status": "PASS"
+      }
+    ],
+    "root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+    "status": "PASS"
+  },
+  "rollback": {
+    "backup_id": "backup-20260701T151139Z",
+    "status": "READY",
+    "steps": [
+      "restore README.md from backups/backup-20260701T151139Z/README.md",
+      "restore pytest.ini from backups/backup-20260701T151139Z/pytest.ini"
+    ]
+  },
+  "root": "H:\\SecondBrainAgent\\SecondBrain-Agent\\.pytest_tmp_v3045_a\\test_write_upgrade_plan_create0",
+  "status": "READY",
+  "to_version": "P1.4.4"
+}

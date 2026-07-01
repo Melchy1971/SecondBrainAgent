@@ -1,0 +1,68 @@
+{
+  "event_bus": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933710+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933725+00:00",
+    "instance_id": "1bc170f5-ee3e-492f-bcec-604ffb03d477"
+  },
+  "tool_registry": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933755+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933759+00:00",
+    "instance_id": "768c371b-bc1a-4a02-bd75-4232f1ce1801"
+  },
+  "memory": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933768+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933770+00:00",
+    "instance_id": "7d28382c-f3aa-4c07-8b50-12369354c67d"
+  },
+  "rag": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933778+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933780+00:00",
+    "instance_id": "c4f5d820-aded-4ec1-be91-9b24c037b148"
+  },
+  "knowledge_graph": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933786+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933788+00:00",
+    "instance_id": "767ac355-92f0-4d7d-8193-88658c5f2021"
+  },
+  "swarm": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933795+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933798+00:00",
+    "instance_id": "bdeaec9d-b498-468d-9cc8-a2590711c6d9"
+  },
+  "learning": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933806+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933808+00:00",
+    "instance_id": "6024e237-971b-4e05-8af2-163006d70064"
+  },
+  "digital_twin": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933816+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933818+00:00",
+    "instance_id": "5440031f-be2f-4cdf-bfae-07d84ff6e4d9"
+  },
+  "desktop": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933826+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933829+00:00",
+    "instance_id": "da52678a-47bb-4430-9cb0-d2261edf2db1"
+  },
+  "mobile": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933837+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933840+00:00",
+    "instance_id": "af5045bf-e995-425a-b190-66ce85d7df8d"
+  },
+  "voice": {
+    "status": "running",
+    "started_at": "2026-07-01T15:19:41.933846+00:00",
+    "heartbeat": "2026-07-01T15:19:41.933849+00:00",
+    "instance_id": "c360b1e3-ed51-41b5-9b27-37ee4159bd95"
+  }
+}

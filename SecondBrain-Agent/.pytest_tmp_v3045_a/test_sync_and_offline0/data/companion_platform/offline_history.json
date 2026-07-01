@@ -1,0 +1,13 @@
+[
+  {
+    "id": "08f0947f-5959-4f08-9dc0-b2e65e3508da",
+    "device_id": "phone",
+    "kind": "note",
+    "payload": {
+      "text": "hello"
+    },
+    "status": "replayed",
+    "created_at": "2026-07-01T15:08:46.489926+00:00",
+    "replayed_at": "2026-07-01T15:08:46.492150+00:00"
+  }
+]

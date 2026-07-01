@@ -1,0 +1,40 @@
+[
+  {
+    "created_at": 1782918978.178307,
+    "decision_id": "a3588747d8e141c99865d83b4bcad72e",
+    "question": "Was zuerst?",
+    "ranking": [
+      {
+        "capacity_impact": "low_risk",
+        "expected_value": 5,
+        "free_hours_after": 23.0,
+        "option": "A",
+        "overload_hours": 0.0,
+        "risk_level": 1,
+        "score": 23,
+        "strategic_fit": 5,
+        "weekly_hours": 2.0
+      },
+      {
+        "capacity_impact": "low_risk",
+        "expected_value": 3,
+        "free_hours_after": 15.0,
+        "option": "B",
+        "overload_hours": 0.0,
+        "risk_level": 4,
+        "score": 6,
+        "strategic_fit": 3,
+        "weekly_hours": 10.0
+      }
+    ],
+    "rationale": [
+      "Beste Option nach Score: A",
+      "Score = Nutzen + strategischer Fit + Reversibilität - Risiko - Kapazitätsstrafe",
+      "Kapazitätsstrafe greift bei <3 freien Stunden oder Überlast"
+    ],
+    "recommended_option": "A",
+    "risks": [
+      "B: hohes Umsetzungsrisiko"
+    ]
+  }
+]

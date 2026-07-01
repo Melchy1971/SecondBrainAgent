@@ -1,0 +1,23 @@
+[
+  {
+    "id": "dce8ff0c-be7f-4003-8112-dbd883392b1d",
+    "name": "GitHub",
+    "kind": "system",
+    "confidence": 0.6,
+    "mentions": 1
+  },
+  {
+    "id": "aa29e126-2b4d-4c2e-83a6-18fea41f016f",
+    "name": "Gmail",
+    "kind": "system",
+    "confidence": 0.6,
+    "mentions": 1
+  },
+  {
+    "id": "d266c03f-f808-4c51-97f7-0ddc6a3b41f5",
+    "name": "Jarvis",
+    "kind": "concept",
+    "confidence": 0.6,
+    "mentions": 1
+  }
+]

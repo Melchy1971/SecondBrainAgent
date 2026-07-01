@@ -1,0 +1,11 @@
+[
+  {
+    "id": "ac70cd6b-c867-410e-a6a9-4f962b238c08",
+    "actor": "system",
+    "action": "runtime.start",
+    "target": "production_core",
+    "metadata": {},
+    "result": "success",
+    "created_at": "2026-07-01T15:19:43.219351+00:00"
+  }
+]

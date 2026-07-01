@@ -1,0 +1,1 @@
+{"action": "cmd.run", "payload": {}, "job_id": "b3ce5a4ef54d4acb94e75ed0ba48490f", "status": "blocked", "attempts": 1, "created_at": 1782919178.9489076, "updated_at": 1782919178.9571986, "last_error": "approval_required"}

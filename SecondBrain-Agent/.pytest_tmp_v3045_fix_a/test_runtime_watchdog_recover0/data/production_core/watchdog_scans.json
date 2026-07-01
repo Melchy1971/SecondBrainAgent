@@ -1,0 +1,36 @@
+[
+  {
+    "id": "486a5f72-8679-43f3-86a5-a2f0aaa0a45d",
+    "status": "degraded",
+    "issues": [
+      {
+        "component": "runtime",
+        "issue": "not_running",
+        "severity": "critical"
+      },
+      {
+        "component": "watchdog",
+        "issue": "no_heartbeats",
+        "severity": "warning"
+      }
+    ],
+    "created_at": "2026-07-01T15:15:54.203677+00:00"
+  },
+  {
+    "id": "6d44bc9b-b0b2-4374-b631-494ca4e2d9e3",
+    "status": "degraded",
+    "issues": [
+      {
+        "component": "runtime",
+        "issue": "not_running",
+        "severity": "critical"
+      },
+      {
+        "component": "watchdog",
+        "issue": "no_heartbeats",
+        "severity": "warning"
+      }
+    ],
+    "created_at": "2026-07-01T15:15:54.205318+00:00"
+  }
+]

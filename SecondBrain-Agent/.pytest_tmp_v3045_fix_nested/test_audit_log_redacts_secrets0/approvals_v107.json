@@ -1,0 +1,20 @@
+{
+  "73cf25786a4747a4909538a05bda40bb": {
+    "action": "note.create",
+    "approval_id": "73cf25786a4747a4909538a05bda40bb",
+    "created_at": 1782918947.827671,
+    "payload_hash": "2b77e9a33384dc3bf80b1723cd29ceec51d209c701534d061c687802f643cbd1",
+    "risk": {
+      "action": "note.create",
+      "blocked": false,
+      "level": 2,
+      "reasons": [
+        "level:2",
+        "secret_detected"
+      ],
+      "requires_approval": true,
+      "score": 75
+    },
+    "status": "pending"
+  }
+}

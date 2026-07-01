@@ -1,0 +1,15 @@
+{
+  "profiles": [
+    {
+      "enabled": true,
+      "kind": "embedding",
+      "profile_id": "local-emb",
+      "provider": "ollama",
+      "values": {
+        "base_url": "http://localhost:11434",
+        "model": "nomic-embed-text",
+        "timeout_seconds": 30
+      }
+    }
+  ]
+}

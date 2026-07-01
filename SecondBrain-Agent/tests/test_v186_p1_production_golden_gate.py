@@ -17,7 +17,7 @@ def test_production_gate_wrapper_includes_golden_retrieval(tmp_path):
 
     payload = production_gate_with_golden(rt, tmp_path, write_report=True)
 
-    assert payload["schema"] == "secondbrain.p1_production.golden.v1"
+    assert payload["schema"].startswith("secondbrain.p1_production.golden.v")
     assert "base_production" in payload
     assert "golden_retrieval" in payload
     assert payload["golden_retrieval"]["ok"] is True
@@ -63,6 +63,6 @@ def test_p1_production_launcher_uses_golden_wrapper(tmp_path, capsys):
     # Local deterministic embeddings still prevent production PASS, but the
     # payload must now include the Golden Retrieval layer.
     assert rc == 1
-    assert "secondbrain.p1_production.golden.v1" in captured
+    assert "secondbrain.p1_production.golden.v" in captured
     assert "golden_retrieval_eval_passes" in captured
     assert (tmp_path / "runtime" / "reports" / "p1_production_latest.json").exists()

@@ -1,0 +1,36 @@
+{
+  "b9906e8d07054e239621478c29bb9649": {
+    "created_at": 1782919198.6943862,
+    "outputs": {
+      "error": "missing_tool",
+      "failed_step": "missing"
+    },
+    "run_id": "b9906e8d07054e239621478c29bb9649",
+    "status": "failed",
+    "updated_at": 1782919198.7081668,
+    "workflow": {
+      "description": "",
+      "metadata": {},
+      "name": "Missing",
+      "steps": [
+        {
+          "action": "missing.tool",
+          "depends_on": [],
+          "error": "missing_tool",
+          "finished_at": 1782919198.7076533,
+          "name": "missing",
+          "payload": {},
+          "result": {
+            "action": "missing.tool",
+            "ok": false,
+            "reason": "missing_tool"
+          },
+          "started_at": 1782919198.704555,
+          "status": "failed",
+          "step_id": "e9f9bda836c64cdbbc364cd181ba7f38"
+        }
+      ],
+      "workflow_id": "wf.missing"
+    }
+  }
+}

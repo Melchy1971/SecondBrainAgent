@@ -1,0 +1,74 @@
+[
+  {
+    "capabilities": [
+      "analyze",
+      "delegate",
+      "coordinate"
+    ],
+    "enabled": true,
+    "name": "supervisor",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 1,
+    "role": "Task analysis, delegation, escalation"
+  },
+  {
+    "capabilities": [
+      "plan",
+      "decompose",
+      "sequence"
+    ],
+    "enabled": true,
+    "name": "planner",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 1,
+    "role": "Task decomposition and dependency planning"
+  },
+  {
+    "capabilities": [
+      "research",
+      "rag",
+      "graph"
+    ],
+    "enabled": true,
+    "name": "researcher",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 1,
+    "role": "Knowledge lookup and source assessment"
+  },
+  {
+    "capabilities": [
+      "execute",
+      "tools",
+      "workflows"
+    ],
+    "enabled": true,
+    "name": "executor",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 2,
+    "role": "Safe tool and workflow execution"
+  },
+  {
+    "capabilities": [
+      "review",
+      "validate",
+      "score"
+    ],
+    "enabled": true,
+    "name": "reviewer",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 1,
+    "role": "Quality control and verification"
+  },
+  {
+    "capabilities": [
+      "memory",
+      "graph",
+      "summarize"
+    ],
+    "enabled": true,
+    "name": "memory_curator",
+    "registered_at": "2026-07-01T15:19:59Z",
+    "risk_level": 1,
+    "role": "Memory consolidation and graph update"
+  }
+]

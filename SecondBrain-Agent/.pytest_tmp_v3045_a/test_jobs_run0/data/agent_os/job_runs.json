@@ -1,0 +1,44 @@
+[
+  {
+    "id": "e2c312ae-67ea-4b11-83c4-4f27ba459a02",
+    "job": "connector_sync",
+    "target": "connectors.sync_all",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312110+00:00"
+  },
+  {
+    "id": "65aefa0a-d7cb-4232-a744-5c65d0ec7943",
+    "job": "rag_index",
+    "target": "rag.index",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312137+00:00"
+  },
+  {
+    "id": "0dd02f56-655b-4d5c-93a8-d2b0fa81b5d1",
+    "job": "knowledge_compression",
+    "target": "memory.compress",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312147+00:00"
+  },
+  {
+    "id": "b29e0d8c-a600-4adb-a83a-ac6abe878847",
+    "job": "learning_reflection",
+    "target": "learning.reflect",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312154+00:00"
+  },
+  {
+    "id": "3fb98f7c-469e-4034-880d-11479cfe1d67",
+    "job": "goal_forecast",
+    "target": "goals.forecast",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312161+00:00"
+  },
+  {
+    "id": "8ae8fc42-3f90-4bc4-aafe-f96e0f92b4fc",
+    "job": "backup_verify",
+    "target": "ops.backup_verify",
+    "status": "simulated_success",
+    "created_at": "2026-07-01T15:08:46.312168+00:00"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "created_at": "2026-07-01T15:11:33Z",
+    "decision": "accepted",
+    "id": "consensus_93580f2ef4c4",
+    "quality_score": 0.85,
+    "rationale": "review_passed",
+    "task_id": "swarm_ab3fe39883a2"
+  }
+]

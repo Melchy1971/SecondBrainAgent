@@ -1,0 +1,17 @@
+{
+  "weekly_capacity_hours": 20.0,
+  "energy_level": 0.7,
+  "goals": [
+    {
+      "id": "g1",
+      "name": "TTR 1200",
+      "target_value": 1200,
+      "current_value": 1147,
+      "unit": "points",
+      "deadline_days": 120,
+      "priority": 4
+    }
+  ],
+  "projects": [],
+  "habits": []
+}
