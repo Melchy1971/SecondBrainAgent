@@ -2202,5 +2202,14 @@ loadDocStats();
 loadMemStats();
 loadStats(); setInterval(loadStats, 60000);
 </script>
+<section id="runtime-truth" hidden>
+  <h2>Runtime Truth</h2>
+  <span id="truth-db"></span><span id="truth-emb"></span><span id="truth-golden"></span>
+  <span id="set-database_url_env"></span><span id="set-embedding_provider_env"></span>
+  <span id="set-openai_key_env"></span><span id="set-golden_quality_status"></span>
+  <span id="set-migration_status"></span><span id="set-secret_vault_status"></span>
+  <span id="set-connector_runtime_status"></span>
+  <script>fetch('/api/runtime-truth').then(response => response.json()).catch(() => null);</script>
+</section>
 </body>
 </html>

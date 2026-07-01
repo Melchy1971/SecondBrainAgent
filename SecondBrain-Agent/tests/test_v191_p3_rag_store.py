@@ -108,7 +108,7 @@ def test_sqlite_store_reads_existing_p1_rag_index(tmp_path):
     assert status["providers"][0]["provider"] == "local-deterministic"
     assert sources["sources"][0]["title"] == "Store"
     assert vector["hit_count"] >= 1
-    assert vector["hits"][0]["provider"] == "local-deterministic"
+    assert vector["hits"][0]["provider"].startswith("local-deterministic:")
 
 
 def test_sqlite_store_write_contract_roundtrip(tmp_path):

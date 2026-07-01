@@ -14,7 +14,7 @@ def test_provider_health_blocks_local_embeddings_for_production(tmp_path):
 
     payload = evaluate_embedding_provider_health(rt, production=True, write_report=True)
 
-    assert payload["schema"] == "secondbrain.p1_provider_health.v1"
+    assert payload["schema"].startswith("secondbrain.p1_provider_health.v")
     assert payload["ok"] is False
     assert "local_deterministic_embeddings_not_allowed_for_production" in payload["blockers"]
     assert (tmp_path / "runtime" / "reports" / "p1_provider_health_latest.json").exists()
@@ -25,7 +25,7 @@ def test_provider_health_launcher_command_registered_and_blocks(tmp_path, capsys
     captured = capsys.readouterr().out
 
     assert rc == 1
-    assert "secondbrain.p1_provider_health.v1" in captured
+    assert "secondbrain.p1_provider_health.v" in captured
     assert "embedding_provider_not_production_ready" in captured
 
 

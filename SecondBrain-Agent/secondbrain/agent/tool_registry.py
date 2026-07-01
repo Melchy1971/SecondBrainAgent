@@ -24,12 +24,20 @@ class ToolDefinition:
         if not callable(self.handler):
             raise ToolRegistryError("tool_handler_not_callable")
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """Compatibility call path for the original positional tool API."""
+        return self.handler(*args, **kwargs)
+
 
 class ToolRegistry:
     def __init__(self) -> None:
         self._tools: dict[str, ToolDefinition] = {}
 
-    def register(self, tool: ToolDefinition) -> ToolDefinition:
+    def register(self, tool: ToolDefinition | str, handler: Callable[..., Any] | None = None) -> ToolDefinition:
+        if isinstance(tool, str):
+            if handler is None:
+                raise ToolRegistryError("tool_handler_not_callable")
+            tool = ToolDefinition(name=tool, description=tool, handler=handler)
         tool.validate()
         if tool.name in self._tools:
             raise ToolRegistryError(f"tool_already_registered:{tool.name}")

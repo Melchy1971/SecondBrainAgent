@@ -19,6 +19,11 @@ from secondbrain.release.dependency_inventory import build_dependency_inventory
 from secondbrain.release.repo_doctor import run_repo_doctor
 from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
+from secondbrain.env_loader import load_env_file
+from secondbrain.p1_embedding_config import evaluate_embedding_config
+from secondbrain.p1_provider_health import evaluate_embedding_provider_health
+from secondbrain.p1_rag_migration import migrate_sqlite_to_selected_store
+from secondbrain.p1_vector_provider_guard import repair_vector_index
 
 
 def out(obj: Any) -> None:
@@ -213,6 +218,7 @@ def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
     if cmd is None:
+        load_env_file()
         return gui_command(["gui", "--project-root", str(Path.cwd())])
     if cmd == "bootstrap":
         out(write_bootstrap_report(Path.cwd(), repair=True))
@@ -227,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         return _p3_rag_store_main(raw)
     if cmd == "p3-p1-store-bridge":
         return _p3_p1_store_bridge_main(raw)
-    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-embedding-status", "p1-vector-provider-audit", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
+    if cmd in {"p1-rag-status", "p1-rag-ingest-text", "p1-rag-ingest-file", "p1-rag-ingest-dir", "p1-rag-search", "p1-rag-vector-search", "p1-rag-hybrid-search", "p1-rag-answer", "p1-rag-sources", "p1-rag-explain", "p1-rag-validate", "p1-rag-quality", "p1-rag-reindex", "p1-rag-migrate-postgres", "p1-embedding-status", "p1-vector-provider-audit", "p1-vector-index-repair", "p1-provider-health", "p1-embedding-config", "p1-retrieval-benchmark", "p1-retrieval-metrics", "p1-golden-eval", "p1-production", "p1-gate"}:
         parser = argparse.ArgumentParser(prog="secondbrain")
         parser.add_argument("--project-root", default=str(Path.cwd()))
         parser.add_argument("--profile", default=None)
@@ -237,6 +243,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--title", default=None)
         parser.add_argument("--limit", type=int, default=5)
         parser.add_argument("--write-report", action="store_true")
+        parser.add_argument("--allow-non-pgvector", action="store_true")
         args, _ = parser.parse_known_args(raw)
         rt = P1RagRuntime(args.project_root, args.profile)
         if cmd == "p1-rag-status":
@@ -245,6 +252,8 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.ingest_text(" ".join(args.args), args.source, args.title)
         elif cmd == "p1-rag-ingest-file":
             payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
+        elif cmd == "p1-rag-ingest-dir":
+            payload = rt.ingest_directory(args.args[0] if args.args else "")
         elif cmd == "p1-rag-search":
             payload = rt.search(" ".join(args.args), args.limit)
         elif cmd == "p1-rag-vector-search":
@@ -257,6 +266,19 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.embedding_status()
         elif cmd == "p1-vector-provider-audit":
             payload = audit_vector_provider(rt, write_report=args.write_report)
+        elif cmd == "p1-vector-index-repair":
+            payload = repair_vector_index(rt, write_report=args.write_report)
+        elif cmd == "p1-provider-health":
+            payload = evaluate_embedding_provider_health(rt, production=True, write_report=args.write_report)
+        elif cmd == "p1-embedding-config":
+            payload = evaluate_embedding_config(args.project_root, production=True, write_report=args.write_report)
+        elif cmd == "p1-rag-migrate-postgres":
+            payload = migrate_sqlite_to_selected_store(
+                args.project_root,
+                dry_run=True,
+                write_report=args.write_report,
+                require_pgvector=not args.allow_non_pgvector,
+            )
         elif cmd == "p1-retrieval-benchmark":
             payload = rt.retrieval_benchmark(write_report=args.write_report)
         elif cmd == "p1-retrieval-metrics":
@@ -277,6 +299,20 @@ def main(argv: list[str] | None = None) -> int:
             payload = rt.quality_report(" ".join(args.args) or "Jarvis RAG Quellen", args.limit, write_report=args.write_report)
         else:
             payload = rt.gate(write_report=args.write_report)
+        out(payload)
+        return 0 if payload.get("ok") else 1
+    if cmd in {"document-center-status", "memory-center-status"}:
+        parser = argparse.ArgumentParser(prog="secondbrain")
+        parser.add_argument("cmd")
+        parser.add_argument("--project-root", default=str(Path.cwd()))
+        parser.add_argument("--profile", default=None)
+        args, _ = parser.parse_known_args(raw)
+        if cmd == "document-center-status":
+            from secondbrain.gui.document_center_runtime import document_center_status
+            payload = document_center_status(args.project_root, args.profile)
+        else:
+            from secondbrain.gui.memory_center_runtime import memory_center_status
+            payload = memory_center_status(args.project_root, args.profile)
         out(payload)
         return 0 if payload.get("ok") else 1
     if cmd in {"p0-doctor", "p0-gate", "p0-report", "p0-smoke", "p0-contract", "p0-readiness", "p0-bootstrap", "p0-production", "p0-audit"}:
@@ -312,6 +348,18 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"layout-center", "layout-center-gui", "layout-status", "layout-list", "layout-load", "layout-activate", "layout-save", "layout-reset", "layout-export", "layout-import", "layout-history"}:
         from secondbrain.native.layout_center.cli import main as layout_center_main
         return layout_center_main(raw)
+    if cmd in {"theme-center", "theme-center-gui", "theme-status", "theme-list", "theme-current", "theme-activate", "theme-preview", "theme-export", "theme-import", "theme-reset", "theme-history"}:
+        from secondbrain.native.theme_center.cli import main as theme_center_main
+        return theme_center_main(raw)
+    if cmd in {"notification-center", "notification-center-gui", "notification-center-status", "notification-list", "notification-send", "notification-read", "notification-read-all", "notification-clear"}:
+        from secondbrain.native.notification_center.cli import main as notification_center_main
+        return notification_center_main(raw)
+    if cmd in {"job-queue-status", "job-queue-add", "job-queue-list", "job-queue-run", "job-queue-approve", "job-queue-cancel", "job-queue-clear-finished", "job-queue-center-gui"}:
+        from secondbrain.native.job_queue_center.cli import launcher_main as job_queue_main
+        return job_queue_main(raw)
+    if cmd in {"native-desktop-health", "native-desktop-doctor", "native-desktop-report"}:
+        from secondbrain.native.desktop_health.cli import main as desktop_health_main
+        return desktop_health_main(raw)
     if cmd in {"settings-center", "settings-center-gui", "settings-center-status", "settings-center-snapshot", "settings-center-write-defaults", "settings-center-set", "settings-center-history"}:
         from secondbrain.native.settings_center.cli import main as settings_center_main
         return settings_center_main(raw)
@@ -319,6 +367,7 @@ def main(argv: list[str] | None = None) -> int:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)
     if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
+        load_env_file()
         return gui_command(raw)
     if cmd == "command-index":
         out(ModuleRegistry().command_index())

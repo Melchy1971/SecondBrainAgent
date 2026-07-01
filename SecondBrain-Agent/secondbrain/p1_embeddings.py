@@ -5,6 +5,7 @@ import importlib
 import json
 import math
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -135,7 +136,7 @@ class OllamaEmbeddingProvider:
             return self._request_embedding(text)
         except Exception as exc:  # noqa: BLE001 - provider boundary
             if self._fallback_allowed():
-                return self.fallback.embed(text)
+                return LocalEmbeddingProvider(self.dimensions).embed(text)
             raise RuntimeError("ollama_embedding_unavailable") from exc
 
     def status(self) -> dict[str, Any]:
@@ -254,6 +255,8 @@ class OpenAIEmbeddingProvider:
     def _request_embedding(self, text: str) -> list[float]:
         if not self._api_key():
             raise RuntimeError("openai_api_key_missing")
+        if "openai" in sys.modules and sys.modules["openai"] is None:
+            raise RuntimeError("openai_sdk_missing")
         try:
             vector = self._request_embedding_sdk(text)
             transport = "sdk"
@@ -272,7 +275,7 @@ class OpenAIEmbeddingProvider:
             return self._request_embedding(text)
         except Exception as exc:  # noqa: BLE001 - provider boundary
             if self._fallback_allowed():
-                return self.fallback.embed(text)
+                return LocalEmbeddingProvider(self.dimensions).embed(text)
             raise RuntimeError("openai_embedding_unavailable") from exc
 
     def status(self) -> dict[str, Any]:

@@ -145,10 +145,7 @@ def _repository_root(project_root: Path) -> Path:
     current = project_root.resolve()
     candidates = (current, *current.parents)
     for candidate in candidates:
-        if (candidate / ".git").exists():
-            return candidate
-    for candidate in candidates:
-        if (candidate / ".github").exists():
+        if (candidate / ".git").exists() or (candidate / ".github").exists():
             return candidate
     return current
 

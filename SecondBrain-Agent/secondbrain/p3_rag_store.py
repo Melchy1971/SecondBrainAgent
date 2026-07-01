@@ -166,7 +166,13 @@ class SQLiteRagStore:
             docs = int(conn.execute("select count(*) as n from documents").fetchone()["n"])
             chunks = int(conn.execute("select count(*) as n from chunks").fetchone()["n"])
             vectors = int(conn.execute("select count(*) as n from chunk_embeddings").fetchone()["n"])
-            providers = [dict(row) for row in conn.execute("select provider, dimensions, count(*) as vectors from chunk_embeddings group by provider, dimensions order by provider, dimensions").fetchall()]
+            providers = []
+            for row in conn.execute("select provider, dimensions, count(*) as vectors from chunk_embeddings group by provider, dimensions order by provider, dimensions").fetchall():
+                item = dict(row)
+                identity = str(item["provider"])
+                item["index_provider"] = identity
+                item["provider"] = identity.split(":", 1)[0]
+                providers.append(item)
         return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "db_path": str(self.db_path), "documents": docs, "chunks": chunks, "vectors": vectors, "providers": providers, "capabilities": ["status", "sources", "upsert_document", "upsert_chunks", "upsert_vectors", "vector_search"]}
 
     def sources(self) -> dict[str, Any]:

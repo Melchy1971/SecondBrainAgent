@@ -16,20 +16,24 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.41"
+    VERSION = "v30.46"
 
     MODULES = (
         ("dashboard", "Dashboard", "dashboard-center-status", ("secondbrain/native/dashboard_center",)),
         ("layout", "Layout", "layout-status", ("secondbrain/native/layout_center",)),
-        ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat_center", "secondbrain/native/chat_center.py")),
-        ("documents", "Dokumente", "document-explorer-status", ("secondbrain/native/document_explorer",)),
-        ("memory", "Memory", "memory-explorer-status", ("secondbrain/native/memory_explorer",)),
-        ("agents", "Agenten", "agent-control-status", ("secondbrain/native/agent_control_center", "secondbrain/native/agent_control")),
-        ("voice", "Sprache", "voice-control-status", ("secondbrain/native/voice_control_center", "secondbrain/native/voice_control")),
-        ("commands", "Kommandos", "command-center-status", ("secondbrain/native/command_center",)),
+        ("themes", "Themes", "theme-status", ("secondbrain/native/theme_center",)),
+        ("notifications", "Benachrichtigungen", "notification-center-status", ("secondbrain/native/notification_center",)),
+        ("jobs", "Jobs", "job-queue-status", ("secondbrain/native/job_queue_center",)),
+        ("health", "Desktop Health", "native-desktop-health", ("secondbrain/native/desktop_health",)),
+        ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat.py",)),
+        ("documents", "Dokumente", "document-explorer-status", ("secondbrain/native/document_explorer.py",)),
+        ("memory", "Memory", "memory-explorer-status", ("secondbrain/native/memory_explorer.py",)),
+        ("agents", "Agenten", "agent-control-status", ("secondbrain/native/agent_control_center.py",)),
+        ("voice", "Sprache", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
+        ("commands", "Kommandos", "command-center-status", ("secondbrain/native/command_center.py",)),
         ("settings", "Einstellungen", "settings-center-status", ("secondbrain/native/settings_center",)),
         ("updates", "Updates", "update-status", ("secondbrain/native/update_center",)),
-        ("installer", "Installer", "native-installer-status", ("secondbrain/native/installer_center",)),
+        ("installer", "Installer", "native-installer-status", ("secondbrain/native/installer_center.py",)),
     )
 
     def __init__(self, project_root: str | Path = ".") -> None:
@@ -45,10 +49,19 @@ class AIWorkspaceService:
         if status_file.exists():
             try:
                 data = json.loads(status_file.read_text(encoding="utf-8"))
-                return str(data.get("current_version") or data.get("version") or self.VERSION)
+                documented = str(data.get("current_version") or data.get("version") or self.VERSION)
+                return max((documented, self.VERSION), key=self._version_key)
             except Exception:
                 return self.VERSION
         return self.VERSION
+
+    @staticmethod
+    def _version_key(value: str) -> tuple[int, ...]:
+        raw = value.lower().removeprefix("v")
+        try:
+            return tuple(int(part) for part in raw.split("."))
+        except ValueError:
+            return (0,)
 
     def _module_exists(self, candidates: tuple[str, ...]) -> bool:
         return any((self.project_root / candidate).exists() for candidate in candidates)

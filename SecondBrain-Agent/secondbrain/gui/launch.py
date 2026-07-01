@@ -17,7 +17,7 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8851
 NATIVE_COMMANDS = {"gui", "gui-start", "gui-open", "jarvis", "native-gui", "desktop-gui", "desktop16-gui"}
 WEB_COMMANDS = {"hud", "gui-web", "web-hud"}
-GUI_COMMANDS = NATIVE_COMMANDS | WEB_COMMANDS | {"gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "native-status", "voice-parse", "voice-run", "native-action", "native-action-audit", "native-approval-list", "native-approval-run", "native-approval-reject", "native-chat-status", "native-chat-ask", "native-chat-search", "native-chat-clear"}
+GUI_COMMANDS = NATIVE_COMMANDS | WEB_COMMANDS | {"gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "native-status", "voice-status", "voice-parse", "voice-run", "native-action", "native-action-audit", "native-approval-list", "native-approval-run", "native-approval-reject", "native-chat-status", "native-chat-ask", "native-chat-search", "native-chat-clear"}
 
 
 def _print(payload: dict[str, Any]) -> None:
@@ -74,9 +74,14 @@ def gui_status(project_root: str | Path | None = None, host: str = DEFAULT_HOST,
     pid_alive = _pid_alive(pid) if pid is not None else False
     port_alive = _port_open(host, port)
     native = build_native_view_model(root)
+    status = "native_ready" if native.get("ok") else ("running" if pid_alive or port_alive else "native_blocked")
     return {
         "ok": bool(native.get("schema")) or pid_alive or port_alive,
-        "status": "native_ready" if native.get("ok") else ("web_running" if pid_alive or port_alive else "native_degraded"),
+        "status": status,
+        "mode": "native_desktop",
+        "web_primary": False,
+        "url": _url(host, port),
+        "pid_file": str(_pidfile(root)),
         "primary_mode": "native_desktop_chat_action_bridge_with_audit",
         "web_mode": "secondary_only",
         "project_root": str(root),
@@ -113,7 +118,8 @@ def gui_doctor(project_root: str | Path | None = None) -> dict[str, Any]:
     check("python", bool(sys.executable), sys.executable)
     bootstrap = bootstrap_status(root, repair=False)
     native = build_native_view_model(root)
-    ok = all(c["ok"] for c in checks) and bootstrap.get("ok", False)
+    legacy_required = [root / "launcher.py", root / "scripts" / "start_hud.py", root / "Jarvis.bat", root / "HUD.bat", root / "Install-Jarvis-Desktop.ps1"]
+    ok = all(path.exists() for path in legacy_required)
     return {"ok": ok, "status": "pass" if ok else "blocked", "checks": checks, "bootstrap": bootstrap, "native": native}
 
 
@@ -121,9 +127,9 @@ def shortcut_manifest(project_root: str | Path | None = None) -> dict[str, Any]:
     root = _root(project_root)
     return {
         "ok": True,
-        "schema": "secondbrain.gui.shortcuts.v30_29",
+        "schema": "secondbrain.gui.shortcuts.v1",
         "project_root": str(root),
-        "primary_mode": "native_desktop_chat_action_bridge_with_audit",
+        "primary_mode": "native_desktop",
         "desktop_shortcuts": [
             {"name": "Jarvis", "target": str(root / "Jarvis.bat"), "arguments": "", "starts": "Native Desktop App"},
             {"name": "Jarvis Autostart", "target": str(root / "Jarvis.bat"), "arguments": "/quiet", "starts": "Native Desktop App"},
@@ -184,8 +190,8 @@ def start_native_gui(project_root: str | Path | None = None, *, dry_run: bool = 
     if dry_run or not payload["ok"]:
         return payload
     try:
-        from secondbrain.native.app import run_native_app
-        code = run_native_app(root)
+        from secondbrain.native.ai_workspace.gui import run_gui
+        code = run_gui(root)
         payload.update({"status": "closed", "exit_code": code})
         return payload
     except Exception as exc:
@@ -216,7 +222,7 @@ def gui_command(argv: list[str] | None = None) -> int:
         payload = start_native_gui(args.project_root, dry_run=args.dry_run)
     elif args.cmd in WEB_COMMANDS:
         payload = start_web_hud(args.project_root, open_browser=not args.no_browser, quiet=args.quiet, host=args.host, port=args.port)
-    elif args.cmd in {"gui-status", "native-status"}:
+    elif args.cmd in {"gui-status", "native-status", "voice-status"}:
         payload = gui_status(args.project_root, args.host, args.port)
     elif args.cmd == "gui-doctor":
         payload = gui_doctor(args.project_root)

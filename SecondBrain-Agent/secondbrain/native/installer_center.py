@@ -203,7 +203,7 @@ def write_installer_artifacts(project_root: str | Path = ".", output_dir: str | 
     for name, content in files.items():
         path = out_dir / name
         path.write_text(content, encoding="utf-8", newline="\n")
-        written.append(str(path.relative_to(root)))
+        written.append(path.relative_to(root).as_posix())
     report = {
         "ok": status["ok"],
         "status": "written" if status["ok"] else "written_with_blockers",

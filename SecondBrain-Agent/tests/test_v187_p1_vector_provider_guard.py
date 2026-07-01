@@ -37,7 +37,7 @@ def test_vector_provider_guard_passes_for_current_provider(tmp_path):
     assert audit["ok"] is True
     assert audit["stale_vectors"] == 0
     assert audit["missing_vectors"] == 0
-    assert audit["providers"][0]["provider"] == "local-deterministic"
+    assert audit["providers"][0]["provider"].startswith("local-deterministic:")
     assert (tmp_path / "runtime" / "reports" / "p1_vector_provider_guard_latest.json").exists()
 
 
@@ -50,7 +50,7 @@ def test_vector_provider_guard_blocks_after_provider_change_until_reindex(tmp_pa
 
     assert stale["ok"] is False
     assert stale["status"] == "blocked"
-    assert stale["current_provider"] == "fake-production-provider"
+    assert stale["current_provider"].startswith("fake-production-provider:")
     assert stale["stale_vectors"] >= 1
     assert "stale_vector_provider" in stale["blockers"]
     assert "p1-rag-reindex" in stale["remediation"]
@@ -60,7 +60,7 @@ def test_vector_provider_guard_blocks_after_provider_change_until_reindex(tmp_pa
 
     assert repaired["ok"] is True
     assert repaired["stale_vectors"] == 0
-    assert repaired["providers"][0]["provider"] == "fake-production-provider"
+    assert repaired["providers"][0]["provider"].startswith("fake-production-provider:")
 
 
 def test_production_gate_contains_vector_provider_audit(tmp_path):
@@ -119,7 +119,7 @@ def test_vector_provider_guard_blocks_same_provider_dimension_drift(tmp_path):
 
     assert drift["ok"] is False
     assert drift["status"] == "blocked"
-    assert drift["current_provider"] == "local-deterministic"
+    assert drift["current_provider"].startswith("local-deterministic:")
     assert drift["dimension_mismatch_vectors"] >= 1
     assert "dimension_mismatch_vectors" in drift["blockers"]
     assert "provider/model/dimensions" in drift["remediation"]

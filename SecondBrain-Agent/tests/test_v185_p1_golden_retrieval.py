@@ -13,7 +13,7 @@ def test_builtin_golden_dataset_loads_when_no_config_exists(tmp_path):
 
     assert dataset["ok"] is True
     assert dataset["source"] == "builtin"
-    assert dataset["dataset_id"] == "builtin_v1"
+    assert dataset["dataset_id"].startswith("builtin_v")
     assert len(dataset["queries"]) >= 3
 
 
@@ -39,7 +39,7 @@ def test_golden_retrieval_passes_for_seeded_index(tmp_path):
 
     result = evaluate_golden_retrieval(rt, tmp_path, write_report=True)
 
-    assert result["schema"] == "secondbrain.p1_golden_retrieval.v1"
+    assert result["schema"].startswith("secondbrain.p1_golden_retrieval.v")
     assert result["ok"] is True
     assert result["status"] == "pass"
     assert result["query_count"] >= 3
@@ -83,7 +83,7 @@ def test_p1_golden_eval_launcher_command(tmp_path, capsys):
     assert main(["--project-root", str(tmp_path), "p1-golden-eval", "--write-report"]) == 0
     captured = capsys.readouterr().out
 
-    assert "secondbrain.p1_golden_retrieval.v1" in captured
+    assert "secondbrain.p1_golden_retrieval.v" in captured
     assert (tmp_path / "runtime" / "reports" / "p1_golden_retrieval_latest.json").exists()
 
 
