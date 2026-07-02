@@ -15,7 +15,7 @@ from secondbrain.native.runtime_snapshot import build_native_view_model
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8851
-NATIVE_COMMANDS = {"gui", "gui-start", "gui-open", "jarvis", "native-gui", "desktop-gui", "desktop16-gui"}
+NATIVE_COMMANDS = {"gui", "gui-start", "gui-open", "jarvis", "native-gui", "desktop", "desktop-gui", "desktop16-gui"}
 WEB_COMMANDS = {"hud", "gui-web", "web-hud"}
 GUI_COMMANDS = NATIVE_COMMANDS | WEB_COMMANDS | {"gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "native-status", "voice-status", "voice-parse", "voice-run", "native-action", "native-action-audit", "native-approval-list", "native-approval-run", "native-approval-reject", "native-chat-status", "native-chat-ask", "native-chat-search", "native-chat-clear"}
 
@@ -138,6 +138,7 @@ def shortcut_manifest(project_root: str | Path | None = None) -> dict[str, Any]:
         "installer": str(root / "Install-Jarvis-Desktop.ps1"),
         "manual_start": [
             "python launcher.py",
+            "python launcher.py desktop",
             "python launcher.py jarvis",
             "python launcher.py native-gui",
             "Jarvis.bat",

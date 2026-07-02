@@ -1,32 +1,35 @@
-# Release Notes v30.25 — Native Desktop + deutsche Sprachsteuerung
+# Release Notes v30.45 - Native Desktop Integration
 
 ## Ergebnis
 
-Jarvis ist nicht mehr primär eine Webanwendung. Der Standardstart öffnet eine eigenständige lokale Desktop-App.
+Die vorhandenen nativen Module laufen unter einer gemeinsamen Desktop-Shell. Der
+Standardstart und der Alias `desktop` verwenden denselben Startpfad.
 
 ## Neu
 
-- Native Desktop-App auf Tkinter-Basis.
-- `python launcher.py`, `python launcher.py jarvis`, `python launcher.py native-gui` starten nativ.
-- Web-HUD bleibt über `python launcher.py hud` / `python launcher.py gui-web` verfügbar.
-- Deutsche Sprachsteuerung als eigener Boundary-Layer.
-- Textbefehle ohne Zusatzabhängigkeiten.
-- Mikrofon/STT/TTS optional per Extras.
-- Neue Diagnosen: `native-status`, `voice-status`, `voice-parse`.
-- Windows-Startdateien auf Native Desktop umgestellt.
+- Zentrales, UI-unabhaengiges `ApplicationState`-Modell.
+- Gemeinsame Navigation, Toolbar und Statusleiste.
+- Dashboard, Workspace, Chat, Document Explorer, Memory Explorer, Agent Control,
+  Voice Control, Command Center, Job Queue, Notification Center, Settings Center,
+  Theme Center und Update Center sind zentral eingebunden.
+- Modulfehler werden in der Shell isoliert angezeigt und beenden nicht die Anwendung.
+- Alle bisherigen nativen Einzelstarts bleiben unveraendert.
+
+## Start
+
+```powershell
+python launcher.py
+python launcher.py desktop
+```
 
 ## Validierung
 
 ```powershell
-pytest tests/test_v3025_native_desktop_voice.py -q
-pytest tests/test_v3020_gui_startup_surface.py -q
-python launcher.py native-status
-python launcher.py voice-parse "Jarvis Status"
+python -m compileall .
+pytest -q
 ```
 
-## Restrisiko
+## Risiko
 
-- Die App ist nativ, aber noch keine kompilierte `.exe`.
-- Mikrofonsteuerung hängt von optionalen Paketen und lokalem Audiogerät ab.
-- Offline-STT-Modelle müssen separat installiert/geladen werden.
-- Alte Web-HUD-Funktionen sind weiter vorhanden, aber nicht mehr Hauptpfad.
+- Die Anwendung bleibt eine lokale Tkinter-App und ist keine kompilierte EXE.
+- Optionale Voice- und Provider-Funktionen benoetigen weiterhin ihre lokalen Abhaengigkeiten.
