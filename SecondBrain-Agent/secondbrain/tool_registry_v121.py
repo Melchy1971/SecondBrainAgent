@@ -32,8 +32,18 @@ class ToolRegistry:
     def _load_manifest(self) -> None:
         if not self.manifest_file.exists():
             return
-        for row in json.loads(self.manifest_file.read_text(encoding='utf-8')):
-            self._tools[row['name']] = ToolDefinition(**row)
+        raw = self.manifest_file.read_text(encoding='utf-8').strip()
+        if not raw:
+            return
+        try:
+            rows = json.loads(raw)
+        except json.JSONDecodeError:
+            return
+        if not isinstance(rows, list):
+            return
+        for row in rows:
+            if isinstance(row, dict) and row.get('name'):
+                self._tools[row['name']] = ToolDefinition(**row)
 
     def _save_manifest(self) -> None:
         rows = [asdict(v) for v in sorted(self._tools.values(), key=lambda x: x.name)]

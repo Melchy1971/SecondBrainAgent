@@ -1,6 +1,10 @@
 from pathlib import Path
 from .utils import now_date, slugify, ensure_unique_path
 
+# v30.46.1: MarkdownRenderer lebt in der gemeinsamen Chat-Architektur.
+# Re-Export haelt bestehende Importe (from secondbrain.markdown import MarkdownRenderer) stabil.
+from secondbrain.chat.markdown_renderer import MarkdownRenderer  # noqa: F401
+
 TYPE_TO_FOLDER = {
     "inbox": "inbox",
     "project": "projects",

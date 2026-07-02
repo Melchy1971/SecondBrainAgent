@@ -1,25 +1,35 @@
-# Release Notes v30.45 - Native Desktop Integration
+# Release Notes v30.46.1 - Unified Chat Engine
 
 ## Ergebnis
 
-Die vorhandenen nativen Module laufen unter einer gemeinsamen Desktop-Shell. Der
-Standardstart und der Alias `desktop` verwenden denselben Startpfad.
+Der bestehende native Chat ist der Mittelpunkt des AI Workspace. Conversations,
+Memory, Dokument-Retrieval, Hybrid Search, Provider, Streaming und Citations
+laufen durch einen gemeinsamen Service- und State-Pfad.
+
+v30.46.1 entfernt die verbliebenen parallelen Ausführungspfade: `ask`, `search`,
+Desktop-App, Actions und Legacy-HUD delegieren jetzt an dieselbe `ChatEngine`.
 
 ## Neu
 
-- Zentrales, UI-unabhaengiges `ApplicationState`-Modell.
-- Gemeinsame Navigation, Toolbar und Statusleiste.
-- Dashboard, Workspace, Chat, Document Explorer, Memory Explorer, Agent Control,
-  Voice Control, Command Center, Job Queue, Notification Center, Settings Center,
-  Theme Center und Update Center sind zentral eingebunden.
-- Modulfehler werden in der Shell isoliert angezeigt und beenden nicht die Anwendung.
-- Alle bisherigen nativen Einzelstarts bleiben unveraendert.
+- `ApplicationState` enthält Workspace, Provider, Modell, Conversation, ausgewählte
+  Dokumente, Runtime Health, Notifications, Memory, Jobs, Agents und Voice State.
+- Conversation Store unter `runtime/chat/<uuid>/` mit Pin/Favorite/Archive,
+  Suche, Export, Provider-Versionen und deduplizierten Attachment-Manifests.
+- Nicht-blockierendes Streaming mit Start, Cancel, Retry und Continue.
+- Markdown-Renderer für Tabellen, Codeblöcke, Listen, Checklisten, Blockquotes,
+  Links und Inline Code; Syntax-Tags sind vorbereitet.
+- Linker Document-Context-Bereich, zentraler Chat und rechtes Citation Panel sind
+  in die bestehende AI-Workspace-Shell eingebettet.
+- OpenAI, Ollama, Gemini und Claude nutzen ausschließlich die vorhandenen Provider.
+- Legacy-Chat-Store und bestehende Launcher-Kommandos bleiben kompatibel.
 
 ## Start
 
 ```powershell
 python launcher.py
 python launcher.py desktop
+python launcher.py conversation-gui
+python launcher.py conversation-list
 ```
 
 ## Validierung
@@ -31,5 +41,5 @@ pytest -q
 
 ## Risiko
 
-- Die Anwendung bleibt eine lokale Tkinter-App und ist keine kompilierte EXE.
-- Optionale Voice- und Provider-Funktionen benoetigen weiterhin ihre lokalen Abhaengigkeiten.
+- Provider-Aufrufe benötigen die jeweilige lokale Konfiguration beziehungsweise Credentials.
+- Provider ohne nativen Streaming-Transport werden in der Chat-Pipeline tokenweise an die GUI weitergereicht.

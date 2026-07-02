@@ -130,6 +130,21 @@ def test_repo_doctor_ignores_virtualenv_cache_artifacts(tmp_path: Path) -> None:
     assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "ok" for check in payload["checks"])
 
 
+def test_repo_doctor_ignores_pytest_temp_and_gitignored_runtime(tmp_path: Path) -> None:
+    _write_minimal_project(tmp_path)
+    (tmp_path / ".gitignore").write_text("runtime/\n", encoding="utf-8")
+    (tmp_path / "runtime").mkdir()
+    (tmp_path / "runtime" / "local.log").write_text("runtime", encoding="utf-8")
+    cache = tmp_path / ".pytest_tmp_previous" / "__pycache__"
+    cache.mkdir(parents=True)
+    (cache / "module.pyc").write_bytes(b"cache")
+
+    payload = run_repo_doctor(tmp_path).to_dict()
+
+    assert payload["ok"] is True
+    assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "ok" for check in payload["checks"])
+
+
 def test_repo_doctor_writes_report(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
 

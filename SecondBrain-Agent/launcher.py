@@ -407,7 +407,10 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop", "desktop-gui", "desktop16-gui"}:
+    if cmd in {"ai-chat", "conversation-list", "conversation-open", "conversation-export", "conversation-delete", "conversation-pin", "conversation-search", "conversation-gui"}:
+        from secondbrain.native.chat import conversation_cli_main
+        return conversation_cli_main(raw)
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop", "desktop-gui", "desktop16-gui", "native-gui", "hud", "gui-web", "web-hud"}:
         load_env_file()
         return gui_command(raw)
     if cmd == "command-index":

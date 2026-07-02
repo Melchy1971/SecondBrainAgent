@@ -9,7 +9,29 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/README.md`
 - `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.45 Native Desktop Integration.
+Aktueller Stand: v30.46.1 Unified Chat Engine.
+
+## v30.46.1
+
+- `ChatEngine` ist die einzige ausführende Chat-Engine im Projekt.
+- Native Desktop, AI Workspace, Actions, Desktop-App und Legacy-HUD verwenden
+  dieselbe Provider-, Context-, Retrieval- und Conversation-Pipeline.
+- `NativeChatService` bleibt ausschließlich als kompatibler Alias erhalten.
+- Legacy-Chat-JSONL wird nur noch gelesen; neue Nachrichten landen ausschließlich
+  im zentralen Conversation Store unter `runtime/chat/`.
+- Chat View, Streaming, Mobile-Darstellung und Voice Conversation bleiben
+  Oberflächen-/Transportadapter und implementieren keine eigene Chatlogik.
+
+## v30.46
+
+- Der bestehende `NativeChatService` ist der zentrale Chat-Einstieg im AI Workspace.
+- Conversations werden unter `runtime/chat/<uuid>/` mit Metadaten, JSONL-Nachrichten,
+  Attachment-Manifests und Exporten gespeichert.
+- Memory, ausgewählte Dokumentquellen, Hybrid Search, bestehende LLM-Provider,
+  Streaming und Citations sind in einer Pipeline verbunden.
+- Die bestehende Desktop-Shell enthält den Chat als eingebettete Drei-Spalten-Ansicht;
+  es wird kein zweites Fenster und kein paralleler Chat-Stack erzeugt.
+- Neue Conversation-Kommandos sind über `launcher.py` verfügbar.
 
 ## v30.45
 

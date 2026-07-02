@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,7 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.45"
+    VERSION = "v30.46.1"
 
     MODULES = (
         ("dashboard", "Dashboard", "dashboard-center-gui", ("secondbrain/native/dashboard_center",)),
@@ -135,6 +136,23 @@ class AIWorkspaceService:
             modules=list(snapshot.modules),
         )
         state.replace_modules(list(snapshot.modules))
+        state.active_provider = os.getenv("SECONDBRAIN_CHAT_PROVIDER", "ollama")
+        state.active_model = os.getenv("SECONDBRAIN_CHAT_MODEL", "llama3.2")
+        from secondbrain.native.agent_control_center import AgentControlCenter
+        from secondbrain.native.chat import ConversationStore
+        from secondbrain.native.job_queue_center.service import JobQueueService
+        from secondbrain.native.memory_explorer import MemoryExplorer
+        from secondbrain.native.notification_center.service import NotificationCenterService
+        from secondbrain.native.voice_control_center import voice_center_status
+
+        state.runtime_health = self._health_payload()
+        state.notifications = NotificationCenterService(self.project_root).list_items(limit=20).get("items", [])
+        state.memory_context = MemoryExplorer(self.project_root).entries(limit=20).get("memories", [])
+        state.active_jobs = JobQueueService(self.project_root).snapshot().get("jobs", [])
+        state.active_agents = AgentControlCenter(self.project_root).tasks(limit=20)
+        state.voice_state = voice_center_status()
+        conversations = ConversationStore(self.project_root).list()
+        state.current_conversation = str(conversations[0]["id"]) if conversations else None
         return state
 
     def module_payload(self, module_id: str) -> dict[str, Any]:
