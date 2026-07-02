@@ -28,3 +28,10 @@ def test_markdown_renderer_supports_links_and_inline_code() -> None:
     assert any(token["type"] == "link" and token["target"] == "https://example.test" for token in tokens)
     assert any(token["type"] == "inline_code" for token in tokens)
 
+
+def test_markdown_renderer_canonical_home_is_chat_package() -> None:
+    # v30.46.1: secondbrain.markdown re-exportiert nur noch.
+    from secondbrain.chat import MarkdownRenderer as CanonicalRenderer
+
+    assert MarkdownRenderer is CanonicalRenderer
+

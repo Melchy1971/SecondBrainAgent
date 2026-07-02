@@ -38,6 +38,7 @@ _EXPORTS = {
     "CitationRenderer": "secondbrain.chat.citations",
     "ConversationExporter": "secondbrain.chat.io",
     "ConversationImporter": "secondbrain.chat.io",
+    "ChatEngine": "secondbrain.native.chat",
     "Conversation": "secondbrain.native.chat",
     "ConversationStore": "secondbrain.native.chat",
 }

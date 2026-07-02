@@ -600,6 +600,7 @@ ALLOWED_SCRIPTS = {
     "run_quality_report.py",
     "run_regression_tests_v9.py",
     "run_tests.py",
+    "run_pytest_q.py",
     # Checks & Health
     "check_paths_v9.py",
     "ai_healthcheck.py",
@@ -844,7 +845,7 @@ class _EmptyMemoryContext:
 
 
 def assistant_chat(query: str, history: list | None = None) -> dict:
-    """Legacy HUD adapter over the canonical project-wide ChatEngine."""
+    """HUD-Adapter ueber die gemeinsame Chat-API (ChatService -> ChatEngine)."""
     query = (query or "").strip()
     if not query:
         return {"ok": False, "answer": "Keine Frage angegeben.", "sources": [],
@@ -856,9 +857,9 @@ def assistant_chat(query: str, history: list | None = None) -> dict:
     if engine == "ollama" and not model:
         configured = _configured_assistant_models(cfg)
         model = configured[0] if configured else ""
-    from secondbrain.native.chat import ChatEngine
-    chat = ChatEngine(ROOT, provider_manager=_HudProviderManager(temp), rag_runtime=_HudRagRuntime(), memory_explorer=_EmptyMemoryContext())
-    result = chat.send(
+    from secondbrain.chat import ChatService
+    chat = ChatService(ROOT, provider_manager=_HudProviderManager(temp), rag_runtime=_HudRagRuntime(), memory_explorer=_EmptyMemoryContext())
+    result = chat.ask(
         query,
         provider=engine,
         model=model,

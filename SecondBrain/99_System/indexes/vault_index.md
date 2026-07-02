@@ -1,8 +1,8 @@
 # Vault Index
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-02
 
-Dateien: 1631
+Dateien: 1635
 
 
 ## 00_Handbuch
@@ -2070,6 +2070,7 @@ Dateien: 1631
 - [[2026-06-25_153329_release_gate_v9]]
 - [[2026-06-29_075625_release_gate_v9]]
 - [[2026-06-30_084859_release_gate_v9]]
+- [[2026-06-30_114022_release_gate_v9]]
 
 ## 99_System\reports
 
@@ -2093,6 +2094,8 @@ Dateien: 1631
 
 ## copilot\copilot-conversations
 
+- [[9.11_and_9.8,_which_is_bigger@20260630_115436]]
+- [[Mainboard_Empfehlung_für_PC@20260630_114245]]
 - [[Tischtennisspiele_und_-Regeln@20260618_153730]]
 
 ## copilot\copilot-custom-prompts
@@ -2112,3 +2115,7 @@ Dateien: 1631
 - [[Simplify]]
 - [[Summarize]]
 - [[Translate to Chinese]]
+
+## .
+
+- [[Datenquelle ERP]]

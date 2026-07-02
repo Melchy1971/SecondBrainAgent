@@ -1,8 +1,8 @@
 """v30.46.1 - ChatService: eine API fuer alle Chat-Oberflaechen.
 
-Fassade ueber die bestehenden Bausteine (NativeChatService,
-ConversationStore, StreamingManager). Konsumenten: AI Workspace (Tk),
-Web-HUD (/api/assistant), CLI (ai-chat/conversation-*).
+Fassade ueber die kanonische ChatEngine (secondbrain.native.chat) plus
+ConversationStore, StreamingManager, Exporter/Importer. Konsumenten:
+AI Workspace (Tk), Web-HUD (/api/assistant), CLI (ai-chat/conversation-*).
 
     chat.ask(text, **optionen)      -> dict (Antwort + Zitate)
     chat.stream(text, ...)          -> Iterator (blocking) oder
@@ -21,7 +21,7 @@ from typing import Any, Callable, Iterator
 from secondbrain.chat.io import ConversationExporter, ConversationImporter
 from secondbrain.chat.state import ConversationState
 from secondbrain.chat.streaming import StreamingManager
-from secondbrain.native.chat import NativeChatService
+from secondbrain.native.chat import ChatEngine
 
 
 class ChatService:
@@ -33,14 +33,14 @@ class ChatService:
         rag_runtime: Any = None,
         memory_explorer: Any = None,
     ) -> None:
-        self.native = NativeChatService(
+        self.engine = ChatEngine(
             project_root,
             provider_manager=provider_manager,
             rag_runtime=rag_runtime,
             memory_explorer=memory_explorer,
         )
-        self.conversations = self.native.conversations
-        self.attachments = self.native.attachments
+        self.conversations = self.engine.conversations
+        self.attachments = self.engine.attachments
         self.exporter = ConversationExporter(self.conversations)
         self.importer = ConversationImporter(self.conversations)
         self.stream_manager = StreamingManager()
@@ -52,11 +52,11 @@ class ChatService:
     def ask(self, text: str, **options: Any) -> dict[str, Any]:
         """Synchrone Antwort ueber den Provider-Pfad (send)."""
         self._remember(text, options)
-        return self.native.send(text, **options)
+        return self.engine.send(text, **options)
 
     def ask_rag(self, text: str, *, limit: int = 5) -> dict[str, Any]:
         """RAG-Bridge ohne LLM-Pflicht (launcher p1-rag-answer)."""
-        return self.native.ask(text, limit=limit)
+        return self.engine.ask(text, limit=limit)
 
     def stream(
         self,
@@ -75,7 +75,7 @@ class ChatService:
         self._remember(text, options)
 
         def factory(cancel_event: Event) -> Iterator[Any]:
-            return self.native.stream_response(text, cancel_event=cancel_event, **options)
+            return self.engine.stream_response(text, cancel_event=cancel_event, **options)
 
         if on_chunk is None and on_done is None and on_error is None:
             self.stream_manager.cancel_event.clear()
@@ -95,7 +95,7 @@ class ChatService:
         if not self._last_text:
             conversation_id = overrides.pop("conversation_id", None) or self.last_conversation_id
             if conversation_id:
-                return self.native.retry(conversation_id, **overrides)
+                return self.engine.retry(conversation_id, **overrides)
             return {"ok": False, "status": "nothing_to_retry"}
         options = {**self._last_options, **overrides}
         options.setdefault("conversation_id", self.last_conversation_id)
@@ -126,7 +126,7 @@ class ChatService:
 
     @property
     def last_conversation_id(self) -> str | None:
-        return self.native.last_conversation_id
+        return self.engine.last_conversation_id
 
     def state(self, conversation_id: str | None = None) -> ConversationState:
         target = conversation_id or self.last_conversation_id

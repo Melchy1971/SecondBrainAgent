@@ -9,7 +9,18 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/README.md`
 - `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.46.1 Unified Chat Engine.
+Aktueller Stand: v30.46.2 Eine Context Pipeline.
+
+## v30.46.2
+
+- `secondbrain/chat/context/` ist die eine Context Pipeline:
+  Prompt -> Conversation -> Working -> Semantic -> Document Retrieval ->
+  Hybrid Search -> Context Builder -> LLM.
+- ContextBuilder, PromptAssembler, MemorySelector, RetrievalCoordinator,
+  ContextLimiter und TokenBudgetManager komponieren Bestandsmodule;
+  keine zweite Retrieval- oder Memory-Engine.
+- `ChatContextBuilder` und die P3-Kontextstubs bleiben als
+  Kompatibilitaets-Fassaden erhalten (Details: APPLY_DELTA_v30_46_2.md).
 
 ## v30.46.1
 
@@ -21,6 +32,11 @@ Aktueller Stand: v30.46.1 Unified Chat Engine.
   im zentralen Conversation Store unter `runtime/chat/`.
 - Chat View, Streaming, Mobile-Darstellung und Voice Conversation bleiben
   Oberflächen-/Transportadapter und implementieren keine eigene Chatlogik.
+- `secondbrain.chat.ChatService` ist die gemeinsame API aller Oberflaechen:
+  `ask() / stream() / retry() / cancel() / export() / import_()`.
+- StreamingManager, MarkdownRenderer, CitationRenderer, ConversationState und
+  ConversationImporter/-Exporter leben unter `secondbrain/chat/`; alte
+  Importadressen bleiben als Aliase erhalten (Details: APPLY_DELTA_v30_46_1.md).
 
 ## v30.46
 

@@ -6,9 +6,7 @@ from pathlib import Path
 from tkinter import filedialog, ttk
 from typing import Any
 
-from secondbrain.gui.chat_stream import ChatStream
-from secondbrain.markdown import MarkdownRenderer
-from secondbrain.native.chat import ChatEngine
+from secondbrain.chat import ChatService, CitationRenderer, MarkdownRenderer
 from secondbrain.native.layout_center.service import NativeLayoutService
 from secondbrain.native.theme_center.service import ThemeCenterService
 
@@ -24,9 +22,10 @@ class AIChatWorkspaceFrame(ttk.Frame):
         self.state = state
         self.project_root = project_root
         self.navigate_callback = navigate_callback
-        self.service = ChatEngine(project_root)
-        self.stream = ChatStream()
+        self.service = ChatService(project_root)
+        self.stream = self.service.stream_manager
         self.renderer = MarkdownRenderer()
+        self.citation_renderer = CitationRenderer()
         self.last_prompt = ""
         self.source_vars = {source: tk.BooleanVar(value=source in {"documents", "memory"}) for source in self.SOURCES}
         self.provider_var = tk.StringVar(value=state.active_provider)
@@ -94,29 +93,25 @@ class AIChatWorkspaceFrame(ttk.Frame):
         self._start_stream(prompt)
 
     def _start_stream(self, prompt: str) -> None:
-        def factory(cancel_event: Any) -> Any:
-            return self.service.stream_response(
+        try:
+            self.service.stream(
                 prompt,
                 conversation_id=self.state.current_conversation,
                 provider=self.provider_var.get(),
                 model=self.model_var.get(),
                 selected_sources=self.selected_sources(),
                 selected_documents=self.state.selected_documents,
-                cancel_event=cancel_event,
+                on_chunk=lambda _chunk: self.after(0, self._render_stream),
+                on_done=lambda _content, _cancelled: self.after(0, self._stream_done),
+                on_error=lambda exc: self.after(0, lambda: self._show_error(exc)),
             )
-
-        started = self.stream.start(
-            factory,
-            on_chunk=lambda _chunk: self.after(0, self._render_stream),
-            on_done=lambda _content, _cancelled: self.after(0, self._stream_done),
-            on_error=lambda exc: self.after(0, lambda: self._show_error(exc)),
-        )
-        if started:
-            self.state.status = "streaming"
-            self.state.message = "Antwort wird gestreamt"
+        except RuntimeError:
+            return
+        self.state.status = "streaming"
+        self.state.message = "Antwort wird gestreamt"
 
     def cancel(self) -> None:
-        self.stream.cancel()
+        self.service.cancel()
 
     def retry(self) -> None:
         if self.last_prompt:
@@ -150,8 +145,8 @@ class AIChatWorkspaceFrame(ttk.Frame):
     def _render_citations(self, rows: list[dict[str, Any]]) -> None:
         for item in self.citations.get_children():
             self.citations.delete(item)
-        for index, row in enumerate(rows):
-            self.citations.insert("", "end", iid=f"citation-{index}", text=row.get("document"), values=(row.get("chunk"), row.get("score"), row.get("workspace"), row.get("source"), row.get("provider")), tags=(str(row.get("document_id") or row.get("source") or ""),))
+        for row in self.citation_renderer.rows(rows):
+            self.citations.insert("", "end", iid=row["iid"], text=row["document"], values=row["values"], tags=(row["tag"],))
 
     def open_citation(self, _event: object | None = None) -> None:
         selected = self.citations.selection()

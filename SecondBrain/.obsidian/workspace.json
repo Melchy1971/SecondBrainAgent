@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "970d75c411409750",
+        "id": "4a85a605f8a0c087",
         "type": "tabs",
         "children": [
           {
-            "id": "4f54224361e96709",
+            "id": "94c2e983e31369fe",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -190,8 +190,12 @@
       "secondbrain-agent:SecondBrain Agent": false
     }
   },
-  "active": "4f54224361e96709",
+  "active": "94c2e983e31369fe",
   "lastOpenFiles": [
+    "05_Quellen/ChatGPT/Code_Optimierung_und_Erweiterung.md",
+    "99_System/indexes/vault_index.md",
+    "38_MultiVault/Federation_Index.md",
+    "Datenquelle ERP.md",
     "copilot/copilot-conversations/9.11_and_9.8,_which_is_bigger@20260630_115436.md",
     "05_Quellen/ChatGPT/Mainboard_Empfehlung_Vergleich.md",
     "copilot/copilot-conversations/Mainboard_Empfehlung_für_PC@20260630_114245.md",
@@ -216,10 +220,6 @@
     "111_ProcessAgent/2026-06-30_process-agent.md",
     "109_ProjectAgent/2026-06-30_project-agent.md",
     "108_MeetingAgent/2026-06-30_meeting-agent.md",
-    "107_ResearchAgent/2026-06-30_research-backlog-agent.md",
-    "106_TaskAgent/2026-06-30_task-agent.md",
-    "105_WeeklyReview/2026-06-30_weekly-review.md",
-    "104_DailyAssistant/2026-06-30_daily-assistant.md",
     "99_System/quality",
     "99_System/conflicts",
     "99_System/production",

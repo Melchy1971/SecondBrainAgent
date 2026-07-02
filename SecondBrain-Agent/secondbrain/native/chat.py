@@ -370,12 +370,31 @@ class AttachmentManager:
 
 
 class ChatContextBuilder:
-    """Combines existing conversation, memory, document and hybrid retrieval data."""
+    """Kompatibilitaets-Fassade ueber die eine Context Pipeline (v30.46.2).
 
-    def __init__(self, project_root: str | Path, *, rag_runtime: Any = None, memory_explorer: Any = None) -> None:
+    Implementierung: secondbrain.chat.context.ContextBuilder
+    (Prompt -> Conversation -> Working -> Semantic -> Documents ->
+    Hybrid Search -> Context -> LLM). Vertrag von build()/citations()
+    bleibt unveraendert.
+    """
+
+    def __init__(
+        self,
+        project_root: str | Path,
+        *,
+        rag_runtime: Any = None,
+        memory_explorer: Any = None,
+        attachments: Any = None,
+    ) -> None:
+        from secondbrain.chat.context import ContextBuilder
+
         self.project_root = Path(project_root).resolve()
-        self._rag_runtime = rag_runtime
-        self._memory_explorer = memory_explorer
+        self._builder = ContextBuilder(
+            self.project_root,
+            rag_runtime=rag_runtime,
+            memory_explorer=memory_explorer,
+            attachments=attachments,
+        )
 
     def build(
         self,
@@ -385,56 +404,19 @@ class ChatContextBuilder:
         selected_sources: Iterable[str] = ("documents", "memory"),
         selected_documents: Iterable[str] = (),
         limit: int = 5,
+        conversation_id: str | None = None,
     ) -> dict[str, Any]:
-        source_set = {str(item).lower() for item in selected_sources}
-        selected = {str(item) for item in selected_documents}
-        conversation = history[-12:]
-        memories: list[dict[str, Any]] = []
-        hits: list[dict[str, Any]] = []
-        if "memory" in source_set:
-            memory = self._memory()
-            result = memory.search(prompt, limit=limit)
-            memories = list(result.get("memories", []))
-        if source_set.intersection({"documents", "folders", "ocr", "github", "mail", "csv"}):
-            result = self._rag().hybrid_search(prompt, limit=max(limit * 2, limit))
-            hits = list(result.get("hits", []))
-            if selected:
-                hits = [hit for hit in hits if selected.intersection({str(hit.get("document_id", "")), str(hit.get("source", "")), str(hit.get("title", ""))})]
-            hits = hits[:limit]
-        sections: list[str] = []
-        if conversation:
-            sections.append("Conversation Memory:\n" + "\n".join(f"{row.get('role')}: {row.get('content')}" for row in conversation))
-        if memories:
-            sections.append("Semantic/Working Memory:\n" + "\n".join(str(row.get("content", "")) for row in memories))
-        if hits:
-            sections.append("Document Retrieval / Hybrid Search:\n" + "\n".join(str(row.get("text") or row.get("snippet") or "") for row in hits))
-        return {"context": "\n\n".join(sections), "conversation": conversation, "memories": memories, "hits": hits, "citations": self.citations(hits)}
+        return self._builder.build(
+            prompt,
+            history,
+            selected_sources=selected_sources,
+            selected_documents=selected_documents,
+            limit=limit,
+            conversation_id=conversation_id,
+        )
 
     def citations(self, hits: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
-        return [
-            {
-                "document": hit.get("title") or hit.get("document_id"),
-                "document_id": hit.get("document_id"),
-                "chunk": hit.get("chunk_id"),
-                "score": hit.get("hybrid_score", hit.get("score", 0.0)),
-                "workspace": "chat",
-                "source": hit.get("source"),
-                "provider": hit.get("provider") or "hybrid",
-            }
-            for hit in hits
-        ]
-
-    def _rag(self) -> Any:
-        if self._rag_runtime is None:
-            from secondbrain.p1_rag_runtime import P1RagRuntime
-            self._rag_runtime = P1RagRuntime(self.project_root)
-        return self._rag_runtime
-
-    def _memory(self) -> Any:
-        if self._memory_explorer is None:
-            from secondbrain.native.memory_explorer import MemoryExplorer
-            self._memory_explorer = MemoryExplorer(self.project_root)
-        return self._memory_explorer
+        return self._builder.citations(hits)
 
 
 class ChatEngine:
@@ -468,6 +450,7 @@ class ChatEngine:
             self.project_root,
             rag_runtime=rag_runtime,
             memory_explorer=memory_explorer,
+            attachments=self.attachments,
         )
         self._provider_manager = provider_manager
         self.last_conversation_id: str | None = None
@@ -503,6 +486,7 @@ class ChatEngine:
             selected_sources=selected_sources,
             selected_documents=selected_documents,
             limit=limit,
+            conversation_id=str(conversation["id"]),
         )
         user_message = self.conversations.append_message(conversation["id"], "user", prompt)
         request = self._completion_request(prompt, prior, context["context"], model_name, stream=False)
@@ -564,6 +548,7 @@ class ChatEngine:
             selected_sources=selected_sources,
             selected_documents=selected_documents,
             limit=limit,
+            conversation_id=str(conversation["id"]),
         )
         self.conversations.append_message(conversation["id"], "user", prompt)
         request = self._completion_request(prompt, prior, context["context"], model_name, stream=True)
@@ -665,15 +650,9 @@ class ChatEngine:
         *,
         stream: bool,
     ) -> CompletionRequest:
-        messages: list[ChatMessage] = []
-        if context:
-            messages.append(ChatMessage("system", "Nutze ausschließlich den folgenden SecondBrain-Kontext und belege Aussagen mit Quellen.\n\n" + context))
-        for row in prior[-12:]:
-            role = str(row.get("role") or "user")
-            if role in {"system", "user", "assistant", "tool"}:
-                messages.append(ChatMessage(role, str(row.get("content") or "")))
-        messages.append(ChatMessage("user", prompt))
-        return CompletionRequest(model=model, messages=messages, stream=stream)
+        from secondbrain.chat.context import PromptAssembler
+
+        return PromptAssembler().completion_request(prompt, prior, context, model, stream=stream)
 
     def ask(self, text: str, *, limit: int = 5, **options: Any) -> dict[str, Any]:
         result = self.send(text, limit=limit, **options)

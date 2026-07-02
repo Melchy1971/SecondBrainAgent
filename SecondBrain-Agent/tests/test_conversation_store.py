@@ -47,3 +47,52 @@ def test_launcher_routes_conversation_commands(tmp_path: Path, capsys) -> None:
 
     assert launcher.main(["conversation-list", "--project-root", str(tmp_path)]) == 0
     assert '"conversations"' in capsys.readouterr().out
+
+
+# --- v30.46.1: ConversationImporter (Re-Import eigener Exporte) --------------
+
+
+def test_importer_reads_json_export(tmp_path: Path) -> None:
+    from secondbrain.chat import ConversationImporter
+
+    store = ConversationStore(tmp_path)
+    conversation = store.create("Roundtrip", provider="ollama", model="a")
+    store.append_message(conversation["id"], "user", "Frage")
+    store.append_message(conversation["id"], "assistant", "Antwort")
+    exported = store.export(conversation["id"], format="json")
+    result = ConversationImporter(store).import_file(exported["path"])
+    assert result["ok"] is True
+    assert result["messages"] == 2
+    assert result["conversation"]["title"].endswith("(Import)")
+    imported_rows = store.messages(result["conversation"]["id"])
+    assert [row["content"] for row in imported_rows] == ["Frage", "Antwort"]
+    assert imported_rows[0]["metadata"]["imported_from"] == exported["path"]
+
+
+def test_importer_reads_md_export(tmp_path: Path) -> None:
+    from secondbrain.chat import ConversationImporter
+
+    store = ConversationStore(tmp_path)
+    conversation = store.create("Markdown", provider="ollama", model="a")
+    store.append_message(conversation["id"], "user", "Frage")
+    store.append_message(conversation["id"], "assistant", "Antwort")
+    exported = store.export(conversation["id"], format="md")
+    result = ConversationImporter(store).import_file(exported["path"])
+    assert result["ok"] is True
+    assert result["messages"] == 2
+    rows = store.messages(result["conversation"]["id"])
+    assert [row["role"] for row in rows] == ["user", "assistant"]
+
+
+def test_importer_rejects_invalid_input(tmp_path: Path) -> None:
+    from secondbrain.chat import ConversationImporter
+
+    store = ConversationStore(tmp_path)
+    importer = ConversationImporter(store)
+    assert importer.import_file(tmp_path / "fehlt.json")["status"] == "source_not_found"
+    bad = tmp_path / "kaputt.json"
+    bad.write_text("kein json", encoding="utf-8")
+    assert importer.import_file(bad)["status"] == "parse_error"
+    empty = tmp_path / "leer.md"
+    empty.write_text("# Nur Titel\n", encoding="utf-8")
+    assert importer.import_file(empty)["status"] == "no_messages"
