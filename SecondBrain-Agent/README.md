@@ -1,6 +1,6 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.25
+# SecondBrain-Agent v30.46
 
 Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberflaeche, deutscher Sprachsteuerung, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
 
@@ -134,6 +134,51 @@ Repariere Index
 Importiere Datei C:\Pfad\datei.pdf
 ```
 
+## Native Desktop Health (seit v30.46)
+
+```powershell
+python launcher.py native-desktop-health
+python launcher.py native-desktop-doctor
+python launcher.py native-desktop-report
+```
+
+Reports liegen unter `runtime/reports`.
+
+## PostgreSQL / pgvector einrichten
+
+Ohne `DATABASE_URL` laeuft der SQLite/RAG-Prototyp; die App startet im Status DEGRADED. Umstellung auf PostgreSQL 16 + pgvector:
+
+1. Treiber installieren (nicht in den pyproject-Extras enthalten):
+
+```powershell
+pip install "psycopg[binary]"
+```
+
+2. Datenbank und Extension anlegen (psql oder pgAdmin):
+
+```sql
+CREATE DATABASE secondbrain;
+\c secondbrain
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+Schlaegt `CREATE EXTENSION vector` fehl, ist pgvector nicht installiert. Windows-Build oder Release-Paket von https://github.com/pgvector/pgvector einspielen, dann erneut ausfuehren.
+
+3. DSN in `.env` eintragen (Datei liegt im Projektordner, Passwort selbst einsetzen):
+
+```text
+DATABASE_URL=postgresql://postgres:PASSWORT@127.0.0.1:5432/secondbrain
+```
+
+4. Validieren und Migration ausfuehren:
+
+```powershell
+python launcher.py p3-pgvector-readiness
+python launcher.py p1-rag-migrate-postgres
+```
+
+5. Jarvis neu starten. Der Dashboard-Status `database` wechselt von `not_configured` auf ready.
+
 ## Release-Gate-Reihenfolge
 
 Vor Featureentwicklung oder Merge:
@@ -169,7 +214,7 @@ docs/releases/
 docs/09_MASTERPLAN_STATUS.json
 ```
 
-Aktueller dokumentierter Stand: v30.21 Unified Application Bootstrap.
+Aktueller dokumentierter Stand: v30.46 Native Desktop Health Gate (siehe `RELEASE_NOTES_v30_46.md`).
 
 Bekannte lokale Warnungen:
 
