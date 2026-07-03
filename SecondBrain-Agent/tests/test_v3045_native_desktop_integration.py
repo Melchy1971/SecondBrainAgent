@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from secondbrain.native.ai_workspace.models import ApplicationState
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
 
 
@@ -19,6 +20,10 @@ def test_workspace_reports_v3045_and_real_native_modules() -> None:
     assert modules["chat"]["status"] == "ready"
     assert modules["documents"]["status"] == "ready"
     assert modules["memory"]["status"] == "ready"
+    assert {
+        "dashboard", "workspace", "chat", "documents", "memory", "agents", "voice",
+        "commands", "jobs", "notifications", "settings", "themes", "updates",
+    }.issubset(modules)
 
 
 def test_workspace_keeps_missing_modules_disabled(tmp_path: Path) -> None:
@@ -49,3 +54,29 @@ def test_workspace_activity_roundtrip(tmp_path: Path) -> None:
 def test_primary_native_launcher_uses_integrated_workspace() -> None:
     source = (ROOT / "secondbrain" / "gui" / "launch.py").read_text(encoding="utf-8")
     assert "secondbrain.native.ai_workspace.gui import run_gui" in source
+
+
+def test_application_state_controls_navigation() -> None:
+    state = AIWorkspaceService(ROOT).application_state()
+    assert isinstance(state, ApplicationState)
+    state.select_module("documents")
+    assert state.active_module == "documents"
+    assert state.status == "ready"
+    assert state.to_dict()["modules"]
+
+
+def test_all_modules_have_integrated_payloads() -> None:
+    service = AIWorkspaceService(ROOT)
+    for module in service.snapshot().modules:
+        payload = service.module_payload(module.id)
+        assert payload.get("status") != "module_error", (module.id, payload)
+
+
+def test_desktop_alias_uses_same_native_start(monkeypatch) -> None:
+    import launcher
+
+    calls: list[list[str]] = []
+    monkeypatch.setattr(launcher, "load_env_file", lambda: None)
+    monkeypatch.setattr(launcher, "gui_command", lambda argv: calls.append(argv) or 0)
+    assert launcher.main(["desktop", "--project-root", str(ROOT)]) == 0
+    assert calls == [["desktop", "--project-root", str(ROOT)]]

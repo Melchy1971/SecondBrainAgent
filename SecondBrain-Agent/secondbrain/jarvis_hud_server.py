@@ -93,10 +93,6 @@ from secondbrain.security_cameras import (  # noqa: E402
 )
 from secondbrain.env_loader import load_env_file  # noqa: E402
 
-# .env in die Prozessumgebung laden, damit die Embedding-/RAG-Engine (os.getenv)
-# dieselben Werte sieht wie die Anzeige-Panels.
-load_env_file(ROOT)
-
 HUD_HTML = ROOT / "web" / "jarvis_hud" / "index.html"
 
 # --- Konfiguration -----------------------------------------------------------
@@ -1749,6 +1745,10 @@ def _reload_monitor() -> None:
 
 # --- Server-Bootstrap --------------------------------------------------------
 def run(host: str = "127.0.0.1", port: int = 8851) -> None:
+    # Loading local configuration belongs to application startup. Keeping it out
+    # of module import prevents read-only consumers and tests from mutating the
+    # process-wide environment merely by importing HUD helpers.
+    load_env_file(ROOT)
     if _reload_enabled() and os.environ.get("HUD_RELOAD_CHILD") != "true":
         _reload_monitor()
         return

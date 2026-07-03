@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .models import WorkspaceModuleState, WorkspaceSnapshot, normalize_project_root
+from .models import ApplicationState, WorkspaceModuleState, WorkspaceSnapshot, normalize_project_root
 
 
 class AIWorkspaceService:
@@ -16,23 +16,24 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.46"
+    VERSION = "v30.45"
 
     MODULES = (
-        ("dashboard", "Dashboard", "dashboard-center-status", ("secondbrain/native/dashboard_center",)),
+        ("dashboard", "Dashboard", "dashboard-center-gui", ("secondbrain/native/dashboard_center",)),
         ("layout", "Layout", "layout-status", ("secondbrain/native/layout_center",)),
-        ("themes", "Themes", "theme-status", ("secondbrain/native/theme_center",)),
-        ("notifications", "Benachrichtigungen", "notification-center-status", ("secondbrain/native/notification_center",)),
-        ("jobs", "Jobs", "job-queue-status", ("secondbrain/native/job_queue_center",)),
-        ("health", "Desktop Health", "native-desktop-health", ("secondbrain/native/desktop_health",)),
+        ("workspace", "Workspace", "workspace-center-gui", ("secondbrain/native/workspace_center.py",)),
         ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat.py",)),
-        ("documents", "Dokumente", "document-explorer-status", ("secondbrain/native/document_explorer.py",)),
-        ("memory", "Memory", "memory-explorer-status", ("secondbrain/native/memory_explorer.py",)),
-        ("agents", "Agenten", "agent-control-status", ("secondbrain/native/agent_control_center.py",)),
-        ("voice", "Sprache", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
-        ("commands", "Kommandos", "command-center-status", ("secondbrain/native/command_center.py",)),
-        ("settings", "Einstellungen", "settings-center-status", ("secondbrain/native/settings_center",)),
-        ("updates", "Updates", "update-status", ("secondbrain/native/update_center",)),
+        ("documents", "Document Explorer", "document-explorer-gui", ("secondbrain/native/document_explorer.py",)),
+        ("memory", "Memory Explorer", "memory-explorer", ("secondbrain/native/memory_explorer.py",)),
+        ("agents", "Agent Control", "agent-control-gui", ("secondbrain/native/agent_control_center.py",)),
+        ("voice", "Voice Control", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
+        ("commands", "Command Center", "command-center-gui", ("secondbrain/native/command_center.py",)),
+        ("jobs", "Job Queue", "job-queue-center-gui", ("secondbrain/native/job_queue_center",)),
+        ("notifications", "Notification Center", "notification-center-gui", ("secondbrain/native/notification_center",)),
+        ("settings", "Settings Center", "gui-status", ("secondbrain/gui/settings_center.py",)),
+        ("themes", "Theme Center", "theme-status", ("secondbrain/native/theme_center",)),
+        ("updates", "Update Center", "status", ("secondbrain/update_system.py",)),
+        ("health", "Desktop Health", "native-desktop-health", ("secondbrain/native/desktop_health",)),
         ("installer", "Installer", "native-installer-status", ("secondbrain/native/installer_center.py",)),
     )
 
@@ -125,6 +126,117 @@ class AIWorkspaceService:
             activity_count=activity_count,
             blockers=blockers,
         )
+
+    def application_state(self) -> ApplicationState:
+        snapshot = self.snapshot()
+        state = ApplicationState(
+            project_root=snapshot.project_root,
+            version=snapshot.version,
+            modules=list(snapshot.modules),
+        )
+        state.replace_modules(list(snapshot.modules))
+        return state
+
+    def module_payload(self, module_id: str) -> dict[str, Any]:
+        """Load one module's existing service model without coupling it to Tk."""
+        providers = {
+            "dashboard": self._dashboard_payload,
+            "layout": self._layout_payload,
+            "workspace": self._workspace_payload,
+            "chat": self._chat_payload,
+            "documents": self._documents_payload,
+            "memory": self._memory_payload,
+            "agents": self._agents_payload,
+            "voice": self._voice_payload,
+            "commands": self._commands_payload,
+            "jobs": self._jobs_payload,
+            "notifications": self._notifications_payload,
+            "settings": self._settings_payload,
+            "themes": self._themes_payload,
+            "updates": self._updates_payload,
+            "health": self._health_payload,
+            "installer": self._installer_payload,
+        }
+        provider = providers.get(module_id)
+        if provider is None:
+            return {"ok": False, "status": "unknown_module", "module": module_id}
+        try:
+            return provider()
+        except Exception as exc:
+            return {"ok": False, "status": "module_error", "module": module_id, "error": type(exc).__name__, "detail": str(exc)}
+
+    def _dashboard_payload(self) -> dict[str, Any]:
+        from secondbrain.native.dashboard_center.service import NativeDashboardService
+        return NativeDashboardService(self.project_root).snapshot().to_dict()
+
+    def _workspace_payload(self) -> dict[str, Any]:
+        from secondbrain.native.workspace_center import workspace_status
+        return workspace_status(self.project_root)
+
+    def _layout_payload(self) -> dict[str, Any]:
+        from secondbrain.native.layout_center.service import NativeLayoutService
+        return NativeLayoutService(self.project_root).status()
+
+    def _chat_payload(self) -> dict[str, Any]:
+        from secondbrain.native.chat import native_chat_status
+        return native_chat_status(self.project_root)
+
+    def _documents_payload(self) -> dict[str, Any]:
+        from secondbrain.native.document_explorer import DocumentExplorer
+        return DocumentExplorer(self.project_root).status()
+
+    def _memory_payload(self) -> dict[str, Any]:
+        from secondbrain.native.memory_explorer import MemoryExplorer
+        return MemoryExplorer(self.project_root).status()
+
+    def _agents_payload(self) -> dict[str, Any]:
+        from secondbrain.native.agent_control_center import AgentControlCenter
+        return AgentControlCenter(self.project_root).status()
+
+    def _voice_payload(self) -> dict[str, Any]:
+        from secondbrain.native.voice_control_center import voice_center_status
+        return voice_center_status()
+
+    def _commands_payload(self) -> dict[str, Any]:
+        from secondbrain.native.command_center import CommandCenter
+        return CommandCenter(self.project_root).status()
+
+    def _jobs_payload(self) -> dict[str, Any]:
+        from secondbrain.native.job_queue_center.service import JobQueueService
+        return JobQueueService(self.project_root).snapshot()
+
+    def _notifications_payload(self) -> dict[str, Any]:
+        from secondbrain.native.notification_center.service import NotificationCenterService
+        return NotificationCenterService(self.project_root).status()
+
+    def _settings_payload(self) -> dict[str, Any]:
+        from secondbrain.gui.settings_center import SettingsCenter
+        return {"ok": True, **SettingsCenter().render_embedding_settings()}
+
+    def _themes_payload(self) -> dict[str, Any]:
+        from secondbrain.native.theme_center.service import ThemeCenterService
+        return ThemeCenterService(self.project_root).status()
+
+    def _updates_payload(self) -> dict[str, Any]:
+        release_notes = self.project_root / "RELEASE_NOTES.md"
+        return {
+            "ok": release_notes.exists(),
+            "mode": "manual",
+            "current_version": self.current_version(),
+            "release_notes": str(release_notes),
+            "rules": ["backup_before_update", "production_gate_after_update", "preserve_local_secrets"],
+        }
+
+    def _health_payload(self) -> dict[str, Any]:
+        from secondbrain.native.desktop_health.service import NativeDesktopHealthService
+        return NativeDesktopHealthService(self.project_root).status()
+
+    def _installer_payload(self) -> dict[str, Any]:
+        return {
+            "ok": (self.project_root / "secondbrain" / "native" / "installer_center.py").exists(),
+            "mode": "native_installer",
+            "module": "secondbrain.native.installer_center",
+        }
 
     def status(self) -> dict[str, Any]:
         snapshot = self.snapshot().to_dict()

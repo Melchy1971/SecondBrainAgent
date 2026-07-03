@@ -407,7 +407,7 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop-gui", "desktop16-gui"}:
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop", "desktop-gui", "desktop16-gui"}:
         load_env_file()
         return gui_command(raw)
     if cmd == "command-index":
