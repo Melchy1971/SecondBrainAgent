@@ -407,7 +407,13 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)
-    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop", "desktop-gui", "desktop16-gui"}:
+    if cmd in {"document-preview", "document-preview-gui", "document-preview-status", "document-preview-open", "document-preview-metadata", "document-preview-search", "document-preview-ocr", "document-preview-annotate", "document-preview-annotations", "document-preview-version-snapshot", "document-preview-versions"}:
+        from secondbrain.native.document_preview.cli import main as document_preview_main
+        return document_preview_main(raw)
+    if cmd in {"ai-chat", "conversation-list", "conversation-open", "conversation-export", "conversation-delete", "conversation-pin", "conversation-search", "conversation-gui"}:
+        from secondbrain.native.chat import conversation_cli_main
+        return conversation_cli_main(raw)
+    if cmd in {"gui", "gui-start", "gui-open", "gui-status", "gui-doctor", "gui-shortcuts", "gui-bootstrap", "jarvis", "desktop", "desktop-gui", "desktop16-gui", "native-gui", "hud", "gui-web", "web-hud"}:
         load_env_file()
         return gui_command(raw)
     if cmd == "command-index":

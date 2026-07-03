@@ -49,6 +49,7 @@ class MemoryExplorer:
         self.memory_path = self.runtime_dir / "memory_entries.jsonl"
         self.voice_notes_path = self.runtime_dir / "voice_notes.jsonl"
         self.chat_history_path = self.runtime_dir / "chat_history.jsonl"
+        self.chat_root = self.project_root / "runtime" / "chat"
 
     def status(self) -> dict[str, Any]:
         entries = self.entries(limit=100000)["memories"]
@@ -159,7 +160,7 @@ class MemoryExplorer:
         return {"ok": True, "format": fmt, "count": len(rows), "path": str(path)}
 
     def sources(self) -> list[dict[str, Any]]:
-        candidates = [self.memory_path, self.voice_notes_path, self.chat_history_path, *sorted(self.memory_dir.glob("*.jsonl"))]
+        candidates = [self.memory_path, self.voice_notes_path, self.chat_history_path, *sorted(self.chat_root.glob("*/messages.jsonl")), *sorted(self.memory_dir.glob("*.jsonl"))]
         rows = []
         for path in candidates:
             rows.append({"path": str(path), "exists": path.exists(), "entries": sum(1 for _ in _read_jsonl(path)) if path.exists() else 0})
@@ -178,6 +179,11 @@ class MemoryExplorer:
             content = str(raw.get("question") or raw.get("prompt") or raw.get("content") or "").strip()
             if content:
                 rows.append(self._from_raw({**raw, "content": content}, default_kind="conversation", default_source="chat"))
+        for path in sorted(self.chat_root.glob("*/messages.jsonl")):
+            for raw in _read_jsonl(path):
+                content = str(raw.get("content") or "").strip()
+                if content:
+                    rows.append(self._from_raw({**raw, "content": content}, default_kind="conversation", default_source="chat_engine"))
         for path in sorted(self.memory_dir.glob("*.jsonl")):
             for raw in _read_jsonl(path):
                 rows.append(self._from_raw(raw, default_kind=str(raw.get("kind") or "imported"), default_source=path.name))

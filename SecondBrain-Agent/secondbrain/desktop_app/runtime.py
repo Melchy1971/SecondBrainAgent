@@ -3,6 +3,8 @@ from pathlib import Path
 from datetime import datetime, timezone
 from uuid import uuid4
 
+from secondbrain.native.chat import ChatEngine
+
 
 class Store:
     def __init__(self, root="."):
@@ -28,6 +30,7 @@ class Store:
 class DesktopAppRuntime:
     def __init__(self, root="."):
         self.store = Store(root)
+        self.chat_engine = ChatEngine(root)
 
     def status(self):
         return {
@@ -72,14 +75,17 @@ class DesktopAppRuntime:
         return self.store.load("notifications", [])
 
     def chat(self, text):
-        user = {"id": str(uuid4()), "role": "user", "text": text, "created_at": datetime.now(timezone.utc).isoformat()}
-        assistant = {"id": str(uuid4()), "role": "assistant", "text": f"Echo: {text}", "created_at": datetime.now(timezone.utc).isoformat()}
-        self.store.append("chat_messages", user)
-        self.store.append("chat_messages", assistant)
-        return {"user": user, "assistant": assistant}
+        result = self.chat_engine.record_exchange(text, f"Echo: {text}", workspace="desktop-app")
+        return {
+            "user": {**result["user"], "text": result["user"]["content"]},
+            "assistant": {**result["assistant"], "text": result["assistant"]["content"]},
+        }
 
     def messages(self):
-        return self.store.load("chat_messages", [])
+        return [
+            {**message, "text": message.get("content", "")}
+            for message in self.chat_engine.store.list(limit=1_000_000)
+        ]
 
     def add_knowledge(self, title, text="", tags=None):
         item = {"id": str(uuid4()), "title": title, "text": text, "tags": tags or []}

@@ -9,7 +9,7 @@ from tkinter import messagebox, ttk
 from typing import Any
 
 from secondbrain.native.actions import NativeActionDispatcher
-from secondbrain.native.chat import NativeChatService
+from secondbrain.native.chat import ChatEngine
 from secondbrain.native.runtime_snapshot import build_native_view_model
 from secondbrain.native.voice_de import GermanVoiceCommandParser
 
@@ -34,7 +34,7 @@ class NativeJarvisApp:
         self.model = build_native_view_model(self.project_root)
         self.voice = GermanVoiceCommandParser()
         self.dispatcher = NativeActionDispatcher(self.project_root)
-        self.chat_service = NativeChatService(self.project_root)
+        self.chat_service = ChatEngine(self.project_root)
         self.root = tk.Tk()
         self.root.title("Jarvis / SecondBrain Agent")
         self.root.geometry("1220x790")

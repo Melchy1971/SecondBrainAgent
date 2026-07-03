@@ -1,6 +1,6 @@
 # Decision Agent Memory v2
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Relevante Notizen
 
@@ -18,6 +18,7 @@ Aktualisiert: 2026-06-30
 - [[Toolentwicklung_mit_KI-Prompts]] — Score 131
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 127
 - [[Claude_Obsidian_Skill]] — Score 127
+- [[2026-07-03_meeting-intelligence]] — Score 116
 - [[2026-06-30_meeting-intelligence]] — Score 112
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 99
 - [[Begrüßung_und_Einstieg]] — Score 99
@@ -53,7 +54,6 @@ Aktualisiert: 2026-06-30
 - [[Logo_design_brief]] — Score 37
 - [[2026-06-26_meeting-intelligence]] — Score 35
 - [[Bildanalyse_Barrierefreiheit_KI_67ff6468-3b88-8007-9be1]] — Score 32
-- [[Bildanalyse_Barrierefreiheit_KI]] — Score 32
 
 ## Gelernte Tags
 

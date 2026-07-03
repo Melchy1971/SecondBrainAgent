@@ -1,18 +1,18 @@
 # Digital Twin v5
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Prioritätsmodell
 
-- projekt: 5401
-- lokal: 2785
-- entscheidung: 2014
-- prozess: 1936
-- risiko: 1809
-- tischtennis: 1549
-- automatisierung: 989
-- stabilität: 382
-- gesundheit: 368
+- projekt: 5502
+- lokal: 2793
+- entscheidung: 2027
+- prozess: 1963
+- risiko: 1856
+- tischtennis: 1592
+- automatisierung: 1006
+- stabilität: 387
+- gesundheit: 373
 - wartbarkeit: 54
 
 ## Wissensprofil
@@ -28,7 +28,7 @@ Aktualisiert: 2026-06-30
 - #gesundheit: 186
 - #obsidian: 134
 - #gemini: 3
-- #copilot-conversation: 2
+- #copilot-conversation: 3
 - #pdf: 1
 - #email: 1
 - #secondbrain: 1

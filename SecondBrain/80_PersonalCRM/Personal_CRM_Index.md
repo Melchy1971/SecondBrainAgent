@@ -1,6 +1,6 @@
 # Personal CRM
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## E-Mail-Kontakte
 
@@ -60,7 +60,7 @@ Aktualisiert: 2026-06-30
 - Unterhaltung: 2383
 - Benutzer: 2306
 - Assistent: 2237
-- Zusammenfassung: 1746
+- Zusammenfassung: 1804
 - Review: 1552
 - Für: 1523
 - Quelle: 1286
@@ -71,39 +71,39 @@ Aktualisiert: 2026-06-30
 - Kurzüberblick: 1194
 - Automatisch: 1192
 - Wenn: 1026
-- Schritt: 968
-- Tags: 911
-- Links: 908
-- Risiko: 902
+- Schritt: 983
+- Tags: 971
+- Links: 967
+- Risiken: 908
+- Risiko: 907
 - Ich: 891
-- Risiken: 843
 - Du: 816
-- Score: 731
-- Datei: 711
+- Score: 736
+- Datei: 712
 - Hier: 701
-- Signale: 685
-- Ergebnis: 652
-- Code: 650
+- Signale: 686
+- Code: 654
+- Ergebnis: 653
 - Text: 647
-- Struktur: 593
-- Titel: 584
+- Titel: 643
+- Struktur: 594
 - Sie: 570
-- Aufgaben: 537
-- Was: 535
-- Frontmatter: 511
+- Aufgaben: 539
+- Was: 537
+- Frontmatter: 512
 - Das: 498
 - Prompt: 482
 - Beispiel: 460
-- Inhalt: 439
-- Dateien: 424
+- Inhalt: 438
+- Nachbereitung: 429
+- Datum: 427
+- Dateien: 425
 - Es: 424
-- Tool: 416
-- Datum: 409
+- Tool: 423
+- Blocker: 416
 - Annahmen: 400
+- Projekt: 398
 - Server: 398
 - Falls: 398
 - Tools: 396
-- Projekt: 394
 - Alternativen: 390
-- Python: 375
-- Daten: 371

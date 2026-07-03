@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -16,14 +17,16 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.45"
+    VERSION = "v30.48"
 
     MODULES = (
         ("dashboard", "Dashboard", "dashboard-center-gui", ("secondbrain/native/dashboard_center",)),
         ("layout", "Layout", "layout-status", ("secondbrain/native/layout_center",)),
         ("workspace", "Workspace", "workspace-center-gui", ("secondbrain/native/workspace_center.py",)),
+        ("projects", "Projekte", "ai-workspace-gui", ("secondbrain/desktop_pro/projects.py",)),
         ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat.py",)),
         ("documents", "Document Explorer", "document-explorer-gui", ("secondbrain/native/document_explorer.py",)),
+        ("preview", "Document Preview", "document-preview-gui", ("secondbrain/native/document_preview",)),
         ("memory", "Memory Explorer", "memory-explorer", ("secondbrain/native/memory_explorer.py",)),
         ("agents", "Agent Control", "agent-control-gui", ("secondbrain/native/agent_control_center.py",)),
         ("voice", "Voice Control", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
@@ -135,6 +138,23 @@ class AIWorkspaceService:
             modules=list(snapshot.modules),
         )
         state.replace_modules(list(snapshot.modules))
+        state.active_provider = os.getenv("SECONDBRAIN_CHAT_PROVIDER", "ollama")
+        state.active_model = os.getenv("SECONDBRAIN_CHAT_MODEL", "llama3.2")
+        from secondbrain.native.agent_control_center import AgentControlCenter
+        from secondbrain.native.chat import ConversationStore
+        from secondbrain.native.job_queue_center.service import JobQueueService
+        from secondbrain.native.memory_explorer import MemoryExplorer
+        from secondbrain.native.notification_center.service import NotificationCenterService
+        from secondbrain.native.voice_control_center import voice_center_status
+
+        state.runtime_health = self._health_payload()
+        state.notifications = NotificationCenterService(self.project_root).list_items(limit=20).get("items", [])
+        state.memory_context = MemoryExplorer(self.project_root).entries(limit=20).get("memories", [])
+        state.active_jobs = JobQueueService(self.project_root).snapshot().get("jobs", [])
+        state.active_agents = AgentControlCenter(self.project_root).tasks(limit=20)
+        state.voice_state = voice_center_status()
+        conversations = ConversationStore(self.project_root).list()
+        state.current_conversation = str(conversations[0]["id"]) if conversations else None
         return state
 
     def module_payload(self, module_id: str) -> dict[str, Any]:
@@ -143,8 +163,10 @@ class AIWorkspaceService:
             "dashboard": self._dashboard_payload,
             "layout": self._layout_payload,
             "workspace": self._workspace_payload,
+            "projects": self._projects_payload,
             "chat": self._chat_payload,
             "documents": self._documents_payload,
+            "preview": self._preview_payload,
             "memory": self._memory_payload,
             "agents": self._agents_payload,
             "voice": self._voice_payload,
@@ -173,6 +195,10 @@ class AIWorkspaceService:
         from secondbrain.native.workspace_center import workspace_status
         return workspace_status(self.project_root)
 
+    def _projects_payload(self) -> dict[str, Any]:
+        from secondbrain.native.project_workspace import ProjectWorkspaceService
+        return ProjectWorkspaceService(self.project_root).snapshot()
+
     def _layout_payload(self) -> dict[str, Any]:
         from secondbrain.native.layout_center.service import NativeLayoutService
         return NativeLayoutService(self.project_root).status()
@@ -184,6 +210,10 @@ class AIWorkspaceService:
     def _documents_payload(self) -> dict[str, Any]:
         from secondbrain.native.document_explorer import DocumentExplorer
         return DocumentExplorer(self.project_root).status()
+
+    def _preview_payload(self) -> dict[str, Any]:
+        from secondbrain.native.document_preview.service import DocumentPreviewService
+        return DocumentPreviewService(self.project_root).status()
 
     def _memory_payload(self) -> dict[str, Any]:
         from secondbrain.native.memory_explorer import MemoryExplorer

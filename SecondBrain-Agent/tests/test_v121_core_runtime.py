@@ -32,6 +32,15 @@ def test_tool_registry_scope_and_approval(tmp_path: Path):
     assert reg.audit(1)[0]['tool'] == 'demo.echo'
 
 
+def test_tool_registry_tolerates_empty_or_invalid_runtime_manifest(tmp_path: Path):
+    manifest = tmp_path / 'tools_v121' / 'tool_manifest.json'
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text('', encoding='utf-8')
+    assert ToolRegistry(tmp_path).list() == []
+    manifest.write_text('{invalid', encoding='utf-8')
+    assert ToolRegistry(tmp_path).list() == []
+
+
 def test_long_runtime_start_tick_tool(tmp_path: Path):
     bus = EventBus(tmp_path)
     reg = ToolRegistry(tmp_path)

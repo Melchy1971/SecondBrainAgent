@@ -1,8 +1,8 @@
-"""P5 v23.2 - RAG Citation Viewer."""
+"""P5 v23.2 / v30.46.1 - Kompatibilitaets-Alias.
 
-class CitationViewer:
-    def render(self, citations: list[str]):
-        return {
-            "count": len(citations),
-            "citations": citations,
-        }
+Die Implementierung lebt seit v30.46.1 in secondbrain.chat.citations.
+Der bisherige Kontrakt (render(citations) -> {count, citations}) bleibt.
+"""
+from secondbrain.chat.citations import CitationRenderer as CitationViewer
+
+__all__ = ["CitationViewer"]

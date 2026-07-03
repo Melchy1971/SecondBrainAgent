@@ -9,7 +9,7 @@ from typing import Any
 
 from secondbrain.native.voice_de import GermanVoiceCommandParser, GermanVoiceIntent
 from secondbrain.native.approval import NativeActionAuditLog, NativeApprovalQueue
-from secondbrain.native.chat import NativeChatService
+from secondbrain.native.chat import ChatEngine
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,7 +106,7 @@ class NativeActionDispatcher:
             return self._finalize(self._write_memory_note(intent), confirmed=confirmed, dry_run=dry_run)
 
         if command == "p1-rag-answer":
-            result = NativeChatService(self.project_root, timeout_seconds=self.timeout_seconds).ask(intent.text)
+            result = ChatEngine(self.project_root, timeout_seconds=self.timeout_seconds).ask(intent.text)
             return self._finalize(NativeActionResult(
                 bool(result.get("ok")),
                 "executed" if result.get("ok") else "failed",
@@ -122,7 +122,7 @@ class NativeActionDispatcher:
             ), confirmed=confirmed, dry_run=dry_run)
 
         if command == "p1-rag-hybrid-search":
-            result = NativeChatService(self.project_root, timeout_seconds=self.timeout_seconds).search(intent.text)
+            result = ChatEngine(self.project_root, timeout_seconds=self.timeout_seconds).search(intent.text)
             return self._finalize(NativeActionResult(
                 bool(result.get("ok")),
                 "executed" if result.get("ok") else "failed",

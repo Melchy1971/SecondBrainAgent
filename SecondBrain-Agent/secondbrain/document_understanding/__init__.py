@@ -3,13 +3,16 @@ try:
     from .parser_contract import ParsedDocument, ParsedPage, ParseStatus, build_parsed_document, normalize_text
     from .parsers import (
         CsvParser,
+        DocxParser,
         EmailParser,
+        ImageParser,
         JsonParser,
         MarkdownParser,
         ParserRegistry,
         ParserValidationError,
         PdfTextParser,
         PlainTextParser,
+        XlsxParser,
         default_parser_registry,
     )
     from .ingestion_contract import ParsedDocumentIngestionService, ParsedIngestionResult

@@ -145,7 +145,10 @@ def _repository_root(project_root: Path) -> Path:
     current = project_root.resolve()
     candidates = (current, *current.parents)
     for candidate in candidates:
-        if (candidate / ".git").exists() or (candidate / ".github").exists():
+        if (candidate / ".github").exists():
+            return candidate
+    for candidate in candidates:
+        if (candidate / ".git").exists():
             return candidate
     return current
 
@@ -280,8 +283,19 @@ def _check_ci_workflow(root: Path) -> list[DoctorCheck]:
 def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
     blocking_findings: list[str] = []
     cache_findings: list[str] = []
+    gitignore = (root / ".gitignore").read_text(encoding="utf-8", errors="replace") if (root / ".gitignore").exists() else ""
+    ignored_top_level_dirs = {
+        line.strip().rstrip("/")
+        for line in gitignore.splitlines()
+        if line.strip().endswith("/") and not any(char in line for char in "*?![")
+    }
     for path in root.rglob("*"):
-        if any(part in IGNORED_ARTIFACT_PARTS for part in path.parts):
+        relative_parts = path.relative_to(root).parts
+        if any(part in IGNORED_ARTIFACT_PARTS for part in relative_parts):
+            continue
+        if any(part.startswith(".pytest_tmp") for part in relative_parts):
+            continue
+        if relative_parts and relative_parts[0] in ignored_top_level_dirs:
             continue
         rel = path.relative_to(root).as_posix()
         if any(part in FORBIDDEN_CACHE_PARTS for part in path.parts):

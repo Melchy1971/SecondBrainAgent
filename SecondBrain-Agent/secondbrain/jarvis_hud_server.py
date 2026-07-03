@@ -600,6 +600,7 @@ ALLOWED_SCRIPTS = {
     "run_quality_report.py",
     "run_regression_tests_v9.py",
     "run_tests.py",
+    "run_pytest_q.py",
     # Checks & Health
     "check_paths_v9.py",
     "ai_healthcheck.py",
@@ -730,77 +731,47 @@ def _ollama_models(base_url: str) -> list:
 
 
 def _ollama_chat(base_url: str, model: str, prompt: str, temperature: float) -> str:
-    """Generierung ueber Ollama /api/generate (dependency-frei)."""
-    url = base_url.rstrip("/") + "/api/generate"
-    payload = json.dumps({
-        "model": model, "prompt": prompt, "stream": False,
-        "options": {"temperature": float(temperature)},
-    }).encode("utf-8")
-    req = urllib.request.Request(url, data=payload,
-                                 headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read().decode("utf-8")).get("response", "").strip()
+    """Compatibility adapter using the shared Ollama provider."""
+    from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest
+    from secondbrain.providers.ollama.chat_provider import OllamaProvider
+    request = CompletionRequest(model=model, messages=[ChatMessage("user", prompt)], temperature=float(temperature))
+    return OllamaProvider(base_url=base_url).complete(request).content.strip()
 
 
 def _openai_chat(model: str, prompt: str, temperature: float) -> str:
-    """Generierung ueber OpenAI (= ChatGPT). Key aus Settings oder OPENAI_API_KEY."""
+    """Compatibility adapter using the shared OpenAI provider."""
+    from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest
+    from secondbrain.providers.openai.chat_provider import OpenAIProvider
     key = load_settings().get("openai_api_key") or os.environ.get("OPENAI_API_KEY")
     if not key:
         raise RuntimeError("Kein OpenAI-Key (Einstellungen oder OPENAI_API_KEY)")
-    url = "https://api.openai.com/v1/chat/completions"
-    payload = json.dumps({
-        "model": model or "gpt-4o-mini",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": float(temperature),
-    }).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers={
-        "Content-Type": "application/json", "Authorization": f"Bearer {key}"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    return data["choices"][0]["message"]["content"].strip()
+    request = CompletionRequest(model=model or "gpt-4o-mini", messages=[ChatMessage("user", prompt)], temperature=float(temperature))
+    return OpenAIProvider(api_key=key).complete(request).content.strip()
 
 
 def _gemini_chat(model: str, prompt: str, temperature: float) -> str:
-    """Generierung ueber Google Gemini. Key aus Settings oder GEMINI_API_KEY."""
+    """Compatibility adapter using the shared Gemini provider."""
+    from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest
+    from secondbrain.providers.gemini.chat_provider import GeminiProvider
     key = (load_settings().get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
            or os.environ.get("GOOGLE_API_KEY"))
     if not key:
         raise RuntimeError("Kein Gemini-Key (Einstellungen oder GEMINI_API_KEY)")
     model = model or "gemini-1.5-flash"
-    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-           f"{model}:generateContent?key={key}")
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": float(temperature)},
-    }).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    cands = data.get("candidates") or []
-    if not cands:
-        raise RuntimeError("Gemini: keine Antwort")
-    parts = (cands[0].get("content") or {}).get("parts") or []
-    return "".join(p.get("text", "") for p in parts).strip()
+    request = CompletionRequest(model=model, messages=[ChatMessage("user", prompt)], temperature=float(temperature))
+    return GeminiProvider(api_key=key).complete(request).content.strip()
 
 
 def _anthropic_chat(model: str, prompt: str, temperature: float) -> str:
-    """Generierung ueber Anthropic Claude. Key aus Settings oder ANTHROPIC_API_KEY."""
+    """Compatibility adapter using the shared Anthropic provider."""
+    from secondbrain.providers.anthropic.chat_provider import AnthropicProvider
+    from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest
     key = load_settings().get("anthropic_api_key") or os.environ.get("ANTHROPIC_API_KEY")
     if not key:
         raise RuntimeError("Kein Anthropic-Key (Einstellungen oder ANTHROPIC_API_KEY)")
     model = model or "claude-3-5-sonnet-latest"
-    url = "https://api.anthropic.com/v1/messages"
-    payload = json.dumps({
-        "model": model, "max_tokens": 4096, "temperature": float(temperature),
-        "messages": [{"role": "user", "content": prompt}],
-    }).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers={
-        "Content-Type": "application/json", "x-api-key": key,
-        "anthropic-version": "2023-06-01"})
-    with urllib.request.urlopen(req, timeout=180) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    blocks = data.get("content") or []
-    return "".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
+    request = CompletionRequest(model=model, messages=[ChatMessage("user", prompt)], temperature=float(temperature), max_tokens=4096)
+    return AnthropicProvider(api_key=key).complete(request).content.strip()
 
 
 def _llm_chat(engine: str, model: str, prompt: str, temperature: float):
@@ -827,29 +798,6 @@ def _llm_chat(engine: str, model: str, prompt: str, temperature: float):
     return _ollama_chat(base, m, prompt, temperature), m
 
 
-def _build_prompt(query: str, chunks: list, history: list) -> str:
-    parts = [
-        "Du bist der SecondBrain-Assistant. Antworte praezise auf Deutsch,",
-        "ausschliesslich gestuetzt auf den folgenden Kontext aus dem Vault.",
-        "Reicht der Kontext nicht, sag das offen. Erfinde nichts.",
-        "Verweise im Text mit [1], [2] ... auf die genutzten Quellen.",
-        "",
-    ]
-    for turn in (history or [])[-6:]:
-        role = "Nutzer" if turn.get("role") == "user" else "Assistant"
-        parts.append(f"{role}: {str(turn.get('content',''))[:600]}")
-    if history:
-        parts.append("")
-    parts.append("Kontext:")
-    if chunks:
-        for i, c in enumerate(chunks, 1):
-            parts.append(f"[{i}] {c.get('note','?')}: {str(c.get('preview',''))[:500]}")
-    else:
-        parts.append("(kein Kontext gefunden)")
-    parts += ["", f"Frage: {query}", "", "Antwort:"]
-    return "\n".join(parts)
-
-
 def _configured_assistant_models(cfg: dict) -> list[str]:
     return [
         model.strip()
@@ -858,8 +806,46 @@ def _configured_assistant_models(cfg: dict) -> list[str]:
     ]
 
 
+class _HudProviderManager:
+    """Adapts legacy HUD settings to the canonical chat engine provider boundary."""
+
+    def __init__(self, temperature: float) -> None:
+        self.temperature = float(temperature)
+
+    def complete(self, provider_name, request):
+        from secondbrain.providers.base.provider_models import CompletionResponse
+        prompt = "\n\n".join(f"{message.role}: {message.content}" for message in request.messages)
+        content, model = _llm_chat(provider_name, request.model, prompt, self.temperature)
+        return CompletionResponse(provider=provider_name, model=model, content=content)
+
+
+class _HudRagRuntime:
+    def hybrid_search(self, query: str, limit: int = 5) -> dict:
+        chunks = _assistant_retrieve(query, limit)
+        return {
+            "ok": True,
+            "hits": [
+                {
+                    "document_id": chunk.get("note"),
+                    "chunk_id": chunk.get("chunk_id"),
+                    "title": chunk.get("note"),
+                    "source": chunk.get("note"),
+                    "text": chunk.get("preview", ""),
+                    "score": chunk.get("score", 0),
+                    "provider": "vault",
+                }
+                for chunk in chunks
+            ],
+        }
+
+
+class _EmptyMemoryContext:
+    def search(self, query: str, limit: int = 5) -> dict:
+        return {"ok": True, "memories": []}
+
+
 def assistant_chat(query: str, history: list | None = None) -> dict:
-    """RAG-gestuetzte Chat-Antwort. Retrieval + Generierung, mit Fallback."""
+    """HUD-Adapter ueber die gemeinsame Chat-API (ChatService -> ChatEngine)."""
     query = (query or "").strip()
     if not query:
         return {"ok": False, "answer": "Keine Frage angegeben.", "sources": [],
@@ -867,33 +853,40 @@ def assistant_chat(query: str, history: list | None = None) -> dict:
     cfg = load_settings()
     engine = (cfg.get("assistant_engine") or "ollama").lower()
     temp = cfg.get("assistant_temperature", 0.2)
-    limit = int(cfg.get("assistant_context_chunks", 5) or 5)
-    chunks = _assistant_retrieve(query, limit)
-    sources = [{"note": c.get("note", ""), "score": c.get("score", 0),
-                "chunk_id": c.get("chunk_id", 0),
-                "preview": str(c.get("preview", ""))[:240]} for c in chunks]
-    prompt = _build_prompt(query, chunks, history)
-
     model = cfg.get("assistant_model") or ""
     if engine == "ollama" and not model:
         configured = _configured_assistant_models(cfg)
         model = configured[0] if configured else ""
-    llm_ok, answer = False, ""
-    try:
-        answer, model = _llm_chat(engine, model, prompt, temp); llm_ok = True
-    except Exception as exc:
-        log_event("hud.assistant_llm_error", {"engine": engine, "error": str(exc)})
-        if sources:
-            names = ", ".join(s["note"] for s in sources[:3])
-            answer = (f"LLM nicht erreichbar ({exc}). {len(sources)} Treffer im "
-                      f"Vault. Top: {names}.")
-        else:
-            answer = f"LLM nicht erreichbar ({exc}) und keine Vault-Treffer."
+    from secondbrain.chat import ChatService
+    chat = ChatService(ROOT, provider_manager=_HudProviderManager(temp), rag_runtime=_HudRagRuntime(), memory_explorer=_EmptyMemoryContext())
+    result = chat.ask(
+        query,
+        provider=engine,
+        model=model,
+        selected_sources=("documents",),
+        history=history or (),
+        limit=int(cfg.get("assistant_context_chunks", 5) or 5),
+    )
+    citations = list(result.get("citations", []))
+    sources = [
+        {"note": citation.get("source", ""), "score": citation.get("score", 0), "chunk_id": citation.get("chunk"), "preview": ""}
+        for citation in citations
+    ]
+    llm_ok = bool(result.get("ok"))
+    answer = str(result.get("answer") or "")
+    conversation = result.get("conversation") or {}
+    model = str(conversation.get("model") or model)
+    if not llm_ok:
+        error = result.get("error", "unbekannter Providerfehler")
+        log_event("hud.assistant_llm_error", {"engine": engine, "error": str(error)})
+        names = ", ".join(source["note"] for source in sources[:3])
+        answer = f"LLM nicht erreichbar ({error})." + (f" Top-Quellen: {names}." if names else " Keine Vault-Treffer.")
 
     log_event("hud.assistant", {"query": query, "sources": len(sources),
                                 "engine": engine, "llm_ok": llm_ok})
     return {"ok": True, "answer": answer, "sources": sources,
-            "llm_ok": llm_ok, "engine": engine, "model": model}
+            "llm_ok": llm_ok, "engine": engine, "model": model,
+            "conversation_id": conversation.get("id")}
 
 
 def assistant_save_note(title: str, content: str) -> dict:
