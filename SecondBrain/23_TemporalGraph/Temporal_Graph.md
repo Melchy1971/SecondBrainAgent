@@ -1,6 +1,6 @@
 # Temporal Knowledge Graph
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 | Datum | Notiz |
 |---|---|
@@ -8,10 +8,13 @@ Aktualisiert: 2026-06-30
 | 01.01.2023 | [[Datenbankaufbau_mit_KI_691ae148-0a44-832f-8a5f]] |
 | 01.01.2023 | [[Temporal_Graph]] |
 | 01.01.2023 | [[Temporal_Graph]] |
+| 01.01.2023 | [[Temporal_Graph]] |
+| 01.01.2023 | [[Temporal_Graph]] |
 | 01.01.2024 | [[Google_Suchstatistik_anzeigen]] |
 | 01.01.2024 | [[Google_Suchstatistik_anzeigen_67d9a314-f0c4-8007-95aa]] |
 | 01.01.2024 | [[PST_Email_Anhang_Speichern]] |
 | 01.01.2024 | [[PST_Email_Anhang_Speichern_681a4aef-ee44-8007-8ea4]] |
+| 01.01.2024 | [[Temporal_Graph]] |
 | 01.01.2024 | [[Temporal_Graph]] |
 | 01.01.2024 | [[Temporal_Graph]] |
 | 01.01.2024 | [[Temporal_Graph]] |
@@ -36,9 +39,6 @@ Aktualisiert: 2026-06-30
 | 01.01.2025 | [[HTML_Bild_und_Text_679babb9-51b4-8007-a139]] |
 | 01.01.2025 | [[Sitzungsprotokoll_Hauptversammlung]] |
 | 01.01.2025 | [[Sitzungsprotokoll_Hauptversammlung_69fcf62c-4d58-8390-888a]] |
-| 01.01.2025 | [[Temporal_Graph]] |
-| 01.01.2025 | [[Temporal_Graph]] |
-| 01.01.2025 | [[Temporal_Graph]] |
 | 01.01.2027 | [[Decision_Intelligence_v2]] |
 | 01.01.2027 | [[Decision_Intelligence_v2]] |
 | 01.01.2027 | [[Protokoll_Vorlage_Tischtennisverein]] |
@@ -1613,6 +1613,7 @@ Aktualisiert: 2026-06-30
 | 2026-06-18 | [[2026-06-30_quality-report]] |
 | 2026-06-18 | [[2026-06-30_self-healing-report]] |
 | 2026-06-18 | [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] |
+| 2026-06-18 | [[2026-07-03_context-map]] |
 | 2026-06-18 | [[CRM_Index]] |
 | 2026-06-18 | [[Chats_herunterladen_Anleitung]] |
 | 2026-06-18 | [[Chats_herunterladen_Anleitung_6a33e238-1fc4-83eb-9add]] |
@@ -1764,6 +1765,7 @@ Aktualisiert: 2026-06-30
 | 2026-06-19 | [[2026-06-30_quality-report]] |
 | 2026-06-19 | [[2026-06-30_quality-report]] |
 | 2026-06-19 | [[2026-06-30_self-healing-report]] |
+| 2026-06-19 | [[2026-07-03_context-map]] |
 | 2026-06-19 | [[Agent_Collaboration_Protocol]] |
 | 2026-06-19 | [[Business_OS_Modules]] |
 | 2026-06-19 | [[ChiefOfStaff_Memory]] |
@@ -1987,7 +1989,6 @@ Aktualisiert: 2026-06-30
 | 2026-06-30 | [[MCP_Ecosystem_Status]] |
 | 2026-06-30 | [[Meeting_Agent_Memory_v2]] |
 | 2026-06-30 | [[Memory_Engine_Profile]] |
-| 2026-06-30 | [[Memory_Profile]] |
 | 2026-06-30 | [[Personal_CRM_Index]] |
 | 2026-06-30 | [[Plugin_Ecosystem]] |
 | 2026-06-30 | [[Process_Agent_Memory_v2]] |
@@ -2002,7 +2003,14 @@ Aktualisiert: 2026-06-30
 | 2026-06-30 | [[Temporal_Graph]] |
 | 2026-06-30 | [[Temporal_Knowledge_Graph]] |
 | 2026-06-30 | [[Voice_Assistant_Status]] |
-| 2026-06-30 | [[vault_index]] |
+| 2026-07-03 | [[2026-07-03_autonomy-report]] |
+| 2026-07-03 | [[2026-07-03_conflict-report]] |
+| 2026-07-03 | [[2026-07-03_context-map]] |
+| 2026-07-03 | [[2026-07-03_governance-report]] |
+| 2026-07-03 | [[2026-07-03_production-gate]] |
+| 2026-07-03 | [[2026-07-03_search_chatgpt-import]] |
+| 2026-07-03 | [[Memory_Profile]] |
+| 2026-07-03 | [[vault_index]] |
 | 22.03.2025 | [[Prompt_Engineering_Best_Practices]] |
 | 22.03.2025 | [[Prompt_Engineering_Best_Practices]] |
 | 22.03.2025 | [[Prompt_Engineering_Best_Practices_67dfc879-a2fc-8007-804a]] |

@@ -26,6 +26,11 @@ MIME_BY_EXTENSION = {
     ".jsonl": "application/x-ndjson",
     ".eml": "message/rfc822",
     ".pdf": "application/pdf",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
 }
 
 
@@ -269,6 +274,119 @@ class PdfTextParser:
         )
 
 
+class DocxParser:
+    """DOCX parser delegating extraction to the existing office import layer."""
+
+    supported_extensions = {".docx"}
+
+    def parse(self, path: str | Path) -> ParsedDocument:
+        p = _ensure_existing_file(path)
+        mime_type = MIME_BY_EXTENSION[".docx"]
+        try:
+            import docx  # type: ignore[import-not-found]  # noqa: F401
+        except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+            return build_parsed_document(
+                title=p.name,
+                text="",
+                mime_type=mime_type,
+                source_path=p,
+                status=ParseStatus.FAILED,
+                metadata={"parser": "docx", "dependency": "python-docx", "bytes": p.stat().st_size},
+                errors=[f"docx_reader_missing:{type(exc).__name__}"],
+            )
+        from secondbrain.office_import import extract_docx
+
+        text = extract_docx(p)
+        return build_parsed_document(
+            title=p.name,
+            text=text,
+            mime_type=mime_type,
+            source_path=p,
+            metadata={"parser": "docx", "bytes": p.stat().st_size},
+        )
+
+
+class XlsxParser:
+    """XLSX parser delegating extraction to the existing office import layer."""
+
+    supported_extensions = {".xlsx"}
+
+    def parse(self, path: str | Path) -> ParsedDocument:
+        p = _ensure_existing_file(path)
+        mime_type = MIME_BY_EXTENSION[".xlsx"]
+        try:
+            import openpyxl  # type: ignore[import-not-found]  # noqa: F401
+        except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+            return build_parsed_document(
+                title=p.name,
+                text="",
+                mime_type=mime_type,
+                source_path=p,
+                status=ParseStatus.FAILED,
+                metadata={"parser": "xlsx", "dependency": "openpyxl", "bytes": p.stat().st_size},
+                errors=[f"xlsx_reader_missing:{type(exc).__name__}"],
+            )
+        from secondbrain.office_import import extract_xlsx
+
+        text = extract_xlsx(p)
+        return build_parsed_document(
+            title=p.name,
+            text=text,
+            mime_type=mime_type,
+            source_path=p,
+            metadata={"parser": "xlsx", "bytes": p.stat().st_size},
+        )
+
+
+class ImageParser:
+    """PNG/JPG parser: dimensions via Pillow, text only via optional OCR engine."""
+
+    supported_extensions = {".png", ".jpg", ".jpeg"}
+
+    def parse(self, path: str | Path) -> ParsedDocument:
+        p = _ensure_existing_file(path)
+        mime_type = MIME_BY_EXTENSION.get(p.suffix.lower(), "application/octet-stream")
+        metadata: dict[str, object] = {"parser": "image", "bytes": p.stat().st_size}
+        image = None
+        try:
+            from PIL import Image  # type: ignore[import-not-found]
+
+            image = Image.open(p)
+            metadata.update({"width": image.width, "height": image.height, "format": image.format})
+        except Exception as exc:  # noqa: BLE001 - optional dependency boundary
+            metadata["pillow"] = f"unavailable:{type(exc).__name__}"
+
+        try:
+            if image is not None:
+                import pytesseract  # type: ignore[import-not-found]
+
+                text = pytesseract.image_to_string(image)
+                if text.strip():
+                    metadata["ocr_engine"] = "pytesseract"
+                    return build_parsed_document(
+                        title=p.name,
+                        text=text,
+                        mime_type=mime_type,
+                        source_path=p,
+                        metadata=metadata,
+                    )
+        except Exception as exc:  # noqa: BLE001 - OCR stays optional
+            metadata["ocr_engine"] = f"unavailable:{type(exc).__name__}"
+        finally:
+            if image is not None:
+                image.close()
+
+        return build_parsed_document(
+            title=p.name,
+            text="",
+            mime_type=mime_type,
+            source_path=p,
+            status=ParseStatus.OCR_REQUIRED,
+            metadata=metadata,
+            errors=["image_text_requires_ocr"],
+        )
+
+
 class ParserRegistry:
     """Extension based parser registry with deterministic unsupported handling."""
 
@@ -326,4 +444,7 @@ def default_parser_registry() -> ParserRegistry:
     registry.register(CsvParser())
     registry.register(EmailParser())
     registry.register(PdfTextParser())
+    registry.register(DocxParser())
+    registry.register(XlsxParser())
+    registry.register(ImageParser())
     return registry

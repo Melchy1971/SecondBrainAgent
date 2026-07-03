@@ -1,8 +1,8 @@
 # Vault Index
 
-Aktualisiert: 2026-07-02
+Aktualisiert: 2026-07-03
 
-Dateien: 1635
+Dateien: 1639
 
 
 ## 00_Handbuch
@@ -1749,6 +1749,7 @@ Dateien: 1635
 - [[2026-06-18_search_gemini-import]]
 - [[2026-06-29_search_chatgpt-import]]
 - [[2026-06-30_search_chatgpt-import]]
+- [[2026-07-03_search_chatgpt-import]]
 - [[Semantic_Index]]
 
 ## 66_KnowledgeGraph
@@ -2003,6 +2004,8 @@ Dateien: 1635
 - [[2026-06-30_084748_chatgpt_import_report]]
 - [[2026-06-30_113515_chatgpt_import_report]]
 - [[2026-06-30_113518_chatgpt_import_report]]
+- [[2026-07-03_093444_chatgpt_import_report]]
+- [[2026-07-03_093449_chatgpt_import_report]]
 
 ## 99_System\claude_review
 
@@ -2051,6 +2054,7 @@ Dateien: 1635
 ## 99_System\production
 
 - [[2026-06-30_production-gate]]
+- [[2026-07-03_production-gate]]
 
 ## 99_System\quality
 

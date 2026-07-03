@@ -1,6 +1,6 @@
 # Executive Agent Memory v2
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Relevante Notizen
 
@@ -49,11 +49,11 @@ Aktualisiert: 2026-06-30
 - [[Temporal_Graph]] — Score 57
 - [[2026-06-26_chief-of-staff-v98]] — Score 53
 - [[2026-06-25_chief-of-staff-v98]] — Score 52
+- [[facts_tasks]] — Score 51
 - [[Instanzstatus_und_Monitoring_69e7795a-acd8-8390-99ab]] — Score 51
 - [[Instanzstatus_und_Monitoring]] — Score 51
 - [[TT_Pro_69c5578e-dedc-8395-b663]] — Score 50
 - [[TT_Pro]] — Score 50
-- [[Roadmap_und_Dev-Setup_68ee0530-e67c-8329-aae3]] — Score 50
 
 ## Gelernte Tags
 

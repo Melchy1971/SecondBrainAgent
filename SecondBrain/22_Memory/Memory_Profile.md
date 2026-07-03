@@ -1,6 +1,6 @@
 # Memory Profile
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Häufige Themen
 
@@ -15,6 +15,7 @@ Aktualisiert: 2026-06-30
 - #gesundheit: 186
 - #obsidian: 134
 - #gemini: 3
+- #copilot-conversation: 3
 - #pdf: 1
 - #email: 1
 - #secondbrain: 1
@@ -23,7 +24,6 @@ Aktualisiert: 2026-06-30
 - #meeting: 1
 - #process: 1
 - #knowledge-gap: 1
-- #"clippings": 1
 
 ## Signale
 

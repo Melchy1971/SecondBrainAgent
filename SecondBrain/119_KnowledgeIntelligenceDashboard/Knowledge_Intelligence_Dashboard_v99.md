@@ -1,19 +1,19 @@
 # Knowledge Intelligence Dashboard v9.9
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## 113_EntityExtraction
 
 # Entity Extraction v9.9
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Häufigste Entitäten
 
-- **ChatGPT** (technology): 1214
+- **ChatGPT** (technology): 1219
 - **Für** (person_or_topic): 1189
-- **SAP** (technology): 1049
-- **Review** (person_or_topic): 784
+- **SAP** (technology): 1054
+- **Review** (person_or_topic): 785
 - **Zusammenfassung** (person_or_topic): 778
 - **Export** (person_or_topic): 774
 - **Automatisch** (person_or_topic): 773
@@ -25,9 +25,9 @@ Aktualisiert: 2026-06-30
 - **Unterhaltung** (person_or_topic): 773
 - **Assistent** (person_or_topic): 730
 - **Ich** (person_or_topic): 560
-- **Review** (project_or_topic): 435
-- **Zusammenfassung** (project_or_topic): 424
-- **Metadaten** (project_or_topic): 419
+- **Review** (project_or_topic): 437
+- **Zusammenfassung** (project_or_topic): 425
+- **Metadaten** (project_or_topic): 420
 - **Export** (project_or_topic): 417
 - **Unterhaltung** (project_or_topic): 417
 - **Automatisch** (project_or_topic): 415
@@ -39,57 +39,57 @@ Aktualisiert: 2026-06-30
 - **Assistent** (project_or_topic): 411
 - **Hier** (person_or_topic): 387
 - **Wenn** (person_or_topic): 380
-- **Was** (person_or_topic): 365
+- **Was** (person_or_topic): 369
 - **Die** (person_or_topic): 333
 - **Wenn** (project_or_topic): 278
 - **Mit** (person_or_topic): 278
-- **Projekt** (project_or_topic): 264
-- **Obsidian** (technology): 254
+- **Projekt** (project_or_topic): 271
+- **Obsidian** (technology): 261
 - **Ein** (person_or_topic): 247
 - **Sie** (person_or_topic): 242
-- **Python** (technology): 236
+- **Python** (technology): 237
+- **Tool** (project_or_topic): 208
 - **Erstelle** (person_or_topic): 206
-- **Tool** (project_or_topic): 205
 - **Falls** (person_or_topic): 203
+- **Code** (project_or_topic): 201
 - **Datei** (person_or_topic): 200
+- **Schritt** (project_or_topic): 198
 - **Wie** (person_or_topic): 198
-- **Schritt** (project_or_topic): 197
-- **Beispiel** (project_or_topic): 196
+- **Beispiel** (project_or_topic): 197
 - **Hier** (project_or_topic): 195
-- **Code** (project_or_topic): 192
-- **Schritt** (person_or_topic): 188
+- **Schritt** (person_or_topic): 189
 - **Beispiel** (person_or_topic): 187
+- **Fragen** (organization): 182
 - **Der** (person_or_topic): 182
-- **Fragen** (organization): 180
+- **Analyse** (project_or_topic): 181
 - **App** (person_or_topic): 178
-- **Analyse** (project_or_topic): 177
-- **Datei** (project_or_topic): 174
+- **Datei** (project_or_topic): 175
 - **Struktur** (project_or_topic): 170
 - **Dateien** (project_or_topic): 164
-- **Daten** (project_or_topic): 161
+- **Risiken** (project_or_topic): 163
+- **Text** (project_or_topic): 161
 - **Text** (person_or_topic): 161
-- **Text** (project_or_topic): 160
+- **Daten** (project_or_topic): 160
 - **Ziel** (project_or_topic): 157
-- **Docker** (technology): 154
-- **Risiken** (project_or_topic): 152
+- **Docker** (technology): 156
 - **Nur** (person_or_topic): 151
 - **Ziel** (person_or_topic): 149
-- **Schritte** (project_or_topic): 147
-- **Falls** (project_or_topic): 14
+- **Schritte** (project_or_topic): 148
+- **Aufgaben** (project_or_topic):
 
 ## 114_RelationshipEngine
 
 # Relationship Engine v9.9
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 | Beziehung | Anzahl |
 |---|---:|
-| blocks | 10328 |
-| mentions | 2562 |
-| decides | 2407 |
-| tagged_as | 1024 |
-| references | 663 |
+| blocks | 11705 |
+| decides | 2808 |
+| mentions | 2782 |
+| references | 1286 |
+| tagged_as | 1075 |
 | influences | 13 |
 | creates_task | 10 |
 
@@ -101,7 +101,7 @@ Aktualisiert: 2026-06-30
 
 # Temporal Knowledge Graph v9.9
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 | Datum | Notizen |
 |---|---:|
@@ -236,7 +236,7 @@ Aktualisiert: 2026-06-30
 
 # Contradiction Detection v9.9
 
-Datum: 2026-06-30
+Datum: 2026-07-03
 
 ## Direkte Mischsignale
 
@@ -261,6 +261,7 @@ Datum: 2026-06-30
 - [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
 - [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
+- [[2026-07-03_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]] enthält erledigt/offen-Signale
 - [[2026-06-19_quality-scores]] enthält erledigt/offen-Signale
 - [[2026-06-18_quality-scores]] enthält erledigt/offen-Signale
 - [[2026-06-19_refactoring-proposals]] enthält erledigt/offen-Signale
@@ -271,14 +272,13 @@ Datum: 2026-06-30
 - [[SecondBrain OS ÔÇô Benutzerhandbuch f├╝r Einsteiger]] enthält erledigt/offen-Signale
 - [[2026-06-18_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
 - [[2026-06-19_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
-- [[2026-06-22_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]] enthält erledigt/offen-Signale
-- [[2026-06-23_simulation_Was_pas
+- [[2026-06-22_simulation_Was_pas
 
 ## 117_KnowledgeQuality
 
 # Knowledge Quality v9.9
 
-Datum: 2026-06-30
+Datum: 2026-07-03
 
 | Score | Notiz | Fehlend |
 |---:|---|---|
@@ -293,6 +293,7 @@ Datum: 2026-06-30
 | 0 | [[2026-06-26_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[2026-06-30_personal-kpis]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Calendar_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
+| 0 | [[Datenquelle ERP]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Document_Ingestion_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Email_Connector_Status]] | Frontmatter, Inhalt, Tags, Links, Struktur |
 | 0 | [[Federation_Index]] | Frontmatter, Inhalt, Tags, Links, Struktur |
@@ -311,14 +312,13 @@ Datum: 2026-06-30
 | 20 | [[2026-06-18_software-factory]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-19_090418_settings-report]] | Frontmatter, Tags, Links, Struktur |
 | 20 | [[2026-06-19_090426_production-ready-gate-v96]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_090431_settings-report]] | Frontmatter, Tags, Links, Struktur |
-| 20 | [[2026-06-19_090433_production-ready-
+| 20 | [[2026-06-19_090431_settings-report]] | Frontmat
 
 ## 118_CrossSourceIntelligence
 
 # Cross Source Intelligence v9.9
 
-Datum: 2026-06-30
+Datum: 2026-07-03
 
 ## Quellen
 
@@ -328,7 +328,7 @@ Datum: 2026-06-30
 | chatgpt | 1185 |
 | gemini | 2 |
 | tags: | 3 |
-| vault | 398 |
+| vault | 435 |
 
 ## Quellenübergreifende Tags
 

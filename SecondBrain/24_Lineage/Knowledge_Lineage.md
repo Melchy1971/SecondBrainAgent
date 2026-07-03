@@ -1,6 +1,6 @@
 # Knowledge Lineage
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 | Notiz | Quelle | Provider |
 |---|---|---|

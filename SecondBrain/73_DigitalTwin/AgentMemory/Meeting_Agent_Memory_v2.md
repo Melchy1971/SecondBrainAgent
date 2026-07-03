@@ -1,9 +1,10 @@
 # Meeting Agent Memory v2
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Relevante Notizen
 
+- [[2026-07-03_meeting-intelligence]] — Score 140
 - [[2026-06-30_meeting-intelligence]] — Score 135
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 81
 - [[Claude_Obsidian_Skill]] — Score 81
@@ -34,7 +35,7 @@ Aktualisiert: 2026-06-30
 - [[Übersetzung_Systemstabilität]] — Score 25
 - [[QoS_Anforderungen_und_Anwendungen_685124e6-6f68-8007-ba47]] — Score 23
 - [[QoS_Anforderungen_und_Anwendungen]] — Score 23
-- [[Meeting_Agent_Memory_v2]] — Score 22
+- [[Meeting_Agent_Memory_v2]] — Score 23
 - [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 15
 - [[Masterplan_optimieren]] — Score 15
 - [[TT_Pro_69c5578e-dedc-8395-b663]] — Score 14
@@ -53,7 +54,6 @@ Aktualisiert: 2026-06-30
 - [[VPS_Architektur_mit_Docker_69e61ad5-ac00-838d-8e63]] — Score 10
 - [[VPS_Architektur_mit_Docker]] — Score 10
 - [[KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0]] — Score 10
-- [[KI-unterstützte_Wissensdatenbank]] — Score 10
 
 ## Gelernte Tags
 

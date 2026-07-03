@@ -16,12 +16,15 @@ from .parser_contract import ParsedDocument, ParseStatus, build_parsed_document
 from .parsers import (
     MIME_BY_EXTENSION,
     CsvParser,
+    DocxParser,
     EmailParser,
+    ImageParser,
     JsonParser,
     MarkdownParser,
     ParserValidationError,
     PdfTextParser,
     PlainTextParser,
+    XlsxParser,
 )
 from .pdf_facade import PdfOcrParserFacade
 
@@ -183,6 +186,9 @@ def default_multi_format_orchestrator(*, enable_pdf_ocr_facade: bool = True) -> 
     orchestrator.register(EmailParser(), mime_types=("message/rfc822",))
     pdf_parser = PdfOcrParserFacade() if enable_pdf_ocr_facade else PdfTextParser()
     orchestrator.register(pdf_parser, name="PdfOcrParserFacade" if enable_pdf_ocr_facade else "PdfTextParser", mime_types=("application/pdf",))
+    orchestrator.register(DocxParser(), mime_types=(MIME_BY_EXTENSION[".docx"],))
+    orchestrator.register(XlsxParser(), mime_types=(MIME_BY_EXTENSION[".xlsx"],))
+    orchestrator.register(ImageParser(), mime_types=("image/png", "image/jpeg"))
     return orchestrator
 
 

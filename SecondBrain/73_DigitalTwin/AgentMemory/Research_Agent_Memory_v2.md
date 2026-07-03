@@ -1,11 +1,13 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-06-30
+Aktualisiert: 2026-07-03
 
 ## Relevante Notizen
 
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 246
 - [[Begrüßung_und_Einstieg]] — Score 246
+- [[2026-07-03_093449_chatgpt_import_report]] — Score 201
+- [[2026-07-03_093444_chatgpt_import_report]] — Score 201
 - [[2026-06-30_113518_chatgpt_import_report]] — Score 201
 - [[2026-06-30_113515_chatgpt_import_report]] — Score 201
 - [[2026-06-30_084748_chatgpt_import_report]] — Score 201
@@ -33,6 +35,7 @@ Aktualisiert: 2026-06-30
 - [[KI-unterstützte_Wissensdatenbank]] — Score 111
 - [[WDB_2026_69f8547b-d860-8394-8c04]] — Score 107
 - [[WDB_2026]] — Score 107
+- [[2026-07-03_self-improvement-plan]] — Score 101
 - [[2026-06-30_self-improvement-plan]] — Score 100
 - [[2026-06-26_self-improvement-plan]] — Score 100
 - [[2026-06-25_self-improvement-plan]] — Score 100
@@ -40,6 +43,8 @@ Aktualisiert: 2026-06-30
 - [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
+- [[2026-07-03_production-gate]] — Score 81
+- [[2026-07-03_governance-report]] — Score 81
 - [[2026-06-30_production-gate]] — Score 81
 - [[2026-06-30_governance-report]] — Score 81
 - [[Joomla_Template_mit_Facebook-Button_4ea66801-899f-41ad-86cb]] — Score 70
@@ -49,11 +54,6 @@ Aktualisiert: 2026-06-30
 - [[Jarvis_6a22b309-3398-838d-8c9b]] — Score 59
 - [[Jarvis]] — Score 59
 - [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 56
-- [[Masterplan_optimieren]] — Score 56
-- [[Blogthemen_finden_68b6dfa8-2510-8330-8079]] — Score 56
-- [[Blogthemen_finden]] — Score 56
-- [[myGEKKO_Video-Klingel_Integration_6a1c97ec-82d4-83eb-9f80]] — Score 52
-- [[myGEKKO_Video-Klingel_Integration]] — Score 52
 
 ## Gelernte Tags
 

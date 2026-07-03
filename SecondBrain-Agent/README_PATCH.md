@@ -9,7 +9,24 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/README.md`
 - `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.46.2 Eine Context Pipeline.
+Aktueller Stand: v30.48 AI Workspace.
+
+## v30.48
+
+- Projekte, Workspaces, Favoriten, Tags, Archiv und Papierkorb sind direkt in
+  die bestehende AI-Workspace-Shell eingebettet.
+- Suche, Filter, JSON-Import/-Export sowie Benutzer, Rollen und Rechte nutzen
+  die vorhandenen ProjectCenter-, WorkspaceManager- und RBAC-Datenpfade.
+- Es wurde keine zweite Projektverwaltung und keine zweite Desktop-Shell
+  eingefuehrt (Details: APPLY_DELTA_v30_48.md).
+
+## v30.46.3
+
+- Die bestehende Desktop-Shell ist der AI Workspace: Navigation links,
+  Conversation/Streaming/Markdown Mitte, Quellen/Memory/Dokumente/Runtime
+  rechts, Prompt/Anhaenge/Sprache/Provider unten.
+- Panel-Logik UI-frei in `ai_workspace/panels.py`; keine zweite Navigation,
+  keine zweite Toolbar (Details: APPLY_DELTA_v30_46_3.md).
 
 ## v30.46.2
 
