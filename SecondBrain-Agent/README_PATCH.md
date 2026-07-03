@@ -9,7 +9,26 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/README.md`
 - `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.48 AI Workspace.
+Aktueller Stand: v30.50 AI Workspace.
+
+## v30.50
+
+- Der Semantic Explorer projiziert vorhandene RAG- und Memory-Daten read-only
+  als Knowledge-, Dokument-, Workspace- und Memory-Graph.
+- Personen, Projekte, Tags, Beziehungen und Quellen werden aus vorhandenen
+  Metadaten abgeleitet; Suche, Filter und Nachbarschaftsnavigation sind integriert.
+- Es gibt keinen eigenen Index und keine zweite Datenhaltung
+  (Details: APPLY_DELTA_v30_50.md).
+
+## v30.49
+
+- Aufgaben, Erinnerungen, Kalender, Agent Jobs, Genehmigungen und Historie
+  sind direkt in den AI Workspace integriert.
+- Prioritaeten und Abhaengigkeiten erweitern den bestehenden Agent-Task-Pfad;
+  Queue und Approval-Komponenten werden wiederverwendet.
+- Das native Dashboard enthaelt eine read-only Aufgabenkarte.
+- Es wurde keine zweite Taskverwaltung eingefuehrt
+  (Details: APPLY_DELTA_v30_49.md).
 
 ## v30.48
 

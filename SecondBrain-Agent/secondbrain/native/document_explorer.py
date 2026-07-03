@@ -4,6 +4,7 @@ import hashlib
 import json
 import mimetypes
 import os
+import shutil
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -164,8 +165,9 @@ class DocumentExplorer:
         target_dir = self.project_root / 'documents'
         target_dir.mkdir(parents=True, exist_ok=True)
         target = target_dir / source.name
-        if copy:
-            target.write_bytes(source.read_bytes())
+        if copy and source != target.resolve():
+            with source.open('rb') as input_handle, target.open('wb') as output_handle:
+                shutil.copyfileobj(input_handle, output_handle, length=1024 * 1024)
         else:
             target = source
         payload = {'ok': True, 'status': 'imported', 'source_path': str(source), 'target_path': str(target), 'copy': copy}

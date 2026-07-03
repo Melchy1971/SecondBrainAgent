@@ -292,7 +292,13 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd == "p1-rag-ingest-text":
             payload = rt.ingest_text(" ".join(args.args), args.source, args.title)
         elif cmd == "p1-rag-ingest-file":
-            payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
+            source_path = args.args[0] if args.args else ""
+            if Path(source_path).suffix.lower() in {".json", ".jsonl", ".ndjson", ".md", ".markdown", ".zip"}:
+                from secondbrain.importing import StreamingImportService
+                session = StreamingImportService(args.project_root).import_file(source_path, source=args.source)
+                payload = {"ok": session.status == "completed", **session.to_dict()}
+            else:
+                payload = rt.ingest_file(source_path, args.source, args.title)
         elif cmd == "p1-rag-ingest-dir":
             payload = rt.ingest_directory(args.args[0] if args.args else "")
         elif cmd == "p1-rag-search":

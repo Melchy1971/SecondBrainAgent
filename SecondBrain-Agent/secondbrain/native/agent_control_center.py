@@ -26,6 +26,13 @@ class AgentTask:
     updated_at: float
     source: str = "native"
     result: str = ""
+    priority: int = 50
+    dependencies: tuple[str, ...] = ()
+    due_at: str | None = None
+    reminder_at: str | None = None
+    calendar_event_id: str | None = None
+    queue_job_id: str | None = None
+    approval_id: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -159,10 +166,27 @@ class AgentControlCenter:
             "assistant": "jarvis",
         }.get(intent, "jarvis")
 
-    def add_task(self, text: str, source: str = "native") -> dict[str, Any]:
+    def add_task(
+        self,
+        text: str,
+        source: str = "native",
+        *,
+        priority: int = 50,
+        dependencies: list[str] | tuple[str, ...] | None = None,
+        due_at: str | None = None,
+        reminder_at: str | None = None,
+        calendar_event_id: str | None = None,
+        queue_job_id: str | None = None,
+    ) -> dict[str, Any]:
         text = (text or "").strip()
         if not text:
             return {"ok": False, "status": "missing_task_text"}
+        priority = max(0, min(100, int(priority)))
+        dependency_ids = tuple(dict.fromkeys(str(item).strip() for item in (dependencies or ()) if str(item).strip()))
+        known_ids = {str(item.get("id")) for item in self.tasks(limit=100_000)}
+        missing = [item for item in dependency_ids if item not in known_ids]
+        if missing:
+            return {"ok": False, "status": "missing_dependencies", "dependencies": missing}
         intent, risk, requires_approval = self._classify(text)
         now = time.time()
         task = AgentTask(
@@ -175,6 +199,12 @@ class AgentControlCenter:
             created_at=now,
             updated_at=now,
             source=source,
+            priority=priority,
+            dependencies=dependency_ids,
+            due_at=due_at,
+            reminder_at=reminder_at,
+            calendar_event_id=calendar_event_id,
+            queue_job_id=queue_job_id,
         )
         self._append_jsonl(self.task_file, task.to_dict())
         self._log("task_added", task.to_dict())
@@ -182,8 +212,29 @@ class AgentControlCenter:
 
     def tasks(self, limit: int = 50) -> list[dict[str, Any]]:
         rows = self._read_jsonl(self.task_file)
-        rows.sort(key=lambda r: r.get("updated_at", r.get("created_at", 0)), reverse=True)
+        rows.sort(key=lambda r: (int(r.get("priority", 50)), -float(r.get("updated_at", r.get("created_at", 0)))))
         return rows[: max(0, limit)]
+
+    def update_task(self, task_id: str, **changes: Any) -> dict[str, Any]:
+        """Update scheduling/integration metadata without creating another task store."""
+        allowed = {
+            "priority", "due_at", "reminder_at", "calendar_event_id", "queue_job_id",
+            "approval_id", "approval_status", "result",
+        }
+        unknown = set(changes) - allowed
+        if unknown:
+            raise ValueError(f"unsupported task fields: {', '.join(sorted(unknown))}")
+        idx, task, rows = self._find_task(task_id)
+        if task is None:
+            return {"ok": False, "status": "task_not_found", "query": task_id}
+        if "priority" in changes:
+            changes["priority"] = max(0, min(100, int(changes["priority"])))
+        task.update(changes)
+        task["updated_at"] = time.time()
+        rows[idx] = task
+        self._write_tasks(rows)
+        self._log("task_updated", {"id": task_id, "changes": changes})
+        return {"ok": True, "task": task}
 
     def _find_task(self, task_id_or_query: str) -> tuple[int, dict[str, Any] | None, list[dict[str, Any]]]:
         query = (task_id_or_query or "").strip().lower()
@@ -203,6 +254,13 @@ class AgentControlCenter:
         if task.get("requires_approval") and not confirmed:
             self._log("task_blocked_for_approval", {"id": task.get("id"), "title": task.get("title")})
             return {"ok": False, "status": "approval_required", "task": task}
+        dependencies = set(task.get("dependencies") or ())
+        if dependencies:
+            completed = {str(item.get("id")) for item in rows if item.get("status") == "done"}
+            unresolved = sorted(dependencies - completed)
+            if unresolved:
+                self._log("task_blocked_for_dependencies", {"id": task.get("id"), "dependencies": unresolved})
+                return {"ok": False, "status": "dependencies_pending", "dependencies": unresolved, "task": task}
         if dry_run:
             return {"ok": True, "status": "dry_run", "task": task, "plan": self.plan(task.get("title", ""))}
         result = self._execute(task)

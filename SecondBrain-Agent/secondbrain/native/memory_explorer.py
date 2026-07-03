@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import time
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -21,6 +21,7 @@ class MemoryEntry:
     archived: bool = False
     favorite: bool = False
     lineage: str = "runtime"
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -37,14 +38,15 @@ class MemoryExplorer:
     the explorer can be enabled before the productive memory backend is final.
     """
 
-    def __init__(self, project_root: str | Path = ".") -> None:
+    def __init__(self, project_root: str | Path = ".", *, ensure_dirs: bool = True) -> None:
         self.project_root = Path(project_root).resolve()
         self.runtime_dir = self.project_root / "runtime" / "native"
         self.memory_dir = self.project_root / "runtime" / "memory"
         self.export_dir = self.project_root / "exports" / "memory"
-        self.runtime_dir.mkdir(parents=True, exist_ok=True)
-        self.memory_dir.mkdir(parents=True, exist_ok=True)
-        self.export_dir.mkdir(parents=True, exist_ok=True)
+        if ensure_dirs:
+            self.runtime_dir.mkdir(parents=True, exist_ok=True)
+            self.memory_dir.mkdir(parents=True, exist_ok=True)
+            self.export_dir.mkdir(parents=True, exist_ok=True)
         self.meta_path = self.runtime_dir / "memory_meta.json"
         self.memory_path = self.runtime_dir / "memory_entries.jsonl"
         self.voice_notes_path = self.runtime_dir / "voice_notes.jsonl"
@@ -215,6 +217,10 @@ class MemoryExplorer:
             archived=bool(raw.get("archived") or False),
             favorite=bool(raw.get("favorite") or False),
             lineage=str(raw.get("lineage") or default_source),
+            metadata={key: value for key, value in raw.items() if key not in {
+                "memory_id", "id", "kind", "content", "text", "body", "source", "created_at",
+                "timestamp", "ts", "tags", "importance", "confidence", "archived", "favorite", "lineage",
+            }},
         )
 
     def _set_meta_flag(self, memory_ref: str, key: str, value: bool) -> dict[str, Any]:

@@ -10,20 +10,9 @@
       "rtsp_port": 554,
       "stream_path": "webcam",
       "mode": "local",
+      "snapshot_url": "",
       "onvif_port": 8000,
       "enabled": true
-    },
-    {
-      "id": "reolink",
-      "name": "Reolink",
-      "location": "Security",
-      "host": "192.168.2.108",
-      "rtsp_port": 554,
-      "stream_path": "reolink",
-      "mode": "webrtc",
-      "onvif_port": 8000,
-      "enabled": false,
-      "note": "Reolink E1 (IPC_517SD5) kann kein RTSP/ONVIF -> kein HUD-Livebild."
     }
   ]
 }
