@@ -84,6 +84,9 @@ py-modules = ["launcher"]
 include = ["secondbrain", "secondbrain.*"]
 exclude = ["tests", "tests.*"]
 
+[tool.setuptools.package-data]
+"secondbrain.storage" = ["migrations/*.sql"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
