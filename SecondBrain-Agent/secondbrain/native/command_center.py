@@ -95,6 +95,22 @@ DEFAULT_COMMANDS: tuple[CommandDefinition, ...] = (
         launcher_args=("gui-bootstrap",),
         aliases=("bootstrap", "start prüfen"),
     ),
+    CommandDefinition(
+        id="agent.plan.list",
+        title="Agent-Pläne anzeigen",
+        description="Listet gespeicherte Agent-Pläne aus der bestehenden Agent-Runtime.",
+        category="Agent",
+        launcher_args=("agent-plan-list",),
+        aliases=("agent pläne", "agent plans", "pläne anzeigen"),
+    ),
+    CommandDefinition(
+        id="tools.list",
+        title="Tools anzeigen",
+        description="Listet die Werkzeuge der einheitlichen Jarvis Tool Registry.",
+        category="Agent",
+        launcher_args=("tool-list",),
+        aliases=("tools", "tool registry", "werkzeuge anzeigen"),
+    ),
 )
 
 

@@ -119,10 +119,26 @@ class NativeApprovalQueue:
         self.project_root = Path(project_root).resolve()
         self.path = approval_path(self.project_root)
 
-    def create(self, *, command: str, intent: str, text: str, target: str = "") -> dict[str, Any]:
+    def create(
+        self,
+        *,
+        command: str,
+        intent: str,
+        text: str,
+        target: str = "",
+        risk_level: str | None = None,
+        reason: str | None = None,
+    ) -> dict[str, Any]:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         created_at = _utc_now()
         approval_id = _stable_id(command, intent, text, target, created_at)
+        # Only override the ApprovalRequest defaults when the caller supplies a
+        # value, so pre-v30.61 callers keep their exact record shape.
+        extra: dict[str, Any] = {}
+        if risk_level is not None:
+            extra["risk_level"] = risk_level
+        if reason is not None:
+            extra["reason"] = reason
         record = ApprovalRequest(
             schema=APPROVAL_SCHEMA,
             approval_id=approval_id,
@@ -131,6 +147,7 @@ class NativeApprovalQueue:
             intent=intent,
             text=text,
             target=target,
+            **extra,
         ).to_dict()
         rows = self._read_all()
         rows.append(record)

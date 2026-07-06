@@ -333,6 +333,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if cmd in {"status", "health", "module-status", "module-health", "modules"}:
         return _local_status(raw)
+    if cmd in {"approval-list", "approval-show", "approval-approve", "approval-reject", "approval-audit", "approval-expire"}:
+        from secondbrain.agent.safety.cli import main as approval_main
+        return approval_main(raw)
+    if cmd in {"workflow-create", "workflow-run", "workflow-status", "workflow-list", "workflow-cancel", "workflow-resume", "workflow-audit", "workflow-rollback"}:
+        from secondbrain.agent.workflow.cli import main as workflow_main
+        return workflow_main(raw)
+    if cmd in {"background-agent-list", "background-agent-register", "background-agent-start", "background-agent-stop", "background-agent-pause", "background-agent-status", "background-agent-run", "background-agent-run-due", "background-agent-runs"}:
+        from secondbrain.agent.background_agents.cli import main as background_agent_main
+        return background_agent_main(raw)
+    if cmd in {"agent-memory-preview", "agent-memory-inject", "agent-memory-audit"}:
+        from secondbrain.agent.memory_injection.cli import main as agent_memory_main
+        return agent_memory_main(raw)
     if cmd.startswith("mobile16-"):
         return _mobile_main(raw)
     try:

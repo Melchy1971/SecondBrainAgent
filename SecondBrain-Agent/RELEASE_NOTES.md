@@ -1,3 +1,64 @@
+# Release Notes v30.63 - Background Agents
+
+## v30.63
+
+- Neues Paket `secondbrain/agent/background_agents/`: registrierte, wiederkehrende Hintergrund-Agenten (Monitore + Wartung).
+- Klassen: `BackgroundAgent`, `AgentSchedule`, `AgentRun`, `AgentHeartbeat`, `AgentSupervisor`, `AgentFailurePolicy` (plus Store, Handler, Service, CLI).
+- Agent-Typen: Import Monitor, Knowledge Quality Monitor, Memory Consolidation, RAG Index Monitor, Notification Agent, System Health Agent.
+- Funktionen: registrieren, starten, stoppen, pausieren, Status, Heartbeat, Fehlerbehandlung (Failure-Policy pause/stop/alert_only), Scheduling (`run_due`).
+- Wiederverwendung ohne Neubau: jeder Run laeuft ueber die v30.62-Workflow-Engine und wird dadurch in der bestehenden Job Queue gespiegelt; Notification Center und Memory-Sink angebunden. Das bestehende `agent/background/` bleibt unangetastet.
+- Persistenz unter `runtime/agent/background_agents/` (agents.json, runs.jsonl, heartbeats.json).
+- Launcher-Kommandos `background-agent-list`, `-register`, `-start`, `-stop`, `-pause`, `-status`, `-run`, `-run-due`, `-runs`.
+- Tests: `test_background_agents.py`, `test_agent_supervisor.py`, `test_agent_heartbeat.py` (27 passed). Keine Regression in v30.62/v30.61/Planner (74 passed).
+
+# Release Notes v30.62 - Agent Workflow Engine
+
+## v30.62
+
+- Neue Engine `secondbrain/agent/workflow/` macht mehrstufige Agent-Plaene ausfuehrbar, checkpointbar und absturzsicher.
+- Klassen: `Workflow`, `WorkflowStep` (re-export), `WorkflowState`, `WorkflowCheckpoint`, `StepRun`, `WorkflowExecutor`, `WorkflowRecovery`, `WorkflowAudit`, `WorkflowStore`, `WorkflowService`.
+- Funktionen: Workflow starten, Schritt ausfuehren, Status speichern (atomarer Checkpoint), Fehler behandeln, Retry, Rollback vorbereiten, nach Approval fortsetzen, nach Absturz fortsetzen.
+- Wiederverwendung ohne Neubau: Planner-Step-Schema, Tool Registry, v30.61 Approval Layer (`SafetyService`/`NativeApprovalQueue`, keine zweite Queue), Job Queue, Notification Center, Recovery-Klassifikation; Memory ueber optionalen Sink.
+- Checkpoints unter `runtime/agent/workflows/<id>.json`, Audit-Trail `workflow_audit.jsonl`.
+- Launcher-Kommandos `workflow-create`, `workflow-run`, `workflow-status`, `workflow-list`, `workflow-cancel`, `workflow-resume`, `workflow-audit`, `workflow-rollback`.
+- Tests: `test_workflow_engine.py`, `test_workflow_checkpoint.py`, `test_workflow_recovery.py`, `test_workflow_approval.py` (21 passed). Keine Regression in `test_v303_agent_workflow_engine.py`, v30.61-Safety, Planner (55 passed).
+
+# Release Notes v30.61 - Agent Approval & Safety Layer
+
+## v30.61
+
+- Zentrale Safety-Schicht `secondbrain/agent/safety/` für riskante Agent-Aktionen ergänzt.
+- Risk Levels `read`, `low`, `medium`, `high`, `destructive`, `external` als Vertrag eingeführt (`RiskClassifier`).
+- `SafetyPolicy` entscheidet je Aktion/Level: `allow` / `require_approval` / `block`; Blocklist, Allowlist und Level-Grenzen konfigurierbar.
+- `ActionGuard` als zentraler Einstiegspunkt: klassifiziert, prüft Policy, stellt bei Bedarf einen Approval-Request.
+- `SafetyService` bündelt den Lebenszyklus: request / approve / reject / expire (TTL) / audit / policy_check.
+- Freigabepflichtig: Dateiänderungen, Löschaktionen, externe API-Aufrufe, E-Mail, Kalender, DB-Migration, Index-Reparatur, Bulk Import, Shell Commands.
+- **Keine zweite Queue**: Wiederverwendung der bestehenden `NativeApprovalQueue` (`runtime/native/approval_queue.jsonl`) und des `NativeActionAuditLog`.
+- `NativeApprovalQueue.create()` rückwärtskompatibel um optionale `risk_level` / `reason` erweitert.
+- Launcher-Kommandos `approval-list`, `approval-show`, `approval-approve`, `approval-reject`, `approval-audit`, `approval-expire` ergänzt.
+- Tests: `test_agent_safety.py`, `test_approval_policy.py`, `test_action_guard.py` (41 passed). Keine Regression in `test_v3028_native_action_audit_approval.py`, `test_agent_planner.py`.
+
+## v30.60
+
+- Bestehende Agent- und v121-Tool-Registries auf eine Implementierung konsolidiert.
+- Einheitliche Modelle für Definition, Input-Schema, Resultat, Risiko, Capability und Health ergänzt.
+- Bestandsmodule für Suche, Dokumente, Import, Memory, Agenten, Jobs, Notifications, Settings, Voice, Updates, GitHub und Filesystem registriert.
+- Persistentes Enable/Disable und Audit verwenden weiterhin `runtime/tools_v121`.
+- Approval-, Scope-, Input- und Output-Validierung zentralisiert.
+- Filesystem-Tools auf den Projektordner begrenzt.
+- Launcher-Kommandos `tool-list`, `tool-show`, `tool-health`, `tool-run`, `tool-disable`, `tool-enable` ergänzt.
+
+# Release Notes v30.59 - Agent Planner
+
+## v30.59
+
+- Kanonische Modelle `AgentPlan`, `AgentStep` und `PlanStatus` ergänzt.
+- Deterministische Zerlegung über bestehenden AgentCore und Command Center implementiert.
+- Bestehende ChatService-, Memory-, Job-Queue- und Approval-Komponenten integriert.
+- Planvalidierung, Risikobewertung und atomare Persistenz in `runtime/agent/plans.json` ergänzt.
+- Erstellen, Anzeigen, Auflisten, Abbrechen und Fortsetzen über den Launcher verfügbar.
+- Keine zweite Agent-, Queue- oder Approval-Architektur eingeführt.
+
 # Release Notes v30.57 - Import Quality Scoring
 
 ## v30.57
@@ -79,39 +140,4 @@ Memory, Dokument-Retrieval, Hybrid Search, Provider, Streaming und Citations
 laufen durch einen gemeinsamen Service- und State-Pfad.
 
 v30.46.1 entfernt die verbliebenen parallelen Ausführungspfade: `ask`, `search`,
-Desktop-App, Actions und Legacy-HUD delegieren jetzt an dieselbe `ChatEngine`.
-
-## Neu
-
-- `ApplicationState` enthält Workspace, Provider, Modell, Conversation, ausgewählte
-  Dokumente, Runtime Health, Notifications, Memory, Jobs, Agents und Voice State.
-- Conversation Store unter `runtime/chat/<uuid>/` mit Pin/Favorite/Archive,
-  Suche, Export, Provider-Versionen und deduplizierten Attachment-Manifests.
-- Nicht-blockierendes Streaming mit Start, Cancel, Retry und Continue.
-- Markdown-Renderer für Tabellen, Codeblöcke, Listen, Checklisten, Blockquotes,
-  Links und Inline Code; Syntax-Tags sind vorbereitet.
-- Linker Document-Context-Bereich, zentraler Chat und rechtes Citation Panel sind
-  in die bestehende AI-Workspace-Shell eingebettet.
-- OpenAI, Ollama, Gemini und Claude nutzen ausschließlich die vorhandenen Provider.
-- Legacy-Chat-Store und bestehende Launcher-Kommandos bleiben kompatibel.
-
-## Start
-
-```powershell
-python launcher.py
-python launcher.py desktop
-python launcher.py conversation-gui
-python launcher.py conversation-list
-```
-
-## Validierung
-
-```powershell
-python -m compileall .
-pytest -q
-```
-
-## Risiko
-
-- Provider-Aufrufe benötigen die jeweilige lokale Konfiguration beziehungsweise Credentials.
-- Provider ohne nativen Streaming-Transport werden in der Chat-Pipeline tokenweise an die GUI weitergereicht.
+Deskt
