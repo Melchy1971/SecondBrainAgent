@@ -8,6 +8,8 @@ import json
 import time
 import uuid
 
+from .utils import atomic_replace
+
 
 @dataclass
 class MobileDevice:
@@ -95,7 +97,7 @@ class MobileBridgeStore:
     def save(self, path: Path, value: Any) -> None:
         tmp = path.with_suffix(path.suffix + ".tmp")
         tmp.write_text(json.dumps(value, indent=2, ensure_ascii=False), encoding="utf-8")
-        tmp.replace(path)
+        atomic_replace(tmp, path)
 
 
 class MobileBridge:

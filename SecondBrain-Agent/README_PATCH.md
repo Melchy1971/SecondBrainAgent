@@ -9,7 +9,40 @@ Aktuelle Installation und Startbefehle stehen hier:
 - `docs/README.md`
 - `docs/04_STARTBEFEHLE.md`
 
-Aktueller Stand: v30.50 AI Workspace.
+Aktueller Stand: v30.57 Import Quality Scoring.
+
+## v30.57
+
+Alle importierten Dokumente werden automatisch auf Duplikate, Near-Duplikate, Sprache, PII, Secrets, Klassifikation sowie Chunk-, Embedding-, OCR- und Parserqualität geprüft. Confidence, Source Trust und Knowledge Quality ergeben einen Score von 0 bis 100. Das bestehende Import Center enthält Quality Dashboard, Import Warnings und Duplicate Viewer.
+
+## v30.56
+
+Die Enterprise Import Engine arbeitet inkrementell: stabile IDs, Content-Hashes und Change Detection unterscheiden neue, geänderte, unveränderte und duplizierte Dokumente. Nur neue oder geänderte Inhalte laufen durch Chunk-, Embedding-, Memory-, Graph- und Search-Stages. Versionen bleiben in der bestehenden RAG-Datenbank erhalten. PostgreSQL/pgvector verwendet COPY-Staging mit Upsert.
+
+## v30.55
+
+Der vorhandene AI Workspace enthält ein vollständiges Import Center mit ETA, Pipeline-Zählern, Worker-/CPU-/RAM-Anzeige, Session-Steuerung, Logs und Fehleransicht. CLI-Zugriff: `python launcher.py import-center`, `import-status`, `import-history`.
+
+## v30.54
+
+PST, EML, PDF, DOCX, XLSX, CSV, TXT, Markdown sowie Obsidian-, Notion-, Paperless- und OneNote-Exporte verwenden die vorhandene Parser-Orchestrierung und denselben Enterprise ImportService. Dokument, Metadaten, Anhänge, OCR-Status, Version und Workspace werden im bestehenden RAG-Dokumentmodell gespeichert.
+
+## v30.53
+
+ChatGPT, Claude, Gemini, Perplexity, LibreChat, AnythingLLM, OpenWebUI und OpenAI Export werden in der bestehenden Enterprise Import Engine auf Conversation, Message, Attachment, Source und Metadata normalisiert. Provider-Adapter besitzen keine eigenen Importpfade.
+
+## v30.52
+
+Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native Job Queue. CPU-abhängige Worker verarbeiten Chunk-, Embedding-, Memory-, Graph- und Search-Stages unabhängig vom Import. Retry, Backoff und Dead Letters bleiben Zustände derselben Queue.
+
+## v30.51
+
+- Zentrale resumierbare Streaming-Import-Engine für ChatGPT, Claude, Gemini,
+  JSON, JSONL und Markdown.
+- `ijson`, konfigurierbare 500er-Batches und transaktionale Checkpoints im
+  bestehenden P1-RAG-Store ermöglichen sehr große Dateien ohne Voll-Read.
+- Das bestehende Import Center, die Provider-Adapter, Queue und RAG-CLI nutzen
+  denselben Service (Details: APPLY_DELTA_v30_51.md).
 
 ## v30.50
 

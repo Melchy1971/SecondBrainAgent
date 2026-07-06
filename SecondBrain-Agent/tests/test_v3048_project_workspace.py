@@ -49,4 +49,4 @@ def test_ai_workspace_registers_existing_project_center(tmp_path):
     assert modules["projects"].status == "missing"
 
     repository_workspace = AIWorkspaceService(__file__)
-    assert repository_workspace.VERSION == "v30.50"
+    assert repository_workspace.VERSION == "v30.57"

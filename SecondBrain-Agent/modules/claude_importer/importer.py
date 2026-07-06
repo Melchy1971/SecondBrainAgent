@@ -1,4 +1,4 @@
-"""Claude adapter for the central v30.51 streaming import engine."""
+"""Claude adapter for the central Enterprise Streaming Import Engine."""
 from __future__ import annotations
 
 from pathlib import Path

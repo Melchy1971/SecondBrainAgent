@@ -8,6 +8,8 @@ from typing import Any
 import json
 import uuid
 
+from .utils import atomic_replace
+
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -42,7 +44,7 @@ def _write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + '.tmp')
     tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str), encoding='utf-8')
-    tmp.replace(path)
+    atomic_replace(tmp, path)
 
 
 @dataclass

@@ -24,6 +24,7 @@ from .parsers import (
     ParserValidationError,
     PdfTextParser,
     PlainTextParser,
+    PstParser,
     XlsxParser,
 )
 from .pdf_facade import PdfOcrParserFacade
@@ -184,6 +185,7 @@ def default_multi_format_orchestrator(*, enable_pdf_ocr_facade: bool = True) -> 
     orchestrator.register(JsonParser(), mime_types=("application/json", "application/x-ndjson"))
     orchestrator.register(CsvParser(), mime_types=("text/csv",))
     orchestrator.register(EmailParser(), mime_types=("message/rfc822",))
+    orchestrator.register(PstParser(), mime_types=(MIME_BY_EXTENSION[".pst"],))
     pdf_parser = PdfOcrParserFacade() if enable_pdf_ocr_facade else PdfTextParser()
     orchestrator.register(pdf_parser, name="PdfOcrParserFacade" if enable_pdf_ocr_facade else "PdfTextParser", mime_types=("application/pdf",))
     orchestrator.register(DocxParser(), mime_types=(MIME_BY_EXTENSION[".docx"],))

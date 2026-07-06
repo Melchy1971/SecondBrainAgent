@@ -170,7 +170,10 @@ class DocumentExplorer:
                 shutil.copyfileobj(input_handle, output_handle, length=1024 * 1024)
         else:
             target = source
-        payload = {'ok': True, 'status': 'imported', 'source_path': str(source), 'target_path': str(target), 'copy': copy}
+        from secondbrain.importing import StreamingImportService
+        session = StreamingImportService(self.project_root).import_document(target, source='document_explorer')
+        payload = {'ok': True, 'status': 'imported', 'source_path': str(source), 'target_path': str(target), 'copy': copy,
+                   'session_id': session.session_id, 'import_status': session.status}
         self._append_activity({'type': 'document.imported', **payload})
         return payload
 

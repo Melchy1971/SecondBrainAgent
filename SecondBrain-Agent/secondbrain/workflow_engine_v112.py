@@ -8,6 +8,7 @@ import time
 import uuid
 
 from .autonomous_agent_v110 import ToolHost
+from .utils import atomic_replace
 
 
 @dataclass
@@ -65,7 +66,7 @@ class WorkflowStore:
         data[run.run_id] = asdict(run)
         tmp = self.path.with_suffix('.json.tmp')
         tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True, default=str), encoding="utf-8")
-        tmp.replace(self.path)
+        atomic_replace(tmp, self.path)
 
     def list(self) -> list[WorkflowRun]:
         return [self._run_from_dict(v) for v in self._load().values()]

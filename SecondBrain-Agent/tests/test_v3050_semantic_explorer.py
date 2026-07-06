@@ -74,4 +74,4 @@ def test_ai_workspace_registers_semantic_explorer():
     assert modules["semantic"].status == "ready"
     payload = workspace.module_payload("semantic")
     assert payload["mode"] == "read_only_rag_memory_projection"
-    assert AIWorkspaceService.VERSION == "v30.50"
+    assert AIWorkspaceService.VERSION == "v30.57"

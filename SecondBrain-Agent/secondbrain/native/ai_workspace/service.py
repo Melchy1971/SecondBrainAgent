@@ -17,7 +17,7 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.51"
+    VERSION = "v30.57"
 
     MODULES = (
         ("dashboard", "Dashboard", "dashboard-center-gui", ("secondbrain/native/dashboard_center",)),
@@ -214,8 +214,8 @@ class AIWorkspaceService:
         return SemanticExplorerService(self.project_root).snapshot()
 
     def _imports_payload(self) -> dict[str, Any]:
-        from secondbrain.importing import StreamingImportService
-        return StreamingImportService(self.project_root).status()
+        from secondbrain.importing import ImportCenterService
+        return ImportCenterService(self.project_root).status()
 
     def _layout_payload(self) -> dict[str, Any]:
         from secondbrain.native.layout_center.service import NativeLayoutService

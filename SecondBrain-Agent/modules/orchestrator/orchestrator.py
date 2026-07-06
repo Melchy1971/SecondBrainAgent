@@ -52,8 +52,11 @@ def run_once(project_root: Path) -> list[dict]:
                         archive_source(project_root, source, "processed")
                     continue
 
-                if source.suffix.lower() in {".json", ".jsonl", ".ndjson", ".md", ".markdown", ".zip"}:
-                    session = streaming.import_file(source, source=provider)
+                if source.suffix.lower() in {".json", ".jsonl", ".ndjson", ".md", ".markdown", ".txt", ".html", ".zip"}:
+                    if source.suffix.lower() in {".pst", ".eml", ".pdf", ".docx", ".xlsx", ".csv", ".txt", ".md", ".markdown"}:
+                        session = streaming.import_document(source, source=provider, workspace_id=str(cfg.get("workspace_id") or "default") if isinstance(cfg, dict) else "default")
+                    else:
+                        session = streaming.import_file(source, source=provider)
                     item = {
                         "source": str(source), "target": str(streaming.db_path), "provider": provider,
                         "type": "streaming_import", "tags": [provider, "import"], "task_files": [],

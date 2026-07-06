@@ -15,6 +15,7 @@ from threading import Event
 from typing import Any, Iterable, Iterator
 
 from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest, StreamChunk
+from secondbrain.utils import atomic_replace
 
 
 @dataclass(frozen=True, slots=True)
@@ -323,7 +324,7 @@ class ConversationStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")
         temporary.write_text(json.dumps(conversation.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
-        temporary.replace(path)
+        atomic_replace(temporary, path)
 
 
 class AttachmentManager:

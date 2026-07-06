@@ -62,4 +62,4 @@ def test_dashboard_and_ai_workspace_integration(tmp_path):
 
     modules = {module.id: module for module in AIWorkspaceService(ROOT).snapshot().modules}
     assert modules["tasks"].status == "ready"
-    assert AIWorkspaceService.VERSION == "v30.50"
+    assert AIWorkspaceService.VERSION == "v30.57"
