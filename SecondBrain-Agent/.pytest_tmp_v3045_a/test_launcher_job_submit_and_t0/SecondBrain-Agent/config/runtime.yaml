@@ -1,6 +1,0 @@
-
-runtime:
-  paths:
-    vault: vault
-    runtime: runtime
-    events: events/runtime

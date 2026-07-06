@@ -1,1 +1,0 @@
-[echo:agent] Analysiere den aktuellen Stand
