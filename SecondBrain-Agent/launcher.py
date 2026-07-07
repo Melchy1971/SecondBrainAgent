@@ -355,6 +355,122 @@ def _desktop_main(argv: list[str]) -> int:
         return 2
 
 
+def _diagram_main(argv: list[str]) -> int:
+    from secondbrain.vision.diagram import DiagramAnalyzer
+    from secondbrain.vision.ports import Image
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--image", required=False, default=None)
+    parser.add_argument("--model", default=None, help="path to ONNX detection model")
+    parser.add_argument("--labels", default="node,arrow", help="comma-separated class labels")
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd != "diagram-analyze":
+        out({"status": "unknown_command", "cmd": args.cmd})
+        return 2
+    if not args.image or not args.model:
+        out({"status": "error", "message": "usage: diagram-analyze --image <path> --model <onnx> [--labels node,arrow]"})
+        return 2
+    try:
+        from secondbrain.vision.engines.onnx_detector import OnnxObjectDetector
+        from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+        detector = OnnxObjectDetector(args.model, args.labels.split(","))
+        analyzer = DiagramAnalyzer(detector, TesseractOcrEngine())
+        out({"status": "ok", **analyzer.analyze_image(Image.from_path(args.image), lang=args.lang)})
+        return 0
+    except RuntimeError as exc:
+        out({"status": "engine_unavailable", "message": str(exc)})
+        return 2
+
+
+def _voice_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--audio", default=None)
+    parser.add_argument("--text", default=None)
+    parser.add_argument("--model", default="base")
+    parser.add_argument("--voice-model", default=None)
+    parser.add_argument("--out", default="out.wav")
+    parser.add_argument("--lang", default=None)
+    parser.add_argument("--speaker", default=None)
+    parser.add_argument("--label", default=None)
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd == "voice-transcribe":
+        if not args.audio:
+            out({"status": "error", "message": "usage: voice-transcribe --audio <path> [--model base] [--lang de]"})
+            return 2
+        try:
+            from secondbrain.voice.engines.whisper_stt import WhisperSttEngine
+            from secondbrain.voice.transcribe import VoiceTranscriber
+            tr = VoiceTranscriber(WhisperSttEngine(args.model))
+            out({"status": "ok", **tr.transcribe_path(args.audio, lang=args.lang)})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    if args.cmd == "voice-say":
+        if not args.text or not args.voice_model:
+            out({"status": "error", "message": "usage: voice-say --text <t> --voice-model <onnx> [--out out.wav]"})
+            return 2
+        try:
+            from secondbrain.voice.engines.piper_tts import PiperTtsEngine
+            clip = PiperTtsEngine(args.voice_model).synthesize(args.text)
+            path = clip.write(args.out)
+            out({"status": "ok", "out": path, "bytes": len(clip.data), "sample_rate": clip.sample_rate})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    if args.cmd in {"voice-enroll", "voice-identify"}:
+        from secondbrain.voice.speaker import SpeakerProfileStore, SpeakerMatcher
+        from secondbrain.voice.ports import Audio
+        store = SpeakerProfileStore(str(Path(args.project_root) / "runtime/voice/speakers.json"))
+        try:
+            from secondbrain.voice.engines.resemblyzer_embedder import ResemblyzerEmbedder
+            matcher = SpeakerMatcher(ResemblyzerEmbedder(), store)
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+        if args.cmd == "voice-enroll":
+            if not args.speaker or not args.audio:
+                out({"status": "error", "message": "usage: voice-enroll --speaker <id> --label <name> --audio <path>"})
+                return 2
+            emb = matcher.enroll(args.speaker, args.label or args.speaker, [Audio.from_path(args.audio)])
+            out({"status": "ok", "speaker": args.speaker, "embedding_dim": len(emb)})
+            return 0
+        sid = matcher.identify(Audio.from_path(args.audio))
+        out({"status": "ok", "speaker": sid.id, "label": sid.label, "score": sid.score})
+        return 0
+    if args.cmd == "voice-command":
+        from secondbrain.voice.commands import VoiceCommandRouter
+        if not args.text:
+            out({"status": "error", "message": "usage: voice-command --text <utterance>"})
+            return 2
+        router = VoiceCommandRouter(agent=lambda t: f"agent received: {t}")
+        out({"status": "ok", **router.handle(args.text)})
+        return 0
+    if args.cmd == "voice-converse":
+        missing = []
+        try:
+            from secondbrain.voice.engines.openwakeword_detector import OpenWakeWordDetector  # noqa: F401
+        except Exception:
+            missing.append("openwakeword")
+        for mod in ("webrtcvad", "faster_whisper", "piper"):
+            try:
+                __import__(mod)
+            except Exception:
+                missing.append(mod)
+        if missing:
+            out({"status": "engine_unavailable", "missing": missing,
+                 "message": "install requirements-voice.txt; the live duplex loop also needs a microphone stack"})
+            return 2
+        out({"status": "ready", "message": "conversation stack available; start the live loop on a machine with a microphone"})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -372,6 +488,10 @@ def main(argv: list[str] | None = None) -> int:
         return _vision_main(raw)
     if cmd == "desktop-analyze":
         return _desktop_main(raw)
+    if cmd == "diagram-analyze":
+        return _diagram_main(raw)
+    if cmd in {"voice-transcribe", "voice-say", "voice-converse", "voice-enroll", "voice-identify", "voice-command"}:
+        return _voice_main(raw)
     if cmd == "repo-doctor":
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":

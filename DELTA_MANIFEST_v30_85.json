@@ -1,0 +1,38 @@
+{
+  "version": "30.85",
+  "title": "Speaker Profiles + persistente Voice-Memory + Voice-Command/Agent-Integration",
+  "type": "feature",
+  "builds_on": "v30.83/84 Voice",
+  "new": {
+    "speaker": "SpeakerEmbedder-Port, SpeakerProfileStore (JSON), SpeakerMatcher (cosine/threshold, enroll/identify)",
+    "memory": "VoiceMemoryStore (persistent) + VoiceMemory (Sprecher-Attribution + RAG-Ingest)",
+    "commands": "VoiceCommandRouter (Regex-Intents + Slots + Agent-Fallback)",
+    "engines": "ResemblyzerEmbedder (lazy, integration-only) + FakeSpeakerEmbedder"
+  },
+  "launcher_commands": [
+    "voice-enroll --speaker <id> --label <n> --audio <path>",
+    "voice-identify --audio <path>",
+    "voice-command --text <utterance>"
+  ],
+  "files": [
+    "SecondBrain-Agent/secondbrain/voice/speaker.py",
+    "SecondBrain-Agent/secondbrain/voice/memory.py",
+    "SecondBrain-Agent/secondbrain/voice/commands.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/fake.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/resemblyzer_embedder.py",
+    "SecondBrain-Agent/secondbrain/voice/__init__.py",
+    "SecondBrain-Agent/tests/voice/test_speaker.py",
+    "SecondBrain-Agent/tests/voice/test_memory.py",
+    "SecondBrain-Agent/tests/voice/test_commands.py",
+    "SecondBrain-Agent/tests/voice/test_embedder_integration.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/v30_85_speaker_memory_commands.md"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/voice",
+    "pytest SecondBrain-Agent/tests/voice -q"
+  ],
+  "test_result": "voice: 22 passed, 5 skipped ; gesamt connectors+vision+voice: 95 passed, 6 skipped",
+  "ml_chain_complete": "v30.80 OCR -> 81 Desktop/Klassifikation -> 82 Objekterkennung/Diagramme -> 83 STT/TTS -> 84 Streaming/Conversation -> 85 Speaker/Memory/Commands",
+  "generated": "2026-07-07"
+}

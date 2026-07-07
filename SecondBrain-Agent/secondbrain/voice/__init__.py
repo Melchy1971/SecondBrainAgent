@@ -1,18 +1,24 @@
-"""Voice Control v20 - konsolidierte Sprachsteuerung fuer Jarvis.
+"""Voice subsystem (v30.83), offline-first.
 
-Einheitlicher Einstieg. Ersetzt die verstreuten Stub-Module
-(voice_assistant_v9, voice_layer_v103, voice_runtime_v114, voice_realtime,
-voice_companion, realtime_voice). Hardware-Provider sind optional und werden
-lazy importiert.
+Layered like vision so the standard test suite stays green without models/hardware:
+- ports:   Audio/Transcript models + Protocols (stdlib-only, unit-testable with fakes)
+- engines: STT (faster-whisper) / TTS (Piper) adapters - lazy imports, integration-only
+- transcribe: orchestration + Voice-Memory ingest via the existing ConnectorImportBridge
 """
-from .config import VoiceConfig
-from .command_router import Intent, VoiceCommandRouter
-from .controller import Response, VoiceController
-from .dictation import write_dictation
-from .hud_bridge import HudBridge
-from .wake_word_engine import WakeWordEngine
+
+from secondbrain.voice.ports import (
+    Audio, AudioClip, TranscriptSegment, Transcript,
+    SttEngine, StreamingStt, TtsEngine, MicrophoneSource,
+)
+from secondbrain.voice.transcribe import VoiceTranscriber, transcript_to_item
+from secondbrain.voice.speaker import SpeakerId, SpeakerEmbedder, SpeakerProfileStore, SpeakerMatcher, cosine
+from secondbrain.voice.memory import VoiceMemory, VoiceMemoryStore
+from secondbrain.voice.commands import VoiceCommandRouter, Intent
 
 __all__ = [
-    "VoiceConfig", "VoiceController", "Response", "VoiceCommandRouter",
-    "Intent", "HudBridge", "WakeWordEngine", "write_dictation",
+    "Audio", "AudioClip", "TranscriptSegment", "Transcript",
+    "SttEngine", "StreamingStt", "TtsEngine", "MicrophoneSource",
+    "VoiceTranscriber", "transcript_to_item",
+    "SpeakerId", "SpeakerEmbedder", "SpeakerProfileStore", "SpeakerMatcher", "cosine",
+    "VoiceMemory", "VoiceMemoryStore", "VoiceCommandRouter", "Intent",
 ]

@@ -1,0 +1,41 @@
+{
+  "version": "30.83",
+  "title": "Voice-Subsystem: offline STT (faster-whisper) + TTS (Piper)",
+  "type": "feature",
+  "layers": {
+    "ports": "secondbrain/voice/ports.py",
+    "engines": "whisper_stt / piper_tts (lazy) + fakes",
+    "orchestration": "transcribe.py -> Voice-Memory via ConnectorImportBridge"
+  },
+  "reused": [
+    "secondbrain/connectors/adapter_contract.py::ConnectorItem",
+    "secondbrain/connectors/import_bridge.py::ConnectorImportBridge"
+  ],
+  "launcher_commands": [
+    "voice-transcribe --audio <path> [--model base] [--lang]",
+    "voice-say --text <t> --voice-model <onnx> [--out]"
+  ],
+  "optional_deps": "requirements-voice.txt (faster-whisper, piper-tts; streaming/wakeword auskommentiert fuer v30.84+)",
+  "files": [
+    "SecondBrain-Agent/secondbrain/voice/__init__.py",
+    "SecondBrain-Agent/secondbrain/voice/ports.py",
+    "SecondBrain-Agent/secondbrain/voice/transcribe.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/__init__.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/fake.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/whisper_stt.py",
+    "SecondBrain-Agent/secondbrain/voice/engines/piper_tts.py",
+    "SecondBrain-Agent/tests/voice/test_ports_transcribe.py",
+    "SecondBrain-Agent/tests/voice/test_fake_engines.py",
+    "SecondBrain-Agent/tests/voice/test_engines_integration.py",
+    "SecondBrain-Agent/requirements-voice.txt",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/v30_83_voice_stt_tts.md"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/voice",
+    "pytest SecondBrain-Agent/tests/voice -q"
+  ],
+  "test_result": "voice: 6 passed, 2 skipped ; gesamt connectors+vision+voice: 79 passed, 3 skipped",
+  "scope_next": "v30.84 Streaming STT/TTS + Wake Word + Interrupt/Conversation; v30.85 Speaker Profiles + Voice Commands/Agent",
+  "generated": "2026-07-07"
+}
