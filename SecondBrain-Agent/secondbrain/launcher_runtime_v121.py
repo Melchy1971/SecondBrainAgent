@@ -9,6 +9,7 @@ from .launcher_runtime_v120 import SecondBrainLauncherV120
 from .launcher_runtime_v113 import _print_json
 from .event_bus_v121 import EventBus
 from .tool_registry_v121 import ToolDefinition, ToolRegistry
+from .agent.tool_discovery import ToolDiscovery
 from .long_running_runtime_v121 import LongRunningRuntime
 
 class SecondBrainLauncherV121(SecondBrainLauncherV120):
@@ -17,6 +18,7 @@ class SecondBrainLauncherV121(SecondBrainLauncherV120):
         self.event_bus_v121 = EventBus(self.config.runtime_dir)
         self.tool_registry_v121 = ToolRegistry(self.config.runtime_dir)
         self._register_core_tools()
+        ToolDiscovery(self.config.project_root, self.tool_registry_v121).discover()
         self.long_runtime_v121 = LongRunningRuntime(self.config.runtime_dir, self.event_bus_v121, self.tool_registry_v121)
 
     def _register_core_tools(self) -> None:
@@ -51,7 +53,7 @@ class SecondBrainLauncherV121(SecondBrainLauncherV120):
     def tool_status(self) -> dict[str, Any]:
         return self.tool_registry_v121.status()
     def tool_list(self, scope: str | None = None) -> list[dict[str, Any]]:
-        return self.tool_registry_v121.list(scope)
+        return [tool.to_dict() for tool in self.tool_registry_v121.list(scope)]
     def tool_execute(self, name: str, payload: dict[str, Any], scopes: list[str], approved: bool = False) -> dict[str, Any]:
         return self.long_runtime_v121.run_tool(name, payload, scopes, approved)
     def tool_audit(self, limit: int = 20) -> list[dict[str, Any]]:

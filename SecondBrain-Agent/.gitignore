@@ -40,3 +40,6 @@ release/*_latest.json
 Thumbs.db
 .vscode/
 .idea/
+
+# v30.67: stray pytest temp dirs (all suffixed variants)
+.pytest_tmp*/

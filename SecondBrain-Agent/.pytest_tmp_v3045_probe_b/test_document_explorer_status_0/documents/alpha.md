@@ -1,2 +1,0 @@
-# Alpha
-Jarvis Wissen

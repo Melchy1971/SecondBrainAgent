@@ -18,6 +18,7 @@ from secondbrain.backup import create_backup
 from secondbrain.dashboard import write_dashboard
 from secondbrain.weighted_graph import update_weighted_graph
 from secondbrain.recommendations import write_recommendations
+from secondbrain.importing import StreamingImportService
 
 def run_once(project_root: Path) -> list[dict]:
     settings = load_settings(project_root)
@@ -25,6 +26,7 @@ def run_once(project_root: Path) -> list[dict]:
     providers = settings.get("providers", {})
 
     imported = []
+    streaming = StreamingImportService(project_root, batch_size=int(settings.get("streaming_import_batch_size", 500)))
     log(project_root, "Importlauf gestartet")
 
     if settings.get("backup_before_import", True):
@@ -48,6 +50,23 @@ def run_once(project_root: Path) -> list[dict]:
                     log(project_root, f"Übersprungen: {source}")
                     if settings.get("archive_processed", False):
                         archive_source(project_root, source, "processed")
+                    continue
+
+                if source.suffix.lower() in {".json", ".jsonl", ".ndjson", ".md", ".markdown", ".txt", ".html", ".zip"}:
+                    if source.suffix.lower() in {".pst", ".eml", ".pdf", ".docx", ".xlsx", ".csv", ".txt", ".md", ".markdown"}:
+                        session = streaming.import_document(source, source=provider, workspace_id=str(cfg.get("workspace_id") or "default") if isinstance(cfg, dict) else "default")
+                    else:
+                        session = streaming.import_file(source, source=provider)
+                    item = {
+                        "source": str(source), "target": str(streaming.db_path), "provider": provider,
+                        "type": "streaming_import", "tags": [provider, "import"], "task_files": [],
+                        "session_id": session.session_id, "chunks": session.chunks,
+                    }
+                    imported.append(item)
+                    mark_processed(project_root, source, streaming.db_path)
+                    if settings.get("archive_processed", False):
+                        archive_source(project_root, source, "processed")
+                    log(project_root, f"Streaming importiert: {source} -> {streaming.db_path}")
                     continue
 
                 text = read_input_file(source)

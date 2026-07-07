@@ -255,6 +255,222 @@ def _p3_p1_store_bridge_main(raw: list[str]) -> int:
     return 0 if payload.get("ok") else 1
 
 
+
+def _m365_main(argv: list[str]) -> int:
+    from secondbrain.connectors.microsoft.config import GraphConfigError
+    from secondbrain.connectors.microsoft.runtime import M365Runtime
+
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("--resources", default=None, help="comma list e.g. mail,calendar,todo")
+    parser.add_argument("--no-wait", action="store_true", help="m365-login: return device code without polling")
+    parser.add_argument("--approve", default=None, help="approve a pending write by request id")
+    args, _ = parser.parse_known_args(argv)
+
+    try:
+        runtime = M365Runtime(args.project_root)
+    except GraphConfigError as exc:
+        out({"status": "config_error", "message": str(exc)})
+        return 2
+
+    resources = [r.strip() for r in args.resources.split(",") if r.strip()] if args.resources else None
+
+    if args.cmd == "m365-login":
+        result = runtime.login(printer=lambda m: print(m, file=sys.stderr), wait=not args.no_wait)
+        out(result)
+        return 0 if result.get("status") in {"ok", "pending"} else 1
+    if args.cmd == "m365-sync":
+        out(runtime.sync(resources))
+        return 0
+    if args.cmd == "m365-status":
+        if args.approve:
+            out(runtime.approve(args.approve))
+            return 0
+        out(runtime.status())
+        return 0
+    if args.cmd == "m365-disconnect":
+        out(runtime.disconnect())
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _google_main(argv: list[str]) -> int:
+    from secondbrain.connectors.scaffold.cli import run_connector_cli
+    from secondbrain.connectors.google.config import GoogleConfigError
+    from secondbrain.connectors.google.runtime import GoogleRuntime
+    return run_connector_cli("google", lambda root: GoogleRuntime(root), argv, out=out, config_error=GoogleConfigError)
+
+
+def _vision_main(argv: list[str]) -> int:
+    from secondbrain.vision.pipeline import VisionPipeline
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("path", nargs="?", default=None)
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd == "vision-ocr":
+        if not args.path:
+            out({"status": "error", "message": "usage: vision-ocr <image-path> [--lang eng]"})
+            return 2
+        try:
+            from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+            pipeline = VisionPipeline(TesseractOcrEngine())
+            out({"status": "ok", **pipeline.process_path(args.path, lang=args.lang)})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _desktop_main(argv: list[str]) -> int:
+    from secondbrain.vision.desktop import DesktopAnalyzer
+    from secondbrain.vision.classify import HeuristicTextClassifier
+    from secondbrain.vision.ports import Image
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--image", default=None, help="analyze an image file instead of the live screen")
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd != "desktop-analyze":
+        out({"status": "unknown_command", "cmd": args.cmd})
+        return 2
+    try:
+        from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+        ocr = TesseractOcrEngine()
+        analyzer = DesktopAnalyzer(ocr, text_classifier=HeuristicTextClassifier())
+        if args.image:
+            result = analyzer.analyze_image(Image.from_path(args.image), lang=args.lang)
+        else:
+            from secondbrain.vision.engines.screen_mss import MssScreenSource
+            analyzer.screen = MssScreenSource()
+            result = analyzer.analyze_screen(lang=args.lang)
+        out({"status": "ok", **result})
+        return 0
+    except RuntimeError as exc:
+        out({"status": "engine_unavailable", "message": str(exc)})
+        return 2
+
+
+def _diagram_main(argv: list[str]) -> int:
+    from secondbrain.vision.diagram import DiagramAnalyzer
+    from secondbrain.vision.ports import Image
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--image", required=False, default=None)
+    parser.add_argument("--model", default=None, help="path to ONNX detection model")
+    parser.add_argument("--labels", default="node,arrow", help="comma-separated class labels")
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd != "diagram-analyze":
+        out({"status": "unknown_command", "cmd": args.cmd})
+        return 2
+    if not args.image or not args.model:
+        out({"status": "error", "message": "usage: diagram-analyze --image <path> --model <onnx> [--labels node,arrow]"})
+        return 2
+    try:
+        from secondbrain.vision.engines.onnx_detector import OnnxObjectDetector
+        from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+        detector = OnnxObjectDetector(args.model, args.labels.split(","))
+        analyzer = DiagramAnalyzer(detector, TesseractOcrEngine())
+        out({"status": "ok", **analyzer.analyze_image(Image.from_path(args.image), lang=args.lang)})
+        return 0
+    except RuntimeError as exc:
+        out({"status": "engine_unavailable", "message": str(exc)})
+        return 2
+
+
+def _voice_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--audio", default=None)
+    parser.add_argument("--text", default=None)
+    parser.add_argument("--model", default="base")
+    parser.add_argument("--voice-model", default=None)
+    parser.add_argument("--out", default="out.wav")
+    parser.add_argument("--lang", default=None)
+    parser.add_argument("--speaker", default=None)
+    parser.add_argument("--label", default=None)
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd == "voice-transcribe":
+        if not args.audio:
+            out({"status": "error", "message": "usage: voice-transcribe --audio <path> [--model base] [--lang de]"})
+            return 2
+        try:
+            from secondbrain.voice.engines.whisper_stt import WhisperSttEngine
+            from secondbrain.voice.transcribe import VoiceTranscriber
+            tr = VoiceTranscriber(WhisperSttEngine(args.model))
+            out({"status": "ok", **tr.transcribe_path(args.audio, lang=args.lang)})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    if args.cmd == "voice-say":
+        if not args.text or not args.voice_model:
+            out({"status": "error", "message": "usage: voice-say --text <t> --voice-model <onnx> [--out out.wav]"})
+            return 2
+        try:
+            from secondbrain.voice.engines.piper_tts import PiperTtsEngine
+            clip = PiperTtsEngine(args.voice_model).synthesize(args.text)
+            path = clip.write(args.out)
+            out({"status": "ok", "out": path, "bytes": len(clip.data), "sample_rate": clip.sample_rate})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    if args.cmd in {"voice-enroll", "voice-identify"}:
+        from secondbrain.voice.speaker import SpeakerProfileStore, SpeakerMatcher
+        from secondbrain.voice.ports import Audio
+        store = SpeakerProfileStore(str(Path(args.project_root) / "runtime/voice/speakers.json"))
+        try:
+            from secondbrain.voice.engines.resemblyzer_embedder import ResemblyzerEmbedder
+            matcher = SpeakerMatcher(ResemblyzerEmbedder(), store)
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+        if args.cmd == "voice-enroll":
+            if not args.speaker or not args.audio:
+                out({"status": "error", "message": "usage: voice-enroll --speaker <id> --label <name> --audio <path>"})
+                return 2
+            emb = matcher.enroll(args.speaker, args.label or args.speaker, [Audio.from_path(args.audio)])
+            out({"status": "ok", "speaker": args.speaker, "embedding_dim": len(emb)})
+            return 0
+        sid = matcher.identify(Audio.from_path(args.audio))
+        out({"status": "ok", "speaker": sid.id, "label": sid.label, "score": sid.score})
+        return 0
+    if args.cmd == "voice-command":
+        from secondbrain.voice.commands import VoiceCommandRouter
+        if not args.text:
+            out({"status": "error", "message": "usage: voice-command --text <utterance>"})
+            return 2
+        router = VoiceCommandRouter(agent=lambda t: f"agent received: {t}")
+        out({"status": "ok", **router.handle(args.text)})
+        return 0
+    if args.cmd == "voice-converse":
+        missing = []
+        try:
+            from secondbrain.voice.engines.openwakeword_detector import OpenWakeWordDetector  # noqa: F401
+        except Exception:
+            missing.append("openwakeword")
+        for mod in ("webrtcvad", "faster_whisper", "piper"):
+            try:
+                __import__(mod)
+            except Exception:
+                missing.append(mod)
+        if missing:
+            out({"status": "engine_unavailable", "missing": missing,
+                 "message": "install requirements-voice.txt; the live duplex loop also needs a microphone stack"})
+            return 2
+        out({"status": "ready", "message": "conversation stack available; start the live loop on a machine with a microphone"})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -264,6 +480,18 @@ def main(argv: list[str] | None = None) -> int:
     if cmd == "bootstrap":
         out(write_bootstrap_report(Path.cwd(), repair=True))
         return 0
+    if cmd in {"m365-login", "m365-sync", "m365-status", "m365-disconnect"}:
+        return _m365_main(raw)
+    if cmd in {"google-login", "google-sync", "google-status", "google-disconnect"}:
+        return _google_main(raw)
+    if cmd == "vision-ocr":
+        return _vision_main(raw)
+    if cmd == "desktop-analyze":
+        return _desktop_main(raw)
+    if cmd == "diagram-analyze":
+        return _diagram_main(raw)
+    if cmd in {"voice-transcribe", "voice-say", "voice-converse", "voice-enroll", "voice-identify", "voice-command"}:
+        return _voice_main(raw)
     if cmd == "repo-doctor":
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
@@ -292,7 +520,13 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd == "p1-rag-ingest-text":
             payload = rt.ingest_text(" ".join(args.args), args.source, args.title)
         elif cmd == "p1-rag-ingest-file":
-            payload = rt.ingest_file(args.args[0] if args.args else "", args.source, args.title)
+            source_path = args.args[0] if args.args else ""
+            if Path(source_path).suffix.lower() in {".json", ".jsonl", ".ndjson", ".md", ".markdown", ".zip"}:
+                from secondbrain.importing import StreamingImportService
+                session = StreamingImportService(args.project_root).import_file(source_path, source=args.source)
+                payload = {"ok": session.status == "completed", **session.to_dict()}
+            else:
+                payload = rt.ingest_file(source_path, args.source, args.title)
         elif cmd == "p1-rag-ingest-dir":
             payload = rt.ingest_directory(args.args[0] if args.args else "")
         elif cmd == "p1-rag-search":
@@ -407,6 +641,15 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)
+    if cmd in {"import-center", "import-status", "import-history"}:
+        from secondbrain.native.import_center_cli import main as import_center_main
+        return import_center_main(raw)
+    if cmd in {"agent-plan-create", "agent-plan-show", "agent-plan-list", "agent-plan-cancel", "agent-plan-resume"}:
+        from secondbrain.agent.planner_cli import main as agent_plan_main
+        return agent_plan_main(raw)
+    if cmd in {"tool-list", "tool-show", "tool-health", "tool-run", "tool-disable", "tool-enable"}:
+        from secondbrain.agent.tool_cli import main as tool_main
+        return tool_main(raw)
     if cmd in {"document-preview", "document-preview-gui", "document-preview-status", "document-preview-open", "document-preview-metadata", "document-preview-search", "document-preview-ocr", "document-preview-annotate", "document-preview-annotations", "document-preview-version-snapshot", "document-preview-versions"}:
         from secondbrain.native.document_preview.cli import main as document_preview_main
         return document_preview_main(raw)
@@ -421,6 +664,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if cmd in {"status", "health", "module-status", "module-health", "modules"}:
         return _local_status(raw)
+    if cmd in {"approval-list", "approval-show", "approval-approve", "approval-reject", "approval-audit", "approval-expire"}:
+        from secondbrain.agent.safety.cli import main as approval_main
+        return approval_main(raw)
+    if cmd in {"workflow-create", "workflow-run", "workflow-status", "workflow-list", "workflow-cancel", "workflow-resume", "workflow-audit", "workflow-rollback"}:
+        from secondbrain.agent.workflow.cli import main as workflow_main
+        return workflow_main(raw)
+    if cmd in {"background-agent-list", "background-agent-register", "background-agent-start", "background-agent-stop", "background-agent-pause", "background-agent-status", "background-agent-run", "background-agent-run-due", "background-agent-runs"}:
+        from secondbrain.agent.background_agents.cli import main as background_agent_main
+        return background_agent_main(raw)
+    if cmd in {"agent-memory-preview", "agent-memory-inject", "agent-memory-audit"}:
+        from secondbrain.agent.memory_injection.cli import main as agent_memory_main
+        return agent_memory_main(raw)
+    if cmd in {"goal-create", "goal-list", "goal-show", "goal-update", "goal-report", "goal-close"}:
+        from secondbrain.agent.goals.cli import main as goal_main
+        return goal_main(raw)
+    if cmd in {"agent-control-center", "agent-control-center-gui", "agent-control-center-status", "agent-control-area", "agent-control-plan-create", "agent-control-plan-inspect", "agent-control-plan-start", "agent-control-approve", "agent-control-reject", "agent-control-workflow", "agent-control-goal-report", "agent-control-bg"}:
+        from secondbrain.native.agent_control.cli import main as agent_control_main
+        return agent_control_main(raw)
     if cmd.startswith("mobile16-"):
         return _mobile_main(raw)
     try:

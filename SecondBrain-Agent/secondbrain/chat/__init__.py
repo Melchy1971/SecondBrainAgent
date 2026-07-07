@@ -41,6 +41,14 @@ _EXPORTS = {
     "ChatEngine": "secondbrain.native.chat",
     "Conversation": "secondbrain.native.chat",
     "ConversationStore": "secondbrain.native.chat",
+    "AnswerEvaluator": "secondbrain.chat.evaluation",
+    "AnswerEvaluation": "secondbrain.chat.evaluation",
+    "HallucinationDetector": "secondbrain.chat.evaluation",
+    "SourceVerifier": "secondbrain.chat.evaluation",
+    "EvidenceRater": "secondbrain.chat.evaluation",
+    "AnswerRater": "secondbrain.chat.evaluation",
+    "SelfCritic": "secondbrain.chat.evaluation",
+    "ImprovementSuggester": "secondbrain.chat.evaluation",
 }
 
 __all__ = sorted(_EXPORTS)

@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "4a85a605f8a0c087",
+        "id": "42c4e1d984759f7c",
         "type": "tabs",
         "children": [
           {
-            "id": "94c2e983e31369fe",
+            "id": "3df4421a5014ed80",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph-Ansicht"
+              "type": "markdown",
+              "state": {
+                "file": "05_Quellen/ChatGPT/Mainboard_Empfehlung_Vergleich_6921c877-4210-832a-ba56.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Mainboard_Empfehlung_Vergleich_6921c877-4210-832a-ba56"
             }
           }
         ]
@@ -190,8 +194,11 @@
       "secondbrain-agent:SecondBrain Agent": false
     }
   },
-  "active": "94c2e983e31369fe",
+  "active": "3df4421a5014ed80",
   "lastOpenFiles": [
+    "59_DataWarehouse/Facts/facts_documents.md",
+    "00_Inbox/20260706_111454_was-findest-du-alles-zum-thema-tischtennis.md",
+    "Unbenannt.canvas",
     "05_Quellen/ChatGPT/Code_Optimierung_und_Erweiterung.md",
     "99_System/indexes/vault_index.md",
     "38_MultiVault/Federation_Index.md",
@@ -208,7 +215,6 @@
     "99_System/chatgpt_import/2026-06-30_113515_chatgpt_import_report.json",
     "132_JarvisControlCenterGUI/Jarvis_Control_Center_GUI.md",
     "00_Inbox/2026-06-18_nicht-unterstuetzter-dateityp-gemini-export-zip.md",
-    "59_DataWarehouse/Facts/facts_documents.md",
     "110_DecisionAgent/2026-06-30_decision-agent.md",
     "123_PersonalKPIs/2026-06-30_personal-kpis.md",
     "122_WeeklyOperatingSystem/2026-06-30_weekly-os.md",
@@ -219,7 +225,6 @@
     "112_ChiefOfStaff/2026-06-30_chief-of-staff-v98.md",
     "111_ProcessAgent/2026-06-30_process-agent.md",
     "109_ProjectAgent/2026-06-30_project-agent.md",
-    "108_MeetingAgent/2026-06-30_meeting-agent.md",
     "99_System/quality",
     "99_System/conflicts",
     "99_System/production",

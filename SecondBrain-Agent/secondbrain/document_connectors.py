@@ -1,5 +1,4 @@
 from pathlib import Path
-from .utils import now_date, slugify, ensure_unique_path, read_text_safe
 
 def extract_pdf(path: Path) -> str:
     try:
@@ -44,35 +43,8 @@ def extract_ocr_image(path: Path) -> str:
     return pytesseract.image_to_string(Image.open(path), lang="deu+eng")
 
 def import_document_to_inbox(settings: dict, file_path: str) -> Path:
-    source = Path(file_path)
-    inbox = Path(settings["inbox_path"]) / "Documents"
-    inbox.mkdir(parents=True, exist_ok=True)
-
-    suffix = source.suffix.lower()
-    if suffix == ".pdf":
-        text = extract_pdf(source)
-    elif suffix == ".docx":
-        text = extract_docx(source)
-    elif suffix == ".xlsx":
-        text = extract_xlsx(source)
-    elif suffix in [".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"]:
-        text = extract_ocr_image(source)
-    else:
-        text = read_text_safe(source)
-
-    target = ensure_unique_path(inbox / f"{now_date()}_{slugify(source.stem)}.md")
-    md = f"""---
-title: "{source.stem}"
-type: document_import
-source_file: "{source}"
-created: {now_date()}
-tags:
-  - document
----
-
-# {source.stem}
-
-{text}
-"""
-    target.write_text(md, encoding="utf-8")
-    return target
+    from secondbrain.importing import StreamingImportService
+    root = settings.get("project_root") or settings.get("agent_root") or "."
+    service = StreamingImportService(root)
+    service.import_document(file_path, source="document_connector", workspace_id=str(settings.get("workspace_id") or "default"))
+    return service.db_path

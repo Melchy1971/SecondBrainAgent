@@ -1,5 +1,7 @@
 import hashlib
+import os
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -33,6 +35,17 @@ def ensure_unique_path(path: Path) -> Path:
         if not candidate.exists():
             return candidate
         i += 1
+
+def atomic_replace(source: Path, target: Path, *, attempts: int = 6, delay: float = 0.02) -> None:
+    """Replace with bounded retries for transient Windows scanner/file locks."""
+    for attempt in range(max(1, attempts)):
+        try:
+            os.replace(source, target)
+            return
+        except PermissionError:
+            if attempt + 1 >= attempts:
+                raise
+            time.sleep(delay * (attempt + 1))
 
 def read_text_safe(path: Path) -> str:
     for enc in ["utf-8", "utf-8-sig", "cp1252", "latin-1"]:

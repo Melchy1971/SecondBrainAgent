@@ -1,17 +1,23 @@
+"""Compatibility contract backed by the unified tool models."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import dataclass
+from enum import StrEnum
 from typing import Any, Callable, Mapping
 
+from secondbrain.agent.tool_registry import (
+    ToolDefinition,
+    ToolInputSchema,
+    ToolResult,
+    ToolRiskLevel,
+)
 
-class ToolRisk(str, Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
+
+ToolRisk = ToolRiskLevel
 
 
-class ToolPermission(str, Enum):
+class ToolPermission(StrEnum):
     READ = "read"
     WRITE = "write"
     DELETE = "delete"
@@ -30,20 +36,6 @@ class ToolParameter:
 
 
 @dataclass(frozen=True)
-class ToolDefinition:
-    name: str
-    description: str
-    parameters: tuple[ToolParameter, ...] = field(default_factory=tuple)
-    permissions: tuple[ToolPermission, ...] = (ToolPermission.READ,)
-    risk: ToolRisk = ToolRisk.LOW
-    requires_approval: bool = False
-    timeout_seconds: float = 30.0
-
-    def parameter_map(self) -> dict[str, ToolParameter]:
-        return {parameter.name: parameter for parameter in self.parameters}
-
-
-@dataclass(frozen=True)
 class ToolCall:
     tool_name: str
     arguments: Mapping[str, Any]
@@ -51,13 +43,15 @@ class ToolCall:
     correlation_id: str | None = None
 
 
-@dataclass(frozen=True)
-class ToolResult:
-    tool_name: str
-    success: bool
-    output: Any = None
-    error: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
 ToolHandler = Callable[[Mapping[str, Any]], Any]
+
+__all__ = [
+    "ToolCall",
+    "ToolDefinition",
+    "ToolHandler",
+    "ToolInputSchema",
+    "ToolParameter",
+    "ToolPermission",
+    "ToolResult",
+    "ToolRisk",
+]

@@ -1,0 +1,78 @@
+{
+  "version": "30.79",
+  "title": "Google Workspace Integration + provider-agnostic Connector-Scaffold",
+  "type": "feature",
+  "scaffold": "SecondBrain-Agent/secondbrain/connectors/scaffold (transport, oauth2, rest_client, delta_connector, writer, approval, sync, runtime_base, cli)",
+  "reused": [
+    "SecondBrain-Agent/secondbrain/connectors/adapter_contract.py::ConnectorItem",
+    "SecondBrain-Agent/secondbrain/connectors/incremental_runner.py::IncrementalSyncRunner",
+    "SecondBrain-Agent/secondbrain/connectors/import_bridge.py::ConnectorImportBridge",
+    "SecondBrain-Agent/secondbrain/connectors/cursor_store.py::JsonCursorStore",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft (rebased onto scaffold, unchanged behaviour)"
+  ],
+  "resources": [
+    "gmail",
+    "calendar",
+    "drive",
+    "contacts",
+    "tasks"
+  ],
+  "not_implemented": {
+    "keep": "Google Keep has no official API -> excluded; document-only, revisit via Takeout export bridge"
+  },
+  "launcher_commands": [
+    "google-login",
+    "google-sync",
+    "google-status",
+    "google-disconnect"
+  ],
+  "files": [
+    "SecondBrain-Agent/docs/releases/v30_79_google_workspace.md",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/__init__.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/auth.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/client.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/config.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/normalizers.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/registry.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/__init__.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/base.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/calendar.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/contacts.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/drive.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/gmail.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/resources/tasks.py",
+    "SecondBrain-Agent/secondbrain/connectors/google/runtime.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/__init__.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/approval.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/cli.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/delta_connector.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/oauth2.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/rest_client.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/runtime_base.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/sync.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/transport.py",
+    "SecondBrain-Agent/secondbrain/connectors/scaffold/writer.py",
+    "SecondBrain-Agent/tests/connectors/google/__init__.py",
+    "SecondBrain-Agent/tests/connectors/google/conftest.py",
+    "SecondBrain-Agent/tests/connectors/google/test_client.py",
+    "SecondBrain-Agent/tests/connectors/google/test_config_auth.py",
+    "SecondBrain-Agent/tests/connectors/google/test_normalizers.py",
+    "SecondBrain-Agent/tests/connectors/google/test_resources.py",
+    "SecondBrain-Agent/tests/connectors/google/test_runtime.py",
+    "SecondBrain-Agent/tests/connectors/google/test_writes_approval.py"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/connectors/scaffold SecondBrain-Agent/secondbrain/connectors/google",
+    "pytest SecondBrain-Agent/tests/connectors -q"
+  ],
+  "test_result": "52 passed (33 M365 rebased + 19 Google)",
+  "config_required": {
+    "env": [
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET",
+      "GOOGLE_SCOPES (optional)"
+    ]
+  },
+  "generated": "2026-07-07"
+}

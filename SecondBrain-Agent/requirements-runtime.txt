@@ -1,6 +1,7 @@
 # Curated runtime dependencies.
 #
-# The current core runtime is standard-library only.
+# The core runtime uses ijson for bounded-memory streaming imports.
+ijson>=3.2.3
 # Optional feature dependencies are declared in pyproject.toml extras:
 #
 #   pip install -e ".[pdf]"        # PDF parsing via PyMuPDF/pypdf

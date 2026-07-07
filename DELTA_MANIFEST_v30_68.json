@@ -1,0 +1,26 @@
+{
+  "version": "30.68",
+  "title": "Reasoning Engine",
+  "files": [
+    "SecondBrain-Agent/secondbrain/agent/reasoning/__init__.py",
+    "SecondBrain-Agent/secondbrain/agent/reasoning/models.py",
+    "SecondBrain-Agent/secondbrain/agent/reasoning/evidence.py",
+    "SecondBrain-Agent/secondbrain/agent/reasoning/session.py",
+    "SecondBrain-Agent/secondbrain/agent/reasoning/history.py",
+    "SecondBrain-Agent/tests/test_reasoning.py",
+    "SecondBrain-Agent/tests/test_evidence.py",
+    "SecondBrain-Agent/tests/test_decisions.py",
+    "SecondBrain-Agent/docs/releases/v30_68_reasoning_engine.md",
+    "SecondBrain-Agent/README_PATCH.md",
+    "SecondBrain-Agent/RELEASE_NOTES.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_68.md"
+  ],
+  "reused": [
+    "SecondBrain-Agent/secondbrain/agent/memory_injection::MemoryInjector",
+    "SecondBrain-Agent/secondbrain/agent/memory_injection::MemoryConflictDetector"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/agent/reasoning",
+    "pytest tests/test_reasoning.py tests/test_evidence.py tests/test_decisions.py -q"
+  ]
+}

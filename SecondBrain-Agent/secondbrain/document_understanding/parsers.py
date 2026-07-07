@@ -12,7 +12,7 @@ import json
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Any, Callable, Iterable
 
 from .parser_contract import ParsedDocument, ParsedPage, ParseStatus, build_parsed_document, normalize_text
 
@@ -25,6 +25,7 @@ MIME_BY_EXTENSION = {
     ".json": "application/json",
     ".jsonl": "application/x-ndjson",
     ".eml": "message/rfc822",
+    ".pst": "application/vnd.ms-outlook",
     ".pdf": "application/pdf",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -176,6 +177,10 @@ class EmailParser:
             value = message.get(header)
             if value:
                 parts.append(f"{header.title()}: {value}")
+        attachments = []
+        for part in message.iter_attachments():
+            payload = part.get_payload(decode=True) or b""
+            attachments.append({"name": part.get_filename() or "attachment", "mime_type": part.get_content_type(), "bytes": len(payload)})
         body = message.get_body(preferencelist=("plain",))
         if body is not None:
             parts.append(body.get_content())
@@ -190,8 +195,46 @@ class EmailParser:
             text="\n\n".join(parts),
             mime_type="message/rfc822",
             source_path=p,
-            metadata={"parser": "email", "bytes": p.stat().st_size},
+            metadata={"parser": "email", "bytes": p.stat().st_size, "attachments": attachments,
+                      "message_id": str(message.get("message-id") or ""), "date": str(message.get("date") or "")},
         )
+
+
+class PstParser:
+    """PST parser using the established parser contract and optional pypff reader."""
+
+    supported_extensions = {".pst"}
+
+    def parse(self, path: str | Path) -> ParsedDocument:
+        p = _ensure_existing_file(path)
+        try:
+            import pypff  # type: ignore[import-not-found]
+        except Exception as exc:
+            return build_parsed_document(title=p.name, text="", mime_type=MIME_BY_EXTENSION[".pst"], source_path=p,
+                status=ParseStatus.FAILED, metadata={"parser": "pypff", "bytes": p.stat().st_size},
+                errors=[f"pst_reader_missing:{type(exc).__name__}"])
+        store = pypff.file()
+        lines: list[str] = []
+        attachments: list[dict[str, Any]] = []
+        try:
+            store.open(str(p))
+            def visit(folder) -> None:
+                for index in range(folder.number_of_sub_messages):
+                    message = folder.get_sub_message(index)
+                    lines.extend((f"## {message.subject or 'Message'}", f"From: {message.sender_name or ''}", str(message.plain_text_body or ""), ""))
+                    for attachment_index in range(message.number_of_attachments):
+                        attachment = message.get_attachment(attachment_index)
+                        attachments.append({"name": attachment.name or f"attachment-{attachment_index + 1}", "bytes": attachment.size})
+                for index in range(folder.number_of_sub_folders):
+                    visit(folder.get_sub_folder(index))
+            visit(store.get_root_folder())
+        except Exception as exc:
+            return build_parsed_document(title=p.name, text="", mime_type=MIME_BY_EXTENSION[".pst"], source_path=p,
+                status=ParseStatus.FAILED, metadata={"parser": "pypff", "bytes": p.stat().st_size}, errors=[f"pst_parse_failed:{exc}"])
+        finally:
+            store.close()
+        return build_parsed_document(title=p.name, text="\n".join(lines), mime_type=MIME_BY_EXTENSION[".pst"], source_path=p,
+            metadata={"parser": "pypff", "bytes": p.stat().st_size, "attachments": attachments})
 
 
 class PdfTextParser:
@@ -443,6 +486,7 @@ def default_parser_registry() -> ParserRegistry:
     registry.register(JsonParser())
     registry.register(CsvParser())
     registry.register(EmailParser())
+    registry.register(PstParser())
     registry.register(PdfTextParser())
     registry.register(DocxParser())
     registry.register(XlsxParser())

@@ -15,6 +15,7 @@ from threading import Event
 from typing import Any, Iterable, Iterator
 
 from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest, StreamChunk
+from secondbrain.utils import atomic_replace
 
 
 @dataclass(frozen=True, slots=True)
@@ -323,7 +324,7 @@ class ConversationStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")
         temporary.write_text(json.dumps(conversation.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
-        temporary.replace(path)
+        atomic_replace(temporary, path)
 
 
 class AttachmentManager:
@@ -452,6 +453,8 @@ class ChatEngine:
             memory_explorer=memory_explorer,
             attachments=self.attachments,
         )
+        from secondbrain.chat.evaluation import AnswerEvaluator
+        self.answer_evaluator = AnswerEvaluator()
         self._provider_manager = provider_manager
         self.last_conversation_id: str | None = None
 
@@ -467,6 +470,7 @@ class ChatEngine:
         selected_documents: Iterable[str] = (),
         history: Iterable[dict[str, Any]] = (),
         limit: int = 5,
+        goal_prompt: str = "",
     ) -> dict[str, Any]:
         prompt = (text or "").strip()
         if not prompt:
@@ -489,7 +493,10 @@ class ChatEngine:
             conversation_id=str(conversation["id"]),
         )
         user_message = self.conversations.append_message(conversation["id"], "user", prompt)
-        request = self._completion_request(prompt, prior, context["context"], model_name, stream=False)
+        request = self._completion_request(
+            prompt, prior, context, model_name, provider=provider_name,
+            workspace=workspace, goal_prompt=goal_prompt, stream=False,
+        )
         try:
             response = self._providers().complete(provider_name, request)
         except Exception as exc:
@@ -501,11 +508,18 @@ class ChatEngine:
                 "message": user_message,
                 "citations": context["citations"],
             }
+        evaluation = self.answer_evaluator.evaluate(
+            prompt,
+            response.content,
+            evidence=[*context["hits"], *context["memories"]],
+            citations=context["citations"],
+        ).to_dict()
         assistant = self.conversations.append_message(
             conversation["id"],
             "assistant",
             response.content,
-            metadata={"provider": response.provider, "model": response.model, "citations": context["citations"], "usage": response.usage},
+            metadata={"provider": response.provider, "model": response.model, "citations": context["citations"],
+                      "usage": response.usage, "evaluation": evaluation},
         )
         return {
             "ok": True,
@@ -515,6 +529,7 @@ class ChatEngine:
             "answer": response.content,
             "citations": context["citations"],
             "memory_context": context["memories"],
+            "evaluation": evaluation,
         }
 
     def stream_response(
@@ -529,6 +544,7 @@ class ChatEngine:
         selected_documents: Iterable[str] = (),
         limit: int = 5,
         cancel_event: Event | None = None,
+        goal_prompt: str = "",
     ) -> Iterator[StreamChunk]:
         prompt = (text or "").strip()
         if not prompt:
@@ -551,7 +567,10 @@ class ChatEngine:
             conversation_id=str(conversation["id"]),
         )
         self.conversations.append_message(conversation["id"], "user", prompt)
-        request = self._completion_request(prompt, prior, context["context"], model_name, stream=True)
+        request = self._completion_request(
+            prompt, prior, context, model_name, provider=provider_name,
+            workspace=workspace, goal_prompt=goal_prompt, stream=True,
+        )
         parts: list[str] = []
         cancelled = False
         try:
@@ -569,6 +588,12 @@ class ChatEngine:
             cancelled = cancelled or bool(cancel_event and cancel_event.is_set())
             content = "".join(parts)
             if content:
+                evaluation = self.answer_evaluator.evaluate(
+                    prompt,
+                    content,
+                    evidence=[*context["hits"], *context["memories"]],
+                    citations=context["citations"],
+                ).to_dict()
                 self.conversations.append_message(
                     conversation["id"],
                     "assistant",
@@ -578,6 +603,7 @@ class ChatEngine:
                         "model": model_name,
                         "citations": context["citations"],
                         "cancelled": cancelled,
+                        "evaluation": evaluation,
                     },
                 )
 
@@ -641,18 +667,36 @@ class ChatEngine:
             for index, token in enumerate(tokens)
         ]
 
-    @staticmethod
     def _completion_request(
+        self,
         prompt: str,
         prior: list[dict[str, Any]],
-        context: str,
+        context: dict[str, Any] | str,
         model: str,
         *,
+        provider: str = "",
+        workspace: str = "",
+        goal_prompt: str = "",
         stream: bool,
     ) -> CompletionRequest:
         from secondbrain.chat.context import PromptAssembler
 
-        return PromptAssembler().completion_request(prompt, prior, context, model, stream=stream)
+        assembler = PromptAssembler(project_root=self.project_root)
+        if isinstance(context, dict) and isinstance(context.get("prompt_sections"), dict):
+            workspace_text = f"Workspace: {workspace}" if workspace else ""
+            return assembler.final_request(
+                prompt,
+                prior,
+                context["prompt_sections"],
+                model,
+                provider=provider,
+                workspace_prompt=workspace_text,
+                goal_prompt=goal_prompt,
+                stream=stream,
+            )
+        return assembler.completion_request(
+            prompt, prior, str(context), model, provider=provider, stream=stream
+        )
 
     def ask(self, text: str, *, limit: int = 5, **options: Any) -> dict[str, Any]:
         result = self.send(text, limit=limit, **options)

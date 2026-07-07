@@ -17,18 +17,22 @@ class AIWorkspaceService:
     for the native desktop shell.
     """
 
-    VERSION = "v30.48"
+    VERSION = "v30.57"
 
     MODULES = (
         ("dashboard", "Dashboard", "dashboard-center-gui", ("secondbrain/native/dashboard_center",)),
         ("layout", "Layout", "layout-status", ("secondbrain/native/layout_center",)),
         ("workspace", "Workspace", "workspace-center-gui", ("secondbrain/native/workspace_center.py",)),
         ("projects", "Projekte", "ai-workspace-gui", ("secondbrain/desktop_pro/projects.py",)),
+        ("tasks", "Aufgaben", "ai-workspace-gui", ("secondbrain/native/task_workspace.py",)),
+        ("semantic", "Semantic Explorer", "ai-workspace-gui", ("secondbrain/native/semantic_explorer.py",)),
+        ("imports", "Import Center", "ai-workspace-gui", ("secondbrain/importing/streaming.py",)),
         ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat.py",)),
         ("documents", "Document Explorer", "document-explorer-gui", ("secondbrain/native/document_explorer.py",)),
         ("preview", "Document Preview", "document-preview-gui", ("secondbrain/native/document_preview",)),
         ("memory", "Memory Explorer", "memory-explorer", ("secondbrain/native/memory_explorer.py",)),
         ("agents", "Agent Control", "agent-control-gui", ("secondbrain/native/agent_control_center.py",)),
+        ("agent_control", "Agent Control Center", "agent-control-center-gui", ("secondbrain/native/agent_control",)),
         ("voice", "Voice Control", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
         ("commands", "Command Center", "command-center-gui", ("secondbrain/native/command_center.py",)),
         ("jobs", "Job Queue", "job-queue-center-gui", ("secondbrain/native/job_queue_center",)),
@@ -164,11 +168,15 @@ class AIWorkspaceService:
             "layout": self._layout_payload,
             "workspace": self._workspace_payload,
             "projects": self._projects_payload,
+            "tasks": self._tasks_payload,
+            "semantic": self._semantic_payload,
+            "imports": self._imports_payload,
             "chat": self._chat_payload,
             "documents": self._documents_payload,
             "preview": self._preview_payload,
             "memory": self._memory_payload,
             "agents": self._agents_payload,
+            "agent_control": self._agent_control_payload,
             "voice": self._voice_payload,
             "commands": self._commands_payload,
             "jobs": self._jobs_payload,
@@ -199,6 +207,18 @@ class AIWorkspaceService:
         from secondbrain.native.project_workspace import ProjectWorkspaceService
         return ProjectWorkspaceService(self.project_root).snapshot()
 
+    def _tasks_payload(self) -> dict[str, Any]:
+        from secondbrain.native.task_workspace import TaskWorkspaceService
+        return TaskWorkspaceService(self.project_root).snapshot()
+
+    def _semantic_payload(self) -> dict[str, Any]:
+        from secondbrain.native.semantic_explorer import SemanticExplorerService
+        return SemanticExplorerService(self.project_root).snapshot()
+
+    def _imports_payload(self) -> dict[str, Any]:
+        from secondbrain.importing import ImportCenterService
+        return ImportCenterService(self.project_root).status()
+
     def _layout_payload(self) -> dict[str, Any]:
         from secondbrain.native.layout_center.service import NativeLayoutService
         return NativeLayoutService(self.project_root).status()
@@ -222,6 +242,10 @@ class AIWorkspaceService:
     def _agents_payload(self) -> dict[str, Any]:
         from secondbrain.native.agent_control_center import AgentControlCenter
         return AgentControlCenter(self.project_root).status()
+
+    def _agent_control_payload(self) -> dict[str, Any]:
+        from secondbrain.native.agent_control.service import AgentControlService
+        return AgentControlService(self.project_root).overview()
 
     def _voice_payload(self) -> dict[str, Any]:
         from secondbrain.native.voice_control_center import voice_center_status

@@ -16,6 +16,7 @@ from typing import Any, Iterable
 from secondbrain.chat.citations import CitationRenderer
 from secondbrain.chat.context.limiter import ContextLimiter
 from secondbrain.chat.context.memory_selector import MemorySelector
+from secondbrain.chat.context.optimization import ContextCandidate, ContextOptimizer
 from secondbrain.chat.context.prompt_assembler import PromptAssembler
 from secondbrain.chat.context.retrieval import RetrievalCoordinator
 from secondbrain.chat.context.token_budget import TokenBudgetManager
@@ -32,6 +33,7 @@ class ContextBuilder:
         agent_context: Any = None,
         workspace_context: Any = None,
         budget: TokenBudgetManager | None = None,
+        optimizer: ContextOptimizer | None = None,
     ) -> None:
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.budget = budget or TokenBudgetManager()
@@ -45,6 +47,7 @@ class ContextBuilder:
             workspace_context=workspace_context,
         )
         self.assembler = PromptAssembler(budget=self.budget, limiter=self.limiter)
+        self.optimizer = optimizer or ContextOptimizer()
         self.citation_renderer = CitationRenderer()
 
     def build(
@@ -83,6 +86,24 @@ class ContextBuilder:
         )
         hits = retrieved["hits"]
 
+        # Rank Memory and RAG together, then remove duplicate or conflicting
+        # candidates before the existing token-budget stage.
+        candidates: list[ContextCandidate] = []
+        payloads: dict[str, dict[str, Any]] = {}
+        for index, row in enumerate(memories):
+            identifier = f"memory:{row.get('memory_id') or row.get('id') or index}"
+            text = str(row.get("content") or row.get("text") or "")
+            candidates.append(ContextCandidate.from_mapping(identifier, text, "semantic_memory", row))
+            payloads[identifier] = row
+        for index, row in enumerate(hits):
+            identifier = f"document:{row.get('chunk_id') or row.get('document_id') or index}:{index}"
+            text = str(row.get("text") or row.get("snippet") or "")
+            candidates.append(ContextCandidate.from_mapping(identifier, text, "documents", row))
+            payloads[identifier] = row
+        optimized = self.optimizer.optimize(prompt, candidates)
+        memories = [payloads[row.candidate.id] for row in optimized.ranked if row.candidate.section == "semantic_memory"]
+        hits = [payloads[row.candidate.id] for row in optimized.ranked if row.candidate.section == "documents"]
+
         # 6: Context Builder (budgetierte Sektionen in Pipeline-Reihenfolge)
         sections: dict[str, list[str]] = {
             "conversation": [f"{row.get('role')}: {row.get('content')}" for row in conversation],
@@ -106,6 +127,8 @@ class ContextBuilder:
             "budget": self.budget.allocate(
                 {name: "\n".join(items) for name, items in sections.items()}
             ),
+            "optimization": optimized.report(),
+            "prompt_sections": {name: list(items) for name, items in sections.items()},
         }
 
     def citations(self, hits: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:

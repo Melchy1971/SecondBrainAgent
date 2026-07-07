@@ -387,6 +387,49 @@ class PgVectorRagStore:
 
         return self._run("upsert_vectors", callback)
 
+    def copy_documents(self, documents: list[RagDocumentRecord]) -> dict[str, Any]:
+        """Bulk upsert documents through PostgreSQL COPY and a transaction-local stage."""
+        rows = [(item.id, item.source, item.title, item.content_hash, item.created_at,
+                 json.dumps(item.metadata, ensure_ascii=False, sort_keys=True)) for item in documents]
+        merge = f"""insert into {self._table('documents')}(id,source,title,content_hash,created_at,metadata_json)
+            select id,source,title,content_hash,created_at,metadata_json from tmp_import_documents
+            on conflict(id) do update set source=excluded.source,title=excluded.title,content_hash=excluded.content_hash,
+            created_at=excluded.created_at,metadata_json=excluded.metadata_json"""
+        return self._copy_rows("documents", "id,source,title,content_hash,created_at,metadata_json", rows, merge)
+
+    def copy_chunks(self, chunks: list[RagChunkRecord]) -> dict[str, Any]:
+        rows = [(item.id, item.document_id, item.ordinal, item.text, item.char_start, item.char_end,
+                 json.dumps(item.tokens, ensure_ascii=False), item.token_count, item.created_at) for item in chunks]
+        merge = f"""insert into {self._table('chunks')}(id,document_id,ordinal,text,char_start,char_end,token_json,token_count,created_at)
+            select id,document_id,ordinal,text,char_start,char_end,token_json,token_count,created_at from tmp_import_chunks
+            on conflict(id) do update set document_id=excluded.document_id,ordinal=excluded.ordinal,text=excluded.text,
+            char_start=excluded.char_start,char_end=excluded.char_end,token_json=excluded.token_json,
+            token_count=excluded.token_count,created_at=excluded.created_at"""
+        return self._copy_rows("chunks", "id,document_id,ordinal,text,char_start,char_end,token_json,token_count,created_at", rows, merge)
+
+    def copy_vectors(self, vectors: list[RagVectorRecord]) -> dict[str, Any]:
+        rows = [(item.chunk_id, item.provider, item.dimensions, _vector_literal(item.vector), item.created_at) for item in vectors]
+        merge = f"""insert into {self._table('chunk_embeddings')}(chunk_id,provider,dimensions,embedding,created_at)
+            select chunk_id,provider,dimensions,embedding,created_at from tmp_import_chunk_embeddings
+            on conflict(chunk_id) do update set provider=excluded.provider,dimensions=excluded.dimensions,
+            embedding=excluded.embedding,created_at=excluded.created_at"""
+        return self._copy_rows("chunk_embeddings", "chunk_id,provider,dimensions,embedding,created_at", rows, merge)
+
+    def _copy_rows(self, suffix: str, columns: str, rows: list[tuple[Any, ...]], merge_sql: str) -> dict[str, Any]:
+        if not rows:
+            return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "copied": 0}
+        target = self._table(suffix)
+        temporary = f"tmp_import_{suffix}"
+        def callback(conn: Any) -> dict[str, Any]:
+            with conn.cursor() as cur:
+                cur.execute(f"create temp table {temporary} (like {target} including defaults) on commit drop")
+                with cur.copy(f"copy {temporary} ({columns}) from stdin") as copy:
+                    for row in rows:
+                        copy.write_row(row)
+                cur.execute(merge_sql)
+            return {"copied": len(rows), "copy_target": target}
+        return self._run(f"copy_{suffix}", callback)
+
     def vector_search(self, query_vector: list[float], *, limit: int = 5, provider: str | None = None) -> dict[str, Any]:
         if not query_vector:
             return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "operation": "vector_search", "hit_count": 0, "hits": []}

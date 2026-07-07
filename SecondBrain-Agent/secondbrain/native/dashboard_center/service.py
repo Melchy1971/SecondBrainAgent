@@ -104,6 +104,35 @@ class NativeDashboardService:
                 count = 0
         return self._card("runtime", "Runtime Logs", "ready", count, "Anzahl nativer JSONL-Runtime-Protokolle.", "dashboard-center-activity")
 
+    def _tasks_card(self) -> DashboardCard:
+        """Read-only v30.49 summary over the existing agent/queue files."""
+        native = self.project_root / "runtime" / "native"
+        task_rows = self._jsonl(native / "agent_tasks.jsonl")
+        job_rows = self._jsonl(native / "job_queue" / "jobs.jsonl")
+        approval_rows = self._jsonl(native / "approval_queue.jsonl")
+        value = {
+            "open": sum(row.get("status") == "pending" for row in task_rows),
+            "reminders": sum(bool(row.get("reminder_at")) for row in task_rows),
+            "calendar": sum(bool(row.get("due_at")) for row in task_rows),
+            "agent_jobs": sum(row.get("kind") == "agent" for row in job_rows),
+            "pending_approvals": sum(row.get("status") == "pending" for row in approval_rows),
+        }
+        return self._card("tasks", "Aufgaben", "ready", value, "Aufgaben, Erinnerungen, Termine, Agent Jobs und Genehmigungen.", "ai-workspace-gui")
+
+    @staticmethod
+    def _jsonl(path: Path) -> list[dict[str, Any]]:
+        if not path.exists():
+            return []
+        rows = []
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            try:
+                value = json.loads(line)
+                if isinstance(value, dict):
+                    rows.append(value)
+            except json.JSONDecodeError:
+                continue
+        return rows
+
     def _security_card(self) -> DashboardCard:
         approval = os.environ.get("SECONDBRAIN_APPROVAL_REQUIRED", "true").lower() in {"1", "true", "yes", "on"}
         vault = os.environ.get("SECONDBRAIN_SECRET_VAULT", "false").lower() in {"1", "true", "yes", "on"}
@@ -121,6 +150,7 @@ class NativeDashboardService:
             self._module_card("documents", "Document Explorer", "secondbrain/native/document_explorer", "document-explorer-status"),
             self._module_card("memory", "Memory Explorer", "secondbrain/native/memory_explorer", "memory-explorer-status"),
             self._module_card("agents", "Agent Control", "secondbrain/native/agent_control_center", "agent-control-status"),
+            self._tasks_card(),
             self._module_card("voice", "Voice Control", "secondbrain/native/voice_control_center", "voice-control-status"),
             self._module_card("commands", "Command Center", "secondbrain/native/command_center", "command-center-status"),
             self._module_card("settings", "Settings Center", "secondbrain/native/settings_center", "settings-center-status"),

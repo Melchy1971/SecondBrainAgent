@@ -1,0 +1,126 @@
+module,area,source_path,decision
+secondbrain.agent.agent_memory_integration,agent,SecondBrain-Agent/secondbrain/agent/agent_memory_integration.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.benchmark_suite,agent,SecondBrain-Agent/secondbrain/agent/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.event_dispatcher,agent,SecondBrain-Agent/secondbrain/agent/event_dispatcher.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.human_loop_workflow,agent,SecondBrain-Agent/secondbrain/agent/human_loop_workflow.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.integration_bridge,agent,SecondBrain-Agent/secondbrain/agent/integration_bridge.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.plan_repository,agent,SecondBrain-Agent/secondbrain/agent/plan_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.planning.task_registry,agent,SecondBrain-Agent/secondbrain/agent/planning/task_registry.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.task_scheduler,agent,SecondBrain-Agent/secondbrain/agent/task_scheduler.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.tool_dependency_resolver,agent,SecondBrain-Agent/secondbrain/agent/tool_dependency_resolver.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.workflow_repository,agent,SecondBrain-Agent/secondbrain/agent/workflow_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p1_embedding_status,cli,SecondBrain-Agent/secondbrain/cli/p1_embedding_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p2_agent_status,cli,SecondBrain-Agent/secondbrain/cli/p2_agent_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p3_memory_status,cli,SecondBrain-Agent/secondbrain/cli/p3_memory_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p4_connector_status,cli,SecondBrain-Agent/secondbrain/cli/p4_connector_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p5_gui_status,cli,SecondBrain-Agent/secondbrain/cli/p5_gui_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p6_voice_status,cli,SecondBrain-Agent/secondbrain/cli/p6_voice_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p7_mobile_status,cli,SecondBrain-Agent/secondbrain/cli/p7_mobile_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.cli.p8_status,cli,SecondBrain-Agent/secondbrain/cli/p8_status.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.benchmark_suite,connectors,SecondBrain-Agent/secondbrain/connectors/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.github_connector,connectors,SecondBrain-Agent/secondbrain/connectors/github_connector.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.github_sync,connectors,SecondBrain-Agent/secondbrain/connectors/github_sync.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.google_calendar_connector,connectors,SecondBrain-Agent/secondbrain/connectors/google_calendar_connector.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.google_calendar_sync,connectors,SecondBrain-Agent/secondbrain/connectors/google_calendar_sync.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.google_drive_connector,connectors,SecondBrain-Agent/secondbrain/connectors/google_drive_connector.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.google_drive_sync,connectors,SecondBrain-Agent/secondbrain/connectors/google_drive_sync.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.sync_audit,connectors,SecondBrain-Agent/secondbrain/connectors/sync_audit.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.token_repository,connectors,SecondBrain-Agent/secondbrain/connectors/token_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.connectors.webhook_manager,connectors,SecondBrain-Agent/secondbrain/connectors/webhook_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.agent_dashboard,dashboard,SecondBrain-Agent/secondbrain/dashboard/agent_dashboard.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.api.retrieval_metrics_api,dashboard,SecondBrain-Agent/secondbrain/dashboard/api/retrieval_metrics_api.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.connector_dashboard,dashboard,SecondBrain-Agent/secondbrain/dashboard/connector_dashboard.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.operations_dashboard,dashboard,SecondBrain-Agent/secondbrain/dashboard/operations_dashboard.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.retrieval_dashboard,dashboard,SecondBrain-Agent/secondbrain/dashboard/retrieval_dashboard.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.widgets.live_metrics_widget,dashboard,SecondBrain-Agent/secondbrain/dashboard/widgets/live_metrics_widget.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.widgets.retrieval_performance_widget,dashboard,SecondBrain-Agent/secondbrain/dashboard/widgets/retrieval_performance_widget.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.dashboard.widgets.retrieval_quality_widget,dashboard,SecondBrain-Agent/secondbrain/dashboard/widgets/retrieval_quality_widget.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.desktop.settings.settings_events,desktop,SecondBrain-Agent/secondbrain/desktop/settings/settings_events.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.ga.deployment_manager,ga,SecondBrain-Agent/secondbrain/ga/deployment_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.ga.ga_release_gate,ga,SecondBrain-Agent/secondbrain/ga/ga_release_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.ga.telemetry_center,ga,SecondBrain-Agent/secondbrain/ga/telemetry_center.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p1_quality_thresholds,gates,SecondBrain-Agent/secondbrain/gates/p1_quality_thresholds.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p4_maturity_gate,gates,SecondBrain-Agent/secondbrain/gates/p4_maturity_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p5_maturity_gate,gates,SecondBrain-Agent/secondbrain/gates/p5_maturity_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p6_production_gate,gates,SecondBrain-Agent/secondbrain/gates/p6_production_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p7_production_gate,gates,SecondBrain-Agent/secondbrain/gates/p7_production_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gates.p8_production_gate,gates,SecondBrain-Agent/secondbrain/gates/p8_production_gate.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.agent_runs_dashboard,gui,SecondBrain-Agent/secondbrain/gui/agent_runs_dashboard.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.approval_inbox,gui,SecondBrain-Agent/secondbrain/gui/approval_inbox.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.benchmark_suite,gui,SecondBrain-Agent/secondbrain/gui/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.citation_viewer,gui,SecondBrain-Agent/secondbrain/gui/citation_viewer.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.connector_management,gui,SecondBrain-Agent/secondbrain/gui/connector_management.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.dock_layout,gui,SecondBrain-Agent/secondbrain/gui/dock_layout.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.memory_graph_view,gui,SecondBrain-Agent/secondbrain/gui/memory_graph_view.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.persistent_settings,gui,SecondBrain-Agent/secondbrain/gui/persistent_settings.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.system_monitor,gui,SecondBrain-Agent/secondbrain/gui/system_monitor.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui.widget_framework,gui,SecondBrain-Agent/secondbrain/gui/widget_framework.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.gui_backend_v102,root,SecondBrain-Agent/secondbrain/gui_backend_v102.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.llm_router,root,SecondBrain-Agent/secondbrain/llm_router.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mcp_tools_v101,root,SecondBrain-Agent/secondbrain/mcp_tools_v101.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.meeting_intelligence,root,SecondBrain-Agent/secondbrain/meeting_intelligence.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.memory.conversation_timeline,memory,SecondBrain-Agent/secondbrain/memory/conversation_timeline.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.memory.memory_analytics,memory,SecondBrain-Agent/secondbrain/memory/memory_analytics.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.memory.memory_benchmark_suite,memory,SecondBrain-Agent/secondbrain/memory/memory_benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.memory.persistent_memory_graph,memory,SecondBrain-Agent/secondbrain/memory/persistent_memory_graph.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.background_sync,mobile,SecondBrain-Agent/secondbrain/mobile/background_sync.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.benchmark_suite,mobile,SecondBrain-Agent/secondbrain/mobile/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.chat_ui,mobile,SecondBrain-Agent/secondbrain/mobile/chat_ui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.offline_model,mobile,SecondBrain-Agent/secondbrain/mobile/offline_model.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.pwa_manager,mobile,SecondBrain-Agent/secondbrain/mobile/pwa_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.mobile.voice_interface,mobile,SecondBrain-Agent/secondbrain/mobile/voice_interface.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.native.agent_control_center_gui,native,SecondBrain-Agent/secondbrain/native/agent_control_center_gui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.native.command_center_gui,native,SecondBrain-Agent/secondbrain/native/command_center_gui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.native.document_explorer_gui,native,SecondBrain-Agent/secondbrain/native/document_explorer_gui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.native.memory_explorer_gui,native,SecondBrain-Agent/secondbrain/native/memory_explorer_gui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.native.workspace_center_gui,native,SecondBrain-Agent/secondbrain/native/workspace_center_gui.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.operations.backup_restore,operations,SecondBrain-Agent/secondbrain/operations/backup_restore.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.operations.update_manager,operations,SecondBrain-Agent/secondbrain/operations/update_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.privacy.gdpr_manager,privacy,SecondBrain-Agent/secondbrain/privacy/gdpr_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.async_batch_embedding_pipeline,rag,SecondBrain-Agent/secondbrain/rag/async_batch_embedding_pipeline.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.benchmark_suite,rag,SecondBrain-Agent/secondbrain/rag/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.fusion_scoring,rag,SecondBrain-Agent/secondbrain/rag/fusion_scoring.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.load_test,rag,SecondBrain-Agent/secondbrain/rag/load_test.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.memory_summarizer,rag,SecondBrain-Agent/secondbrain/rag/memory_summarizer.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.postgres_kpi_store,rag,SecondBrain-Agent/secondbrain/rag/postgres_kpi_store.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.reindex_scheduler,rag,SecondBrain-Agent/secondbrain/rag/reindex_scheduler.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.retention_policy,rag,SecondBrain-Agent/secondbrain/rag/retention_policy.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.retrieval_metrics,rag,SecondBrain-Agent/secondbrain/rag/retrieval_metrics.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.similarity_queries,rag,SecondBrain-Agent/secondbrain/rag/similarity_queries.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.rag.vector_store_pgvector,rag,SecondBrain-Agent/secondbrain/rag/vector_store_pgvector.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.security.benchmark_suite,security,SecondBrain-Agent/secondbrain/security/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.healthcheck,storage,SecondBrain-Agent/secondbrain/storage/healthcheck.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.repositories.chunk_repository,storage,SecondBrain-Agent/secondbrain/storage/repositories/chunk_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.repositories.connector_repository,storage,SecondBrain-Agent/secondbrain/storage/repositories/connector_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.repositories.memory_repository,storage,SecondBrain-Agent/secondbrain/storage/repositories/memory_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.repositories.workflow_repository,storage,SecondBrain-Agent/secondbrain/storage/repositories/workflow_repository.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.transaction_manager,storage,SecondBrain-Agent/secondbrain/storage/transaction_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.storage.vector_index_manager,storage,SecondBrain-Agent/secondbrain/storage/vector_index_manager.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.voice.benchmark_suite,voice,SecondBrain-Agent/secondbrain/voice/benchmark_suite.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.voice.speaker_identification,voice,SecondBrain-Agent/secondbrain/voice/speaker_identification.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.voice.streaming_pipeline,voice,SecondBrain-Agent/secondbrain/voice/streaming_pipeline.py,QUARANTINE_PENDING_GREEN_RUN
+secondbrain.agent.context_builder,-,SecondBrain-Agent/secondbrain/agent/context_builder.py,KEEP (registry/init/dynamic)
+secondbrain.agent.graph.extract,-,SecondBrain-Agent/secondbrain/agent/graph/extract.py,KEEP (registry/init/dynamic)
+secondbrain.agent.session_manager,-,SecondBrain-Agent/secondbrain/agent/session_manager.py,KEEP (import:secondbrain/desktop_os/desktop_kernel.py)
+secondbrain.audit,-,SecondBrain-Agent/secondbrain/audit.py,KEEP (registry/init/dynamic)
+secondbrain.chat.context.builder,-,SecondBrain-Agent/secondbrain/chat/context/builder.py,KEEP (registry/init/dynamic)
+secondbrain.connectors.metrics,-,SecondBrain-Agent/secondbrain/connectors/metrics.py,KEEP (registry/init/dynamic)
+secondbrain.connectors.retry_backoff,-,SecondBrain-Agent/secondbrain/connectors/retry_backoff.py,KEEP (import:tests/test_v213_p2_completion.py)
+secondbrain.connectors.scheduler,-,SecondBrain-Agent/secondbrain/connectors/scheduler.py,KEEP (registry/init/dynamic)
+secondbrain.desktop_app.app,-,SecondBrain-Agent/secondbrain/desktop_app/app.py,KEEP (registry/init/dynamic)
+secondbrain.ga.observability,-,SecondBrain-Agent/secondbrain/ga/observability.py,KEEP (import:secondbrain/production_core/runtime.py)
+secondbrain.ga.provider_registry,-,SecondBrain-Agent/secondbrain/ga/provider_registry.py,KEEP (registry/init/dynamic)
+secondbrain.ga.release_gate,-,SecondBrain-Agent/secondbrain/ga/release_gate.py,KEEP (registry/init/dynamic)
+secondbrain.gui.memory_explorer,-,SecondBrain-Agent/secondbrain/gui/memory_explorer.py,KEEP (import:secondbrain/agent/planner.py)
+secondbrain.memory.context_assembly_pipeline,-,SecondBrain-Agent/secondbrain/memory/context_assembly_pipeline.py,KEEP (registry/init/dynamic)
+secondbrain.memory.context_builder,-,SecondBrain-Agent/secondbrain/memory/context_builder.py,KEEP (registry/init/dynamic)
+secondbrain.mobile.dashboard,-,SecondBrain-Agent/secondbrain/mobile/dashboard.py,KEEP (registry/init/dynamic)
+secondbrain.mobile.metrics,-,SecondBrain-Agent/secondbrain/mobile/metrics.py,KEEP (registry/init/dynamic)
+secondbrain.native.app,-,SecondBrain-Agent/secondbrain/native/app.py,KEEP (registry/init/dynamic)
+secondbrain.rag.hybrid_retrieval,-,SecondBrain-Agent/secondbrain/rag/hybrid_retrieval.py,KEEP (dotted:tests/test_v194_p1_hybrid_gate.py)
+secondbrain.rag.pgvector_repository,-,SecondBrain-Agent/secondbrain/rag/pgvector_repository.py,KEEP (import:tests/test_v302_pgvector_production.py)
+secondbrain.secrets,-,SecondBrain-Agent/secondbrain/secrets.py,KEEP (import:secondbrain/api_bridge_v116.py)
+secondbrain.storage.database,-,SecondBrain-Agent/secondbrain/storage/database.py,KEEP (import:tests/test_database_runtime.py)
+secondbrain.storage.metrics,-,SecondBrain-Agent/secondbrain/storage/metrics.py,KEEP (registry/init/dynamic)
+secondbrain.storage.repositories.document_repository,-,SecondBrain-Agent/secondbrain/storage/repositories/document_repository.py,KEEP (registry/init/dynamic)
+secondbrain.voice.metrics,-,SecondBrain-Agent/secondbrain/voice/metrics.py,KEEP (registry/init/dynamic)

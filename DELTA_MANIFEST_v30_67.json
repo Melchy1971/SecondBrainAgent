@@ -1,0 +1,42 @@
+{
+  "version": "30.67",
+  "title": "Phase 3 Stabilisierung",
+  "type": "non_destructive_cleanup",
+  "files": [
+    "SecondBrain-Agent/docs/releases/v30_67_phase3_stabilization.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_67.md",
+    "SecondBrain-Agent/README_PATCH.md",
+    "SecondBrain-Agent/RELEASE_NOTES.md",
+    ".gitignore",
+    "SecondBrain-Agent/.gitignore"
+  ],
+  "git_index_changes": {
+    "untracked_dirs": [
+      "SecondBrain-Agent/.pytest_tmp_v3045_a",
+      "SecondBrain-Agent/.pytest_tmp_v3045_b",
+      "SecondBrain-Agent/.pytest_tmp_v3045_fix_a",
+      "SecondBrain-Agent/.pytest_tmp_v3045_fix_b",
+      "SecondBrain-Agent/.pytest_tmp_v3045_fix_nested",
+      "SecondBrain-Agent/.pytest_tmp_v3045_nested",
+      "SecondBrain-Agent/.pytest_tmp_v3045_probe_a",
+      "SecondBrain-Agent/.pytest_tmp_v3045_probe_b",
+      "SecondBrain-Agent/.pytest_tmp_v3045_probe_nested"
+    ],
+    "untracked_file_count": 2455,
+    "note": "git rm -r --cached only; working files preserved"
+  },
+  "deleted_source": [],
+  "validation": {
+    "compileall": "ok (agent + native packages, both launchers)",
+    "pytest_agent_framework": "170 passed (v30.61-v30.66, 22 files)",
+    "repo_doctor": "ok=true, 48 ok / 2 warning / 0 error / 1 skipped",
+    "launcher_smoke": "7 command groups ok",
+    "gui_smoke": "8 areas via view_model (no Tk)"
+  },
+  "reports": [
+    "Phase 3 Completion Report",
+    "Known Limitations",
+    "Remaining Risks",
+    "Phase 4 Readiness"
+  ]
+}

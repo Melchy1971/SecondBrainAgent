@@ -1312,7 +1312,7 @@ _IMPORT_SCRIPTS = {
     "gemini": "import_gemini_export.py",
     "perplexity": "import_perplexity_export.py",
 }
-_ZIP_MAX = 400 * 1024 * 1024  # 400 MB
+_ZIP_MAX = 4 * 1024 * 1024 * 1024  # 4 GB
 
 
 def imports_zip_raw(source: str, filename: str, raw: bytes) -> dict:
@@ -1325,9 +1325,9 @@ def imports_zip_raw(source: str, filename: str, raw: bytes) -> dict:
         return {"ok": False, "error": f"Unbekannte Quelle: {source}. "
                 f"Erlaubt: {sorted(_IMPORT_SCRIPTS)}"}
     if not raw:
-        return {"ok": False, "error": "Keine Datei empfangen (oder groesser als 400 MB)."}
+        return {"ok": False, "error": "Keine Datei empfangen (oder groesser als 4 GB)."}
     if len(raw) > _ZIP_MAX:
-        return {"ok": False, "error": "Datei zu gross (max. 400 MB)."}
+        return {"ok": False, "error": "Datei zu gross (max. 4 GB)."}
     if raw[:2] != b"PK":
         return {"ok": False, "error": "Keine gueltige ZIP-Datei (PK-Signatur fehlt)."}
     updir = ROOT / "data" / "_zip_uploads"
