@@ -1,6 +1,22 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.46
+# SecondBrain-Agent v30.61.0
+
+## Version (Single Source of Truth)
+
+Die Version wird **ausschliesslich** in `pyproject.toml` (`[project].version`) gepflegt.
+Alles andere leitet sich daraus ab:
+
+- `secondbrain/version.py` liest pyproject (Fallback: installierte Paket-Metadaten) und liefert
+  `get_version()`, `get_build_number()` und `version_info()`. Die Buildnummer wird deterministisch
+  aus der Version berechnet (30.61.0 -> Build 306100).
+- Paket (`secondbrain.__version__`), GUI (`secondbrain.gui.version`), CLI (`secondbrain.cli.version`)
+  und Launcher (`python launcher.py version`) beziehen die Version von dort.
+- `python launcher.py version-sync` schreibt die abgeleiteten Anker (README-Titel,
+  `docs/09_MASTERPLAN_STATUS.json`) neu. Historische `vXX`-Referenzen im Fliesstext bleiben unberuehrt.
+
+Version anheben: nur `pyproject.toml` aendern, dann `version-sync` ausfuehren.
+
 
 Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberflaeche, deutscher Sprachsteuerung, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
 

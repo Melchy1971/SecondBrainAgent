@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "42c4e1d984759f7c",
+        "id": "8345ec230c95ca4d",
         "type": "tabs",
         "children": [
           {
-            "id": "3df4421a5014ed80",
+            "id": "8607e2d395ec34c2",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "05_Quellen/ChatGPT/Mainboard_Empfehlung_Vergleich_6921c877-4210-832a-ba56.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Mainboard_Empfehlung_Vergleich_6921c877-4210-832a-ba56"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph-Ansicht"
             }
           }
         ]
@@ -194,8 +190,9 @@
       "secondbrain-agent:SecondBrain Agent": false
     }
   },
-  "active": "3df4421a5014ed80",
+  "active": "8607e2d395ec34c2",
   "lastOpenFiles": [
+    "05_Quellen/ChatGPT/Mainboard_Empfehlung_Vergleich_6921c877-4210-832a-ba56.md",
     "59_DataWarehouse/Facts/facts_documents.md",
     "00_Inbox/20260706_111454_was-findest-du-alles-zum-thema-tischtennis.md",
     "Unbenannt.canvas",
@@ -224,7 +221,6 @@
     "116_ContradictionDetection/2026-06-30_contradictions.md",
     "112_ChiefOfStaff/2026-06-30_chief-of-staff-v98.md",
     "111_ProcessAgent/2026-06-30_process-agent.md",
-    "109_ProjectAgent/2026-06-30_project-agent.md",
     "99_System/quality",
     "99_System/conflicts",
     "99_System/production",

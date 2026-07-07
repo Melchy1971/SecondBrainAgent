@@ -1,0 +1,38 @@
+{
+  "version": "30.62",
+  "title": "Agent Workflow Engine",
+  "files": [
+    "SecondBrain-Agent/secondbrain/agent/workflow/__init__.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/models.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/store.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/audit.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/recovery.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/executor.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/service.py",
+    "SecondBrain-Agent/secondbrain/agent/workflow/cli.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/tests/_workflow_fakes.py",
+    "SecondBrain-Agent/tests/test_workflow_engine.py",
+    "SecondBrain-Agent/tests/test_workflow_checkpoint.py",
+    "SecondBrain-Agent/tests/test_workflow_recovery.py",
+    "SecondBrain-Agent/tests/test_workflow_approval.py",
+    "SecondBrain-Agent/docs/releases/v30_62_workflow_engine.md",
+    "SecondBrain-Agent/README_PATCH.md",
+    "SecondBrain-Agent/RELEASE_NOTES.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_62.md"
+  ],
+  "reused": [
+    "SecondBrain-Agent/secondbrain/agent/workflow_models.py::WorkflowStep",
+    "SecondBrain-Agent/secondbrain/agent/tool_registry.py::ToolRegistry",
+    "SecondBrain-Agent/secondbrain/agent/safety::SafetyService",
+    "SecondBrain-Agent/secondbrain/native/approval.py::NativeApprovalQueue",
+    "SecondBrain-Agent/secondbrain/native/job_queue_center/service.py::JobQueueService",
+    "SecondBrain-Agent/secondbrain/native/notification_center/service.py::NotificationCenterService",
+    "SecondBrain-Agent/secondbrain/agent/workflow_recovery.py::WorkflowRecovery"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/agent/workflow SecondBrain-Agent/launcher.py",
+    "pytest tests/test_workflow_engine.py tests/test_workflow_checkpoint.py tests/test_workflow_recovery.py tests/test_workflow_approval.py -q",
+    "python launcher.py workflow-list"
+  ]
+}
