@@ -1,0 +1,45 @@
+{
+  "version": "30.80",
+  "title": "Vision/OCR-Subsystem (offline, GPU-optional) - Port/Adapter/Orchestrierung",
+  "type": "feature",
+  "layers": {
+    "ports": "secondbrain/vision/ports.py",
+    "engines": "secondbrain/vision/engines (fake + tesseract lazy)",
+    "pipeline": "secondbrain/vision/pipeline.py"
+  },
+  "reused": [
+    "SecondBrain-Agent/secondbrain/connectors/adapter_contract.py::ConnectorItem",
+    "SecondBrain-Agent/secondbrain/connectors/import_bridge.py::ConnectorImportBridge"
+  ],
+  "launcher_commands": [
+    "vision-ocr <path> [--lang]"
+  ],
+  "optional_deps": "SecondBrain-Agent/requirements-vision.txt (pytesseract, pillow, mss, opencv; onnxruntime-gpu/ultralytics fuer Objekterkennung)",
+  "files": [
+    "SecondBrain-Agent/docs/releases/v30_80_vision_ocr.md",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/requirements-vision.txt",
+    "SecondBrain-Agent/secondbrain/vision/__init__.py",
+    "SecondBrain-Agent/secondbrain/vision/engines/__init__.py",
+    "SecondBrain-Agent/secondbrain/vision/engines/fake.py",
+    "SecondBrain-Agent/secondbrain/vision/engines/tesseract_ocr.py",
+    "SecondBrain-Agent/secondbrain/vision/ingest.py",
+    "SecondBrain-Agent/secondbrain/vision/pipeline.py",
+    "SecondBrain-Agent/secondbrain/vision/ports.py",
+    "SecondBrain-Agent/tests/vision/__init__.py",
+    "SecondBrain-Agent/tests/vision/test_pipeline.py",
+    "SecondBrain-Agent/tests/vision/test_ports_ingest.py",
+    "SecondBrain-Agent/tests/vision/test_tesseract_integration.py"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/vision",
+    "pytest SecondBrain-Agent/tests/vision -q"
+  ],
+  "test_result": "7 passed (fakes); Tesseract-Integrationstest via importorskip uebersprungen ohne optionale Deps",
+  "decisions": {
+    "offline_only": true,
+    "gpu_available": true,
+    "ml_deps_optional": true
+  },
+  "generated": "2026-07-07"
+}

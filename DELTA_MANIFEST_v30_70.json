@@ -1,0 +1,26 @@
+{
+  "version": "30.70",
+  "title": "ToolChain",
+  "files": [
+    "SecondBrain-Agent/secondbrain/agent/toolchain/__init__.py",
+    "SecondBrain-Agent/secondbrain/agent/toolchain/models.py",
+    "SecondBrain-Agent/secondbrain/agent/toolchain/executor.py",
+    "SecondBrain-Agent/secondbrain/agent/toolchain/visual.py",
+    "SecondBrain-Agent/secondbrain/agent/toolchain/chain.py",
+    "SecondBrain-Agent/tests/_toolchain_fakes.py",
+    "SecondBrain-Agent/tests/test_toolchain.py",
+    "SecondBrain-Agent/tests/test_toolchain_control_flow.py",
+    "SecondBrain-Agent/tests/test_toolchain_recovery.py",
+    "SecondBrain-Agent/docs/releases/v30_70_toolchain.md",
+    "SecondBrain-Agent/README_PATCH.md",
+    "SecondBrain-Agent/RELEASE_NOTES.md",
+    "SecondBrain-Agent/APPLY_DELTA_v30_70.md"
+  ],
+  "reused": [
+    "SecondBrain-Agent/secondbrain/agent/tool_registry.py::ToolRegistry"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/agent/toolchain",
+    "pytest tests/test_toolchain.py tests/test_toolchain_control_flow.py tests/test_toolchain_recovery.py -q"
+  ]
+}

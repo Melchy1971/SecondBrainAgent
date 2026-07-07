@@ -10,3 +10,6 @@ logs/
 
 # Generated vector index; rebuilt locally and can exceed GitHub's blob limit.
 SecondBrain/99_System/vector_rag/vector_index.json
+
+# v30.67: stray pytest temp dirs (all suffixed variants)
+.pytest_tmp*/

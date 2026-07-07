@@ -1,8 +1,8 @@
 # Vault Index
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-06
 
-Dateien: 1639
+Dateien: 1681
 
 
 ## 00_Handbuch
@@ -16,6 +16,7 @@ Dateien: 1639
 ## 00_Inbox
 
 - [[2026-06-18_nicht-unterstuetzter-dateityp-gemini-export-zip]]
+- [[20260706_111454_was-findest-du-alles-zum-thema-tischtennis]]
 
 ## 01_Projekte
 
@@ -1253,6 +1254,7 @@ Dateien: 1639
 - [[2026-06-25_self-reflection]]
 - [[2026-06-26_self-reflection]]
 - [[2026-06-30_self-reflection]]
+- [[2026-07-03_self-reflection]]
 
 ## 102_ReasoningEngine
 
@@ -1262,6 +1264,7 @@ Dateien: 1639
 - [[2026-06-25_reasoning-map]]
 - [[2026-06-26_reasoning-map]]
 - [[2026-06-30_reasoning-map]]
+- [[2026-07-03_reasoning-map]]
 
 ## 103_GoalSystem
 
@@ -1275,6 +1278,7 @@ Dateien: 1639
 - [[2026-06-25_daily-assistant]]
 - [[2026-06-26_daily-assistant]]
 - [[2026-06-30_daily-assistant]]
+- [[2026-07-03_daily-assistant]]
 
 ## 105_WeeklyReview
 
@@ -1284,6 +1288,7 @@ Dateien: 1639
 - [[2026-06-25_weekly-review]]
 - [[2026-06-26_weekly-review]]
 - [[2026-06-30_weekly-review]]
+- [[2026-07-03_weekly-review]]
 
 ## 106_TaskAgent
 
@@ -1293,6 +1298,7 @@ Dateien: 1639
 - [[2026-06-25_task-agent]]
 - [[2026-06-26_task-agent]]
 - [[2026-06-30_task-agent]]
+- [[2026-07-03_task-agent]]
 
 ## 107_ResearchAgent
 
@@ -1302,6 +1308,7 @@ Dateien: 1639
 - [[2026-06-25_research-backlog-agent]]
 - [[2026-06-26_research-backlog-agent]]
 - [[2026-06-30_research-backlog-agent]]
+- [[2026-07-03_research-backlog-agent]]
 
 ## 108_MeetingAgent
 
@@ -1311,6 +1318,7 @@ Dateien: 1639
 - [[2026-06-25_meeting-agent]]
 - [[2026-06-26_meeting-agent]]
 - [[2026-06-30_meeting-agent]]
+- [[2026-07-03_meeting-agent]]
 
 ## 109_ProjectAgent
 
@@ -1320,6 +1328,7 @@ Dateien: 1639
 - [[2026-06-25_project-agent]]
 - [[2026-06-26_project-agent]]
 - [[2026-06-30_project-agent]]
+- [[2026-07-03_project-agent]]
 
 ## 10_DailyBriefings
 
@@ -1334,6 +1343,7 @@ Dateien: 1639
 - [[2026-06-25_decision-agent]]
 - [[2026-06-26_decision-agent]]
 - [[2026-06-30_decision-agent]]
+- [[2026-07-03_decision-agent]]
 
 ## 111_ProcessAgent
 
@@ -1343,6 +1353,7 @@ Dateien: 1639
 - [[2026-06-25_process-agent]]
 - [[2026-06-26_process-agent]]
 - [[2026-06-30_process-agent]]
+- [[2026-07-03_process-agent]]
 
 ## 112_ChiefOfStaff
 
@@ -1352,6 +1363,7 @@ Dateien: 1639
 - [[2026-06-25_chief-of-staff-v98]]
 - [[2026-06-26_chief-of-staff-v98]]
 - [[2026-06-30_chief-of-staff-v98]]
+- [[2026-07-03_chief-of-staff-v98]]
 
 ## 113_EntityExtraction
 
@@ -1373,6 +1385,7 @@ Dateien: 1639
 - [[2026-06-25_contradictions]]
 - [[2026-06-26_contradictions]]
 - [[2026-06-30_contradictions]]
+- [[2026-07-03_contradictions]]
 
 ## 117_KnowledgeQuality
 
@@ -1382,6 +1395,7 @@ Dateien: 1639
 - [[2026-06-25_knowledge-quality]]
 - [[2026-06-26_knowledge-quality]]
 - [[2026-06-30_knowledge-quality]]
+- [[2026-07-03_knowledge-quality]]
 
 ## 118_CrossSourceIntelligence
 
@@ -1391,6 +1405,7 @@ Dateien: 1639
 - [[2026-06-25_cross-source-intelligence]]
 - [[2026-06-26_cross-source-intelligence]]
 - [[2026-06-30_cross-source-intelligence]]
+- [[2026-07-03_cross-source-intelligence]]
 
 ## 119_KnowledgeIntelligenceDashboard
 
@@ -1413,6 +1428,7 @@ Dateien: 1639
 - [[2026-06-25_daily-os]]
 - [[2026-06-26_daily-os]]
 - [[2026-06-30_daily-os]]
+- [[2026-07-03_daily-os]]
 
 ## 122_WeeklyOperatingSystem
 
@@ -1422,6 +1438,7 @@ Dateien: 1639
 - [[2026-06-25_weekly-os]]
 - [[2026-06-26_weekly-os]]
 - [[2026-06-30_weekly-os]]
+- [[2026-07-03_weekly-os]]
 
 ## 123_PersonalKPIs
 
@@ -1431,6 +1448,7 @@ Dateien: 1639
 - [[2026-06-25_personal-kpis]]
 - [[2026-06-26_personal-kpis]]
 - [[2026-06-30_personal-kpis]]
+- [[2026-07-03_personal-kpis]]
 
 ## 124_PersonalERP\Learning
 
@@ -1445,6 +1463,7 @@ Dateien: 1639
 - [[2026-06-18_decision-intelligence]]
 - [[2026-06-19_decision-intelligence]]
 - [[2026-06-30_decision-intelligence]]
+- [[2026-07-03_decision-intelligence]]
 - [[Decision_Register]]
 
 ## 130_DocumentIngestion
@@ -1523,6 +1542,7 @@ Dateien: 1639
 - [[2026-06-18_context-map]]
 - [[2026-06-19_context-map]]
 - [[2026-06-30_context-map]]
+- [[2026-07-03_context-map]]
 
 ## 22_Memory
 
@@ -1543,24 +1563,28 @@ Dateien: 1639
 - [[2026-06-18_knowledge-compression]]
 - [[2026-06-19_knowledge-compression]]
 - [[2026-06-30_knowledge-compression]]
+- [[2026-07-03_knowledge-compression]]
 
 ## 26_Deduplication
 
 - [[2026-06-18_semantic-deduplication]]
 - [[2026-06-19_semantic-deduplication]]
 - [[2026-06-30_semantic-deduplication]]
+- [[2026-07-03_semantic-deduplication]]
 
 ## 27_Research
 
 - [[2026-06-18_research-backlog]]
 - [[2026-06-19_research-backlog]]
 - [[2026-06-30_research-backlog]]
+- [[2026-07-03_research-backlog]]
 
 ## 28_Predictions
 
 - [[2026-06-18_prediction-report]]
 - [[2026-06-19_prediction-report]]
 - [[2026-06-30_prediction-report]]
+- [[2026-07-03_prediction-report]]
 
 ## 29_Simulations
 
@@ -1568,12 +1592,14 @@ Dateien: 1639
 - [[2026-06-18_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 - [[2026-06-19_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 - [[2026-06-30_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
+- [[2026-07-03_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
 
 ## 30_ProcessMining
 
 - [[2026-06-18_process-mining]]
 - [[2026-06-19_process-mining]]
 - [[2026-06-30_process-mining]]
+- [[2026-07-03_process-mining]]
 
 ## 31_ProcessCopilot
 
@@ -1616,6 +1642,7 @@ Dateien: 1639
 - [[2026-06-18_chief-of-staff-v2]]
 - [[2026-06-19_chief-of-staff-v2]]
 - [[2026-06-30_chief-of-staff-v2]]
+- [[2026-07-03_chief-of-staff-v2]]
 
 ## 36_EventBus
 
@@ -1765,6 +1792,7 @@ Dateien: 1639
 - [[2026-06-25_project-intelligence]]
 - [[2026-06-26_project-intelligence]]
 - [[2026-06-30_project-intelligence]]
+- [[2026-07-03_project-intelligence]]
 
 ## 68_DecisionIntelligence
 
@@ -1779,6 +1807,7 @@ Dateien: 1639
 - [[2026-06-25_meeting-intelligence]]
 - [[2026-06-26_meeting-intelligence]]
 - [[2026-06-30_meeting-intelligence]]
+- [[2026-07-03_meeting-intelligence]]
 
 ## 70_CalendarIntelligence
 
@@ -1789,6 +1818,7 @@ Dateien: 1639
 - [[2026-06-25_calendar-intelligence]]
 - [[2026-06-26_calendar-intelligence]]
 - [[2026-06-30_calendar-intelligence]]
+- [[2026-07-03_calendar-intelligence]]
 
 ## 71_DataWarehouse
 
@@ -1826,6 +1856,7 @@ Dateien: 1639
 - [[2026-06-25_self-improvement-plan]]
 - [[2026-06-26_self-improvement-plan]]
 - [[2026-06-30_self-improvement-plan]]
+- [[2026-07-03_self-improvement-plan]]
 
 ## 75_SecondBrainOS
 
@@ -1844,6 +1875,7 @@ Dateien: 1639
 - [[2026-06-25_recommendations]]
 - [[2026-06-26_recommendations]]
 - [[2026-06-30_recommendations]]
+- [[2026-07-03_recommendations]]
 
 ## 78_LearningEngine
 
@@ -1854,6 +1886,7 @@ Dateien: 1639
 - [[2026-06-25_learning-plan]]
 - [[2026-06-26_learning-plan]]
 - [[2026-06-30_learning-plan]]
+- [[2026-07-03_learning-plan]]
 
 ## 79_SimulationEngineV2
 
@@ -1864,6 +1897,7 @@ Dateien: 1639
 - [[2026-06-25_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
 - [[2026-06-26_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
 - [[2026-06-30_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
+- [[2026-07-03_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
 
 ## 80_PersonalCRM
 
@@ -1886,6 +1920,7 @@ Dateien: 1639
 - [[2026-06-25_monitoring]]
 - [[2026-06-26_monitoring]]
 - [[2026-06-30_monitoring]]
+- [[2026-07-03_monitoring]]
 
 ## 85_PluginEcosystem
 
@@ -1957,6 +1992,7 @@ Dateien: 1639
 - [[2026-06-25_event-bus]]
 - [[2026-06-26_event-bus]]
 - [[2026-06-30_event-bus]]
+- [[2026-07-03_event-bus]]
 
 ## 94_AutonomousAgents
 
@@ -1994,6 +2030,7 @@ Dateien: 1639
 - [[2026-06-18_autonomy-report]]
 - [[2026-06-19_autonomy-report]]
 - [[2026-06-30_autonomy-report]]
+- [[2026-07-03_autonomy-report]]
 
 ## 99_System\chatgpt_import
 
@@ -2014,6 +2051,7 @@ Dateien: 1639
 ## 99_System\conflicts
 
 - [[2026-06-30_conflict-report]]
+- [[2026-07-03_conflict-report]]
 
 ## 99_System\dashboard
 
@@ -2033,6 +2071,7 @@ Dateien: 1639
 - [[2026-06-18_governance-report]]
 - [[2026-06-19_governance-report]]
 - [[2026-06-30_governance-report]]
+- [[2026-07-03_governance-report]]
 
 ## 99_System\indexes
 
@@ -2059,6 +2098,7 @@ Dateien: 1639
 ## 99_System\quality
 
 - [[2026-06-30_quality-report]]
+- [[2026-07-03_quality-report]]
 
 ## 99_System\rag
 
@@ -2090,10 +2130,12 @@ Dateien: 1639
 - [[2026-06-18_self-healing-report]]
 - [[2026-06-19_self-healing-report]]
 - [[2026-06-30_self-healing-report]]
+- [[2026-07-03_self-healing-report]]
 
 ## 99_System\sync
 
 - [[2026-06-30_sync-health]]
+- [[2026-07-03_sync-health]]
 - [[Sync_Strategy]]
 
 ## copilot\copilot-conversations

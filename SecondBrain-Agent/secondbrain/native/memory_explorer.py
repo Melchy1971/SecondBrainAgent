@@ -4,6 +4,7 @@ import json
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -202,8 +203,14 @@ class MemoryExplorer:
         created = raw.get("created_at") or raw.get("timestamp") or raw.get("ts") or time.time()
         try:
             created_at = float(created)
-        except Exception:
-            created_at = time.time()
+        except (TypeError, ValueError):
+            try:
+                parsed = datetime.fromisoformat(str(created).strip().replace("Z", "+00:00"))
+                if parsed.tzinfo is None:
+                    parsed = parsed.replace(tzinfo=timezone.utc)
+                created_at = parsed.timestamp()
+            except (OverflowError, TypeError, ValueError):
+                created_at = time.time()
         memory_id = str(raw.get("memory_id") or raw.get("id") or _stable_memory_id(default_kind, default_source, content, created_at))
         return MemoryEntry(
             memory_id=memory_id,

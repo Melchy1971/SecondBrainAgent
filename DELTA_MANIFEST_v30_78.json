@@ -1,0 +1,73 @@
+{
+  "version": "30.78",
+  "title": "Microsoft Graph / M365 Integration (device-code OAuth2, delta sync, approval-gated writes)",
+  "type": "feature",
+  "reused": [
+    "SecondBrain-Agent/secondbrain/connectors/adapter_contract.py::ConnectorItem",
+    "SecondBrain-Agent/secondbrain/connectors/incremental_runner.py::IncrementalSyncRunner",
+    "SecondBrain-Agent/secondbrain/connectors/import_bridge.py::ConnectorImportBridge",
+    "SecondBrain-Agent/secondbrain/connectors/cursor_store.py::JsonCursorStore",
+    "SecondBrain-Agent/secondbrain/connectors/token_repository.py::TokenRepository",
+    "SecondBrain-Agent/secondbrain/connectors/token_refresh.py::TokenRefreshService",
+    "SecondBrain-Agent/secondbrain/connectors/retry_backoff.py::ConnectorRetryBackoff",
+    "SecondBrain-Agent/secondbrain/connectors/sync_audit.py::SyncAudit"
+  ],
+  "resources": [
+    "mail",
+    "calendar",
+    "contacts",
+    "onedrive",
+    "teams",
+    "todo",
+    "onenote"
+  ],
+  "launcher_commands": [
+    "m365-login",
+    "m365-sync",
+    "m365-status",
+    "m365-disconnect"
+  ],
+  "files": [
+    "SecondBrain-Agent/docs/releases/v30_78_m365_graph.md",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/__init__.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/approval.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/background_sync.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/config.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/graph_auth.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/graph_client.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/normalizers.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/registry.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/__init__.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/base.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/calendar.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/contacts.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/mail.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/onedrive.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/onenote.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/teams.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/resources/todo.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/runtime.py",
+    "SecondBrain-Agent/secondbrain/connectors/microsoft/transport.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/conftest.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_config.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_graph_auth.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_graph_client.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_normalizers.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_resources.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_runtime.py",
+    "SecondBrain-Agent/tests/connectors/microsoft/test_writes_approval.py"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/connectors/microsoft",
+    "pytest SecondBrain-Agent/tests/connectors/microsoft -q"
+  ],
+  "config_required": {
+    "env": [
+      "M365_CLIENT_ID",
+      "M365_TENANT_ID (optional, default 'common')",
+      "M365_SCOPES (optional)"
+    ]
+  },
+  "generated": "2026-07-07"
+}

@@ -1,0 +1,36 @@
+{
+  "version": "30.81",
+  "title": "Screenshot/Desktop-Analyse + offline Textklassifikation",
+  "type": "feature",
+  "builds_on": "v30.80 Vision-Ports",
+  "new": {
+    "classify": "HeuristicTextClassifier (regelbasiert, offline, deterministisch) + TextClassifier-Port",
+    "desktop": "DesktopAnalyzer: capture->OCR->classify->ingest (+watch-Loop)",
+    "capture": "MssScreenSource (lazy mss, integration-only)"
+  },
+  "reused": [
+    "secondbrain/vision/ports.py",
+    "secondbrain/vision/ingest.py",
+    "ConnectorImportBridge"
+  ],
+  "launcher_commands": [
+    "desktop-analyze [--image <path>] [--lang]"
+  ],
+  "files": [
+    "SecondBrain-Agent/secondbrain/vision/classify.py",
+    "SecondBrain-Agent/secondbrain/vision/desktop.py",
+    "SecondBrain-Agent/secondbrain/vision/engines/screen_mss.py",
+    "SecondBrain-Agent/secondbrain/vision/__init__.py",
+    "SecondBrain-Agent/tests/vision/test_classify.py",
+    "SecondBrain-Agent/tests/vision/test_desktop.py",
+    "SecondBrain-Agent/tests/vision/test_mss_integration.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/v30_81_desktop_analysis.md"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/vision",
+    "pytest SecondBrain-Agent/tests/vision -q"
+  ],
+  "test_result": "17 passed, 1 skipped (mss) ; Gesamt tests/connectors+tests/vision: 69 passed, 1 skipped",
+  "generated": "2026-07-07"
+}

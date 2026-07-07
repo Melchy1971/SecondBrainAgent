@@ -255,6 +255,106 @@ def _p3_p1_store_bridge_main(raw: list[str]) -> int:
     return 0 if payload.get("ok") else 1
 
 
+
+def _m365_main(argv: list[str]) -> int:
+    from secondbrain.connectors.microsoft.config import GraphConfigError
+    from secondbrain.connectors.microsoft.runtime import M365Runtime
+
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    parser.add_argument("--resources", default=None, help="comma list e.g. mail,calendar,todo")
+    parser.add_argument("--no-wait", action="store_true", help="m365-login: return device code without polling")
+    parser.add_argument("--approve", default=None, help="approve a pending write by request id")
+    args, _ = parser.parse_known_args(argv)
+
+    try:
+        runtime = M365Runtime(args.project_root)
+    except GraphConfigError as exc:
+        out({"status": "config_error", "message": str(exc)})
+        return 2
+
+    resources = [r.strip() for r in args.resources.split(",") if r.strip()] if args.resources else None
+
+    if args.cmd == "m365-login":
+        result = runtime.login(printer=lambda m: print(m, file=sys.stderr), wait=not args.no_wait)
+        out(result)
+        return 0 if result.get("status") in {"ok", "pending"} else 1
+    if args.cmd == "m365-sync":
+        out(runtime.sync(resources))
+        return 0
+    if args.cmd == "m365-status":
+        if args.approve:
+            out(runtime.approve(args.approve))
+            return 0
+        out(runtime.status())
+        return 0
+    if args.cmd == "m365-disconnect":
+        out(runtime.disconnect())
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _google_main(argv: list[str]) -> int:
+    from secondbrain.connectors.scaffold.cli import run_connector_cli
+    from secondbrain.connectors.google.config import GoogleConfigError
+    from secondbrain.connectors.google.runtime import GoogleRuntime
+    return run_connector_cli("google", lambda root: GoogleRuntime(root), argv, out=out, config_error=GoogleConfigError)
+
+
+def _vision_main(argv: list[str]) -> int:
+    from secondbrain.vision.pipeline import VisionPipeline
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("path", nargs="?", default=None)
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd == "vision-ocr":
+        if not args.path:
+            out({"status": "error", "message": "usage: vision-ocr <image-path> [--lang eng]"})
+            return 2
+        try:
+            from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+            pipeline = VisionPipeline(TesseractOcrEngine())
+            out({"status": "ok", **pipeline.process_path(args.path, lang=args.lang)})
+            return 0
+        except RuntimeError as exc:
+            out({"status": "engine_unavailable", "message": str(exc)})
+            return 2
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _desktop_main(argv: list[str]) -> int:
+    from secondbrain.vision.desktop import DesktopAnalyzer
+    from secondbrain.vision.classify import HeuristicTextClassifier
+    from secondbrain.vision.ports import Image
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--image", default=None, help="analyze an image file instead of the live screen")
+    parser.add_argument("--lang", default="eng")
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd != "desktop-analyze":
+        out({"status": "unknown_command", "cmd": args.cmd})
+        return 2
+    try:
+        from secondbrain.vision.engines.tesseract_ocr import TesseractOcrEngine
+        ocr = TesseractOcrEngine()
+        analyzer = DesktopAnalyzer(ocr, text_classifier=HeuristicTextClassifier())
+        if args.image:
+            result = analyzer.analyze_image(Image.from_path(args.image), lang=args.lang)
+        else:
+            from secondbrain.vision.engines.screen_mss import MssScreenSource
+            analyzer.screen = MssScreenSource()
+            result = analyzer.analyze_screen(lang=args.lang)
+        out({"status": "ok", **result})
+        return 0
+    except RuntimeError as exc:
+        out({"status": "engine_unavailable", "message": str(exc)})
+        return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -264,6 +364,14 @@ def main(argv: list[str] | None = None) -> int:
     if cmd == "bootstrap":
         out(write_bootstrap_report(Path.cwd(), repair=True))
         return 0
+    if cmd in {"m365-login", "m365-sync", "m365-status", "m365-disconnect"}:
+        return _m365_main(raw)
+    if cmd in {"google-login", "google-sync", "google-status", "google-disconnect"}:
+        return _google_main(raw)
+    if cmd == "vision-ocr":
+        return _vision_main(raw)
+    if cmd == "desktop-analyze":
+        return _desktop_main(raw)
     if cmd == "repo-doctor":
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
@@ -448,6 +556,12 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"agent-memory-preview", "agent-memory-inject", "agent-memory-audit"}:
         from secondbrain.agent.memory_injection.cli import main as agent_memory_main
         return agent_memory_main(raw)
+    if cmd in {"goal-create", "goal-list", "goal-show", "goal-update", "goal-report", "goal-close"}:
+        from secondbrain.agent.goals.cli import main as goal_main
+        return goal_main(raw)
+    if cmd in {"agent-control-center", "agent-control-center-gui", "agent-control-center-status", "agent-control-area", "agent-control-plan-create", "agent-control-plan-inspect", "agent-control-plan-start", "agent-control-approve", "agent-control-reject", "agent-control-workflow", "agent-control-goal-report", "agent-control-bg"}:
+        from secondbrain.native.agent_control.cli import main as agent_control_main
+        return agent_control_main(raw)
     if cmd.startswith("mobile16-"):
         return _mobile_main(raw)
     try:

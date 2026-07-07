@@ -12,7 +12,8 @@ from .semantic_explorer import SemanticExplorerService, VIEW_TYPES
 
 class SemanticExplorerFrame(ttk.Frame):
     COLORS = {"document": "#60A5FA", "memory": "#A78BFA", "person": "#F59E0B", "project": "#34D399",
-              "workspace": "#22D3EE", "tag": "#F472B6", "source": "#94A3B8", "concept": "#E5E7EB"}
+              "workspace": "#22D3EE", "tag": "#F472B6", "source": "#94A3B8", "timeline": "#FB7185",
+              "evidence": "#FDE047", "concept": "#E5E7EB"}
 
     def __init__(self, master: tk.Misc, project_root: str | Path):
         super().__init__(master)
@@ -55,7 +56,7 @@ class SemanticExplorerFrame(ttk.Frame):
         ttk.Label(self, textvariable=self.status).pack(fill="x")
 
     def reload(self) -> None:
-        self.current = self.service.explore(view=self.view.get(), query=self.query.get(),
+        self.current = self.service.graph_explorer(view=self.view.get(), query=self.query.get(),
             node_types=[self.node_type.get()] if self.node_type.get() else [],
             relationship_types=[self.relationship_type.get()] if self.relationship_type.get() else [],
             sources=[self.source.get()] if self.source.get() else [], tags=[self.tag.get()] if self.tag.get() else [])

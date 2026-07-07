@@ -32,6 +32,7 @@ class AIWorkspaceService:
         ("preview", "Document Preview", "document-preview-gui", ("secondbrain/native/document_preview",)),
         ("memory", "Memory Explorer", "memory-explorer", ("secondbrain/native/memory_explorer.py",)),
         ("agents", "Agent Control", "agent-control-gui", ("secondbrain/native/agent_control_center.py",)),
+        ("agent_control", "Agent Control Center", "agent-control-center-gui", ("secondbrain/native/agent_control",)),
         ("voice", "Voice Control", "voice-control-status", ("secondbrain/native/voice_control_center.py",)),
         ("commands", "Command Center", "command-center-gui", ("secondbrain/native/command_center.py",)),
         ("jobs", "Job Queue", "job-queue-center-gui", ("secondbrain/native/job_queue_center",)),
@@ -175,6 +176,7 @@ class AIWorkspaceService:
             "preview": self._preview_payload,
             "memory": self._memory_payload,
             "agents": self._agents_payload,
+            "agent_control": self._agent_control_payload,
             "voice": self._voice_payload,
             "commands": self._commands_payload,
             "jobs": self._jobs_payload,
@@ -240,6 +242,10 @@ class AIWorkspaceService:
     def _agents_payload(self) -> dict[str, Any]:
         from secondbrain.native.agent_control_center import AgentControlCenter
         return AgentControlCenter(self.project_root).status()
+
+    def _agent_control_payload(self) -> dict[str, Any]:
+        from secondbrain.native.agent_control.service import AgentControlService
+        return AgentControlService(self.project_root).overview()
 
     def _voice_payload(self) -> dict[str, Any]:
         from secondbrain.native.voice_control_center import voice_center_status

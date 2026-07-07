@@ -1,3 +1,161 @@
+<<<<<<< HEAD
+# Release Notes v30.76 - Plugin Runtime
+
+## v30.76
+
+- Deklarativer Plugin Loader und versioniertes Plugin Manifest.
+- Explizites Host-Trust vor jeder Python-Aktivierung.
+- Plugin API mit vorhandener ToolRegistry statt zweiter Registry.
+- Deklarierte/gewaehrte Plugin Permissions und pfadgesicherte Sandbox-API.
+- Schema-validierte Plugin Settings; Secret-Werte nur als Referenzen.
+- Aktivierungs-Rollback und Deaktivierung entfernen registrierte Plugin-Tools.
+- Offline Marketplace-Katalogvorbereitung mit Publisher-/Lizenz-/Checksum-Pruefung.
+
+# Release Notes v30.75 - Answer Evaluation
+
+## v30.75
+
+- Automatische Answer Evaluation nach synchronen und gestreamten Provider-Antworten.
+- Hallucination Detection ueber Claim-/Evidenzabdeckung und nicht belegte Zahlen.
+- Source Verification ueber starke Chunk-/Dokument-IDs.
+- Confidence wiederverwendet das bestehende Reasoning-Modell.
+- Answer Rating und Evidence Rating mit transparenten Teilmetriken.
+- Self Critique und Improvement Suggestions ohne internes Chain-of-Thought.
+- Direkte Ablage in bestehenden Assistant-Message-Metadaten; keine neue Datenhaltung.
+
+# Release Notes v30.74 - Layered Prompt Pipeline
+
+## v30.74
+
+- Typisierte System-, Workspace-, Memory-, Goal-, Document-, User- und Provider-Prompt-Layer.
+- `FinalPromptBuilder` ist die zentrale Assembly hinter dem vorhandenen `PromptAssembler`.
+- Kanonischer ChatEngine-Pfad nutzt die Layer direkt aus den bestehenden Context-Sektionen.
+- Prompt Audit speichert Hashes, Groessen und Layer-Metadaten ohne Inhalte.
+- Prompt History speichert lokale Inhalte mit bestehender Secret-Redaction.
+- Provider-Fallback fuer fehlende System-Prompt-Unterstuetzung.
+
+# Release Notes v30.73 - Context Optimization
+
+## v30.73
+
+- Gemeinsames Context Ranking fuer bestehende Memory- und RAG-Ergebnisse.
+- Memory Ranking ueber die bestehende `MemoryRanking`-Implementierung.
+- Source Ranking mit explizitem Trust-/Confidence-Vorrang und sicheren Defaults.
+- Exakte und nahe Duplicate Removal vor der Token-Budgetierung.
+- Conflict Resolution ueber den bestehenden `MemoryConflictDetector`; die staerker bewertete Aussage bleibt erhalten.
+- Prompt Compression und explizite Prompt Expansion im bestehenden `PromptAssembler`.
+- Keine neue Datenhaltung und keine zweite Context-Pipeline.
+
+# Release Notes v30.72 - Semantic Graph Explorer
+
+## v30.72
+
+- Entity-, Relationship-, Project-, People-, Timeline- und Evidence-Graph im vorhandenen `SemanticExplorerService`.
+- Timeline aus vorhandenen Dokument- und Memory-Zeitstempeln; Evidence aus RAG-Chunks und Memory-Eintraegen.
+- Gewichtete Graph Search mit Knoten-, Beziehungs- und Quellfiltern.
+- Graph Explorer bleibt direkt in der bestehenden AI-Workspace-GUI integriert.
+- Ausschliesslich read-only Projektion ueber RAG und Memory; keine neue Datenhaltung.
+
+# Release Notes v30.71 - Scheduler (Recurring Jobs / Cron / Dependencies / Maintenance)
+
+## v30.71
+
+- Neues Paket `secondbrain/agent/scheduler/`: wiederkehrende und geplante Jobs mit Cron, Abhaengigkeiten und Wartung.
+- Cron (5 Felder: `*`, `*/n`, `a-b`, `a,b`) + Intervall-Schedule; `matches`, `due` (1-Tag-Fenster), `next_after`.
+- Dependency Scheduler: abhaengige Jobs laufen erst nach erfolgreichem Vorlauf (sonst skipped), topologische Reihenfolge.
+- Eingebaute Wartung: health_check (*/15), auto_index (stuendlich), knowledge_refresh (3am, abhaengig von auto_index), memory_consolidation (4am, Memory-Sink).
+- Wiederverwendung: jede Ausloesung wird ueber `JobQueueService.add_job` in die bestehende Job Queue gespiegelt - keine zweite Queue. Health-Check liest `snapshot()`.
+- Klassen: `JobScheduler`, `RecurringJob`, `JobRun`, `CronSchedule`, `IntervalSchedule`, `SchedulerStore`.
+- Persistenz `runtime/agent/scheduler/` (recurring_jobs.json, runs.jsonl).
+- Tests: `test_cron.py`, `test_scheduler.py`, `test_dependencies.py`, `test_maintenance.py` (25 passed). Keine Regression in v30.61-v30.70.
+
+# Release Notes v30.70 - ToolChain
+
+## v30.70
+
+- Neues Paket `secondbrain/agent/toolchain/`: zusammengesetzte Tool-Workflows mit Kontrollfluss und Resilienz.
+- Kontrollfluss: Conditional Steps, Loops (while/foreach mit max_iterations), Parallel Steps.
+- Resilienz: Retry (max_attempts), Fallback (Alternativ-Step), Rollback (Kompensation in umgekehrter Reihenfolge), Error Handling.
+- Visual Workflow: Mermaid (`flowchart TD`) + ASCII-Baum ueber `chain.visualize()`.
+- Wiederverwendung: Tools laufen ueber die bestehende `ToolRegistry.run` - kein zweiter Tool-Executor.
+- Klassen: `ToolChain`, `ToolChainExecutor`, `VisualWorkflow`, `ToolStep`, `ConditionalStep`, `LoopStep`, `ParallelStep`, `ChainContext`, `ChainRun`, `StepResult`, `RetryPolicy`.
+- Tests: `test_toolchain.py`, `test_toolchain_control_flow.py`, `test_toolchain_recovery.py` (20 passed). Keine Regression in v30.61-v30.69.
+
+# Release Notes v30.69 - Multi-Agent Coordination
+
+## v30.69
+
+- Neues Paket `secondbrain/agent/coordination/`: bestehende Agenten als Spezialisten hinter einem Coordinator - keine zweite Agent Engine.
+- Spezialisten (Adapter ueber Bestands-Subsystemen): Planner (AgentPlanService), Executor (WorkflowExecutor), Critic (ReasoningSession), Reviewer, Memory + Search (Memory-Store/MemoryInjector), Import (JobQueueService).
+- Communication Bus (Pub/Sub + Log), Task Delegation nach Capability, Shared Context / Shared Memory / Shared Goals (GoalTracker).
+- `solve`-Pipeline: Planen -> Kritik -> Review -> Ausfuehren (nur bei approved und Severity != high).
+- Persistenz `runtime/agent/coordination/bus.jsonl`.
+- Tests: `test_communication.py`, `test_agents.py`, `test_coordinator.py` (22 passed). Keine Regression in v30.61-v30.68.
+
+# Release Notes v30.68 - Reasoning Engine
+
+## v30.68
+
+- Neues Paket `secondbrain/agent/reasoning/`: strukturiertes Problemloesen (nicht nur Tool-Aufrufe), deterministisch und auditierbar.
+- Klassen: `ReasoningSession`, `ReasoningChain`, `ReasoningStep`, `EvidenceCollector`, `Evidence`, `Hypothesis`, `Decision`, `DecisionScore`, `Confidence`, `ReasoningHistory`.
+- Verfahren: Chain of Thought (intern), Tree of Thoughts, Hypothesentest, Evidenz-Ranking, Alternativen, Unsicherheiten, Konflikterkennung.
+- Wiederverwendung ohne Parallelarchitektur: Evidenz ueber v30.64 `MemoryInjector` (Quelle/Confidence/Aktualitaet, Secret-/Privacy-Filter) + injizierbare RAG-Suche; Konflikte ueber v30.64 `MemoryConflictDetector`.
+- Jede Entscheidung traegt Confidence, Evidence, Sources, Alternatives, Risk (+ uncertainties, conflicts).
+- Persistenz `runtime/agent/reasoning/history.jsonl`.
+- Tests: `test_reasoning.py`, `test_evidence.py`, `test_decisions.py` (22 passed). Keine Regression in v30.61-v30.67.
+
+=======
+>>>>>>> 5e262f05d5b ( Changes to be committed:)
+# Release Notes v30.67 - Phase 3 Stabilisierung
+
+## v30.67
+
+- Nicht-destruktive Stabilisierung: kein Bestands-Quellcode geloescht (alle Dubletten sind noch in Benutzung; Deprecation-Plan im Bericht).
+- Runtime-/Testartefakte aus Git entfernt: 2455 faelschlich getrackte Dateien in neun `.pytest_tmp_v3045_*`-Ordnern untracked (`git rm -r --cached`), `.gitignore` um `.pytest_tmp*/` erweitert.
+- Launcher-Kommandos geprueft: alle v30.61-v30.66-Dispatch-Ziele importieren und antworten.
+- Dubletten-Inventur (4 Approval-Pfade, 2 Tool-Registries, alte Workflow-/Background-Pfade) mit risikobewertetem Deprecation-Plan.
+- Validierung: compileall ok; Agent-Framework-Testset 170 passed; RepoDoctor ok=true (48/2/0); Launcher- und GUI-Smoke ok.
+- Berichte: Phase 3 Completion Report, Known Limitations, Remaining Risks, Phase 4 Readiness (docs/releases/v30_67_phase3_stabilization.md).
+
+# Release Notes v30.66 - Native Agent Control GUI
+
+## v30.66
+
+- Alle Agent-Funktionen (v30.59-v30.65) in die bestehende native Desktop-Anwendung integriert - eine Agent-Control-Oberflaeche im AI Workspace, keine zweite GUI.
+- Neues Modul `secondbrain/native/agent_control/` (Aggregations-Service, GUI-Panel, CLI); im AI Workspace als Modul `agent_control` registriert.
+- GUI-Bereiche: Agenten, Plaene, Workflows, Background Agents, Approvals, Goals, Audit, Logs - jeder aus dem jeweiligen Bestands-Subsystem.
+- Funktionen: Plan erstellen/pruefen/starten, Approval bestaetigen/ablehnen, Workflow ueberwachen, Goal Tracking anzeigen, Background Agents verwalten.
+- Jeder Bereich degradiert defensiv; GUI-Logik UI-frei ueber `view_model()`/`build_tabs()` getestet (Tkinter lazy).
+- Launcher-Kommandos `agent-control-center`, `-gui`, `-status`, `agent-control-area`, `agent-control-plan-*`, `agent-control-approve/reject`, `agent-control-workflow`, `agent-control-goal-report`, `agent-control-bg`.
+- Tests: `test_agent_control_gui.py`, `test_agent_workspace_integration.py` (14 passed). Keine Regression in v30.61-v30.65 (71 passed).
+
+# Release Notes v30.65 - Agent Goal Tracking
+
+## v30.65
+
+- Neues Paket `secondbrain/agent/goals/`: Jarvis verfolgt Ziele, Fortschritt und offene Aufgaben.
+- Klassen: `Goal`, `GoalMilestone`, `GoalMetric`, `GoalStatus`, `GoalEvidence`, `GoalReview`, `GoalStore`, `GoalTracker`.
+- Funktionen: Ziel erstellen, in Plaene zerlegen, Fortschritt messen, offene Risiken anzeigen, pausieren, abschliessen, Zielbericht erzeugen.
+- Integration ohne Neubau: Agent Planner (Zerlegung, Plaene bleiben in `runtime/agent/plans.json`), Workflow Engine (Status), Memory-Sink, Notification Center, Dashboard-Snapshot.
+- Fortschritt = deterministische Mischung aus Meilenstein-, Metrik- und Plan-Fortschritt.
+- Persistenz unter `runtime/agent/goals/` (goals.json, reviews.jsonl).
+- Launcher-Kommandos `goal-create`, `goal-list`, `goal-show`, `goal-update`, `goal-report`, `goal-close`.
+- Tests: `test_goal_tracking.py`, `test_goal_metrics.py`, `test_goal_reporting.py` (28 passed). Keine Regression in v30.61-v30.64 (70 passed).
+
+# Release Notes v30.64 - Agent Memory Injection
+
+## v30.64
+
+- Neues Paket `secondbrain/agent/memory_injection/`: Agenten nutzen Memory gezielt, begrenzt und nachvollziehbar.
+- Keine zweite Memory Engine - liest die bestehende `secondbrain.agent.memory` (`InMemoryMemoryStore`, `MemoryRecord`).
+- Klassen: `MemoryInjector`, `MemoryQuery`, `MemoryContext`, `MemoryEvidence`, `MemoryRanking`, `MemoryBudget`, `MemoryConflictDetector` (plus Filter, Audit, Service, CLI).
+- Agenten erhalten: relevante Erinnerungen, Quellen, Confidence, Aktualitaet, Konflikte, Ausschluesse im Privacy Mode.
+- Regeln: Secrets niemals injizieren, Privacy Mode erzwingen, Tokenbudget beachten, Quellenpflicht.
+- Pipeline in Sicherheitsreihenfolge: Secrets -> Privacy -> Quellenpflicht -> Ranking -> Budget/Limit -> Konflikte.
+- Audit-Trail unter `runtime/agent/memory_injection/audit.jsonl` (nur `inject` schreibt).
+- Launcher-Kommandos `agent-memory-preview`, `agent-memory-inject`, `agent-memory-audit`.
+- Tests: `test_memory_injection.py`, `test_memory_budget.py`, `test_memory_privacy.py`, `test_memory_conflicts.py` (25 passed). Keine Regression in v30.61-v30.63 (72 passed).
+
 # Release Notes v30.63 - Background Agents
 
 ## v30.63
