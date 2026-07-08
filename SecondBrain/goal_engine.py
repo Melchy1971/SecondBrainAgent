@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .config import load_simple_yaml
 
 def write_goal_map(project_root: Path, settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     folder = vault / "50_Goals"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Goal_Map.md"

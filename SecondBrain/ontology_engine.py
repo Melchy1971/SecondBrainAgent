@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
@@ -22,7 +23,7 @@ def classify_node(text: str) -> str:
     return best[0] if best[1] > 0 else "document"
 
 def write_ontology_index(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "39_Ontology"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Ontology_Index.md"

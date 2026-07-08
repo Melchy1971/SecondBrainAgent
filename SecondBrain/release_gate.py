@@ -1,6 +1,7 @@
 from pathlib import Path
 import subprocess
 import sys
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .config import load_settings, load_simple_yaml
 from .hardening import hardening_score
@@ -56,7 +57,7 @@ def run_release_gate(project_root: Path) -> dict:
 
 def write_release_gate_report(project_root: Path) -> Path:
     settings = load_settings(project_root)
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     target_dir = vault / "99_System" / "release_gates"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_release-gate-v6-1.md"

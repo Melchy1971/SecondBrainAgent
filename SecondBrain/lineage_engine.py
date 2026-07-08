@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, frontmatter_value
 
 def build_lineage_index(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "24_Lineage"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Knowledge_Lineage.md"

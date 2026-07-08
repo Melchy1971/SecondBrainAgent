@@ -1,12 +1,13 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_links, extract_tags, word_tokens
 
 IMPORTANT_SEEDS = ["sap", "obsidian", "claude", "ollama", "python", "mcp", "prozess", "projekt", "email", "pdf"]
 
 def write_knowledge_gaps(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("knowledge_gaps", "20_KnowledgeGaps")
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_knowledge-gaps.md"

@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_chief_of_staff_v2(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "35_ChiefOfStaff"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_chief-of-staff-v2.md"

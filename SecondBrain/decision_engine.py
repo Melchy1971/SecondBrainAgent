@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+from .path import from_settings_mapping
 from .utils import now_date, slugify, ensure_unique_path
 from .vault_scan import iter_markdown, read_note
 
@@ -17,7 +18,7 @@ def extract_decisions_from_text(text: str) -> list[str]:
     return out
 
 def write_decision_register(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("decisions", "12_Decisions")
     folder.mkdir(parents=True, exist_ok=True)
     register = folder / "Decision_Register.md"

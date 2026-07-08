@@ -1,12 +1,13 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_tags
 
 MEMORY_SIGNALS = ["priorität", "präferenz", "immer", "nie", "wichtig", "ziel", "arbeitsweise", "entscheidung"]
 
 def build_memory_profile(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "22_Memory"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Memory_Profile.md"

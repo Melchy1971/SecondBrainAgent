@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_tags, extract_links, note_type
 
@@ -21,7 +22,7 @@ def score_note(text: str) -> int:
     return min(score, 100)
 
 def write_quality_scores(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "40_QualityScores"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_quality-scores.md"

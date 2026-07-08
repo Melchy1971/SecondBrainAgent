@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 AGENTS = ["Supervisor", "Research", "Project", "Meeting", "Process", "Knowledge", "Governance", "Quality", "Executive"]
 
 def write_agent_swarm_status(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "34_AgentSwarm"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Agent_Swarm_Status.md"

@@ -1,11 +1,12 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 AGENTS = ["Research", "Project", "Process", "Executive", "ChiefOfStaff"]
 
 def write_agent_memories(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "48_AgentMemory"
     folder.mkdir(parents=True, exist_ok=True)
     created = []

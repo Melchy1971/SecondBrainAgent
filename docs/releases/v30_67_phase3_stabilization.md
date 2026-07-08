@@ -52,7 +52,7 @@ RepoDoctor-Warnungen: (1) README.md nennt keine aktuelle Runtime-Version; (2) Ca
 |-----------------|-------------|------------|
 | `native/approval.py` `NativeApprovalQueue` | planner, safety (v30.61), native/actions, task_workspace, gui/launch, Workflow/Background/Goal-Deltas | **Kanonisch – behalten.** Alle neuen Deltas standardisieren hierauf. |
 | `production_core/security/approval.py` `ApprovalWorkflow` | `production_core/runtime.py` (ProductionCore) | Eigene Domäne (Production-Core). Behalten oder später auf NativeApprovalQueue bündeln. Niedriges Risiko, kein Konflikt. |
-| `security_v107.py` `ApprovalStore` | `secure_agent_kernel_v107.py` | Legacy v10.7-Kernel. **Deprecate**, sobald Kernel v107 abgelöst ist. |
+| `security_v107.py` `ApprovalStore` | `secure_agent_kernel_v107.py` | v10.7-Kernel. **Ablösen**, sobald Kernel v107 abgelöst ist. |
 | `agent/approval_system.py` `ApprovalSystem` | `gates/p2_production_gate.py`, `gates/p2_completion_report.py`, `agent/workflow_executor.py` (alt), `tests/test_v211_p2_runtime.py` | **Deprecate zusammen** mit dem alten `workflow_executor.py`. |
 
 ### Tool-Registries (2)
@@ -67,7 +67,7 @@ RepoDoctor-Warnungen: (1) README.md nennt keine aktuelle Runtime-Version; (2) Ca
 - `agent/workflow_executor.py` (Postgres-gebunden, nutzt `ApprovalSystem`) + `tests/test_v303_agent_workflow_engine.py` vs. neue dateibasierte Engine `agent/workflow/` (v30.62). Beide getestet – alt behalten, bis Postgres-Pfad migriert.
 - `agent/background/` (In-Memory-Job-Manager, `tests/agent/background/…`) vs. `agent/background_agents/` (v30.63, geplante Hintergrund-Agenten). Unterschiedliche Konzepte – nicht dedupliziert.
 
-**Empfohlene Reihenfolge (auf 3.13, mit grünem `pytest`):** 1) `security_v107`/`secure_agent_kernel_v107` ablösen → `ApprovalStore` entfernen. 2) `agent/workflow_executor.py` (alt) + `ApprovalSystem` + `test_v303` migrieren auf v30.62-Engine. 3) `launcher_runtime_v12x` auf `agent/tool_registry` migrieren → `tool_registry_v121` entfernen. 4) `agent/background` auf `background_agents` migrieren oder als Legacy markieren.
+**Empfohlene Reihenfolge (auf 3.13, mit grünem `pytest`):** 1) `security_v107`/`secure_agent_kernel_v107` ablösen → `ApprovalStore` entfernen. 2) `agent/workflow_executor.py` (alt) + `ApprovalSystem` + `test_v303` migrieren auf v30.62-Engine. 3) `launcher_runtime_v12x` auf `agent/tool_registry` migrieren → `tool_registry_v121` entfernen. 4) `agent/background` auf `background_agents` migrieren oder als Kompatibilitaetsfall markieren.
 
 ---
 

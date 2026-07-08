@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .vault_scan import iter_markdown, read_note, extract_tags, note_type
 
@@ -9,7 +10,7 @@ def has_title(text: str) -> bool:
     return any(line.strip().startswith("title:") for line in text.splitlines()[:30])
 
 def quality_report(settings: dict) -> dict:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     notes = list(iter_markdown(vault))
     total = len(notes)
     with_fm = 0
@@ -45,7 +46,7 @@ def quality_report(settings: dict) -> dict:
     }
 
 def write_quality_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "quality"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_quality-report.md"

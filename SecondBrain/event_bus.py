@@ -1,9 +1,10 @@
 from pathlib import Path
 import json
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def emit_event(settings: dict, event_type: str, payload: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "99_System" / "events"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_events.jsonl"
@@ -17,7 +18,7 @@ def emit_event(settings: dict, event_type: str, payload: dict) -> Path:
     return target
 
 def write_event_summary(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     source_dir = vault / "99_System" / "events"
     folder = vault / "36_EventBus"
     folder.mkdir(parents=True, exist_ok=True)

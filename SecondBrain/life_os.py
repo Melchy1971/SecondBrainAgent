@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 AREAS = ["Beruf", "Privat", "Gesundheit", "Finanzen", "Lernen", "Reisen", "Verein", "Smart Home", "Projekte", "Wissen"]
 
 def write_life_os_dashboard(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "47_LifeOS"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_life-os-dashboard.md"

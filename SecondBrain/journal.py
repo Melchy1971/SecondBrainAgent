@@ -1,11 +1,12 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def append_journal(settings: dict, imported_items: list[dict]) -> Path | None:
     if not settings.get("journal_enabled", True):
         return None
 
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     journal_folder = settings.get("vault_folders", {}).get("journal", "06_Journal")
     target_dir = vault / journal_folder
     target_dir.mkdir(parents=True, exist_ok=True)

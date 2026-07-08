@@ -32,6 +32,22 @@ def from_settings_service(service, project_root) -> AppPaths:
     return resolve_paths(project_root, vault_setting=_get(VAULT_SETTING_KEY),
                          incoming_setting=_get(INCOMING_SETTING_KEY))
 
+def from_settings_mapping(settings: dict, project_root=None) -> AppPaths:
+    root_value = project_root or settings.get("project_root") or Path.cwd()
+
+    class _MappingService:
+        def __init__(self, values: dict) -> None:
+            self._values = values if isinstance(values, dict) else {}
+
+        def get(self, key: str) -> str:
+            if key == VAULT_SETTING_KEY:
+                return str(self._values.get("vault_path", self._values.get("vault", "")) or "")
+            if key == INCOMING_SETTING_KEY:
+                return str(self._values.get("incoming_path", self._values.get("inbox_path", self._values.get("incoming", ""))) or "")
+            return str(self._values.get(key, "") or "")
+
+    return from_settings_service(_MappingService(settings), root_value)
+
 def ensure_dirs(paths: AppPaths) -> AppPaths:
     paths.vault.mkdir(parents=True, exist_ok=True)
     paths.incoming.mkdir(parents=True, exist_ok=True)

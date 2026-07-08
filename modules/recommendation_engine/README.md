@@ -1,3 +1,5 @@
 # recommendation_engine
 
-Priorisierte Empfehlungen aus Risiken, Tasks und Wissensqualität.
+Kanonische Empfehlungslogik fuer Risiken, Tasks und Wissensqualitaet.
+
+Kompatibilitaets-Wrapper bleiben erhalten; die zentrale Nutzung laeuft ueber `secondbrain.recommendations`.

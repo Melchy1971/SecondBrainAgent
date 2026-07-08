@@ -1,12 +1,13 @@
 from pathlib import Path
 import re
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 DATE_RE = re.compile(r"\b(20\d{2}-\d{2}-\d{2}|\d{2}\.\d{2}\.20\d{2})\b")
 
 def build_temporal_graph(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "23_TemporalGraph"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Temporal_Graph.md"

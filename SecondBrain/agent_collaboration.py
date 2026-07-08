@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_collaboration_protocol(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "49_AgentCollaboration"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Agent_Collaboration_Protocol.md"

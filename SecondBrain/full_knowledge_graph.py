@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 from collections import Counter, defaultdict
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, note_type, extract_tags, extract_links
 
@@ -36,7 +37,7 @@ def edge_type_from_context(text: str, link: str) -> str:
     return "references"
 
 def build_full_graph(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     system_dir = vault / "99_System" / "knowledge_graph"
     system_dir.mkdir(parents=True, exist_ok=True)
     target_json = system_dir / "full_knowledge_graph.json"

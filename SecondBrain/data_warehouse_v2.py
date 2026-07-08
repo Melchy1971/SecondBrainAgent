@@ -1,10 +1,11 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, note_type, extract_tags, extract_tasks
 
 def write_data_warehouse_v2(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     base = vault / "71_DataWarehouse"
     base.mkdir(parents=True, exist_ok=True)
     created = []

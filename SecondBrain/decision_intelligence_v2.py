@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
@@ -11,7 +12,7 @@ def extract_decision_lines(text: str) -> list[str]:
     return out
 
 def write_decision_intelligence_v2(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "68_DecisionIntelligence"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Decision_Intelligence_v2.md"

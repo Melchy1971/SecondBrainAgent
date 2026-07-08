@@ -1,10 +1,11 @@
 from pathlib import Path
 from collections import defaultdict, Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_links, extract_tags, note_type
 
 def build_context_map(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "21_Context"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_context-map.md"

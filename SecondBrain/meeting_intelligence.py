@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, slugify, ensure_unique_path
 from .vault_scan import read_note
 
 def analyze_meeting_file(settings: dict, source: Path) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("meetings", "13_Meetings")
     folder.mkdir(parents=True, exist_ok=True)
 

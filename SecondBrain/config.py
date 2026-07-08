@@ -59,6 +59,7 @@ def load_settings(project_root: Path) -> dict:
     settings = load_simple_yaml(project_root / "config" / "settings.yaml")
     vault = load_simple_yaml(project_root / "config" / "vault.yaml")
     providers = load_simple_yaml(project_root / "config" / "providers.yaml")
+    settings["project_root"] = str(project_root)
     settings.setdefault("vault_path", str(project_root / "SecondBrain"))
     settings.setdefault("incoming_path", str(project_root / "SecondBrain-Inbox"))
 

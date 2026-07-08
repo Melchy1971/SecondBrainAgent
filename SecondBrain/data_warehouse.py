@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, note_type, extract_tasks
 
 def write_data_warehouse(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     base = vault / "59_DataWarehouse"
     facts = base / "Facts"
     dims = base / "Dimensions"

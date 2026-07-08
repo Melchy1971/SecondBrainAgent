@@ -1,11 +1,12 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def update_graph(settings: dict, imported_items: list[dict]) -> Path | None:
     if not settings.get("graph_enabled", True):
         return None
 
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     graph_folder = settings.get("vault_folders", {}).get("graph", "07_Graph")
     target_dir = vault / graph_folder
     target_dir.mkdir(parents=True, exist_ok=True)

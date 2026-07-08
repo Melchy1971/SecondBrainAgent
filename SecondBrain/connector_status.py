@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .config import load_simple_yaml
 
 def write_connector_status(project_root: Path, settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     target_dir = vault / "99_System" / "connector_status"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_connector-status.md"

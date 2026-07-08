@@ -1,10 +1,11 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_tags
 
 def write_learning_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("learning", "16_Lernsystem")
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_learning-report.md"

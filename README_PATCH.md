@@ -496,7 +496,7 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
 - `ijson`, konfigurierbare 500er-Batches und transaktionale Checkpoints im
   bestehenden P1-RAG-Store ermöglichen sehr große Dateien ohne Voll-Read.
 - Das bestehende Import Center, die Provider-Adapter, Queue und RAG-CLI nutzen
-  denselben Service (Details: APPLY_DELTA_v30_51.md).
+  denselben Service (Details siehe Release Notes).
 
 ## v30.50
 
@@ -505,7 +505,7 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
 - Personen, Projekte, Tags, Beziehungen und Quellen werden aus vorhandenen
   Metadaten abgeleitet; Suche, Filter und Nachbarschaftsnavigation sind integriert.
 - Es gibt keinen eigenen Index und keine zweite Datenhaltung
-  (Details: APPLY_DELTA_v30_50.md).
+  (Details siehe Release Notes).
 
 ## v30.49
 
@@ -515,7 +515,7 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
   Queue und Approval-Komponenten werden wiederverwendet.
 - Das native Dashboard enthaelt eine read-only Aufgabenkarte.
 - Es wurde keine zweite Taskverwaltung eingefuehrt
-  (Details: APPLY_DELTA_v30_49.md).
+  (Details siehe Release Notes).
 
 ## v30.48
 
@@ -524,7 +524,7 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
 - Suche, Filter, JSON-Import/-Export sowie Benutzer, Rollen und Rechte nutzen
   die vorhandenen ProjectCenter-, WorkspaceManager- und RBAC-Datenpfade.
 - Es wurde keine zweite Projektverwaltung und keine zweite Desktop-Shell
-  eingefuehrt (Details: APPLY_DELTA_v30_48.md).
+  eingefuehrt (Details siehe Release Notes).
 
 ## v30.46.3
 
@@ -532,7 +532,7 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
   Conversation/Streaming/Markdown Mitte, Quellen/Memory/Dokumente/Runtime
   rechts, Prompt/Anhaenge/Sprache/Provider unten.
 - Panel-Logik UI-frei in `ai_workspace/panels.py`; keine zweite Navigation,
-  keine zweite Toolbar (Details: APPLY_DELTA_v30_46_3.md).
+  keine zweite Toolbar (Details siehe Release Notes).
 
 ## v30.46.2
 
@@ -543,12 +543,12 @@ Der Enterprise-Streaming-Import übergibt jeden Batch an die vorhandene native J
   ContextLimiter und TokenBudgetManager komponieren Bestandsmodule;
   keine zweite Retrieval- oder Memory-Engine.
 - `ChatContextBuilder` und die P3-Kontextstubs bleiben als
-  Kompatibilitaets-Fassaden erhalten (Details: APPLY_DELTA_v30_46_2.md).
+  Kompatibilitaets-Fassaden erhalten (Details siehe Release Notes).
 
 ## v30.46.1
 
 - `ChatEngine` ist die einzige ausführende Chat-Engine im Projekt.
-- Native Desktop, AI Workspace, Actions, Desktop-App und Legacy-HUD verwenden
+- Native Desktop, AI Workspace, Actions, Desktop-App und Web-HUD verwenden
   dieselbe Provider-, Context-, Retrieval- und Conversation-Pipeline.
 - `NativeChatService` bleibt ausschließlich als kompatibler Alias erhalten.
-- Legacy-Chat-JSONL wird nur noch gelesen; neue Nachrichten landen aus
+- Chat-JSONL wird nur noch gelesen; neue Nachrichten landen aus

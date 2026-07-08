@@ -1,4 +1,14 @@
-<<<<<<< HEAD
+# Release Notes v30.77 - UI Path Override and Import Consolidation
+
+## v30.77
+
+- UI-konfigurierte Pfade aus `data/desktop_app/settings.json` ueberschreiben jetzt `config/settings.yaml` fuer Vault- und Inbox-Aufloesung.
+- Zentrale Pfadlogik ueber `secondbrain/path.py` konsolidiert; Kompatibilitaets-Bruecken `from_settings_mapping()` und `from_settings_service()` halten die bisherigen Verbraucher stabil.
+- Viele direkte `settings["vault_path"]`-/`settings["incoming_path"]`-Verbraucher auf die zentrale Aufloesung migriert.
+- Kompatibilitaets-Wrapper fuer `secondbrain.goal_engine` und `secondbrain.recommendations` stellen die alten Importpfade weiter bereit.
+- V9/V97-Module wurden auf die kanonischen Implementierungen umgebogen, um Doppelimplementierungen zu vermeiden.
+- Dokumentation aktualisiert: README um Pfad-Override-Hinweise ergaenzt.
+
 # Release Notes v30.76 - Plugin Runtime
 
 ## v30.76
@@ -104,8 +114,6 @@
 - Persistenz `runtime/agent/reasoning/history.jsonl`.
 - Tests: `test_reasoning.py`, `test_evidence.py`, `test_decisions.py` (22 passed). Keine Regression in v30.61-v30.67.
 
-=======
->>>>>>> 5e262f05d5b ( Changes to be committed:)
 # Release Notes v30.67 - Phase 3 Stabilisierung
 
 ## v30.67
@@ -257,7 +265,7 @@
 - PST-Parser im vorhandenen Registry-Pattern mit optionalem `pypff` ergänzt.
 - Dokumentmetadaten um Anhänge, OCR-Status, Version und Workspace erweitert.
 - Workspace-Import für Obsidian, Notion, Paperless und OneNote ergänzt.
-- Document Explorer und Legacy-Connectoren auf den zentralen ImportService umgestellt.
+- Document Explorer und Connectoren auf den zentralen ImportService umgestellt.
 
 # Release Notes v30.53 - Unified Enterprise Importer
 
@@ -265,7 +273,7 @@
 
 - Kanonisches Conversation-Modell für sämtliche Chat-Exporte.
 - Acht Provider-Adapter auf `StreamingImportService` vereinheitlicht.
-- Legacy-Perplexity-Importpfad entfernt.
+- Perplexity-Importpfad entfernt.
 - TXT- und HTML-Streaming als zusätzliche Enterprise-Eingaben ergänzt.
 - Provider- und Integrationsfixtures für alle unterstützten Formate ergänzt.
 
