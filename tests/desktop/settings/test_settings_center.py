@@ -24,12 +24,44 @@ def test_default_registry_contains_core_categories() -> None:
     assert "rag" in categories
     assert "connectors" in categories
     assert "security" in categories
+    assert "paths" in categories
 
 
 def test_settings_service_loads_defaults(tmp_path: Path) -> None:
     settings = service(tmp_path)
     assert settings.get("desktop.theme") == "system"
     assert settings.get("rag.max_results") == 10
+
+
+def test_load_settings_seeds_flat_path_defaults(tmp_path: Path) -> None:
+    from secondbrain.config import load_settings
+
+    settings = load_settings(tmp_path)
+    assert settings["vault_path"] == str(tmp_path / "SecondBrain")
+    assert settings["incoming_path"] == str(tmp_path / "SecondBrain-Inbox")
+
+
+def test_desktop_ui_settings_override_config_yaml(tmp_path: Path) -> None:
+    from secondbrain.config import load_settings
+
+    config_dir = tmp_path / "config"
+    config_dir.mkdir(parents=True)
+    (config_dir / "settings.yaml").write_text(
+        "vault_path: old-vault\nincoming_path: old-inbox\n",
+        encoding="utf-8",
+    )
+    desktop_dir = tmp_path / "data" / "desktop_app"
+    desktop_dir.mkdir(parents=True)
+    (desktop_dir / "settings.json").write_text(
+        '{"vault_path": "D:/CustomVault", "incoming_path": "D:/CustomInbox"}',
+        encoding="utf-8",
+    )
+
+    settings = load_settings(tmp_path)
+    assert Path(settings["vault_path"]) == Path("D:/CustomVault")
+    assert Path(settings["incoming_path"]) == Path("D:/CustomInbox")
+    assert Path(settings["paths.vault"]) == Path("D:/CustomVault")
+    assert Path(settings["paths.incoming"]) == Path("D:/CustomInbox")
 
 
 def test_settings_service_persists_update(tmp_path: Path) -> None:
