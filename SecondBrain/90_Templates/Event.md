@@ -1,7 +1,0 @@
-# Event
-
-## Typ
-
-## Payload
-
-## Folgeaktionen

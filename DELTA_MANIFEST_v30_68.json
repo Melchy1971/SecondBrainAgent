@@ -1,0 +1,67 @@
+{
+  "version": "30.68",
+  "title": "Desktop-GUI: vereinheitlichtes Design-System + Accessibility + Unified Shell",
+  "type": "feature",
+  "no_function_removed": true,
+  "analysis": "Bestehende native Center (theme/notification/job_queue/layout/dashboard) haben je models/service/gui; nicht dupliziert, sondern vereinheitlichende Schicht ergaenzt.",
+  "new_logic": {
+    "tokens": "Spacing/Typo/Radii + Light+Dark-Paletten mit semantischen Rollen",
+    "contrast": "WCAG-2.1-Kontrast + AA/AAA (Accessibility) - Paletten verifiziert AA",
+    "theme": "ThemeRegistry (Dark Mode Toggle) + ttk-Style-Map als Daten",
+    "states": "Loading/Error/Async-ViewState",
+    "keymap": "Keyboard-Nav + Konflikterkennung",
+    "responsive": "Breakpoints -> compact/regular/wide + Sidebar/Spalten",
+    "status_bar": "StatusBar-Komposition",
+    "workspace_selector": "Workspace-Wechsel",
+    "activity_feed": "Activity Feed"
+  },
+  "gui": {
+    "file": "secondbrain/gui/app_shell.py",
+    "note": "Tkinter Unified Shell/Base-Window; in Sandbox nicht gerendert/abgenommen (kein Display); Logik voll getestet. Vereinheitlicht Chrome (Sidebar/StatusBar/Theme/Keys/Responsive) OHNE bestehende Funktionen zu entfernen."
+  },
+  "launcher_commands": [
+    "ui-theme --theme dark|light",
+    "ui-contrast-check (Exit 4 bei AA-FAIL)"
+  ],
+  "requirements": [
+    "Navigation",
+    "Abstaende",
+    "Farbschema",
+    "Dark Mode",
+    "Responsive Layout",
+    "Keyboard Navigation",
+    "Accessibility",
+    "Loading States",
+    "Error States",
+    "Notifications(Badge)",
+    "Job Monitor(Badge)",
+    "Status Bar",
+    "Workspace Selector",
+    "Activity Feed"
+  ],
+  "files": [
+    "SecondBrain-Agent/secondbrain/ui/tokens.py",
+    "SecondBrain-Agent/secondbrain/ui/contrast.py",
+    "SecondBrain-Agent/secondbrain/ui/theme.py",
+    "SecondBrain-Agent/secondbrain/ui/states.py",
+    "SecondBrain-Agent/secondbrain/ui/keymap.py",
+    "SecondBrain-Agent/secondbrain/ui/responsive.py",
+    "SecondBrain-Agent/secondbrain/ui/status_bar.py",
+    "SecondBrain-Agent/secondbrain/ui/workspace_selector.py",
+    "SecondBrain-Agent/secondbrain/ui/activity_feed.py",
+    "SecondBrain-Agent/secondbrain/ui/__init__.py",
+    "SecondBrain-Agent/secondbrain/gui/app_shell.py",
+    "SecondBrain-Agent/tests/ui/test_contrast_accessibility.py",
+    "SecondBrain-Agent/tests/ui/test_tokens_theme.py",
+    "SecondBrain-Agent/tests/ui/test_states_keymap_responsive.py",
+    "SecondBrain-Agent/tests/ui/test_status_workspace_activity.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/30_68_desktop_gui_unification.md"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/ui",
+    "pytest SecondBrain-Agent/tests/ui -q"
+  ],
+  "test_result": "ui: 17 passed ; gesamt 230 passed, 10 skipped",
+  "generated": "2026-07-08"
+}
