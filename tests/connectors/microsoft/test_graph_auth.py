@@ -1,4 +1,3 @@
-import json
 from secondbrain.connectors.microsoft.graph_auth import GraphAuthenticator, GraphAuthError
 from secondbrain.connectors.microsoft.transport import FakeTransport
 

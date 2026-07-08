@@ -1,21 +1,35 @@
-"""Deterministic local embedding provider used for tests and offline fallback."""
+"""Deterministic local embedding provider. DEV_ONLY - never production.
+
+Stable hash-based projection with no network dependency. It is NOT semantic and
+is NOT a fallback: production code must never substitute it for a real provider.
+It exists only for development and tests. ``production_ready`` is always ``False``
+so the production gate blocks it regardless of a passing structural probe.
+"""
 
 from __future__ import annotations
 
 import hashlib
 import math
 
-from secondbrain.rag.providers.base import EmbeddingBatch, EmbeddingProviderConfig, EmbeddingResult
+from secondbrain.rag.providers.base import (
+    EmbeddingBatch,
+    EmbeddingProviderConfig,
+    EmbeddingResult,
+    ProviderHealthReport,
+)
 
 
 class DeterministicEmbeddingProvider:
-    """Stable hash-based embeddings with no network dependency.
+    """Deterministic hash-based embeddings for development and tests only.
 
-    This is not semantic quality. It is a safe offline fallback for development,
-    tests, and degraded operation when real embedding services are unavailable.
+    DEV_ONLY: not semantic, not production-ready, never used as a silent
+    fallback for an unavailable real provider.
     """
 
     name = "deterministic"
+    semantic = False
+    production_ready = False
+    dev_only = True
 
     def __init__(self, dimensions: int = 64, model: str = "hash-v1") -> None:
         if dimensions <= 0:
@@ -26,6 +40,19 @@ class DeterministicEmbeddingProvider:
     @classmethod
     def from_config(cls, config: EmbeddingProviderConfig) -> "DeterministicEmbeddingProvider":
         return cls(dimensions=config.dimensions or 64, model=config.model or "hash-v1")
+
+    def health(self) -> ProviderHealthReport:
+        """Structural probe passes, but the provider is never production-ready."""
+        return ProviderHealthReport(
+            status="PASS",
+            provider=self.name,
+            model=self.model,
+            dimensions=self.dimensions,
+            semantic=False,
+            production_ready=False,
+            dev_only=True,
+            error="deterministic embeddings are DEV_ONLY and never production-ready",
+        )
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         vectors: list[list[float]] = []

@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from secondbrain.connectors.microsoft.config import GraphConfig

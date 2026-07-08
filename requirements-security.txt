@@ -1,2 +1,2 @@
-# Secret management (AES-256-GCM). Required for secondbrain.secret_manager.
+# Secret management (AES-256-GCM). Required for secondbrain.vault (Secret Vault).
 cryptography>=42.0
