@@ -1,43 +1,131 @@
 {
-  "version": "30.61.0",
-  "current_version": "v30.61.0",
-  "status": "IN_PROGRESS",
-  "focus": "Native Desktop Health Gate",
-  "last_delta": "v30.46-native-desktop-health",
-  "native_desktop": {
-    "primary_start": true,
-    "web_hud": "secondary_only",
-    "german_voice": true,
-    "action_audit": true,
-    "approval_queue": true,
-    "chat_center": true,
-    "dashboard_center": true,
-    "layout_center": true,
-    "theme_center": true,
-    "notification_center": true,
-    "job_queue_center": true,
-    "ai_workspace_integration": true,
-    "desktop_health_gate": true
-  },
-  "new_commands": [
-    "native-chat-status",
-    "native-chat-ask",
-    "native-chat-search",
-    "native-chat-clear",
-    "ai-workspace-status",
-    "ai-workspace-navigation",
-    "native-desktop-health",
-    "native-desktop-report",
-    "job-queue-status"
+  "version": "30.77.0",
+  "current_version": "v30.77.0",
+  "completed_capabilities": [
+    {
+      "release": "v30.61",
+      "capability": "Agent Approval and Safety Layer mit zentraler NativeApprovalQueue-Wiederverwendung",
+      "status": "completed"
+    },
+    {
+      "release": "v30.62",
+      "capability": "Workflow Engine mit Checkpoints, Recovery und Approval-Integration",
+      "status": "completed"
+    },
+    {
+      "release": "v30.63",
+      "capability": "Background Agents mit Scheduling, Supervisor und Heartbeats",
+      "status": "completed"
+    },
+    {
+      "release": "v30.64",
+      "capability": "Agent Memory Injection mit Budget, Privacy und Konflikterkennung",
+      "status": "completed"
+    },
+    {
+      "release": "v30.65",
+      "capability": "Goal Tracking inklusive Zielmetriken, Reviews und Reports",
+      "status": "completed"
+    },
+    {
+      "release": "v30.66",
+      "capability": "Native Agent Control GUI im AI Workspace integriert",
+      "status": "completed"
+    },
+    {
+      "release": "v30.67",
+      "capability": "Phase-3-Stabilisierung mit Dubletteninventur, Launcher-Pruefung und Testhygiene",
+      "status": "completed"
+    },
+    {
+      "release": "v30.68",
+      "capability": "Reasoning Engine mit Evidence/Confidence/Audit-Historie",
+      "status": "completed"
+    },
+    {
+      "release": "v30.69",
+      "capability": "Multi-Agent Coordination mit Coordinator, Delegation und Bus-Log",
+      "status": "completed"
+    },
+    {
+      "release": "v30.70",
+      "capability": "ToolChain mit Kontrollfluss, Retry/Fallback/Rollback und Visualisierung",
+      "status": "completed"
+    },
+    {
+      "release": "v30.71",
+      "capability": "Scheduler fuer recurring jobs, cron und dependency-aware Ausfuehrung",
+      "status": "completed"
+    },
+    {
+      "release": "v30.72",
+      "capability": "Semantic Graph Explorer als read-only Projektion ueber RAG und Memory",
+      "status": "completed"
+    },
+    {
+      "release": "v30.73",
+      "capability": "Context Optimization mit Ranking, Dedupe, Conflict Resolution und Compression",
+      "status": "completed"
+    },
+    {
+      "release": "v30.74",
+      "capability": "Layered Prompt Pipeline mit Prompt-Audit und Prompt-History",
+      "status": "completed"
+    },
+    {
+      "release": "v30.75",
+      "capability": "Answer Evaluation mit Hallucination Detection, Source Verification und Ratings",
+      "status": "completed"
+    },
+    {
+      "release": "v30.76",
+      "capability": "Plugin Runtime mit Manifest, Permission-Modell, Host-Trust und Rollback",
+      "status": "completed"
+    },
+    {
+      "release": "v30.77",
+      "capability": "UI Path Override, zentrale Pfadkonsolidierung und Legacy-Import-Kompatibilitaet",
+      "status": "completed"
+    }
   ],
   "remaining_blockers": [
-    "native_gui_unified_layout_polish",
-    "document_preview_drag_drop",
-    "wake_word_and_streaming_stt_tts",
-    "real_connector_runtime",
-    "installer_exe_msi",
-    "secret_vault_encryption"
+    "postgresql_pgvector_live_validation_pending",
+    "provider_live_validation_openai_ollama_pending",
+    "real_connector_runtime_rollout",
+    "installer_exe_msi_pipeline",
+    "secret_vault_encryption_rollout"
   ],
-  "build": 306100,
+  "degraded_modes": [
+    "sqlite_rag_prototype_without_database_url",
+    "local_embedding_provider_not_production_ready"
+  ],
+  "known_risks": [
+    "test_environment_vs_target_environment_gap",
+    "memory_injection_heuristic_ranking_conflicts",
+    "background_agents_need_external_run_due_trigger",
+    "agent_control_gui_aggregator_without_caching"
+  ],
+  "next_sprint": {
+    "focus": "Production readiness hardening",
+    "goals": [
+      "postgresql_pgvector_live_gate_green",
+      "provider_live_health_gate_green",
+      "connector_runtime_stabilization",
+      "secret_vault_rollout_completion"
+    ]
+  },
+  "release_readiness": {
+    "state": "CONDITIONAL_READY",
+    "basis": "v30.61-v30.77 capabilities completed; remaining items are runtime/environment hardening",
+    "required_gates": [
+      "repo-doctor",
+      "dependency-inventory",
+      "gui-doctor",
+      "p0-gate",
+      "p1-gate",
+      "pytest"
+    ]
+  },
+  "build": 307700,
   "version_source": "pyproject.toml"
 }

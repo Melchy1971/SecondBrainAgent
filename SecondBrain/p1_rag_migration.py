@@ -119,7 +119,7 @@ def migrate_sqlite_to_selected_store(
         blockers.append({"code": "target_store_not_pgvector", "target_backend": target.backend})
     readiness = None
     if target.backend == "pgvector":
-        readiness = pgvector_readiness(root, live=True, apply=False)
+        readiness = pgvector_readiness(root, live=True, apply=True)
         if not readiness.get("ok"):
             blockers.append({"code": "pgvector_readiness_blocked", "detail": readiness})
     if blockers:

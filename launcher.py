@@ -868,7 +868,7 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd == "p1-rag-migrate-postgres":
             payload = migrate_sqlite_to_selected_store(
                 args.project_root,
-                dry_run=True,
+                dry_run=False,
                 write_report=args.write_report,
                 require_pgvector=not args.allow_non_pgvector,
             )

@@ -47,6 +47,17 @@ def test_p1_production_gate_passes_with_seed_content(tmp_path):
     assert (tmp_path / "runtime" / "reports" / "p1_production_latest.json").exists()
 
 
+def test_p1_production_gate_blocks_when_database_is_degraded(tmp_path):
+    rt = P1RagRuntime(tmp_path)
+    rt.ingest_text("Jarvis RAG Quellen", source="unit://db-check", title="DB Check")
+
+    payload = rt.production_gate(write_report=False)
+
+    db_check = next(check for check in payload["checks"] if check["name"] == "database_pgvector_production_ready")
+    assert db_check["ok"] is False
+    assert db_check["detail"]["status"] == "degraded_sqlite"
+
+
 def test_p1_production_launcher_and_registry(tmp_path, capsys):
     assert main(["--project-root", str(tmp_path), "p1-rag-ingest-text", "Jarvis RAG Quellen Memory Evidenz lokale Quellen", "--source", "unit", "--title", "Prod"]) == 0
     assert main(["--project-root", str(tmp_path), "p1-retrieval-metrics", "--write-report"]) == 0

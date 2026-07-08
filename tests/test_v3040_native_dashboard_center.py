@@ -4,6 +4,7 @@ from pathlib import Path
 
 from secondbrain.native.dashboard_center.service import NativeDashboardService
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
+import secondbrain.native.dashboard_center.service as dashboard_service_module
 
 
 def test_dashboard_status_contains_core_cards(tmp_path: Path) -> None:
@@ -44,3 +45,27 @@ def test_dashboard_security_blocks_when_approval_disabled(tmp_path: Path, monkey
     cards = {card["id"]: card for card in service.snapshot().to_dict()["cards"]}
     assert cards["security"]["status"] == "blocked"
     assert "approval_required_disabled" in cards["security"]["blockers"]
+
+
+def test_dashboard_database_card_uses_degraded_status(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        dashboard_service_module,
+        "evaluate_db_pgvector_production_status",
+        lambda _root: {"status": "degraded_sqlite", "reason": "database_url_missing"},
+    )
+    service = NativeDashboardService(tmp_path)
+    cards = {card["id"]: card for card in service.snapshot().to_dict()["cards"]}
+    assert cards["database"]["status"] == "warning"
+    assert cards["database"]["value"] == "degraded_sqlite"
+
+
+def test_dashboard_database_card_uses_blocked_status(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        dashboard_service_module,
+        "evaluate_db_pgvector_production_status",
+        lambda _root: {"status": "blocked_missing_pgvector", "reason": "pgvector_extension_missing"},
+    )
+    service = NativeDashboardService(tmp_path)
+    cards = {card["id"]: card for card in service.snapshot().to_dict()["cards"]}
+    assert cards["database"]["status"] == "blocked"
+    assert cards["database"]["value"] == "blocked_missing_pgvector"

@@ -1,6 +1,6 @@
 vector_rag:
   enabled: true
-  provider: local_markdown_tfidf
+  provider: local
   future_provider: chroma_or_faiss
   vault_path: H:\SecondBrainAgent\SecondBrain
   index_path: H:\SecondBrainAgent\SecondBrain\99_System\vector_rag\vector_index.json

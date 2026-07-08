@@ -22,18 +22,34 @@ def sync_version(project_root: str | Path = ".") -> dict:
 
     masterplan = root / "docs" / "09_MASTERPLAN_STATUS.json"
     if masterplan.exists():
-        data = json.loads(masterplan.read_text(encoding="utf-8"))
+        old_text = masterplan.read_text(encoding="utf-8")
+        data = json.loads(old_text)
         data["version"] = version
         data["current_version"] = f"v{version}"
         data["build"] = build
         data["version_source"] = "pyproject.toml"
-        masterplan.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        updated["masterplan"] = version
+        new_text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+        if new_text != old_text:
+            masterplan.write_text(new_text, encoding="utf-8")
+            updated["masterplan"] = version
 
     readme = root / "README.md"
     if readme.exists():
         text = readme.read_text(encoding="utf-8")
-        new = re.sub(r"(?m)^(#\s+SecondBrain-Agent\s+v)[0-9][^\s]*", rf"\g<1>{version}", text, count=1)
+        new = text
+        new = re.sub(r"(?m)^(#\s+SecondBrain-Agent\s+v)[0-9][^\s]*", rf"\g<1>{version}", new, count=1)
+        new = re.sub(
+            r"\([0-9]+\.[0-9]+(?:\.[0-9]+)?\s*->\s*Build\s*[0-9]+\)",
+            f"({version} -> Build {build})",
+            new,
+            count=1,
+        )
+        new = re.sub(
+            r"(?m)^(Aktueller\s+dokumentierter\s+Stand:\s*)v[0-9]+(?:\.[0-9]+){1,2}",
+            rf"\g<1>v{version}",
+            new,
+            count=1,
+        )
         if new != text:
             readme.write_text(new, encoding="utf-8")
             updated["readme"] = version

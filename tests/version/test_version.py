@@ -25,8 +25,8 @@ def test_pyproject_is_leading_source_even_with_stale_metadata():
 
 
 def test_build_number_is_derived_from_version():
-    assert V.get_build_number("30.61.0") == 306100
-    assert V.version_tuple("30.61.0") == (30, 61, 0)
+    assert V.get_build_number("30.77.0") == 307700
+    assert V.version_tuple("30.77.0") == (30, 77, 0)
     assert V.get_build_number() == V.get_build_number(V.get_version())
 
 
@@ -49,7 +49,15 @@ def _make_project(tmp_path, old="30.00"):
     (tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").write_text(
         json.dumps({"version": old, "current_version": f"v{old}", "status": "IN_PROGRESS",
                     "focus": "keep me"}, indent=2), encoding="utf-8")
-    (tmp_path / "README.md").write_text(f"# SecondBrain-Agent v{old}\n\nsince v30.25 stuff\n", encoding="utf-8")
+    (tmp_path / "README.md").write_text(
+        (
+            f"# SecondBrain-Agent v{old}\n\n"
+            f"Build sample ({old} -> Build 300000).\n"
+            f"Aktueller dokumentierter Stand: v{old} Demo.\n\n"
+            "since v30.25 stuff\n"
+        ),
+        encoding="utf-8",
+    )
 
 
 def test_sync_updates_masterplan_and_readme(tmp_path):
@@ -62,6 +70,8 @@ def test_sync_updates_masterplan_and_readme(tmp_path):
     assert data["focus"] == "keep me"          # other keys preserved
     readme = (tmp_path / "README.md").read_text()
     assert readme.splitlines()[0] == f"# SecondBrain-Agent v{v}"
+    assert f"({v} -> Build {V.get_build_number(v)})" in readme
+    assert f"Aktueller dokumentierter Stand: v{v}" in readme
     assert "since v30.25 stuff" in readme       # historical refs untouched
     assert result["updated"]["masterplan"] == v
 
@@ -70,6 +80,7 @@ def test_sync_is_idempotent(tmp_path):
     _make_project(tmp_path)
     first = sync_version(tmp_path)
     before = (tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").read_text()
-    sync_version(tmp_path)
+    second = sync_version(tmp_path)
     after = (tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").read_text()
+    assert second["updated"] == {}
     assert before == after and first["version"] == V.get_version()
