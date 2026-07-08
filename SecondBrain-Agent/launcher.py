@@ -619,6 +619,54 @@ def _doc_main(argv: list[str]) -> int:
     out({"status": "unknown_command", "cmd": args.cmd}); return 2
 
 
+def _secret_main(argv: list[str]) -> int:
+    import json as _json
+    from secondbrain.secret_manager.vault import SecretVault, VaultError, VaultLockedError
+    from secondbrain.secret_manager.health import vault_health
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--path", default=os.environ.get("SECOND_BRAIN_VAULT", "runtime/secrets/vault.json"))
+    parser.add_argument("--name", default=None)
+    parser.add_argument("--type", default="workspace_secret")
+    parser.add_argument("--file", default=None)
+    args, _ = parser.parse_known_args(argv)
+    pw = os.environ.get("SECOND_BRAIN_VAULT_PASSWORD", "")      # never via CLI arg
+    value = os.environ.get("SECRET_VALUE", "")
+    exp_pw = os.environ.get("SECRET_EXPORT_PASSWORD", "")
+    try:
+        if args.cmd == "secret-init":
+            SecretVault.create(args.path, pw)
+            out({"status": "ok", "initialized": True, "path": args.path})
+            return 0
+        vault = SecretVault(args.path)
+        if args.cmd == "secret-health":
+            out({"status": "ok", **vault_health(vault)}); return 0
+        vault.unlock(pw)
+        if args.cmd == "secret-set":
+            if not args.name or not value:
+                out({"status": "error", "message": "set SECRET_VALUE env and --name"}); return 2
+            vault.set_secret(args.name, value, secret_type=args.type)
+            out({"status": "ok", "name": args.name, "type": args.type})   # value never echoed
+            return 0
+        if args.cmd == "secret-list":
+            out({"status": "ok", "secrets": vault.list_secrets()}); return 0
+        if args.cmd == "secret-rotate":
+            out({"status": "ok", **vault.rotate_master_key(pw)}); return 0
+        if args.cmd == "secret-export":
+            if not args.file or not exp_pw:
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+            Path(args.file).write_text(_json.dumps(vault.export_bundle(exp_pw)), encoding="utf-8")
+            out({"status": "ok", "exported_to": args.file}); return 0
+        if args.cmd == "secret-import":
+            if not args.file or not exp_pw:
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+            bundle = _json.loads(Path(args.file).read_text(encoding="utf-8"))
+            out({"status": "ok", **vault.import_bundle(bundle, exp_pw)}); return 0
+        out({"status": "unknown_command", "cmd": args.cmd}); return 2
+    except (VaultError, VaultLockedError) as exc:
+        out({"status": "vault_error", "message": str(exc)}); return 3
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
@@ -649,6 +697,8 @@ def main(argv: list[str] | None = None) -> int:
         return _embed_main(raw)
     if cmd in {"doc-preview", "doc-diff"}:
         return _doc_main(raw)
+    if cmd in {"secret-init", "secret-set", "secret-list", "secret-health", "secret-rotate", "secret-export", "secret-import"}:
+        return _secret_main(raw)
     if cmd == "desktop-analyze":
         return _desktop_main(raw)
     if cmd == "diagram-analyze":

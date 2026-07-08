@@ -1,6 +1,6 @@
 # Connector Foundation v10.1
 
-Aktualisiert: 2026-06-30 11:44
+Aktualisiert: 2026-07-07 16:35
 
 | Connector | Status | Schreibzugriff | Bemerkung |
 |---|---|---|---|

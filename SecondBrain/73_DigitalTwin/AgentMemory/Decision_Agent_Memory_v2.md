@@ -1,9 +1,10 @@
 # Decision Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
+- [[2026-07-03_decision-agent]] — Score 241
 - [[2026-06-30_decision-agent]] — Score 241
 - [[2026-06-26_decision-agent]] — Score 231
 - [[2026-06-25_decision-agent]] — Score 231
@@ -18,6 +19,7 @@ Aktualisiert: 2026-07-03
 - [[Toolentwicklung_mit_KI-Prompts]] — Score 131
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 127
 - [[Claude_Obsidian_Skill]] — Score 127
+- [[2026-07-07_meeting-intelligence]] — Score 119
 - [[2026-07-03_meeting-intelligence]] — Score 116
 - [[2026-06-30_meeting-intelligence]] — Score 112
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 99
@@ -27,6 +29,7 @@ Aktualisiert: 2026-07-03
 - [[2026-06-23_chief-of-staff-v98]] — Score 91
 - [[2026-06-22_chief-of-staff-v98]] — Score 91
 - [[2026-06-19_chief-of-staff-v98]] — Score 91
+- [[2026-07-03_chief-of-staff-v98]] — Score 81
 - [[2026-06-30_chief-of-staff-v98]] — Score 80
 - [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 75
 - [[Masterplan_optimieren]] — Score 75
@@ -41,6 +44,7 @@ Aktualisiert: 2026-07-03
 - [[Decision_Intelligence_v2]] — Score 52
 - [[DB_160426_69dcca9d-793c-838f-85d0]] — Score 47
 - [[DB_160426]] — Score 47
+- [[Memory_Profile]] — Score 43
 - [[Jarvis_6a22b309-3398-838d-8c9b]] — Score 40
 - [[Jarvis]] — Score 40
 - [[Datenbankaufbau_mit_KI_691ae148-0a44-832f-8a5f]] — Score 38
@@ -49,11 +53,7 @@ Aktualisiert: 2026-07-03
 - [[Code-Stand_vs._Masterplan]] — Score 38
 - [[Prozessüberarbeitung_und_Dokumentation_68c93ceb-e48c-8324-ac7c]] — Score 37
 - [[Prozessüberarbeitung_und_Dokumentation]] — Score 37
-- [[Memory_Profile]] — Score 37
 - [[Logo_design_brief_692ebccc-f290-8328-9f5b]] — Score 37
-- [[Logo_design_brief]] — Score 37
-- [[2026-06-26_meeting-intelligence]] — Score 35
-- [[Bildanalyse_Barrierefreiheit_KI_67ff6468-3b88-8007-9be1]] — Score 32
 
 ## Gelernte Tags
 

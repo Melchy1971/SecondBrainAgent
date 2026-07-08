@@ -1,6 +1,6 @@
 # Process Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
@@ -24,9 +24,9 @@ Aktualisiert: 2026-07-03
 - [[Code_Integration_Fehler]] — Score 34
 - [[2026-06-26_process-agent]] — Score 34
 - [[2026-06-22_process-agent]] — Score 32
+- [[Temporal_Graph]] — Score 27
 - [[2026-06-19_process-agent]] — Score 27
-- [[Temporal_Graph]] — Score 26
-- [[vault_index]] — Score 24
+- [[vault_index]] — Score 25
 - [[weighted_edges]] — Score 22
 - [[Jack_der_kleine_Astronaut_67a4ed51-a148-8007-a1fb]] — Score 19
 - [[Jack_der_kleine_Astronaut]] — Score 19

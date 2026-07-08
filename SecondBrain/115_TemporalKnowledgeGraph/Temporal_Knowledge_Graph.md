@@ -1,6 +1,6 @@
 # Temporal Knowledge Graph v9.9
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 | Datum | Notizen |
 |---|---:|
@@ -287,7 +287,9 @@ Aktualisiert: 2026-07-03
 | 2026-06-29 | 1 |
 | 2026-06-30 | 47 |
 | 2026-07-02 | 2 |
-| 2026-07-03 | 78 |
+| 2026-07-03 | 36 |
+| 2026-07-06 | 1 |
+| 2026-07-07 | 78 |
 | owner: | 2 |
 | participan | 1 |
 | source: | 3 |

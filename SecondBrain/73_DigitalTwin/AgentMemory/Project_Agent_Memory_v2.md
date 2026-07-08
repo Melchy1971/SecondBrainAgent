@@ -1,6 +1,6 @@
 # Project Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
@@ -10,9 +10,9 @@ Aktualisiert: 2026-07-03
 - [[Claude_Obsidian_Skill]] — Score 308
 - [[WDB_2026_69f8547b-d860-8394-8c04]] — Score 285
 - [[WDB_2026]] — Score 285
+- [[facts_tasks]] — Score 215
 - [[Jarvis_mit_LLMs_planen_6927371a-3b88-8326-8781]] — Score 197
 - [[Jarvis_mit_LLMs_planen]] — Score 197
-- [[facts_tasks]] — Score 182
 - [[Jarvis_6a22b309-3398-838d-8c9b]] — Score 157
 - [[Jarvis]] — Score 157
 - [[Begrüßung_und_Einstieg_69b118c3-1efc-838e-9276]] — Score 124
@@ -30,30 +30,30 @@ Aktualisiert: 2026-07-03
 - [[Entwicklungsplan_und_Architektur_6a34fb76-1edc-83eb-a275]] — Score 94
 - [[Entwicklungsplan_und_Architektur]] — Score 94
 - [[2026-06-22_project-agent]] — Score 92
+- [[2026-07-03_project-agent]] — Score 90
 - [[2026-06-30_project-agent]] — Score 90
 - [[2026-06-19_project-agent]] — Score 90
+- [[2026-07-07_prediction-report]] — Score 84
 - [[2026-07-03_prediction-report]] — Score 82
 - [[2026-06-30_prediction-report]] — Score 82
 - [[Unraid_SQL_KI_Integration_698ef204-1cf0-838a-b7cb]] — Score 73
 - [[Unraid_SQL_KI_Integration]] — Score 73
+- [[2026-07-03_task-agent]] — Score 72
+- [[Temporal_Graph]] — Score 68
 - [[2026-06-19_prediction-report]] — Score 66
 - [[2026-06-26_chief-of-staff-v98]] — Score 64
 - [[2026-06-19_chief-of-staff-v98]] — Score 64
+- [[vault_index]] — Score 63
 - [[2026-06-23_chief-of-staff-v98]] — Score 63
 - [[2026-06-22_chief-of-staff-v98]] — Score 63
 - [[2026-06-25_chief-of-staff-v98]] — Score 62
-- [[Temporal_Graph]] — Score 61
+- [[2026-07-07_project-intelligence]] — Score 59
 - [[2026-06-30_task-agent]] — Score 59
-- [[vault_index]] — Score 58
 - [[Datenbankaufbau_mit_KI_691ae148-0a44-832f-8a5f]] — Score 57
 - [[Datenbankaufbau_mit_KI]] — Score 57
 - [[Projektstruktur_Analyse_69e0b0df-376c-838a-b3ba]] — Score 56
 - [[Projektstruktur_Analyse]] — Score 56
 - [[2026-07-03_project-intelligence]] — Score 54
-- [[2026-06-30_project-intelligence]] — Score 52
-- [[2026-06-30_chief-of-staff-v98]] — Score 50
-- [[Tool_klonen_und_verbinden_68f726f0-7b90-832a-abaa]] — Score 46
-- [[Tool_klonen_und_verbinden]] — Score 46
 
 ## Gelernte Tags
 

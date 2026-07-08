@@ -1,6 +1,6 @@
 # Executive Dashboard
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## KPIs
 
@@ -19,7 +19,7 @@ Aktualisiert: 2026-07-03
 - quick_capture: 4
 - source: 1
 - task: 3
-- unknown: 442
+- unknown: 485
 - web_source: 1
 
 ## Führungsfragen

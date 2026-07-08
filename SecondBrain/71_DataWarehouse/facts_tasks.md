@@ -54,6 +54,27 @@
 | - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-30_task-agent]] |
 | - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-30_task-agent]] |
 | - [ ] Aufgabe | offene Aufgaben | | [[2026-06-30_task-agent]] |
+| - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ]  Projektsetup und Entwicklungsumgebung einrichten<br> | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ] Unraid: Docker läuft, Shares/Volumes geplant (z.B. `appdata/mailknowledge/…`)<br>- [ ] VS Code + Claude Extension / Continue / Cursor eingerichtet<br>- [ ] Ports grob geplant:<br>- [ ] `docker compose version` funktioniert auf dem Host (oder Unraid Shell)<br>- [ ] Prompt A in Claude ausführen | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ] Unraid: Docker läuft, Shares/Volumes geplant (z.B. `appdata/mailknowledge/…`)<br>- [ ] VS Code + Claude Extension / Continue / Cursor eingerichtet<br>- [ ] Ports grob geplant:<br>- [ ] `docker compose version` funktioniert auf dem Host (oder Unraid Shell)<br>- [ ] Prompt A in Claude ausführen | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ]  Projektsetup und Entwicklungsumgebung einrichten<br> | [[2026-07-03_task-agent]] |
+| - [ ]  Datenbank-Schema entwerfen und implementieren<br> | [[2026-07-03_task-agent]] |
+| - [ ]  PST-Datei-Import entwickeln (lokale Datei einlesen)<br> | [[2026-07-03_task-agent]] |
+| - [ ]  Basis-E-Mail-Parser für Metadaten und Text<br> | [[2026-07-03_task-agent]] |
+| - [ ]  IMAP-Connector implementieren | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ]  Projektsetup und Entwicklungsumgebung einrichten<br> | [[2026-07-03_task-agent]] |
+| - [ ]  Datenbank-Schema entwerfen und implementieren<br> | [[2026-07-03_task-agent]] |
+| - [ ]  PST-Datei-Import entwickeln (lokale Datei einlesen)<br> | [[2026-07-03_task-agent]] |
+| - [ ]  Basis-E-Mail-Parser für Metadaten und Text<br> | [[2026-07-03_task-agent]] |
+| - [ ]  IMAP-Connector implementieren | Risiko | | [[2026-07-03_task-agent]] |
+| - [ ] Verbesserte Thread-Ansicht<br>- [ ] Gespeicherte Suchen & Custom Views<br>- [ ] Erweiterte Power-Search<br>- [ ] Clustering & Themenübersicht<br>- [ ] Kommentare & interne Notizen | Entscheidung | | [[2026-07-03_task-agent]] |
+| - [ ] Verbesserte Thread-Ansicht<br>- [ ] Gespeicherte Suchen & Custom Views<br>- [ ] Erweiterte Power-Search<br>- [ ] Clustering & Themenübersicht<br>- [ ] Kommentare & interne Notizen | Entscheidung | | [[2026-07-03_task-agent]] |
+| - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-07-03_task-agent]] |
+| - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-07-03_task-agent]] |
+| - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-07-03_task-agent]] |
+| - [ ] Aufgabe | offene Aufgaben | | [[2026-07-03_task-agent]] |
 | - [ ] Anforderungen konkretisieren (s. offene Fragen)<br>- [ ] 2–3 Beispiel-PDFs als Testgrundlage beschaffen<br>- [ ] Proof of Concept mit `pdfplumber` auf Beispieldaten | offene Aufgaben | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Watcher testen.<br>- [ ] Journal prüfen.<br>- [ ] Daily Digest prüfen. | offene Aufgaben | | [[2026-06-19_chief-of-staff-v98]] |
 | - [ ] Status prüfen<br>- [ ] nächste Schritte definieren | Entscheidung | | [[2026-06-19_chief-of-staff-v98]] |
@@ -64,6 +85,8 @@
 | - [ ] Anforderungen konkretis | [[2026-06-25_chief-of-staff-v98]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_chief-of-staff-v98]] |
 | - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-06-30_chief-of-staff-v98]] |
+| - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-07-03_chief-of-staff-v98]] |
+| - [ ] VS Code → richtiger Interpreter ausgewählt  <br>- [ ] `pip install pymupdf` (oder `pip install -r requirements.txt`) erfolgreich  <br>- [ ] Bei Python 3.13 ggf. temporär 3.12-venv nutzen  <br>- [ ] In `sorter.py` optionaler Import (falls du PymuPDF nicht willst)  <br>- [ ] GUI-Vorschau: Ergebnis entpacken   | Risiko | | [[2026-07-03_chief-of-staff-v98]] |
 | - [ ] Aufgabe 1 | [[Projekt_Dashboard_OneNote]] |
 | - [ ] Aufgabe 2 | [[Projekt_Dashboard_OneNote]] |
 | - [ ] Aufgabe 3 | [[Projekt_Dashboard_OneNote]] |

@@ -2,7 +2,7 @@
 
 | Typ | Anzahl |
 |---|---:|
-| unknown | 450 |
+| unknown | 495 |
 | project | 4 |
 | task | 3 |
 | email_analysis | 1 |
