@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, slugify, ensure_unique_path
 
 def write_task_files(settings: dict, source_note: Path, tasks: list[str], provider: str) -> list[Path]:
@@ -8,7 +9,7 @@ def write_task_files(settings: dict, source_note: Path, tasks: list[str], provid
     if not tasks:
         return []
 
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = settings.get("vault_folders", {}).get("tasks", "04_Tasks")
     target_dir = vault / folder
     target_dir.mkdir(parents=True, exist_ok=True)

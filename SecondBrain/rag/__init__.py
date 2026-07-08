@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from secondbrain.path import from_settings_mapping
 from secondbrain.rag.hybrid_score import HybridScoreCalculator, HybridScoreWeights
 from secondbrain.rag.vector_search_service import VectorSearchService
 from secondbrain.utils import now_date
@@ -24,7 +25,7 @@ def chunk_text(text: str, size: int = 1200, overlap: int = 150) -> list[str]:
 
 
 def build_rag_index(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     system = vault / settings.get("vault_folders", {}).get("system", "99_System") / "rag"
     system.mkdir(parents=True, exist_ok=True)
     target = system / "rag_index.json"
@@ -52,7 +53,7 @@ def build_rag_index(settings: dict) -> Path:
 
 
 def search_rag(settings: dict, query: str, limit: int = 10) -> list[dict]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     index_path = vault / settings.get("vault_folders", {}).get("system", "99_System") / "rag" / "rag_index.json"
     if not index_path.exists():
         build_rag_index(settings)
@@ -70,7 +71,7 @@ def search_rag(settings: dict, query: str, limit: int = 10) -> list[dict]:
 
 
 def write_rag_answer(settings: dict, query: str) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("rag", "19_RAG")
     folder.mkdir(parents=True, exist_ok=True)
     results = search_rag(settings, query)

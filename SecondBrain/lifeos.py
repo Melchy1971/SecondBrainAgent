@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 AREAS = ["Gesundheit", "Finanzen", "Reisen", "Verein"]
 
 def write_lifeos_indexes(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     base = vault / settings.get("vault_folders", {}).get("lifeos", "14_LifeOS")
     created = []
     for area in AREAS:

@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import subprocess
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .config import load_settings
 from .validator import validate_environment
@@ -31,7 +32,7 @@ def run_production_gate(project_root: Path) -> dict:
 
 def write_production_gate_report(project_root: Path) -> Path:
     settings = load_settings(project_root)
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     target_dir = vault / "99_System" / "production"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_production-gate.md"

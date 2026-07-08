@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, slugify
 from .vault_scan import iter_markdown, read_note
 
 def personal_search(settings: dict, query: str) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "54_PersonalSearch"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_search_{slugify(query)}.md"

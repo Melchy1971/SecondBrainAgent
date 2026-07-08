@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_tags
 
@@ -14,7 +15,7 @@ AGENT_PROFILES = {
 }
 
 def write_agent_memory_v2(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "73_DigitalTwin" / "AgentMemory"
     folder.mkdir(parents=True, exist_ok=True)
     notes = [(p.stem, read_note(p).lower(), extract_tags(read_note(p))) for p in iter_markdown(vault)]

@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def build_vault_index(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, Path.cwd()).vault
     system_folder = settings.get("vault_folders", {}).get("system", "99_System")
     target_dir = vault / system_folder / "indexes"
     target_dir.mkdir(parents=True, exist_ok=True)

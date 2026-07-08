@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_local_ai_cluster(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "61_LocalAICluster"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Local_AI_Cluster.md"

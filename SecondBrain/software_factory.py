@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 PROJECTS = ["Wissensdatenbank", "Jarvis", "SecondBrain", "Tischtennis-Buddy"]
 
 def write_software_factory(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "62_SoftwareFactory"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_software-factory.md"

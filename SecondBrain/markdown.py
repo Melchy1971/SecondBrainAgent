@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, slugify, ensure_unique_path
 
 # v30.46.1: MarkdownRenderer lebt in der gemeinsamen Chat-Architektur.
@@ -69,7 +70,7 @@ tags:
 """
 
 def write_note(settings, note_type, provider, source_path: Path, text, tags) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folders = settings.get("vault_folders", {})
     folder_key = TYPE_TO_FOLDER.get(note_type, "inbox")
     folder = folders.get(folder_key, "00_Inbox")

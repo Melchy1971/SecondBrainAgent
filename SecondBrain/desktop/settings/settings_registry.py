@@ -83,6 +83,22 @@ def default_settings_registry() -> SettingsRegistry:
         secret=True,
     ))
     registry.register(SettingDefinition(
+        key="paths.vault",
+        category=SettingCategory.PATHS,
+        setting_type=SettingType.PATH,
+        default="",
+        label="Vault-Ordner",
+        description="Pfad zum Obsidian-Vault (leer = <Projekt>/SecondBrain).",
+    ))
+    registry.register(SettingDefinition(
+        key="paths.incoming",
+        category=SettingCategory.PATHS,
+        setting_type=SettingType.PATH,
+        default="",
+        label="Incoming-/Inbox-Ordner",
+        description="Pfad für eingehende Dateien (leer = <Projekt>/SecondBrain-Inbox).",
+    ))
+    registry.register(SettingDefinition(
         key="general.default_workspace",
         category=SettingCategory.GENERAL,
         setting_type=SettingType.STRING,

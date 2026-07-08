@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import defaultdict
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, word_tokens
 
@@ -9,7 +10,7 @@ def jaccard(a: set, b: set) -> float:
     return len(a & b) / len(a | b)
 
 def write_semantic_dedup_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "26_Deduplication"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_semantic-deduplication.md"

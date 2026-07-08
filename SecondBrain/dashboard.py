@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def _safe_count(path: Path, pattern: str = "*") -> int:
@@ -11,8 +12,9 @@ def write_dashboard(settings: dict, project_root: Path, imported_items: list[dic
     if not settings.get("dashboard_enabled", True):
         return None
 
-    vault = Path(settings["vault_path"])
-    inbox = Path(settings["inbox_path"])
+    paths = from_settings_mapping(settings, project_root)
+    vault = paths.vault
+    inbox = paths.incoming
     system_folder = settings.get("vault_folders", {}).get("system", "99_System")
     target_dir = vault / system_folder / "dashboard"
     target_dir.mkdir(parents=True, exist_ok=True)

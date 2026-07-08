@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_process_copilot_templates(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "31_ProcessCopilot"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Process_Copilot_Commands.md"

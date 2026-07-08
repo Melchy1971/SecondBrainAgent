@@ -1,11 +1,12 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def write_review_item(settings: dict, source_note: Path, note_type: str, reason: str) -> Path | None:
     if not settings.get("create_claude_review_queue", True):
         return None
 
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     system_folder = settings.get("vault_folders", {}).get("system", "99_System")
     target_dir = vault / system_folder / "claude_review"
     target_dir.mkdir(parents=True, exist_ok=True)

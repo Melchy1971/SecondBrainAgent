@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 def write_meeting_intelligence_v2(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "69_MeetingIntelligence"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_meeting-intelligence.md"

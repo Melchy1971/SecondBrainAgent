@@ -1,12 +1,13 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 SYSTEM_KEYWORDS = ["sap", "p01", "p02", "pfs", "crm", "ctam", "cpq", "dive", "focused insights", "mcp", "obsidian"]
 
 def write_process_map(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("processes", "15_Prozesse")
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_prozesslandkarte.md"

@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, slugify
 from .vault_scan import iter_markdown, read_note
 
 def run_simulation(settings: dict, scenario: str) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "29_Simulations"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_simulation_{slugify(scenario)}.md"

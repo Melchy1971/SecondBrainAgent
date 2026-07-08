@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from .settings_models import SettingDefinition, SettingType, SettingValidationIssue
 
 
@@ -13,7 +15,7 @@ class SettingsValidator:
             return issues
 
         expected = definition.setting_type
-        if expected in {SettingType.STRING, SettingType.SECRET_REF} and not isinstance(value, str):
+        if expected in {SettingType.STRING, SettingType.SECRET_REF, SettingType.PATH} and not isinstance(value, str):
             issues.append(SettingValidationIssue(definition.key, "type", "Expected string value"))
         elif expected == SettingType.BOOLEAN and not isinstance(value, bool):
             issues.append(SettingValidationIssue(definition.key, "type", "Expected boolean value"))
@@ -23,6 +25,10 @@ class SettingsValidator:
             issues.append(SettingValidationIssue(definition.key, "type", "Expected numeric value"))
         elif expected == SettingType.CHOICE and definition.choices and value not in definition.choices:
             issues.append(SettingValidationIssue(definition.key, "choice", "Value is not an allowed choice"))
+
+        if expected == SettingType.PATH and isinstance(value, str) and value.strip():
+            if not Path(value).expanduser().is_dir():
+                issues.append(SettingValidationIssue(definition.key, "path_missing", "Ordner existiert (noch) nicht", severity="warning"))
 
         if isinstance(value, (int, float)):
             if definition.min_value is not None and value < definition.min_value:

@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def write_migration_status(settings: dict, project_root: Path) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     target_dir = vault / "99_System" / "migrations"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_migration-status.md"

@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 AREAS = ["CRM", "DMS", "Projects", "Finance", "Health", "Verein"]
 
 def write_personal_erp_indexes(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     base = vault / "33_PersonalERP"
     created = []
     for area in AREAS:

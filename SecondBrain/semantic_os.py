@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_semantic_os_status(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "60_SemanticOS"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Semantic_OS_Status.md"

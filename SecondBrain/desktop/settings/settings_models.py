@@ -13,6 +13,7 @@ class SettingType(str, Enum):
     FLOAT = "float"
     CHOICE = "choice"
     SECRET_REF = "secret_ref"
+    PATH = "path"
 
 
 class SettingCategory(str, Enum):
@@ -22,6 +23,7 @@ class SettingCategory(str, Enum):
     DESKTOP = "desktop"
     SECURITY = "security"
     ADVANCED = "advanced"
+    PATHS = "paths"
 
 
 @dataclass(frozen=True)

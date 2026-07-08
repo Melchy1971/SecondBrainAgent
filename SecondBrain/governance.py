@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .vault_scan import iter_markdown, read_note
 
@@ -11,7 +12,7 @@ SECRET_PATTERNS = [
 ]
 
 def scan_secret_leaks(settings: dict) -> list[dict]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     findings = []
     for note in iter_markdown(vault):
         text = read_note(note)
@@ -21,7 +22,7 @@ def scan_secret_leaks(settings: dict) -> list[dict]:
     return findings
 
 def write_governance_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "governance"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_governance-report.md"

@@ -1,13 +1,14 @@
 from pathlib import Path
 from collections import Counter
 import re
+from .path import from_settings_mapping
 from .utils import now_date
 
 def extract_links(text: str) -> list[str]:
     return re.findall(r"\[\[([^\]]+)\]\]", text)
 
 def update_weighted_graph(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     graph_folder = settings.get("vault_folders", {}).get("graph", "07_Graph")
     target_dir = vault / graph_folder / "Weights"
     target_dir.mkdir(parents=True, exist_ok=True)

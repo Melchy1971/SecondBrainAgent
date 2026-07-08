@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 import re
 
@@ -6,7 +7,7 @@ DATE_RE = re.compile(r"\b(20\d{2}-\d{2}-\d{2}|\d{2}\.\d{2}\.20\d{2})\b")
 
 def import_ics(settings: dict, ics_path: str) -> Path:
     source = Path(ics_path)
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "70_CalendarIntelligence"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_ics-import.md"
@@ -29,7 +30,7 @@ def import_ics(settings: dict, ics_path: str) -> Path:
     return target
 
 def write_calendar_intelligence(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "70_CalendarIntelligence"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_calendar-intelligence.md"

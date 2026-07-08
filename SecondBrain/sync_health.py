@@ -1,4 +1,5 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 SYNC_MARKERS = {
@@ -7,7 +8,7 @@ SYNC_MARKERS = {
 }
 
 def write_sync_health(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "sync"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_sync-health.md"

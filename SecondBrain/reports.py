@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def write_import_report(settings: dict, imported_items: list[dict], project_root: Path) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     system_folder = settings.get("vault_folders", {}).get("system", "99_System")
     target_dir = vault / system_folder / "reports"
     target_dir.mkdir(parents=True, exist_ok=True)

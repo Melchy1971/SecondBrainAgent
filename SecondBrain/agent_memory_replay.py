@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 def write_memory_replay(settings: dict, topic: str = "") -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "22_Memory"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_memory-replay.md"

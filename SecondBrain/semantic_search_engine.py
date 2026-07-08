@@ -3,6 +3,7 @@ import json
 import math
 import re
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date, slugify
 from .vault_scan import iter_markdown, read_note, note_type, extract_tags, extract_links
 
@@ -26,7 +27,7 @@ def cosine(a: dict, b: dict) -> float:
     return dot / (na * nb) if na and nb else 0.0
 
 def build_semantic_index(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "semantic_search"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / "semantic_index.json"
@@ -53,7 +54,7 @@ def build_semantic_index(settings: dict) -> Path:
     return target
 
 def semantic_search(settings: dict, query: str, limit: int = 20) -> list[dict]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     index_path = vault / "99_System" / "semantic_search" / "semantic_index.json"
     if not index_path.exists():
         build_semantic_index(settings)
@@ -70,7 +71,7 @@ def semantic_search(settings: dict, query: str, limit: int = 20) -> list[dict]:
     return sorted(results, key=lambda x: x["score"], reverse=True)[:limit]
 
 def write_search_result(settings: dict, query: str) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "65_SemanticSearch"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_search_{slugify(query)}.md"

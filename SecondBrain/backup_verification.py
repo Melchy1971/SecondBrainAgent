@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def verify_backups(project_root: Path, settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings, project_root).vault
     target_dir = vault / "99_System" / "backup_verification"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_backup-verification.md"

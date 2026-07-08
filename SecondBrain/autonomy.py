@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 
 def write_autonomy_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "autonomy"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_autonomy-report.md"

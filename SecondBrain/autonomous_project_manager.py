@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, extract_tasks
 
 def write_autonomous_project_plan(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "45_AutonomousProjectManager"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_autonomous-project-plan.md"

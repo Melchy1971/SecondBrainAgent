@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_twin_reports(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     specs = {
         "56_DigitalTwinV4/Digital_Twin_v4.md": [
             "# Digital Twin v4",

@@ -1,10 +1,11 @@
 from pathlib import Path
 from collections import Counter
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note
 
 def write_digital_twin_profile(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / settings.get("vault_folders", {}).get("digital_twin", "17_DigitalTwin")
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / "Digital_Twin_Profile.md"

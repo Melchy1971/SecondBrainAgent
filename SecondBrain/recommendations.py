@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_recommendations(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = settings.get("vault_folders", {}).get("recommendations", "09_Recommendations")
     target_dir = vault / folder
     target_dir.mkdir(parents=True, exist_ok=True)

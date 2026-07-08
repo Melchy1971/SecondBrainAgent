@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 from collections import defaultdict
+from .path import from_settings_mapping
 from .utils import now_date, now_datetime
 from .vault_scan import iter_markdown
 
@@ -15,7 +16,7 @@ CONFLICT_PATTERNS = [
 ]
 
 def detect_conflicts(settings: dict) -> list[Path]:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     conflicts = []
     by_stem = defaultdict(list)
 
@@ -38,7 +39,7 @@ def detect_conflicts(settings: dict) -> list[Path]:
     return out
 
 def write_conflict_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / "99_System" / "conflicts"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_conflict-report.md"

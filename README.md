@@ -50,7 +50,7 @@ pip install -e ".[openai]"
 pip install -e ".[all]"
 ```
 
-Minimaler Legacy-Pfad:
+Minimaler Installationspfad:
 
 ```powershell
 python -m pip install -r requirements-dev.txt
@@ -75,7 +75,7 @@ python launcher.py gui
 python launcher.py gui-start
 ```
 
-Legacy Web-HUD nur bei Bedarf:
+Web-HUD nur bei Bedarf:
 
 ```powershell
 python launcher.py hud
@@ -98,6 +98,15 @@ powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
 Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Jarvis.bat` startet den nativen Desktop, `HUD.bat` das Web-HUD (127.0.0.1:8851).
+
+## Pfad- und Settings-Override
+
+Die UI-konfigurierten Pfade sind die kanonische Quelle fuer Vault- und Inbox-Aufloesung.
+
+- `data/desktop_app/settings.json` ueberschreibt `config/settings.yaml` fuer `paths.vault` und `paths.incoming`.
+- `secondbrain/path.py` kapselt die zentrale Pfadauflösung.
+- Verbraucher mit `vault_path`/`incoming_path` sind auf die zentrale Aufloesung umgestellt.
+- Import-Kollisionen bei `secondbrain.goal_engine` und `secondbrain.recommendations` bleiben ueber Kompatibilitaets-Wrapper stabil.
 
 ## Lokale Oberflaechen
 
@@ -230,7 +239,7 @@ docs/releases/
 docs/09_MASTERPLAN_STATUS.json
 ```
 
-Aktueller dokumentierter Stand: v30.46 Native Desktop Health Gate (siehe `RELEASE_NOTES_v30_46.md`).
+Aktueller dokumentierter Stand: v30.77 UI Path Override and Import Consolidation (siehe `RELEASE_NOTES.md`).
 
 Bekannte lokale Warnungen:
 

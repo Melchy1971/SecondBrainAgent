@@ -1,8 +1,9 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 def write_research_backlog(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     gap_folder = vault / "20_KnowledgeGaps"
     folder = vault / "27_Research"
     folder.mkdir(parents=True, exist_ok=True)

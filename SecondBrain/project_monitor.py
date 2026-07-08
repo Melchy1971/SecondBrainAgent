@@ -1,9 +1,10 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 from .vault_scan import iter_markdown, read_note, note_type, extract_tasks
 
 def write_project_monitor(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     target_dir = vault / settings.get("vault_folders", {}).get("system", "99_System") / "process_intelligence"
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / f"{now_date()}_project-monitor.md"

@@ -1,10 +1,11 @@
 from pathlib import Path
+from .path import from_settings_mapping
 from .utils import now_date
 
 AGENTS = ["Importer", "Review", "Project", "Research", "Process", "Governance", "Quality", "Executive"]
 
 def write_agent_economy_report(settings: dict) -> Path:
-    vault = Path(settings["vault_path"])
+    vault = from_settings_mapping(settings).vault
     folder = vault / "42_AgentEconomy"
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / f"{now_date()}_agent-economy.md"
