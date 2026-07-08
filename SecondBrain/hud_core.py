@@ -14,9 +14,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(r"H:\SecondBrainAgent\SecondBrain-Agent")
-VAULT = Path(r"H:\SecondBrainAgent\SecondBrain")
-INBOX = Path(r"H:\SecondBrainAgent\SecondBrain-Inbox")
+ROOT = Path(__file__).resolve().parents[1]
+VAULT = ROOT / "SecondBrain"
+INBOX = ROOT / "SecondBrain-Inbox"
 LOG_DIR = ROOT / "logs"
 
 

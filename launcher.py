@@ -22,12 +22,45 @@ from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
 from secondbrain.env_loader import load_env_file
 from secondbrain.version import version_info as _version_info, get_version as _get_version
+from secondbrain.voice.ports import (
+    Audio, AudioClip, TranscriptSegment, Transcript,
+    SttEngine, StreamingStt, TtsEngine, MicrophoneSource,
+    WakeWordDetector, VoiceActivityDetector, StreamingTts,
+)
+from secondbrain.voice.transcribe import VoiceTranscriber, transcript_to_item
+from secondbrain.voice.speaker import (
+    SpeakerId, SpeakerEmbedder, SpeakerProfileStore, SpeakerMatcher,
+    cosine as speaker_cosine,
+)
+from secondbrain.voice.memory import VoiceMemory, VoiceMemoryStore
+from secondbrain.voice.streaming import StreamingSttSession
+from secondbrain.voice.conversation import ConversationController, State as ConversationState
+from secondbrain.voice.commands import (
+    VoiceCommandRouter as RealtimeVoiceCommandRouter,
+    Intent as RealtimeIntent,
+)
 
 __version__ = _get_version()
 from secondbrain.p1_embedding_config import evaluate_embedding_config
 from secondbrain.p1_provider_health import evaluate_embedding_provider_health
 from secondbrain.p1_rag_migration import migrate_sqlite_to_selected_store
 from secondbrain.p1_vector_provider_guard import repair_vector_index
+
+try:
+    __all__
+except NameError:
+    __all__ = []
+
+__all__ += [
+    "Audio", "AudioClip", "TranscriptSegment", "Transcript",
+    "SttEngine", "StreamingStt", "TtsEngine", "MicrophoneSource",
+    "WakeWordDetector", "VoiceActivityDetector", "StreamingTts",
+    "VoiceTranscriber", "transcript_to_item",
+    "SpeakerId", "SpeakerEmbedder", "SpeakerProfileStore", "SpeakerMatcher", "speaker_cosine",
+    "VoiceMemory", "VoiceMemoryStore", "StreamingSttSession",
+    "ConversationController", "ConversationState",
+    "RealtimeVoiceCommandRouter", "RealtimeIntent",
+]
 
 
 def out(obj: Any) -> None:
