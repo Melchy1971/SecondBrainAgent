@@ -1,0 +1,53 @@
+{
+  "version": "30.67",
+  "title": "Connector-Runtime-Luecken: GitHub, lokaler Ordner, Outlook-PST, persistente DLQ, Conflict-Detection",
+  "type": "feature",
+  "builds_on": "Connector-Scaffold (v30.79)",
+  "already_existing": [
+    "Gmail/Drive/Calendar (v30.79)",
+    "OneDrive/Outlook Mail (v30.78 M365)",
+    "dead_letter.py (Model+InMemory)",
+    "health.py (Source-Status)",
+    "conflict_resolution.py (Resolver)"
+  ],
+  "new": {
+    "github": "connectors/github/ (PAT+Device-Flow-Auth, REST-Client mit Retry, Issues-Connector incremental via since, approval-gated Writer)",
+    "local_folder": "connectors/local_folder.py (Filesystem incremental, mtime-Watermark)",
+    "outlook_pst": "connectors/outlook_pst.py (lazy pypff + FakePstReader)",
+    "dlq": "connectors/dead_letter_store.py (JsonDeadLetterQueue + replay, erweitert bestehendes Model)",
+    "conflict": "connectors/conflict_detection.py (ConflictDetector mit Base-Version -> both_changed etc.)"
+  },
+  "launcher_commands": [
+    "local-folder-sync --path",
+    "github-issues --owner --repo (env GITHUB_TOKEN)"
+  ],
+  "kept_unchanged": [
+    "connectors/dead_letter.py",
+    "connectors/conflict_resolution.py",
+    "connectors/health.py",
+    "github_connector.py Stub"
+  ],
+  "files": [
+    "SecondBrain-Agent/secondbrain/connectors/local_folder.py",
+    "SecondBrain-Agent/secondbrain/connectors/dead_letter_store.py",
+    "SecondBrain-Agent/secondbrain/connectors/conflict_detection.py",
+    "SecondBrain-Agent/secondbrain/connectors/outlook_pst.py",
+    "SecondBrain-Agent/secondbrain/connectors/github/config.py",
+    "SecondBrain-Agent/secondbrain/connectors/github/auth.py",
+    "SecondBrain-Agent/secondbrain/connectors/github/client.py",
+    "SecondBrain-Agent/secondbrain/connectors/github/normalizers.py",
+    "SecondBrain-Agent/secondbrain/connectors/github/connector.py",
+    "SecondBrain-Agent/tests/connectors_runtime/test_local_folder.py",
+    "SecondBrain-Agent/tests/connectors_runtime/test_dead_letter_and_conflict.py",
+    "SecondBrain-Agent/tests/connectors_runtime/test_github.py",
+    "SecondBrain-Agent/tests/connectors_runtime/test_outlook_pst.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/30_67_connector_gaps.md"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/connectors",
+    "pytest SecondBrain-Agent/tests/connectors_runtime -q"
+  ],
+  "test_result": "connectors_runtime: 16 passed, 1 skipped (pypff) ; gesamt 213 passed, 10 skipped",
+  "generated": "2026-07-08"
+}

@@ -1,15 +1,45 @@
-# Local inbox exports can exceed GitHub's 100 MB blob limit.
-SecondBrain-Inbox/**/*.zip
-SecondBrain-Agent/SecondBrain-Inbox/**/*.zip
-
-# Local runtime/cache artifacts.
-runtime/
-logs/
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
 .pytest_cache/
 .pytest_tmp/
+.mypy_cache/
+.ruff_cache/
 
-# Generated vector index; rebuilt locally and can exceed GitHub's blob limit.
-SecondBrain/99_System/vector_rag/vector_index.json
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+.env/
+
+# Local secrets / runtime config (enthaelt API-Keys / Kamera-Logins - nie committen)
+config/hud_settings.json
+config/mediamtx.yml
+auto.key
+mediamtx.exe
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+htmlcov/
+.coverage
+
+# Local runtime artifacts
+runtime/
+.config/
+logs/
+release/*_latest.json
+*.pid
+*.log
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
 # v30.67: stray pytest temp dirs (all suffixed variants)
 .pytest_tmp*/
