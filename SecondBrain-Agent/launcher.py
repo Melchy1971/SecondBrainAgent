@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,9 @@ from secondbrain.release.repo_doctor import run_repo_doctor
 from secondbrain.gui.launch import gui_command
 from secondbrain.gui.bootstrap import write_bootstrap_report
 from secondbrain.env_loader import load_env_file
+from secondbrain.version import version_info as _version_info, get_version as _get_version
+
+__version__ = _get_version()
 from secondbrain.p1_embedding_config import evaluate_embedding_config
 from secondbrain.p1_provider_health import evaluate_embedding_provider_health
 from secondbrain.p1_rag_migration import migrate_sqlite_to_selected_store
@@ -471,9 +475,208 @@ def _voice_main(argv: list[str]) -> int:
     return 2
 
 
+def _first_project_root(argv: list[str]) -> str:
+    for i, item in enumerate(argv):
+        if item == "--project-root" and i + 1 < len(argv):
+            return argv[i + 1]
+    return str(Path.cwd())
+
+
+def _db_main(argv: list[str]) -> int:
+    from secondbrain.storage.db_policy import DatabaseStartupError
+    from secondbrain.storage.db_provider import DatabaseProvider
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    args, _ = parser.parse_known_args(argv)
+    try:
+        provider = DatabaseProvider.start()
+    except DatabaseStartupError as exc:
+        out({"status": "db_unavailable", "message": str(exc)})
+        return 3
+    if args.cmd == "db-validate":
+        out({"status": "ok", **provider.runtime.health()})
+        return 0
+    if args.cmd == "db-status":
+        out({"status": "ok", **provider.health()})
+        return 0
+    if args.cmd == "db-migrate":
+        out({"status": "ok", "migrate": provider.migrate()})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _vector_store_from_env():
+    from secondbrain.storage.db_provider import DatabaseProvider
+    from secondbrain.storage.vector_store import SqliteVectorStore, PgVectorStore
+    provider = DatabaseProvider.start()
+    rt = provider.runtime
+    if rt.backend == "postgresql":
+        return PgVectorStore(rt.executor.database), rt
+    return SqliteVectorStore(rt.url), rt
+
+
+def _vector_main(argv: list[str]) -> int:
+    from secondbrain.storage.db_policy import DatabaseStartupError
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--count", type=int, default=1000)
+    parser.add_argument("--dim", type=int, default=64)
+    parser.add_argument("--queries", type=int, default=20)
+    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--method", default="hnsw")
+    parser.add_argument("--metric", default="cosine")
+    parser.add_argument("--from", dest="source_url", default=None)
+    args, _ = parser.parse_known_args(argv)
+    try:
+        store, rt = _vector_store_from_env()
+    except DatabaseStartupError as exc:
+        out({"status": "db_unavailable", "message": str(exc)})
+        return 3
+    if args.cmd == "vector-benchmark":
+        from secondbrain.storage.vector_benchmark import run_benchmark
+        out({"status": "ok", **run_benchmark(store, count=args.count, dim=args.dim,
+                                             queries=args.queries, limit=args.limit)})
+        return 0
+    if args.cmd == "vector-reindex":
+        out({"status": "ok", **store.reindex(method=args.method, metric=args.metric)})
+        return 0
+    if args.cmd == "vector-explain":
+        sample = [0.0] * args.dim
+        out({"status": "ok", **store.explain(sample, limit=args.limit, metric=args.metric)})
+        return 0
+    if args.cmd == "vector-migrate":
+        from secondbrain.storage.vector_store import SqliteVectorStore
+        from secondbrain.storage.vector_migrate import migrate_vectors
+        if not args.source_url:
+            out({"status": "error", "message": "usage: vector-migrate --from sqlite:///path (target = current DATABASE_URL)"})
+            return 2
+        source = SqliteVectorStore(args.source_url)
+        out({"status": "ok", **migrate_vectors(source, store)})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _embed_main(argv: list[str]) -> int:
+    from secondbrain.embeddings.base import EmbeddingConfig, EmbeddingProviderError
+    from secondbrain.embeddings.factory import build_provider
+    from secondbrain.embeddings.gate import embedding_production_gate
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--provider", default=os.environ.get("EMBEDDING_PROVIDER", "openai"))
+    parser.add_argument("--model", default=os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small"))
+    parser.add_argument("--dimensions", type=int, default=int(os.environ.get("EMBEDDING_DIMENSIONS", "1536")))
+    parser.add_argument("--environment", default=os.environ.get("SECOND_BRAIN_ENV", "production"))
+    args, _ = parser.parse_known_args(argv)
+    cfg = EmbeddingConfig(provider=args.provider, model=args.model, dimensions=args.dimensions)
+    try:
+        provider = build_provider(cfg)
+    except EmbeddingProviderError as exc:
+        out({"status": "provider_error", "message": str(exc)})
+        return 3
+    if args.cmd == "embed-health":
+        out({"status": "ok", **provider.health().to_dict()})
+        return 0
+    if args.cmd == "embed-validate":
+        h = provider.health()
+        out({"status": "ok", "dimensions_ok": h.dimensions == args.dimensions, **h.to_dict()})
+        return 0
+    if args.cmd == "embed-gate":
+        report = embedding_production_gate(provider, environment=args.environment)
+        out(report)
+        return 0 if report["status"] == "PASS" else 4
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
+
+
+def _doc_main(argv: list[str]) -> int:
+    from pathlib import Path as _P
+    from secondbrain.documents.preview import resolve, markdown_to_html, highlight
+    from secondbrain.documents.compare import diff_documents
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("path", nargs="?", default=None)
+    parser.add_argument("--against", default=None)
+    args, _ = parser.parse_known_args(argv)
+    if args.cmd == "doc-preview":
+        if not args.path:
+            out({"status": "error", "message": "usage: doc-preview <file>"}); return 2
+        kind = resolve(args.path)
+        payload = {"status": "ok", "kind": kind.kind, "renderer": kind.renderer, "mime": kind.mime}
+        if kind.kind == "markdown" and _P(args.path).exists():
+            payload["html"] = markdown_to_html(_P(args.path).read_text(encoding="utf-8", errors="replace"))
+        out(payload); return 0
+    if args.cmd == "doc-diff":
+        if not args.path or not args.against:
+            out({"status": "error", "message": "usage: doc-diff <a> --against <b>"}); return 2
+        a = _P(args.path).read_text(encoding="utf-8", errors="replace")
+        b = _P(args.against).read_text(encoding="utf-8", errors="replace")
+        result = diff_documents(a, b, left_label=args.path, right_label=args.against)
+        out({"status": "ok", "added": result["added"], "removed": result["removed"],
+             "similarity": result["similarity"], "identical": result["identical"]})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd}); return 2
+
+
+def _secret_main(argv: list[str]) -> int:
+    import json as _json
+    from secondbrain.secret_manager.vault import SecretVault, VaultError, VaultLockedError
+    from secondbrain.secret_manager.health import vault_health
+    parser = argparse.ArgumentParser(prog="secondbrain")
+    parser.add_argument("cmd")
+    parser.add_argument("--path", default=os.environ.get("SECOND_BRAIN_VAULT", "runtime/secrets/vault.json"))
+    parser.add_argument("--name", default=None)
+    parser.add_argument("--type", default="workspace_secret")
+    parser.add_argument("--file", default=None)
+    args, _ = parser.parse_known_args(argv)
+    pw = os.environ.get("SECOND_BRAIN_VAULT_PASSWORD", "")      # never via CLI arg
+    value = os.environ.get("SECRET_VALUE", "")
+    exp_pw = os.environ.get("SECRET_EXPORT_PASSWORD", "")
+    try:
+        if args.cmd == "secret-init":
+            SecretVault.create(args.path, pw)
+            out({"status": "ok", "initialized": True, "path": args.path})
+            return 0
+        vault = SecretVault(args.path)
+        if args.cmd == "secret-health":
+            out({"status": "ok", **vault_health(vault)}); return 0
+        vault.unlock(pw)
+        if args.cmd == "secret-set":
+            if not args.name or not value:
+                out({"status": "error", "message": "set SECRET_VALUE env and --name"}); return 2
+            vault.set_secret(args.name, value, secret_type=args.type)
+            out({"status": "ok", "name": args.name, "type": args.type})   # value never echoed
+            return 0
+        if args.cmd == "secret-list":
+            out({"status": "ok", "secrets": vault.list_secrets()}); return 0
+        if args.cmd == "secret-rotate":
+            out({"status": "ok", **vault.rotate_master_key(pw)}); return 0
+        if args.cmd == "secret-export":
+            if not args.file or not exp_pw:
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+            Path(args.file).write_text(_json.dumps(vault.export_bundle(exp_pw)), encoding="utf-8")
+            out({"status": "ok", "exported_to": args.file}); return 0
+        if args.cmd == "secret-import":
+            if not args.file or not exp_pw:
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+            bundle = _json.loads(Path(args.file).read_text(encoding="utf-8"))
+            out({"status": "ok", **vault.import_bundle(bundle, exp_pw)}); return 0
+        out({"status": "unknown_command", "cmd": args.cmd}); return 2
+    except (VaultError, VaultLockedError) as exc:
+        out({"status": "vault_error", "message": str(exc)}); return 3
+
+
 def main(argv: list[str] | None = None) -> int:
     raw = list(sys.argv[1:] if argv is None else argv)
     cmd = _first_command(raw)
+    if cmd in {"version", "--version"} or "--version" in raw or "-V" in raw:
+        out(_version_info())
+        return 0
+    if cmd == "version-sync":
+        from secondbrain.version_sync import sync_version
+        out(sync_version(_first_project_root(raw)))
+        return 0
     if cmd is None:
         load_env_file()
         return gui_command(["gui", "--project-root", str(Path.cwd())])
@@ -486,6 +689,16 @@ def main(argv: list[str] | None = None) -> int:
         return _google_main(raw)
     if cmd == "vision-ocr":
         return _vision_main(raw)
+    if cmd in {"db-validate", "db-status", "db-migrate"}:
+        return _db_main(raw)
+    if cmd in {"vector-benchmark", "vector-reindex", "vector-explain", "vector-migrate"}:
+        return _vector_main(raw)
+    if cmd in {"embed-health", "embed-validate", "embed-gate"}:
+        return _embed_main(raw)
+    if cmd in {"doc-preview", "doc-diff"}:
+        return _doc_main(raw)
+    if cmd in {"secret-init", "secret-set", "secret-list", "secret-health", "secret-rotate", "secret-export", "secret-import"}:
+        return _secret_main(raw)
     if cmd == "desktop-analyze":
         return _desktop_main(raw)
     if cmd == "diagram-analyze":

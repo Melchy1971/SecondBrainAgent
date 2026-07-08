@@ -1,18 +1,20 @@
 # Meeting Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
+- [[2026-07-07_meeting-intelligence]] — Score 145
 - [[2026-07-03_meeting-intelligence]] — Score 140
 - [[2026-06-30_meeting-intelligence]] — Score 135
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 81
 - [[Claude_Obsidian_Skill]] — Score 81
+- [[2026-07-03_meeting-agent]] — Score 76
 - [[2026-06-30_meeting-agent]] — Score 75
 - [[2026-06-26_meeting-agent]] — Score 58
 - [[2026-06-25_meeting-agent]] — Score 55
 - [[2026-06-23_meeting-agent]] — Score 52
-- [[Temporal_Graph]] — Score 48
+- [[Temporal_Graph]] — Score 50
 - [[2026-06-26_meeting-intelligence]] — Score 48
 - [[2026-06-22_meeting-agent]] — Score 48
 - [[2026-06-25_meeting-intelligence]] — Score 43
@@ -28,14 +30,14 @@ Aktualisiert: 2026-07-03
 - [[Protokoll_Vorlage_Tischtennisverein]] — Score 38
 - [[2026-06-22_meeting-intelligence]] — Score 38
 - [[2026-06-19_meeting-intelligence]] — Score 34
+- [[vault_index]] — Score 31
 - [[Turniermodi_im_Tischtennis_690dacc5-ab28-832e-9526]] — Score 30
 - [[Turniermodi_im_Tischtennis]] — Score 30
-- [[vault_index]] — Score 29
 - [[Übersetzung_Systemstabilität_68d64dec-d6b4-832f-aad0]] — Score 25
 - [[Übersetzung_Systemstabilität]] — Score 25
+- [[Meeting_Agent_Memory_v2]] — Score 25
 - [[QoS_Anforderungen_und_Anwendungen_685124e6-6f68-8007-ba47]] — Score 23
 - [[QoS_Anforderungen_und_Anwendungen]] — Score 23
-- [[Meeting_Agent_Memory_v2]] — Score 23
 - [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 15
 - [[Masterplan_optimieren]] — Score 15
 - [[TT_Pro_69c5578e-dedc-8395-b663]] — Score 14
@@ -52,8 +54,6 @@ Aktualisiert: 2026-07-03
 - [[2026-06-26_knowledge-quality]] — Score 11
 - [[2026-06-25_knowledge-quality]] — Score 11
 - [[VPS_Architektur_mit_Docker_69e61ad5-ac00-838d-8e63]] — Score 10
-- [[VPS_Architektur_mit_Docker]] — Score 10
-- [[KI-unterstützte_Wissensdatenbank_69b90982-c908-838c-a3d0]] — Score 10
 
 ## Gelernte Tags
 

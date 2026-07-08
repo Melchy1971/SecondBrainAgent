@@ -1,12 +1,12 @@
 # Goal System v9.7
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 | Zielbereich | Notizen | Aufgaben | Risiken | Entscheidungen | Fokus |
 |---|---:|---:|---:|---:|---|
-| Beruf | 1269 | 668 | 3446 | 2048 | Risiko senken |
-| Projekte | 792 | 653 | 3360 | 1783 | Risiko senken |
-| Lernen | 1389 | 645 | 3646 | 2055 | Risiko senken |
-| Gesundheit | 275 | 376 | 1479 | 1067 | Risiko senken |
-| Verein | 471 | 539 | 1826 | 1320 | Risiko senken |
-| Privat | 300 | 324 | 535 | 576 | Risiko senken |
+| Beruf | 1292 | 692 | 3695 | 2093 | Risiko senken |
+| Projekte | 818 | 677 | 3720 | 1844 | Risiko senken |
+| Lernen | 1414 | 669 | 4008 | 2119 | Risiko senken |
+| Gesundheit | 285 | 376 | 1501 | 1074 | Risiko senken |
+| Verein | 487 | 541 | 1932 | 1358 | Risiko senken |
+| Privat | 305 | 324 | 552 | 579 | Risiko senken |

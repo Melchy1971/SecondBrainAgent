@@ -1,6 +1,6 @@
 # Executive Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
@@ -28,6 +28,7 @@ Aktualisiert: 2026-07-03
 - [[Code-Stand_vs._Masterplan]] — Score 135
 - [[Prompt_optimieren_69398561-caf0-832b-9d53]] — Score 100
 - [[Prompt_optimieren]] — Score 100
+- [[2026-07-03_project-agent]] — Score 83
 - [[2026-06-30_project-agent]] — Score 83
 - [[Turniermodi_im_Tischtennis_690dacc5-ab28-832e-9526]] — Score 80
 - [[Turniermodi_im_Tischtennis]] — Score 80
@@ -44,16 +45,15 @@ Aktualisiert: 2026-07-03
 - [[2026-06-19_project-agent]] — Score 65
 - [[Wissensdatenbank_Masterplan_erstellen_69f1df7b-6970-8396-8311]] — Score 64
 - [[Wissensdatenbank_Masterplan_erstellen]] — Score 64
+- [[facts_tasks]] — Score 61
 - [[VPS_Server_69e49760-eee0-8392-a8cb]] — Score 60
 - [[VPS_Server]] — Score 60
+- [[2026-07-03_task-agent]] — Score 59
 - [[Temporal_Graph]] — Score 57
 - [[2026-06-26_chief-of-staff-v98]] — Score 53
 - [[2026-06-25_chief-of-staff-v98]] — Score 52
-- [[facts_tasks]] — Score 51
 - [[Instanzstatus_und_Monitoring_69e7795a-acd8-8390-99ab]] — Score 51
 - [[Instanzstatus_und_Monitoring]] — Score 51
-- [[TT_Pro_69c5578e-dedc-8395-b663]] — Score 50
-- [[TT_Pro]] — Score 50
 
 ## Gelernte Tags
 

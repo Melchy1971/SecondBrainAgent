@@ -1,6 +1,6 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 ## Relevante Notizen
 
@@ -17,6 +17,7 @@ Aktualisiert: 2026-07-03
 - [[2026-06-29_090416_chatgpt_import_report]] — Score 201
 - [[VPS_Server_69e49760-eee0-8392-a8cb]] — Score 187
 - [[VPS_Server]] — Score 187
+- [[2026-07-03_knowledge-quality]] — Score 157
 - [[2026-06-22_knowledge-quality]] — Score 156
 - [[2026-06-30_knowledge-quality]] — Score 154
 - [[2026-06-23_knowledge-quality]] — Score 151
@@ -25,6 +26,7 @@ Aktualisiert: 2026-07-03
 - [[2026-06-19_knowledge-quality]] — Score 140
 - [[Claude_Obsidian_Skill_6a339c33-134c-83ed-8c55]] — Score 129
 - [[Claude_Obsidian_Skill]] — Score 129
+- [[2026-07-03_research-backlog-agent]] — Score 121
 - [[2026-06-30_research-backlog-agent]] — Score 121
 - [[2026-06-26_research-backlog-agent]] — Score 121
 - [[2026-06-25_research-backlog-agent]] — Score 121
@@ -35,6 +37,7 @@ Aktualisiert: 2026-07-03
 - [[KI-unterstützte_Wissensdatenbank]] — Score 111
 - [[WDB_2026_69f8547b-d860-8394-8c04]] — Score 107
 - [[WDB_2026]] — Score 107
+- [[2026-07-07_self-improvement-plan]] — Score 101
 - [[2026-07-03_self-improvement-plan]] — Score 101
 - [[2026-06-30_self-improvement-plan]] — Score 100
 - [[2026-06-26_self-improvement-plan]] — Score 100
@@ -43,17 +46,14 @@ Aktualisiert: 2026-07-03
 - [[2026-06-22_self-improvement-plan]] — Score 100
 - [[2026-06-19_self-improvement-plan]] — Score 100
 - [[2026-06-18_self-improvement-plan]] — Score 100
+- [[2026-07-07_production-gate]] — Score 81
+- [[2026-07-07_governance-report]] — Score 81
 - [[2026-07-03_production-gate]] — Score 81
 - [[2026-07-03_governance-report]] — Score 81
 - [[2026-06-30_production-gate]] — Score 81
 - [[2026-06-30_governance-report]] — Score 81
 - [[Joomla_Template_mit_Facebook-Button_4ea66801-899f-41ad-86cb]] — Score 70
 - [[Joomla_Template_mit_Facebook-Button]] — Score 70
-- [[Toolentwicklung_mit_KI-Prompts_69b7cdd8-9f58-8396-b976]] — Score 69
-- [[Toolentwicklung_mit_KI-Prompts]] — Score 69
-- [[Jarvis_6a22b309-3398-838d-8c9b]] — Score 59
-- [[Jarvis]] — Score 59
-- [[Masterplan_optimieren_69286aa7-5514-832b-956f]] — Score 56
 
 ## Gelernte Tags
 

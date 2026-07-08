@@ -1,12 +1,12 @@
 # Decision Intelligence v2
 
-Aktualisiert: 2026-07-03
+Aktualisiert: 2026-07-07
 
 | Qualität | Entscheidung | Quelle | Fehlende Felder |
 |---:|---|---|---|
 | 0 | ** Der Autostart öffnet keinen Browser. Bei jedem Login ein Browserfenster aufzureißen wäre lästig; der Server läuft, du öffnest die Seite bei Bedarf (oder per Desktop-Icon). Wenn du den Browser doch bei jedem Login willst, sag Bescheid — dann nehme ich das `/quiet` aus der Autostart-Verknüpfung. | [[Install]] | Annahme, Alternative, Risiko, Ergebnis |
-| 25 | 2014 | [[Digital_Twin_v6]] | Alternative, Risiko, Ergebnis |
-| 25 | 2024 | [[Digital_Twin_v5]] | Alternative, Risiko, Ergebnis |
+| 25 | 2027 | [[Digital_Twin_v6]] | Alternative, Risiko, Ergebnis |
+| 25 | 2098 | [[Digital_Twin_v5]] | Alternative, Risiko, Ergebnis |
 | 50 |  | [[Datenbankentwicklung_mit_Codex]] | Risiko, Ergebnis |
 | 50 |  | [[Datenbankentwicklung_mit_Codex_69f1f03e-aab0-838d-bc69]] | Risiko, Ergebnis |
 | 50 |  | [[Geräteempfehlung_für_Rückenbeweglichkeit]] | Risiko, Ergebnis |

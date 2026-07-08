@@ -1,6 +1,6 @@
 {
-  "version": "30.46",
-  "current_version": "v30.46",
+  "version": "30.61.0",
+  "current_version": "v30.61.0",
   "status": "IN_PROGRESS",
   "focus": "Native Desktop Health Gate",
   "last_delta": "v30.46-native-desktop-health",
@@ -37,5 +37,7 @@
     "real_connector_runtime",
     "installer_exe_msi",
     "secret_vault_encryption"
-  ]
+  ],
+  "build": 306100,
+  "version_source": "pyproject.toml"
 }

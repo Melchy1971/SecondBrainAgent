@@ -1,31 +1,69 @@
 {
   "version": "30.66",
-  "title": "Native Agent Control GUI",
-  "files": [
-    "SecondBrain-Agent/secondbrain/native/agent_control/__init__.py",
-    "SecondBrain-Agent/secondbrain/native/agent_control/service.py",
-    "SecondBrain-Agent/secondbrain/native/agent_control/gui.py",
-    "SecondBrain-Agent/secondbrain/native/agent_control/cli.py",
-    "SecondBrain-Agent/secondbrain/native/ai_workspace/service.py",
-    "SecondBrain-Agent/launcher.py",
-    "SecondBrain-Agent/tests/test_agent_control_gui.py",
-    "SecondBrain-Agent/tests/test_agent_workspace_integration.py",
-    "SecondBrain-Agent/docs/releases/v30_66_native_agent_control_gui.md",
-    "SecondBrain-Agent/README_PATCH.md",
-    "SecondBrain-Agent/RELEASE_NOTES.md",
-    "SecondBrain-Agent/APPLY_DELTA_v30_66.md"
+  "title": "Secret-Verwaltung: AES-256-GCM Envelope, Rotation, Audit, Zeroization",
+  "type": "feature",
+  "crypto": "AES-256-GCM (cryptography) + scrypt-KDF (stdlib); Envelope: scrypt-KEK umschließt zufälligen AES-256-DEK",
+  "hard_rules": [
+    "Keine Secrets im Log/Audit/auf Platte im Klartext (getestet)",
+    "Echte Krypto, kein Fake-Cipher"
   ],
-  "reused": [
-    "SecondBrain-Agent/secondbrain/native/ai_workspace/service.py::AIWorkspaceService",
-    "SecondBrain-Agent/secondbrain/agent/planner.py::AgentPlanService",
-    "SecondBrain-Agent/secondbrain/agent/workflow/store.py::WorkflowStore",
-    "SecondBrain-Agent/secondbrain/agent/background_agents::AgentSupervisor",
-    "SecondBrain-Agent/secondbrain/agent/safety::SafetyService",
-    "SecondBrain-Agent/secondbrain/agent/goals::GoalTracker"
+  "features": [
+    "Master Key",
+    "Passwortänderung (DEK-rewrap)",
+    "Master-Key-Rotation (re-encrypt)",
+    "API Keys/OAuth Tokens/Workspace Secrets",
+    "Audit Logging (ohne Werte)",
+    "Memory Zeroization",
+    "Redaction + logging-Filter",
+    "Export/Import (portabel, eigenes Passwort)",
+    "Health"
+  ],
+  "kept_unchanged": [
+    "secondbrain/secrets.py",
+    "secondbrain/security/secret_vault.py"
+  ],
+  "gui": {
+    "file": "secondbrain/gui/secret_manager.py",
+    "note": "Tkinter, in Sandbox nicht ausgeführt/abgenommen; Logik voll getestet",
+    "features": [
+      "Secret Manager",
+      "Passwort ändern",
+      "Export",
+      "Import",
+      "Health-Anzeige"
+    ]
+  },
+  "launcher_commands": [
+    "secret-init",
+    "secret-set (SECRET_VALUE env)",
+    "secret-list",
+    "secret-health",
+    "secret-rotate",
+    "secret-export",
+    "secret-import"
+  ],
+  "note": "Passwörter/Werte nur über ENV (SECOND_BRAIN_VAULT_PASSWORD/SECRET_VALUE), nie als CLI-Arg; kein Klartext-get im Launcher",
+  "files": [
+    "SecondBrain-Agent/secondbrain/secret_manager/crypto.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/vault.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/zeroize.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/redaction.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/audit.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/health.py",
+    "SecondBrain-Agent/secondbrain/secret_manager/__init__.py",
+    "SecondBrain-Agent/secondbrain/gui/secret_manager.py",
+    "SecondBrain-Agent/tests/secret_manager/test_crypto_zeroize.py",
+    "SecondBrain-Agent/tests/secret_manager/test_vault_rotation_export.py",
+    "SecondBrain-Agent/tests/secret_manager/test_no_secret_leaks.py",
+    "SecondBrain-Agent/tests/secret_manager/test_health.py",
+    "SecondBrain-Agent/requirements-security.txt",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/30_66_secret_management.md"
   ],
   "validation": [
-    "python -m compileall SecondBrain-Agent/secondbrain/native/agent_control SecondBrain-Agent/secondbrain/native/ai_workspace/service.py SecondBrain-Agent/launcher.py",
-    "pytest tests/test_agent_control_gui.py tests/test_agent_workspace_integration.py -q",
-    "python launcher.py agent-control-center"
-  ]
+    "python -m compileall SecondBrain-Agent/secondbrain/secret_manager",
+    "pytest SecondBrain-Agent/tests/secret_manager -q"
+  ],
+  "test_result": "secret_manager: 16 passed ; gesamt 197 passed, 9 skipped",
+  "generated": "2026-07-08"
 }

@@ -1,0 +1,37 @@
+{
+  "version": "30.61.0",
+  "title": "Single Source of Truth fuer die Version (pyproject-fuehrend)",
+  "type": "refactor-nonfunctional",
+  "source_of_truth": "pyproject.toml [project].version",
+  "build_rule": "major*10000+minor*100+patch (30.61.0 -> 306100)",
+  "adopters": [
+    "secondbrain.__version__",
+    "secondbrain.gui.version",
+    "secondbrain.cli.version",
+    "launcher version"
+  ],
+  "synced_anchors": [
+    "README.md title",
+    "docs/09_MASTERPLAN_STATUS.json"
+  ],
+  "behaviour_change": "none functional; additive version reporting; launcher --version now prints version",
+  "files": [
+    "SecondBrain-Agent/pyproject.toml",
+    "SecondBrain-Agent/secondbrain/version.py",
+    "SecondBrain-Agent/secondbrain/version_sync.py",
+    "SecondBrain-Agent/secondbrain/__init__.py",
+    "SecondBrain-Agent/secondbrain/gui/version.py",
+    "SecondBrain-Agent/secondbrain/cli/version.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/README.md",
+    "SecondBrain-Agent/docs/09_MASTERPLAN_STATUS.json",
+    "SecondBrain-Agent/docs/releases/30.61.md",
+    "SecondBrain-Agent/tests/version/test_version.py"
+  ],
+  "validation": [
+    "python -m compileall SecondBrain-Agent/secondbrain/version.py SecondBrain-Agent/secondbrain/version_sync.py",
+    "pytest SecondBrain-Agent/tests/version -q"
+  ],
+  "test_result": "7 passed ; gesamt 102 passed, 6 skipped",
+  "generated": "2026-07-07"
+}

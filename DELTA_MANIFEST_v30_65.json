@@ -1,31 +1,57 @@
 {
   "version": "30.65",
-  "title": "Agent Goal Tracking",
-  "files": [
-    "SecondBrain-Agent/secondbrain/agent/goals/__init__.py",
-    "SecondBrain-Agent/secondbrain/agent/goals/models.py",
-    "SecondBrain-Agent/secondbrain/agent/goals/store.py",
-    "SecondBrain-Agent/secondbrain/agent/goals/tracker.py",
-    "SecondBrain-Agent/secondbrain/agent/goals/service.py",
-    "SecondBrain-Agent/secondbrain/agent/goals/cli.py",
-    "SecondBrain-Agent/launcher.py",
-    "SecondBrain-Agent/tests/_goal_fakes.py",
-    "SecondBrain-Agent/tests/test_goal_tracking.py",
-    "SecondBrain-Agent/tests/test_goal_metrics.py",
-    "SecondBrain-Agent/tests/test_goal_reporting.py",
-    "SecondBrain-Agent/docs/releases/v30_65_goal_tracking.md",
-    "SecondBrain-Agent/README_PATCH.md",
-    "SecondBrain-Agent/RELEASE_NOTES.md",
-    "SecondBrain-Agent/APPLY_DELTA_v30_65.md"
+  "title": "Document-Center-Erweiterung (Preview/Tags/Versionierung/Diff/Queue/History/OCR-Status)",
+  "type": "feature",
+  "no_breaking_changes": true,
+  "kept_unchanged": [
+    "secondbrain/gui/document_center_runtime.py",
+    "secondbrain/desktop/documents/*",
+    "secondbrain/storage/repositories/document_repository.py",
+    "secondbrain/importing/*"
   ],
-  "reused": [
-    "SecondBrain-Agent/secondbrain/agent/planner.py::AgentPlanService",
-    "SecondBrain-Agent/secondbrain/agent/workflow/store.py::WorkflowStore",
-    "SecondBrain-Agent/secondbrain/native/notification_center/service.py::NotificationCenterService"
+  "new_logic": {
+    "preview": "Resolver (pdf/office/markdown/code/image/video/audio/text) + Markdown->HTML + Syntax-Highlight-Tokenizer (optional pygments)",
+    "upload_queue": "Mehrfachimport + Upload-Queue mit Progress/Status",
+    "import_history": "persistente Import-History",
+    "tags": "Tag-Store",
+    "versioning": "content-hash Versionen",
+    "compare": "Dokumentenvergleich (unified diff)",
+    "ocr_status": "OCR-Status-Tracker (an vision-OCR angebunden)"
+  },
+  "gui": {
+    "file": "secondbrain/gui/document_center_pro.py",
+    "note": "Tkinter (Windows/Desktop). In der Sandbox NICHT ausgefuehrt/abgenommen (kein Display); tkinter lazy importiert. Logik dahinter voll getestet.",
+    "features": [
+      "PDF/Office/Markdown/Bild/Video/Audio Preview",
+      "Syntax Highlighting",
+      "Drag&Drop (tkdnd)",
+      "Upload-Queue"
+    ]
+  },
+  "launcher_commands": [
+    "doc-preview <file>",
+    "doc-diff <a> --against <b>"
+  ],
+  "files": [
+    "SecondBrain-Agent/secondbrain/documents/preview.py",
+    "SecondBrain-Agent/secondbrain/documents/tags.py",
+    "SecondBrain-Agent/secondbrain/documents/versioning.py",
+    "SecondBrain-Agent/secondbrain/documents/compare.py",
+    "SecondBrain-Agent/secondbrain/documents/upload_queue.py",
+    "SecondBrain-Agent/secondbrain/documents/import_history.py",
+    "SecondBrain-Agent/secondbrain/documents/ocr_status.py",
+    "SecondBrain-Agent/secondbrain/documents/__init__.py",
+    "SecondBrain-Agent/secondbrain/gui/document_center_pro.py",
+    "SecondBrain-Agent/tests/documents/test_preview.py",
+    "SecondBrain-Agent/tests/documents/test_tags_versioning_compare.py",
+    "SecondBrain-Agent/tests/documents/test_queue_history_ocr.py",
+    "SecondBrain-Agent/launcher.py",
+    "SecondBrain-Agent/docs/releases/30_65_document_center.md"
   ],
   "validation": [
-    "python -m compileall SecondBrain-Agent/secondbrain/agent/goals SecondBrain-Agent/launcher.py",
-    "pytest tests/test_goal_tracking.py tests/test_goal_metrics.py tests/test_goal_reporting.py -q",
-    "python launcher.py goal-list"
-  ]
+    "python -m compileall SecondBrain-Agent/secondbrain/documents",
+    "pytest SecondBrain-Agent/tests/documents -q"
+  ],
+  "test_result": "documents: 19 passed ; gesamt 181 passed, 9 skipped",
+  "generated": "2026-07-07"
 }
