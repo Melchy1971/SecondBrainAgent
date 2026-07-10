@@ -9,6 +9,7 @@ from uuid import uuid4
 class TaskStepState(StrEnum):
     PENDING = "pending"
     RUNNING = "running"
+    WAITING_APPROVAL = "waiting_approval"
     COMPLETED = "completed"
     FAILED = "failed"
     SKIPPED = "skipped"
