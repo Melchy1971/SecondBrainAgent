@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
 from uuid import uuid4
 
+from .approval_policy import MandatoryApprovalDecision, MandatoryApprovalPolicy
+
 
 ToolHandler = Callable[[Mapping[str, Any]], Any]
 
@@ -59,6 +61,16 @@ class ToolCapability(StrEnum):
     SYSTEM = "system"
     RAG = "rag"
     WORKFLOW = "workflow"
+    DELETE = "delete"
+    SEND = "send"
+    FORWARD = "forward"
+    PUBLISH = "publish"
+    EXTERNAL_WRITE = "external_write"
+    FILESYSTEM_WRITE = "filesystem_write"
+    SYSTEM_COMMAND = "system_command"
+    PERMISSION_CHANGE = "permission_change"
+    CREDENTIAL_CHANGE = "credential_change"
+    CONNECTOR_WRITE = "connector_write"
 
 
 _JSON_TYPES: dict[str, type | tuple[type, ...]] = {
@@ -378,6 +390,8 @@ class ToolRegistry:
     def __init__(self, runtime_dir: str | Path | None = None) -> None:
         self._tools: dict[str, ToolDefinition] = {}
         self._lock = threading.RLock()
+        self.approval_policy = MandatoryApprovalPolicy()
+        self._approval_lookup: Callable[[str], Mapping[str, Any] | None] | None = None
         self.root = Path(runtime_dir).resolve() / "tools_v121" if runtime_dir is not None else None
         self.manifest_file = self.root / "tool_manifest.json" if self.root else None
         self.audit_file = self.root / "tool_audit.jsonl" if self.root else None
@@ -460,6 +474,9 @@ class ToolRegistry:
             self._save_manifest()
         return updated
 
+    def set_approval_lookup(self, lookup: Callable[[str], Mapping[str, Any] | None]) -> None:
+        self._approval_lookup = lookup
+
     def run(
         self,
         name: str,
@@ -467,16 +484,20 @@ class ToolRegistry:
         *,
         scopes: Iterable[str] | None = None,
         approved: bool = False,
+        approval: Mapping[str, Any] | None = None,
     ) -> ToolResult:
         started = time.perf_counter()
         values = dict(payload or {})
         tool: ToolDefinition | None = None
+        policy: MandatoryApprovalDecision | None = None
+        _ = approved  # Retained for API compatibility; a Boolean is not approval evidence.
         try:
             tool = self.get(name)
+            policy = self.approval_policy.evaluate_tool(tool)
             if not tool.enabled:
                 raise ToolRegistryError(f"tool_disabled:{name}")
-            if tool.requires_approval and not approved:
-                raise ToolRegistryError(f"tool_requires_approval:{name}")
+            if policy.effective_requires_approval and not self._approval_matches(tool, values, approval):
+                raise ToolRegistryError(f"tool_requires_approval:{name}:{policy.policy_rule}")
             if scopes is not None:
                 missing = set(tool.scopes) - set(scopes)
                 if missing:
@@ -486,10 +507,19 @@ class ToolRegistry:
                 raise ToolRegistryError(f"tool_handler_missing:{name}")
             output = tool.handler(validated)
             _validate_output(tool.output_schema, output)
-            result = ToolResult(name, True, output=output, duration_ms=_elapsed_ms(started), metadata={"risk_level": tool.risk_level.value})
+            result = ToolResult(
+                name,
+                True,
+                output=output,
+                duration_ms=_elapsed_ms(started),
+                metadata={"risk_level": tool.risk_level.value, **policy.audit_fields()},
+            )
         except Exception as exc:
-            result = ToolResult(name, False, error=str(exc), duration_ms=_elapsed_ms(started), metadata={"risk_level": tool.risk_level.value if tool else "unknown"})
-        self._audit(tool, result, values)
+            metadata = {"risk_level": tool.risk_level.value if tool else "unknown"}
+            if policy is not None:
+                metadata.update(policy.audit_fields())
+            result = ToolResult(name, False, error=str(exc), duration_ms=_elapsed_ms(started), metadata=metadata)
+        self._audit(tool, result, values, policy)
         return result
 
     def execute(
@@ -500,9 +530,11 @@ class ToolRegistry:
         approved: bool = False,
         *,
         confirmed: bool = False,
+        approval: Mapping[str, Any] | None = None,
     ) -> Any:
         legacy_runtime = scopes is not None
-        result = self.run(name, payload, scopes=scopes, approved=bool(approved or confirmed))
+        _ = approved, confirmed  # Compatibility-only flags; never authorization evidence.
+        result = self.run(name, payload, scopes=scopes, approval=approval)
         if not result.success:
             error = result.error or f"tool_execution_failed:{name}"
             if not legacy_runtime and "tool_requires_approval" in error:
@@ -554,7 +586,13 @@ class ToolRegistry:
                     continue
         return rows[-max(0, int(limit)):]
 
-    def _audit(self, tool: ToolDefinition | None, result: ToolResult, payload: Mapping[str, Any]) -> None:
+    def _audit(
+        self,
+        tool: ToolDefinition | None,
+        result: ToolResult,
+        payload: Mapping[str, Any],
+        policy: MandatoryApprovalDecision | None = None,
+    ) -> None:
         if not self.audit_file:
             return
         safe_payload = tool.input_schema.sanitize(payload) if tool else {}
@@ -566,8 +604,31 @@ class ToolRegistry:
             "duration_ms": result.duration_ms,
             "created_at": time.time(),
         }
+        if policy is not None:
+            row.update(policy.audit_fields())
         with self.audit_file.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+    def _approval_matches(
+        self,
+        tool: ToolDefinition,
+        payload: Mapping[str, Any],
+        approval: Mapping[str, Any] | None,
+    ) -> bool:
+        if not isinstance(approval, Mapping) or not approval.get("approval_id"):
+            return False
+        if self._approval_lookup is None:
+            return False
+        persisted = self._approval_lookup(str(approval["approval_id"]))
+        if not isinstance(persisted, Mapping) or persisted.get("status") != "approved":
+            return False
+        approved_tool = str(persisted.get("tool_name") or persisted.get("command") or "")
+        if approved_tool != tool.name:
+            return False
+        approved_payload = persisted.get("payload")
+        if not isinstance(approved_payload, Mapping):
+            return False
+        return dict(approved_payload) == tool.input_schema.sanitize(payload)
 
     def _load_manifest(self) -> None:
         if not self.manifest_file or not self.manifest_file.exists():
