@@ -248,15 +248,19 @@ class WorkflowExecutor:
             if missing:
                 return self._fail(cp, runs, step, f"dependency_not_completed:{','.join(missing)}")
 
-            if step.requires_approval:
+            approval_required, blocked = self._approval_requirement(step)
+            if blocked:
+                return self._fail(cp, runs, step, "policy_blocked")
+
+            if approval_required:
                 decision = self._check_approval(cp, step, run)
-                if decision == "pending":
+                if decision in {"pending", "deferred"}:
                     return self._wait_for_approval(cp, runs, step, run)
                 if decision == "rejected":
                     return self._fail(cp, runs, step, "approval_rejected")
                 # approved -> fall through and execute
 
-            verdict = self._execute_step(cp, step, run, approved=step.requires_approval)
+            verdict = self._execute_step(cp, step, run, approved=approval_required)
             self._persist_runs(cp, runs)
 
             if run.status == STEP_COMPLETED:
@@ -318,6 +322,27 @@ class WorkflowExecutor:
         raise RuntimeError(getattr(result, "error", None) or f"tool_failed:{step.tool_name}")
 
     # -- approval integration (reuses v30.61 SafetyService) ---------------
+    def _approval_requirement(self, step: WorkflowStep) -> tuple[bool, bool]:
+        """Return (requires_approval, blocked_by_policy)."""
+
+        if step.requires_approval:
+            return True, False
+        if self.safety is None:
+            return False, False
+        risk_level, verdict = self.safety.policy_check(step.tool_name or step.name)
+        _ = risk_level
+        if verdict.outcome == "block":
+            return False, True
+        return bool(verdict.requires_approval), False
+
+    def _category_for_step(self, step: WorkflowStep) -> str:
+        action = (step.tool_name or step.name or "").lower()
+        if "delete" in action:
+            return "delete_request"
+        if "permission" in action or "role" in action:
+            return "connector_permission_change"
+        return "risky_agent_action"
+
     def _check_approval(self, cp: WorkflowCheckpoint, step: WorkflowStep, run: StepRun) -> str:
         if self.safety is None:
             raise RuntimeError("approval_layer_unavailable")
@@ -330,6 +355,7 @@ class WorkflowExecutor:
                 intent=step.name,
                 text=cp.objective,
                 target=target,
+                category=self._category_for_step(step),
             )
             run.approval_id = record["approval_id"]
         return record.get("status", "pending")
@@ -360,8 +386,9 @@ class WorkflowExecutor:
             return self._drive(cp)
         if status == "rejected":
             return self._fail(cp, runs, step, "approval_rejected")
-        # still pending
-        self.audit.record(workflow_id=cp.workflow_id, event="approval_still_pending", step_id=step.id)
+        # still pending/deferred
+        self.audit.record(workflow_id=cp.workflow_id, event="approval_still_pending", step_id=step.id,
+                          detail={"status": status})
         return cp
 
     # -- terminal transitions ---------------------------------------------

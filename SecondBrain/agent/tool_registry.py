@@ -13,6 +13,36 @@ from uuid import uuid4
 
 
 ToolHandler = Callable[[Mapping[str, Any]], Any]
+RollbackHandler = Callable[[Mapping[str, Any], Any], Any]
+
+
+DEFAULT_TOOL_CATEGORIES: tuple[str, ...] = (
+    "search",
+    "document",
+    "connector",
+    "calendar",
+    "email",
+    "file",
+    "workflow",
+    "memory",
+    "system",
+)
+
+_CATEGORY_ALIASES: dict[str, str] = {
+    "documents": "document",
+    "doc": "document",
+    "import": "connector",
+    "imports": "connector",
+    "github": "connector",
+    "filesystem": "file",
+    "files": "file",
+    "jobs": "workflow",
+    "agents": "workflow",
+    "notifications": "system",
+    "settings": "system",
+    "voice": "system",
+    "updates": "system",
+}
 
 
 class ToolRegistryError(ValueError):
@@ -45,6 +75,14 @@ class ToolRiskLevel(StrEnum):
 
 class ToolCapability(StrEnum):
     SEARCH = "search"
+    DOCUMENT = "document"
+    CONNECTOR = "connector"
+    CALENDAR = "calendar"
+    EMAIL = "email"
+    FILE = "file"
+    WORKFLOW_CORE = "workflow"
+    MEMORY_CORE = "memory"
+    SYSTEM_CORE = "system"
     DOCUMENTS = "documents"
     IMPORT = "import"
     MEMORY = "memory"
@@ -59,6 +97,26 @@ class ToolCapability(StrEnum):
     SYSTEM = "system"
     RAG = "rag"
     WORKFLOW = "workflow"
+
+    @classmethod
+    def parse(cls, value: Any) -> "ToolCapability":
+        if isinstance(value, cls):
+            return value
+        normalized = str(value or "").strip().lower()
+        aliases = {
+            "documents": cls.DOCUMENT,
+            "document": cls.DOCUMENT,
+            "import": cls.CONNECTOR,
+            "filesystem": cls.FILE,
+            "file": cls.FILE,
+            "workflow": cls.WORKFLOW,
+            "memory": cls.MEMORY,
+            "system": cls.SYSTEM,
+        }
+        try:
+            return aliases.get(normalized) or cls(normalized)
+        except ValueError as exc:
+            raise ToolRegistryError(f"invalid_tool_capability:{value}") from exc
 
 
 _JSON_TYPES: dict[str, type | tuple[type, ...]] = {
@@ -165,11 +223,13 @@ class ToolDefinition:
     requires_approval: bool
     enabled: bool
     handler: ToolHandler | None
+    rollback_handler: RollbackHandler | None
     capabilities: tuple[ToolCapability, ...]
     scopes: tuple[str, ...]
     parameters: tuple[Any, ...]
     permissions: tuple[Any, ...]
     timeout_seconds: float
+    retry_count: int
     metadata: dict[str, Any]
 
     def __init__(
@@ -190,6 +250,8 @@ class ToolDefinition:
         permissions: Iterable[Any] = (),
         risk: ToolRiskLevel | str | int | None = None,
         timeout_seconds: float = 30.0,
+        retry_count: int = 0,
+        rollback_handler: RollbackHandler | None = None,
         metadata: Mapping[str, Any] | None = None,
         requires_confirmation: bool | None = None,
     ) -> None:
@@ -246,18 +308,21 @@ class ToolDefinition:
             }
         self.name = str(name).strip()
         self.description = str(description).strip()
-        self.category = str(category or "general").strip().lower()
+        self.category = _normalize_category(category)
         self.input_schema = ToolInputSchema.from_value(input_schema)
         self.output_schema = dict(output_schema or {})
         self.risk_level = ToolRiskLevel.parse(risk if risk is not None else risk_level)
-        self.requires_approval = bool(requires_approval if requires_confirmation is None else requires_confirmation)
+        explicit_approval = bool(requires_approval if requires_confirmation is None else requires_confirmation)
+        self.requires_approval = explicit_approval or self.risk_level in {ToolRiskLevel.HIGH, ToolRiskLevel.CRITICAL}
         self.enabled = bool(enabled)
         self.handler = handler
-        self.capabilities = tuple(ToolCapability(str(item)) for item in capabilities)
+        self.rollback_handler = rollback_handler
+        self.capabilities = tuple(ToolCapability.parse(item) for item in capabilities)
         self.scopes = tuple(str(item) for item in scopes)
         self.parameters = parameter_tuple
         self.permissions = tuple(permissions)
         self.timeout_seconds = max(0.001, float(timeout_seconds))
+        self.retry_count = max(0, int(retry_count))
         self.metadata = dict(metadata or {})
         self.validate()
 
@@ -280,6 +345,8 @@ class ToolDefinition:
             raise ToolRegistryError("tool_description_required")
         if self.handler is not None and not callable(self.handler):
             raise ToolRegistryError("tool_handler_not_callable")
+        if self.rollback_handler is not None and not callable(self.rollback_handler):
+            raise ToolRegistryError("tool_rollback_handler_not_callable")
         unknown_required = set(self.input_schema.required) - set(self.input_schema.properties) if self.input_schema.properties else set()
         if unknown_required:
             raise ToolRegistryError(f"required_input_schema_missing:{','.join(sorted(unknown_required))}")
@@ -294,6 +361,7 @@ class ToolDefinition:
             enabled=self.enabled if enabled is None else enabled,
             parameters=self.parameters,
             permissions=self.permissions,
+            rollback_handler=self.rollback_handler,
         )
 
     def to_dict(self, *, include_handler: bool = False) -> dict[str, Any]:
@@ -310,6 +378,7 @@ class ToolDefinition:
             "capabilities": [item.value for item in self.capabilities],
             "scopes": list(self.scopes),
             "timeout_seconds": self.timeout_seconds,
+            "retry_count": self.retry_count,
             "metadata": dict(self.metadata),
         }
         if include_handler:
@@ -322,6 +391,7 @@ class ToolDefinition:
         payload: Mapping[str, Any],
         *,
         handler: ToolHandler | None = None,
+        rollback_handler: RollbackHandler | None = None,
         enabled: bool | None = None,
         parameters: Iterable[Any] = (),
         permissions: Iterable[Any] = (),
@@ -342,6 +412,8 @@ class ToolDefinition:
             parameters=parameters,
             permissions=permissions,
             timeout_seconds=float(data.get("timeout_seconds", 30.0)),
+            retry_count=int(data.get("retry_count", 0)),
+            rollback_handler=rollback_handler,
             metadata=data.get("metadata") or {},
         )
 
@@ -471,6 +543,8 @@ class ToolRegistry:
         started = time.perf_counter()
         values = dict(payload or {})
         tool: ToolDefinition | None = None
+        attempts = 0
+        safe_payload: dict[str, Any] = dict(values)
         try:
             tool = self.get(name)
             if not tool.enabled:
@@ -482,15 +556,91 @@ class ToolRegistry:
                 if missing:
                     raise ToolRegistryError(f"missing_tool_scopes:{','.join(sorted(missing))}")
             validated = tool.input_schema.validate(values)
+            safe_payload = tool.input_schema.sanitize(validated)
             if tool.handler is None:
                 raise ToolRegistryError(f"tool_handler_missing:{name}")
-            output = tool.handler(validated)
+            attempts = 0
+            output = None
+            last_error: Exception | None = None
+            for attempts in range(1, tool.retry_count + 2):
+                try:
+                    output = _invoke_with_timeout(tool.handler, validated, tool.timeout_seconds)
+                    last_error = None
+                    break
+                except Exception as exc:  # noqa: BLE001 - attempt errors are normalized in result
+                    last_error = exc
+                    if attempts >= tool.retry_count + 1:
+                        raise
+            if last_error is not None:
+                raise last_error
             _validate_output(tool.output_schema, output)
-            result = ToolResult(name, True, output=output, duration_ms=_elapsed_ms(started), metadata={"risk_level": tool.risk_level.value})
+            result = ToolResult(
+                name,
+                True,
+                output=output,
+                duration_ms=_elapsed_ms(started),
+                metadata={
+                    "risk_level": tool.risk_level.value,
+                    "category": tool.category,
+                    "requires_approval": tool.requires_approval,
+                    "timeout_seconds": tool.timeout_seconds,
+                    "retry_count": tool.retry_count,
+                    "attempts": attempts,
+                },
+            )
         except Exception as exc:
-            result = ToolResult(name, False, error=str(exc), duration_ms=_elapsed_ms(started), metadata={"risk_level": tool.risk_level.value if tool else "unknown"})
-        self._audit(tool, result, values)
+            result = ToolResult(
+                name,
+                False,
+                error=str(exc),
+                duration_ms=_elapsed_ms(started),
+                metadata={
+                    "risk_level": tool.risk_level.value if tool else "unknown",
+                    "category": tool.category if tool else "unknown",
+                    "requires_approval": tool.requires_approval if tool else False,
+                    "timeout_seconds": tool.timeout_seconds if tool else None,
+                    "retry_count": tool.retry_count if tool else 0,
+                    "attempts": max(1, attempts),
+                },
+            )
+        self._audit(tool, result, safe_payload)
         return result
+
+    def rollback(self, name: str, payload: Mapping[str, Any] | None = None, result: Any = None) -> dict[str, Any]:
+        tool = self.get(name)
+        if tool.rollback_handler is None:
+            return {"ok": True, "status": "no_rollback", "tool": name}
+        values = dict(payload or {})
+        started = time.perf_counter()
+        try:
+            outcome = _invoke_with_timeout(lambda current: tool.rollback_handler(current, result), values, tool.timeout_seconds)
+            row = {
+                "tool": name,
+                "status": "rollback_success",
+                "payload": tool.input_schema.sanitize(values),
+                "error": None,
+                "duration_ms": _elapsed_ms(started),
+                "created_at": time.time(),
+                "event": "rollback",
+            }
+            if self.audit_file:
+                with self.audit_file.open("a", encoding="utf-8") as handle:
+                    handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            return {"ok": True, "status": "rollback_success", "tool": name, "result": outcome}
+        except Exception as exc:  # noqa: BLE001 - rollback failures must be isolated
+            row = {
+                "tool": name,
+                "status": "rollback_failed",
+                "payload": tool.input_schema.sanitize(values),
+                "error": str(exc),
+                "duration_ms": _elapsed_ms(started),
+                "created_at": time.time(),
+                "event": "rollback",
+            }
+            if self.audit_file:
+                with self.audit_file.open("a", encoding="utf-8") as handle:
+                    handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+            return {"ok": False, "status": "rollback_failed", "tool": name, "error": str(exc)}
 
     def execute(
         self,
@@ -557,14 +707,15 @@ class ToolRegistry:
     def _audit(self, tool: ToolDefinition | None, result: ToolResult, payload: Mapping[str, Any]) -> None:
         if not self.audit_file:
             return
-        safe_payload = tool.input_schema.sanitize(payload) if tool else {}
         row = {
             "tool": result.tool_name,
             "status": result.status,
-            "payload": safe_payload,
+            "payload": dict(payload),
             "error": result.error,
             "duration_ms": result.duration_ms,
             "created_at": time.time(),
+            "event": "tool_run",
+            "metadata": dict(result.metadata),
         }
         with self.audit_file.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
@@ -612,6 +763,33 @@ def _parameter_json_type(type_name: str) -> str:
 
 def _elapsed_ms(started: float) -> int:
     return int((time.perf_counter() - started) * 1000)
+
+
+def _normalize_category(category: str | None) -> str:
+    normalized = str(category or "system").strip().lower()
+    normalized = _CATEGORY_ALIASES.get(normalized, normalized)
+    if normalized not in DEFAULT_TOOL_CATEGORIES:
+        return "system"
+    return normalized
+
+
+def _invoke_with_timeout(handler: Callable[..., Any], payload: Mapping[str, Any], timeout_seconds: float, **kwargs: Any) -> Any:
+    box: dict[str, Any] = {}
+
+    def _runner() -> None:
+        try:
+            box["result"] = handler(payload, **kwargs)
+        except Exception as exc:  # noqa: BLE001 - normalized by caller
+            box["error"] = exc
+
+    thread = threading.Thread(target=_runner, daemon=True)
+    thread.start()
+    thread.join(max(0.001, float(timeout_seconds)))
+    if thread.is_alive():
+        raise TimeoutError(f"tool_timeout:{timeout_seconds}")
+    if "error" in box:
+        raise box["error"]
+    return box.get("result")
 
 
 def _validate_output(schema: Mapping[str, Any], output: Any) -> None:

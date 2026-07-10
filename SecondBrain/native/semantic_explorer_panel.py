@@ -42,6 +42,8 @@ class SemanticExplorerFrame(ttk.Frame):
         self.tag_filter = ttk.Combobox(bar, textvariable=self.tag, state="readonly", width=12)
         self.tag_filter.pack(side="left", padx=3)
         ttk.Button(bar, text="Suchen", command=self.reload).pack(side="left")
+        ttk.Button(bar, text="Dok-Beziehungen", command=self.preview_document_relationships).pack(side="left", padx=3)
+        ttk.Button(bar, text="Export JSON", command=self.export_json).pack(side="left", padx=3)
         ttk.Button(bar, text="Zurueck", command=self.back).pack(side="left", padx=3)
         body = ttk.PanedWindow(self, orient="horizontal"); body.pack(fill="both", expand=True)
         graph_frame, side = ttk.Frame(body), ttk.Frame(body, padding=4)
@@ -110,3 +112,21 @@ class SemanticExplorerFrame(ttk.Frame):
     def _tree_select(self, _event=None) -> None:
         selected = self.nodes.selection()
         if selected: self.focus_node(selected[0])
+
+    def preview_document_relationships(self) -> None:
+        selected = self.nodes.selection()
+        if not selected:
+            self.status.set("Bitte zuerst ein Dokument in der Liste waehlen.")
+            return
+        node_id = selected[0]
+        result = self.service.document_relationship_preview(node_id)
+        if not result.get("ok"):
+            self.status.set(f"Dokument-Beziehungen: {result.get('status')}")
+            return
+        self.current = {**result, "available": self.service.snapshot()["available"]}
+        self._render(self.current)
+        self.status.set(f"Dokument-Beziehungen: {len(result.get('nodes', []))} Knoten, {len(result.get('edges', []))} Kanten")
+
+    def export_json(self) -> None:
+        payload = self.service.export_json()
+        self.status.set(f"Graph exportiert: {payload.get('path')}")

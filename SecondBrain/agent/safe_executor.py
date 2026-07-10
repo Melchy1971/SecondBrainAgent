@@ -57,10 +57,16 @@ class SafeExecutor:
                 step.result = self.registry.execute(step.tool_name, step.payload, confirmed=confirmed)
                 step.state = TaskStepState.COMPLETED
                 results.append(step.result)
+                executed_steps.append(step)
             except (ToolRegistryError, Exception) as exc:  # noqa: BLE001 - isolate tool failures in agent boundary
                 step.error = str(exc)
                 step.state = TaskStepState.FAILED
                 errors.append(str(exc))
+                for completed in reversed(executed_steps):
+                    if completed.tool_name:
+                        rollback = self.registry.rollback(completed.tool_name, completed.payload, completed.result)
+                        if not rollback.get("ok", False):
+                            errors.append(str(rollback.get("error") or f"rollback_failed:{completed.tool_name}"))
                 break
         return ExecutionResult(ok=not errors and not pending, plan_id=plan.plan_id, results=results, errors=errors, pending_approval_ids=pending)
 

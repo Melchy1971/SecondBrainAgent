@@ -102,10 +102,18 @@ class AgentControlService:
                 d = plan.to_dict() if hasattr(plan, "to_dict") else dict(plan)
                 steps = d.get("steps", [])
                 done = sum(1 for s in steps if s.get("status") == "completed")
+                waiting = sum(1 for s in steps if s.get("status") == "waiting_approval")
+                failed = sum(1 for s in steps if s.get("status") == "failed")
+                deps = sum(len(s.get("dependencies") or []) for s in steps)
                 items.append({
                     "id": d["id"], "goal": d.get("goal", ""), "status": d.get("status"),
                     "steps": len(steps), "steps_completed": done,
                     "requires_approval": any(s.get("requires_approval") for s in steps),
+                    "approval_gates": sum(1 for s in steps if s.get("requires_approval")),
+                    "waiting_approval": waiting,
+                    "failed_steps": failed,
+                    "dependencies": deps,
+                    "maximum_risk": (d.get("metadata") or {}).get("maximum_risk", "low"),
                 })
             return {"ok": True, "count": len(items), "plans": items}
         return self._safe(build)
@@ -132,8 +140,17 @@ class AgentControlService:
 
     def area_approvals(self) -> dict[str, Any]:
         def build():
-            pending = self._safety().list(status="pending")
-            return {"ok": True, "pending": len(pending), "approvals": pending}
+            all_rows = self._safety().list()
+            pending = [row for row in all_rows if row.get("status") == "pending"]
+            deferred = [row for row in all_rows if row.get("status") == "deferred"]
+            open_items = pending + deferred
+            return {
+                "ok": True,
+                "pending": len(pending),
+                "deferred": len(deferred),
+                "open": len(open_items),
+                "approvals": open_items,
+            }
         return self._safe(build)
 
     def area_goals(self) -> dict[str, Any]:
@@ -235,6 +252,11 @@ class AgentControlService:
             },
         }
 
+    def explain_plan(self, plan_id: str) -> dict[str, Any]:
+        payload = self._planner().explain(plan_id)
+        self._log("plan_explained", {"plan_id": plan_id, "step_count": payload.get("step_count", 0)})
+        return payload
+
     def start_plan(self, plan_id: str) -> dict[str, Any]:
         plan = self._planner().resume(plan_id)
         d = plan.to_dict()
@@ -249,6 +271,11 @@ class AgentControlService:
     def reject(self, approval_id: str, *, decided_by: str = "user") -> dict[str, Any]:
         decision = self._safety().reject(approval_id, decided_by=decided_by)
         self._log("approval_rejected", {"approval_id": approval_id})
+        return {"ok": decision.ok, **decision.to_dict()}
+
+    def defer(self, approval_id: str, *, decided_by: str = "user", until: str = "", note: str = "") -> dict[str, Any]:
+        decision = self._safety().defer(approval_id, decided_by=decided_by, until=until, note=note)
+        self._log("approval_deferred", {"approval_id": approval_id, "until": until})
         return {"ok": decision.ok, **decision.to_dict()}
 
     def monitor_workflow(self, workflow_id: str) -> dict[str, Any]:

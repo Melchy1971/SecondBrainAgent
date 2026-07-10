@@ -10,6 +10,7 @@ from secondbrain.agent.planner import AgentPlanService
 COMMANDS = {
     "agent-plan-create",
     "agent-plan-show",
+    "agent-plan-explain",
     "agent-plan-list",
     "agent-plan-cancel",
     "agent-plan-resume",
@@ -38,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
             plan_id = options.args[0]
             if options.cmd == "agent-plan-show":
                 payload = service.load(plan_id).to_dict()
+            elif options.cmd == "agent-plan-explain":
+                payload = service.explain(plan_id)
             elif options.cmd == "agent-plan-cancel":
                 payload = service.cancel(plan_id).to_dict()
             else:

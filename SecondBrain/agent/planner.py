@@ -14,6 +14,7 @@ from uuid import uuid4
 
 from secondbrain.agent.agent_core import AgentCore
 from secondbrain.agent.task_graph import TaskGraph, TaskNode
+from secondbrain.agent.workflow_recovery import WorkflowRecovery
 from secondbrain.agent.tool_registry import ToolDefinition
 from secondbrain.chat.service import ChatService
 from secondbrain.native.approval import NativeApprovalQueue
@@ -50,8 +51,12 @@ class AgentStep:
     tool: str
     inputs: dict[str, Any]
     expected_output: str
+    dependencies: list[str] = field(default_factory=list)
+    preconditions: list[str] = field(default_factory=list)
+    tool_mapping: dict[str, Any] = field(default_factory=dict)
     risk_level: str = "low"
     requires_approval: bool = False
+    recovery_suggestion: dict[str, Any] = field(default_factory=dict)
     status: PlanStatus = PlanStatus.PENDING
     evidence: list[dict[str, Any]] = field(default_factory=list)
 
@@ -69,8 +74,12 @@ class AgentStep:
             tool=str(payload["tool"]),
             inputs=dict(payload.get("inputs") or {}),
             expected_output=str(payload["expected_output"]),
+            dependencies=[str(item) for item in payload.get("dependencies") or []],
+            preconditions=[str(item) for item in payload.get("preconditions") or []],
+            tool_mapping=dict(payload.get("tool_mapping") or {}),
             risk_level=str(payload.get("risk_level") or "low"),
             requires_approval=bool(payload.get("requires_approval", False)),
+            recovery_suggestion=dict(payload.get("recovery_suggestion") or {}),
             status=PlanStatus(payload.get("status", PlanStatus.PENDING.value)),
             evidence=[dict(item) for item in payload.get("evidence") or []],
         )
@@ -180,12 +189,24 @@ class PlanValidator:
                 errors.append(f"{prefix}.inputs_must_be_object")
             if not step.expected_output.strip():
                 errors.append(f"{prefix}.expected_output_required")
+            if not isinstance(step.dependencies, list):
+                errors.append(f"{prefix}.dependencies_must_be_list")
+            if any(not str(dep).strip() for dep in step.dependencies):
+                errors.append(f"{prefix}.dependencies_invalid")
+            if not isinstance(step.preconditions, list):
+                errors.append(f"{prefix}.preconditions_must_be_list")
+            if any(not str(item).strip() for item in step.preconditions):
+                errors.append(f"{prefix}.preconditions_invalid")
             if step.risk_level not in RISK_LEVELS:
                 errors.append(f"{prefix}.invalid_risk_level:{step.risk_level}")
             if step.risk_level in {"high", "critical"} and not step.requires_approval:
                 errors.append(f"{prefix}.approval_required_for_risk")
             if not isinstance(step.evidence, list):
                 errors.append(f"{prefix}.evidence_must_be_list")
+        for index, step in enumerate(plan.steps):
+            for dep in step.dependencies:
+                if dep not in ids:
+                    errors.append(f"step[{index}].unknown_dependency:{dep}")
         return errors
 
     def require_valid(self, plan: AgentPlan) -> AgentPlan:
@@ -251,6 +272,41 @@ class PlanPersistence:
         temporary.replace(self.path)
 
 
+class PlanAudit:
+    """Append-only audit trail for planner lifecycle and step transitions."""
+
+    def __init__(self, project_root: str | Path = ".") -> None:
+        self.project_root = Path(project_root).resolve()
+        self.path = self.project_root / "runtime" / "agent" / "plan_audit.jsonl"
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def record(self, *, plan_id: str, event: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        row = {
+            "plan_id": str(plan_id),
+            "event": str(event),
+            "payload": dict(payload or {}),
+            "created_at": _utc_now(),
+        }
+        with self.path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+        return row
+
+    def events(self, plan_id: str, *, limit: int = 200) -> list[dict[str, Any]]:
+        if not self.path.exists():
+            return []
+        rows: list[dict[str, Any]] = []
+        for line in self.path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                item = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if str(item.get("plan_id")) == str(plan_id):
+                rows.append(item)
+        return rows[-max(1, int(limit)):]
+
+
 class PlanBuilder:
     """Decompose goals using existing AgentCore routes and Command Center tools."""
 
@@ -281,7 +337,17 @@ class PlanBuilder:
         clauses = [self._clean_clause(item) for item in self._SPLIT.split(normalized)]
         clauses = [item for item in clauses if item]
         memory_evidence = self._memory_evidence(normalized, workspace_id)
-        steps = [self._build_step(clause, memory_evidence if index == 0 else []) for index, clause in enumerate(clauses)]
+        steps: list[AgentStep] = []
+        previous_id = ""
+        for index, clause in enumerate(clauses):
+            step = self._build_step(clause, memory_evidence if index == 0 else [])
+            if previous_id:
+                step.dependencies = [previous_id]
+                step.preconditions = [f"Step {previous_id} muss abgeschlossen sein"]
+            else:
+                step.preconditions = ["Plan wurde validiert"]
+            steps.append(step)
+            previous_id = step.id
         plan = AgentPlan(
             id=f"plan_{uuid4().hex[:12]}",
             goal=normalized,
@@ -307,7 +373,16 @@ class PlanBuilder:
             inputs = {"command": command.id}
             expected = f"Strukturiertes Ergebnis für {command.id}"
             evidence = [{"type": "command", "source": "command_center", "id": command.id}]
-            step = AgentStep(f"step_{uuid4().hex[:12]}", title, intent, tool, inputs, expected, evidence=evidence + memory_evidence)
+            step = AgentStep(
+                f"step_{uuid4().hex[:12]}",
+                title,
+                intent,
+                tool,
+                inputs,
+                expected,
+                tool_mapping={"source": "command_center", "command_id": command.id, "tool": tool},
+                evidence=evidence + memory_evidence,
+            )
             return self.risk_analyzer.analyze(
                 step,
                 command_risk=command.risk,
@@ -319,12 +394,14 @@ class PlanBuilder:
             step = AgentStep(
                 f"step_{uuid4().hex[:12]}", title, route.intent, route.tool_name, inputs,
                 f"Ergebnis des Tools {route.tool_name}",
+                tool_mapping={"source": "agent_core_router", "route_intent": route.intent, "tool": route.tool_name},
                 evidence=[{"type": "route", "source": "agent_core", "confidence": route.confidence}] + memory_evidence,
             )
             return self.risk_analyzer.analyze(step)
         step = AgentStep(
             f"step_{uuid4().hex[:12]}", title, route.intent or "chat", "chat.ask", {"text": title},
             "Begründete Chat-Antwort mit vorhandenen RAG-/Memory-Quellen",
+            tool_mapping={"source": "fallback", "tool": "chat.ask"},
             evidence=[{"type": "route", "source": "agent_core", "confidence": route.confidence}] + memory_evidence,
         )
         return self.risk_analyzer.analyze(step)
@@ -368,6 +445,8 @@ class AgentPlanService:
         persistence: PlanPersistence | None = None,
         queue: JobQueueService | None = None,
         approvals: NativeApprovalQueue | None = None,
+        audit: PlanAudit | None = None,
+        recovery: WorkflowRecovery | None = None,
     ) -> None:
         self.project_root = Path(project_root).resolve()
         self.builder = builder or PlanBuilder(self.project_root)
@@ -375,12 +454,16 @@ class AgentPlanService:
         self.persistence = persistence or PlanPersistence(self.project_root)
         self.queue = queue or JobQueueService(self.project_root)
         self.approvals = approvals or NativeApprovalQueue(self.project_root)
+        self.audit = audit or PlanAudit(self.project_root)
+        self.recovery = recovery or WorkflowRecovery()
 
     def create(self, goal: str, *, workspace_id: str | None = None) -> AgentPlan:
         plan = self.builder.build(goal, workspace_id=workspace_id)
         self.validator.require_valid(plan)
         plan.status = PlanStatus.VALIDATED
-        return self.persistence.save(plan)
+        stored = self.persistence.save(plan)
+        self.audit.record(plan_id=stored.id, event="plan_created", payload={"steps": len(stored.steps), "maximum_risk": stored.metadata.get("maximum_risk", "low")})
+        return stored
 
     def load(self, plan_id: str) -> AgentPlan:
         return self.persistence.load(plan_id)
@@ -402,7 +485,9 @@ class AgentPlanService:
                     self.queue.cancel(job_id)
             step.status = PlanStatus.CANCELLED
         plan.status = PlanStatus.CANCELLED
-        return self.persistence.save(plan)
+        stored = self.persistence.save(plan)
+        self.audit.record(plan_id=stored.id, event="plan_cancelled", payload={"steps": len(stored.steps)})
+        return stored
 
     def resume(self, plan_id: str) -> AgentPlan:
         plan = self.load(plan_id)
@@ -431,14 +516,23 @@ class AgentPlanService:
                 approved = approval.get("status") == "approved"
                 if approval.get("status") == "rejected":
                     step.status = PlanStatus.FAILED
+                    step.recovery_suggestion = self.recovery.classify(RuntimeError("approval_rejected"))
+                    self.audit.record(plan_id=plan.id, event="step_failed", payload={"step_id": step.id, "reason": "approval_rejected", "recovery": step.recovery_suggestion})
                     plan.status = PlanStatus.FAILED
                     continue
             job_id = self._evidence_value(step.evidence, "queue", "job_id")
             job = self.queue.get_job(job_id) if job_id else None
             if job and job.status == "success":
                 step.status = PlanStatus.COMPLETED
+                self.audit.record(plan_id=plan.id, event="step_completed", payload={"step_id": step.id, "job_id": job.id})
                 continue
-            if job is None or job.status in {"failed", "dead_letter", "cancelled"}:
+            if job and job.status in {"failed", "dead_letter"}:
+                step.status = PlanStatus.FAILED
+                step.recovery_suggestion = self.recovery.classify(RuntimeError(f"job_{job.status}"))
+                self.audit.record(plan_id=plan.id, event="step_failed", payload={"step_id": step.id, "job_id": job.id, "reason": f"job_{job.status}", "recovery": step.recovery_suggestion})
+                plan.status = PlanStatus.FAILED
+                continue
+            if job is None or job.status == "cancelled":
                 job = self.queue.add_job(
                     "agent",
                     step.title,
@@ -452,8 +546,10 @@ class AgentPlanService:
                     },
                 )
                 step.evidence.append({"type": "queue", "job_id": job.id})
+                self.audit.record(plan_id=plan.id, event="step_queued", payload={"step_id": step.id, "job_id": job.id, "requires_approval": step.requires_approval})
             elif approved and job.status == "blocked":
                 job = self.queue.approve(job.id)
+                self.audit.record(plan_id=plan.id, event="step_approval_granted", payload={"step_id": step.id, "job_id": job.id})
             if approved:
                 if job.status == "running":
                     step.status = PlanStatus.RUNNING
@@ -471,7 +567,35 @@ class AgentPlanService:
                 PlanStatus.QUEUED if queued else
                 PlanStatus.COMPLETED
             )
-        return self.persistence.save(plan)
+        stored = self.persistence.save(plan)
+        self.audit.record(plan_id=stored.id, event="plan_resumed", payload={"status": stored.status.value})
+        return stored
+
+    def explain(self, plan_id: str) -> dict[str, Any]:
+        plan = self.load(plan_id)
+        steps = [step.to_dict() for step in plan.steps]
+        risky = [step for step in steps if step.get("risk_level") in {"high", "critical"}]
+        approvals = [step for step in steps if step.get("requires_approval")]
+        dependencies = {
+            step["id"]: list(step.get("dependencies") or [])
+            for step in steps
+        }
+        explanation = {
+            "ok": True,
+            "plan_id": plan.id,
+            "goal": plan.goal,
+            "status": plan.status.value,
+            "step_count": len(steps),
+            "maximum_risk": plan.metadata.get("maximum_risk", "low"),
+            "dependencies": dependencies,
+            "approval_gates": [step["id"] for step in approvals],
+            "risky_steps": [step["id"] for step in risky],
+            "tool_mapping": {step["id"]: dict(step.get("tool_mapping") or {}) for step in steps},
+            "steps": steps,
+            "audit": self.audit.events(plan.id, limit=200),
+        }
+        self.audit.record(plan_id=plan.id, event="plan_explained", payload={"steps": len(steps)})
+        return explanation
 
     @staticmethod
     def _evidence_value(evidence: Iterable[dict[str, Any]], kind: str, key: str) -> str | None:
