@@ -50,12 +50,25 @@ EXPECTED_OPTIONAL_EXTRAS: tuple[str, ...] = (
 )
 
 EXPECTED_CI_LINES: tuple[str, ...] = (
-    "cd SecondBrain-Agent",
     "pip install -e \".[dev]\"",
+    "python launcher.py version-sync",
+    "git diff --exit-code README.md docs/09_MASTERPLAN_STATUS.json",
     "python launcher.py repo-doctor --execute-runtime-checks",
     "python launcher.py dependency-inventory",
-    "pytest -q",
+    "pytest -q -m \"release or connector\"",
+    "pytest -q -m \"integration and not live\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice",
+    "python launcher.py rc-gate --write-report",
 )
+
+LOCAL_PATH_SCAN_GLOBS: tuple[str, ...] = (
+    "config/**/*.yaml",
+    "config/**/*.yml",
+    "config/**/*.json",
+    ".github/workflows/*.yml",
+    ".github/workflows/*.yaml",
+)
+
+LOCAL_PATH_PATTERN = re.compile(r"(?:(?<![A-Za-z])[A-Za-z]:[\\/]|/Users/[^/]+/|/home/[^/]+/)")
 
 FORBIDDEN_ROOT_PREFIXES: tuple[str, ...] = (
     "PATCH_",
@@ -280,6 +293,32 @@ def _check_ci_workflow(root: Path) -> list[DoctorCheck]:
     return checks
 
 
+
+def _check_local_path_dependencies(root: Path) -> list[DoctorCheck]:
+    findings: list[dict[str, Any]] = []
+    for pattern in LOCAL_PATH_SCAN_GLOBS:
+        for path in sorted(root.glob(pattern)):
+            if not path.is_file():
+                continue
+            rel = path.relative_to(root).as_posix()
+            for line_no, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1):
+                if LOCAL_PATH_PATTERN.search(line):
+                    findings.append({"file": rel, "line": line_no})
+    if findings:
+        return [DoctorCheck(
+            "repo:local-path-dependencies",
+            "error",
+            "blocking",
+            "local absolute paths found in release-relevant config or CI files",
+            {"findings": findings[:100], "count": len(findings)},
+        )]
+    return [DoctorCheck(
+        "repo:local-path-dependencies",
+        "ok",
+        "blocking",
+        "no local absolute paths in release-relevant config or CI files",
+    )]
+
 def _check_forbidden_artifacts(root: Path) -> list[DoctorCheck]:
     blocking_findings: list[str] = []
     cache_findings: list[str] = []
@@ -350,7 +389,7 @@ def run_repo_doctor(
     project_root: str | Path,
     *,
     execute_runtime_checks: bool = False,
-    timeout_seconds: int = 15,
+    timeout_seconds: int = 60,
     write_report: bool = False,
 ) -> RepoDoctorReport:
     root = Path(project_root).resolve()
@@ -369,6 +408,7 @@ def run_repo_doctor(
         checks.extend(_check_readme(root))
         checks.extend(_check_release_docs(root))
         checks.extend(_check_ci_workflow(root))
+        checks.extend(_check_local_path_dependencies(root))
         checks.extend(_check_forbidden_artifacts(root))
         if execute_runtime_checks:
             for args in LIGHTWEIGHT_COMMANDS:

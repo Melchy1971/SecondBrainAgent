@@ -1,16 +1,16 @@
 vaults:
   secondbrain:
-    path: H:\SecondBrainAgent\SecondBrain
+    path: data/vaults/secondbrain
     enabled: true
   wissen:
-    path: H:\SecondBrainAgent\Wissensdatenbank
+    path: data/vaults/wissen
     enabled: false
   beruf:
-    path: H:\SecondBrainAgent\Beruf
+    path: data/vaults/beruf
     enabled: false
   privat:
-    path: H:\SecondBrainAgent\Privat
+    path: data/vaults/privat
     enabled: false
   verein:
-    path: H:\SecondBrainAgent\Verein
+    path: data/vaults/verein
     enabled: false

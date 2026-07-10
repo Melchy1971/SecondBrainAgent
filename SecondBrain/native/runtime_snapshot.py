@@ -8,7 +8,7 @@ from typing import Any
 
 from secondbrain.gui.bootstrap import bootstrap_status
 from secondbrain.gui.p1_control_panel import P1ControlPanel
-from secondbrain.gui.settings_center import SettingsCenter
+from secondbrain.runtime_config import RuntimeConfig
 from secondbrain.native.voice_de import GermanVoiceCommandParser
 from secondbrain.native.approval import native_audit_status
 from secondbrain.native.chat import native_chat_status
@@ -103,7 +103,7 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
     production = _production_status(base)
     memory = _memory_status(base)
     p1_panel = P1ControlPanel().render(provider if isinstance(provider, dict) else {})
-    settings = SettingsCenter().render_embedding_settings()
+    settings = _safe_call(lambda: RuntimeConfig(base).snapshot(), {"schema": "secondbrain.runtime_config.v1", "sections": []})
     voice_examples = _action_surface()["german_examples"]
     parser = GermanVoiceCommandParser()
     audit = native_audit_status(base, limit=10)
@@ -123,6 +123,7 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "memory": memory,
         "p1_control": p1_panel,
         "settings": settings,
+        "config_status": settings.get("status", {"status": "unknown"}),
         "actions": _action_surface(),
         "audit": audit,
         "chat": chat,

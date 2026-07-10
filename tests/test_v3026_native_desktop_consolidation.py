@@ -36,7 +36,8 @@ def test_native_view_model_exposes_german_voice_and_runtime_truth(tmp_path: Path
     assert payload["mode"] == "native_desktop_primary"
     assert payload["web_hud"] == "secondary_only"
     assert payload["voice"]["language"] == "de-DE"
-    assert payload["settings"]["schema"] == "secondbrain.gui.settings.embedding.v1"
+    assert payload["settings"]["schema"] == "secondbrain.runtime_config.v1"
+    assert payload["config_status"]["status"] in {"ok", "blocked"}
 
 
 def test_german_voice_parser_maps_core_commands():

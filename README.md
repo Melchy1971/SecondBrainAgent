@@ -25,10 +25,10 @@ Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberfla
 Alle Befehle laufen aus dem Projektordner:
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+cd <repo-root>
 ```
 
-Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
+Wenn Befehle ausserhalb des Repo-Roots gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
 
 ## Installation
 
@@ -104,7 +104,7 @@ Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Jarvis
 Die UI-konfigurierten Pfade sind die kanonische Quelle fuer Vault- und Inbox-Aufloesung.
 
 - `data/desktop_app/settings.json` ueberschreibt `config/settings.yaml` fuer `paths.vault` und `paths.incoming`.
-- `secondbrain/path.py` kapselt die zentrale Pfadauflösung.
+- `secondbrain/path.py` kapselt die zentrale PfadauflÃ¶sung.
 - Verbraucher mit `vault_path`/`incoming_path` sind auf die zentrale Aufloesung umgestellt.
 - Import-Kollisionen bei `secondbrain.goal_engine` und `secondbrain.recommendations` bleiben ueber Kompatibilitaets-Wrapper stabil.
 
@@ -154,7 +154,7 @@ Beispiele:
 Jarvis Status
 Suche PostgreSQL pgvector
 Frage was fehlt noch
-Öffne Dokumente
+Ã–ffne Dokumente
 Repariere Index
 Importiere Datei C:\Pfad\datei.pdf
 ```

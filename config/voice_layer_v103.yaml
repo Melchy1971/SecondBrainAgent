@@ -18,5 +18,5 @@ voice_layer_v103:
     email_send: disabled
     command_execution: review_first
   inbox:
-    dictation_folder: H:\SecondBrainAgent\SecondBrain-Inbox\Voice\Dictation
-    audio_folder: H:\SecondBrainAgent\SecondBrain-Inbox\Voice\Audio
+    dictation_folder: data/inbox/Voice/Dictation
+    audio_folder: data/inbox/Voice/Audio

@@ -1,9 +1,7 @@
 """Voice subsystem (v30.83+), offline-first.
 
-Layered like vision so the standard test suite stays green without models/hardware:
-- ports:   Audio/Transcript models + Protocols (stdlib-only, unit-testable with fakes)
-- engines: STT (faster-whisper) / TTS (Piper) / VAD / wake-word adapters - lazy, integration-only
-- conversation/assistant: continuous full-duplex assistant with barge-in (deterministic)
+The package also preserves the v20 controller exports used by older launcher and
+unit-test entry points.
 """
 
 from secondbrain.voice.ports import (
@@ -14,10 +12,15 @@ from secondbrain.voice.ports import (
 from secondbrain.voice.transcribe import VoiceTranscriber, transcript_to_item
 from secondbrain.voice.speaker import SpeakerId, SpeakerEmbedder, SpeakerProfileStore, SpeakerMatcher, cosine
 from secondbrain.voice.memory import VoiceMemory, VoiceMemoryStore
-from secondbrain.voice.commands import VoiceCommandRouter, Intent
+from secondbrain.voice.command_router import VoiceCommandRouter
+from secondbrain.voice.commands import Intent
+from secondbrain.voice.config import VoiceConfig
+from secondbrain.voice.controller import VoiceController
 from secondbrain.voice.conversation import ConversationController, State
+from secondbrain.voice.dictation import write_dictation
+from secondbrain.voice.wake_word_engine import WakeWordEngine
 from secondbrain.voice.assistant import (
-    ContinuousVoiceAssistant, VoiceConfig, VoiceStatus, MicStatus,
+    ContinuousVoiceAssistant, VoiceConfig as AssistantVoiceConfig, VoiceStatus, MicStatus,
     StreamingTtsPlayer, MissingMicrophoneError, audio_level,
 )
 
@@ -28,7 +31,8 @@ __all__ = [
     "VoiceTranscriber", "transcript_to_item",
     "SpeakerId", "SpeakerEmbedder", "SpeakerProfileStore", "SpeakerMatcher", "cosine",
     "VoiceMemory", "VoiceMemoryStore", "VoiceCommandRouter", "Intent",
+    "VoiceConfig", "VoiceController", "WakeWordEngine", "write_dictation",
     "ConversationController", "State",
-    "ContinuousVoiceAssistant", "VoiceConfig", "VoiceStatus", "MicStatus",
+    "ContinuousVoiceAssistant", "AssistantVoiceConfig", "VoiceStatus", "MicStatus",
     "StreamingTtsPlayer", "MissingMicrophoneError", "audio_level",
 ]

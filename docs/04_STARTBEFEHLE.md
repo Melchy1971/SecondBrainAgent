@@ -3,7 +3,7 @@
 ## Arbeitsverzeichnis
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+cd <repo-root>
 ```
 
 ## Installation
