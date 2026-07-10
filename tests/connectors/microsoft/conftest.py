@@ -1,10 +1,9 @@
-import json
 import pytest
 
 from secondbrain.connectors.microsoft.config import GraphConfig
-from secondbrain.connectors.microsoft.transport import FakeTransport
 from secondbrain.connectors.microsoft.graph_auth import GraphAuthenticator
 from secondbrain.connectors.microsoft.graph_client import GraphClient
+from tests.fakes.connectors import ConnectorFakeTransport
 
 
 @pytest.fixture
@@ -20,7 +19,7 @@ def config(tmp_path):
 
 @pytest.fixture
 def transport():
-    return FakeTransport()
+    return ConnectorFakeTransport()
 
 
 @pytest.fixture

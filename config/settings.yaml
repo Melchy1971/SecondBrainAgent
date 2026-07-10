@@ -2,9 +2,9 @@ app_name: SecondBrain-Agent
 version: 10.3.0
 platform_mode: cross_platform
 default_language: de
-vault_path: H:\SecondBrainAgent\SecondBrain
-inbox_path: H:\SecondBrainAgent\SecondBrain-Inbox
-system_path: H:\SecondBrainAgent\SecondBrain-Agent
+vault_path: data/vaults/secondbrain
+inbox_path: data/inbox
+system_path: .
 data_model: markdown_only
 v103_enabled: true
 voice_layer_enabled: prepared

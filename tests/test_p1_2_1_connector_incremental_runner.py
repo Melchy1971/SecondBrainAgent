@@ -6,22 +6,7 @@ from secondbrain.connectors.cursor_store import InMemoryCursorStore, JsonCursorS
 from secondbrain.connectors.incremental_runner import FetchBatch, FetchedItem, IncrementalSyncRunner
 from secondbrain.connectors.sync_state import SyncCursor, SyncStatus
 
-
-class FakeConnector:
-    name = "fake"
-
-    def __init__(self, batches):
-        self.batches = list(batches)
-        self.calls = []
-
-    def fetch_since(self, cursor, limit):
-        self.calls.append((cursor, limit))
-        if not self.batches:
-            return FetchBatch(items=[], next_cursor=cursor, has_more=False)
-        batch = self.batches.pop(0)
-        if isinstance(batch, Exception):
-            raise batch
-        return batch
+from tests.fakes.connectors import FakeIncrementalConnector as FakeConnector
 
 
 def test_runner_commits_cursor_after_successful_sync():

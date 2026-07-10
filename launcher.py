@@ -100,7 +100,7 @@ def _repo_doctor_main(argv: list[str]) -> int:
     parser.add_argument("cmd")
     parser.add_argument("--project-root", default=str(Path.cwd()))
     parser.add_argument("--execute-runtime-checks", action="store_true", help="execute lightweight launcher checks")
-    parser.add_argument("--timeout", type=int, default=15, help="timeout per runtime command in seconds")
+    parser.add_argument("--timeout", type=int, default=60, help="timeout per runtime command in seconds")
     parser.add_argument("--write-report", action="store_true")
     args, _ = parser.parse_known_args(argv)
     payload = run_repo_doctor(
@@ -123,6 +123,23 @@ def _dependency_inventory_main(argv: list[str]) -> int:
     out(payload)
     return 0 if payload.get("ok") else 1
 
+
+
+def _rc_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="SecondBrain release-candidate gate")
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--target-version", default=None)
+    parser.add_argument("--write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    root = args.project_root_option or args.project_root
+    from secondbrain.release.rc_gate import Verdict, run_rc_gate, write_artifacts
+    report = run_rc_gate(root, target_version=args.target_version)
+    if args.write_report:
+        write_artifacts(report, root)
+    out(report)
+    return 0 if report["verdict"] != Verdict.BLOCKED.value else 2
 
 def _mobile_main(argv: list[str] | None = None) -> int:
     from secondbrain.mobile_companion import MobileCompanionRuntime
@@ -814,6 +831,8 @@ def main(argv: list[str] | None = None) -> int:
         return _repo_doctor_main(raw)
     if cmd == "dependency-inventory":
         return _dependency_inventory_main(raw)
+    if cmd == "rc-gate":
+        return _rc_gate_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
@@ -868,7 +887,7 @@ def main(argv: list[str] | None = None) -> int:
         elif cmd == "p1-rag-migrate-postgres":
             payload = migrate_sqlite_to_selected_store(
                 args.project_root,
-                dry_run=True,
+                dry_run=False,
                 write_report=args.write_report,
                 require_pgvector=not args.allow_non_pgvector,
             )
@@ -956,6 +975,10 @@ def main(argv: list[str] | None = None) -> int:
     if cmd in {"settings-center", "settings-center-gui", "settings-center-status", "settings-center-snapshot", "settings-center-write-defaults", "settings-center-set", "settings-center-history"}:
         from secondbrain.native.settings_center.cli import main as settings_center_main
         return settings_center_main(raw)
+    if cmd in {"config-status", "config-snapshot", "config-set", "config-doctor"}:
+        load_env_file()
+        from secondbrain.runtime_config.cli import main as runtime_config_main
+        return runtime_config_main(raw)
     if cmd in {"ai-workspace", "ai-workspace-gui", "ai-workspace-status", "ai-workspace-snapshot", "ai-workspace-navigation", "ai-workspace-activity", "ai-workspace-record"}:
         from secondbrain.native.ai_workspace.cli import main as ai_workspace_main
         return ai_workspace_main(raw)

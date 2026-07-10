@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import DashboardCard, DashboardSnapshot, normalize_project_root
+from secondbrain.storage.db_production_status import evaluate_db_pgvector_production_status
 
 
 class NativeDashboardService:
@@ -79,10 +80,37 @@ class NativeDashboardService:
         )
 
     def _database_card(self) -> DashboardCard:
-        database_url = os.environ.get("DATABASE_URL", "")
-        if database_url.startswith(("postgresql://", "postgres://")):
-            return self._card("database", "PostgreSQL / pgvector", "ready", "configured", "DATABASE_URL ist auf PostgreSQL gesetzt.", "p3-pgvector-readiness")
-        return self._card("database", "PostgreSQL / pgvector", "warning", "not_configured", "Keine produktive PostgreSQL-Verbindung in ENV sichtbar.", "settings-center-gui", warnings=["database_url_missing"])
+        db_status = evaluate_db_pgvector_production_status(self.project_root)
+        state = str(db_status.get("status") or "blocked_missing_database")
+        reason = str(db_status.get("reason") or "unknown")
+        if state == "ready":
+            return self._card(
+                "database",
+                "PostgreSQL / pgvector",
+                "ready",
+                state,
+                "Produktive PostgreSQL/pgvector-Validierung ist erfolgreich.",
+                "p3-pgvector-readiness",
+            )
+        if state == "degraded_sqlite":
+            return self._card(
+                "database",
+                "PostgreSQL / pgvector",
+                "warning",
+                state,
+                f"SQLite-Degradierung aktiv ({reason}).",
+                "settings-center-gui",
+                warnings=[state, reason],
+            )
+        return self._card(
+            "database",
+            "PostgreSQL / pgvector",
+            "blocked",
+            state,
+            f"Produktive DB-Validierung blockiert ({reason}).",
+            "p3-pgvector-readiness",
+            blockers=[state, reason],
+        )
 
     def _embedding_card(self) -> DashboardCard:
         provider = os.environ.get("SECONDBRAIN_EMBEDDING_PROVIDER", "local")

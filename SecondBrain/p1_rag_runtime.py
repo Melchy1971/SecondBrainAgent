@@ -16,6 +16,7 @@ from secondbrain.document_understanding.parsers import default_parser_registry
 from secondbrain.p1_embeddings import cosine_similarity, embedding_index_provider, provider_from_profile
 from secondbrain.p1_retrieval import evaluate_ranked_hits, production_decision, reciprocal_rank_fusion
 from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, create_rag_store
+from secondbrain.storage.db_production_status import evaluate_db_pgvector_production_status
 
 SCHEMA_VERSION = "secondbrain.p1_rag.v2"
 P1_PRODUCTION_SCHEMA = "secondbrain.p1_production.v1"
@@ -664,15 +665,17 @@ class P1RagRuntime:
         metrics = self.retrieval_metrics(False)
         embedding = self.embedding_status()["provider"]
         decision = production_decision(metrics)
+        database = evaluate_db_pgvector_production_status(self.root)
         checks = [
             {"name": "p1_gate_passes", "ok": bool(gate.get("ok")), "severity": "blocker", "detail": {"schema": gate.get("schema"), "blockers": gate.get("blockers"), "warnings": gate.get("warnings")}},
+            {"name": "database_pgvector_production_ready", "ok": database.get("status") == "ready", "severity": "blocker", "detail": database},
             {"name": "embedding_provider_production_ready", "ok": bool(embedding.get("production_ready")) and not bool(embedding.get("fallback_used")), "severity": "blocker", "detail": embedding},
             {"name": "retrieval_thresholds_pass", "ok": decision["ok"], "severity": "blocker", "detail": decision},
             {"name": "answer_policy_enforced", "ok": self.answer("zzzxxy_no_local_evidence_probe", 2).get("status") == "no_evidence", "severity": "blocker", "detail": {"policy": "no_evidence_must_be_explicit"}},
             {"name": "source_lineage_available", "ok": self.sources().get("ok") and self.status().get("documents", 0) >= 0, "severity": "blocker", "detail": {"documents": self.status().get("documents", 0)}},
         ]
         blockers = sum(1 for c in checks if not c["ok"] and c["severity"] == "blocker")
-        payload = {"schema": P1_PRODUCTION_SCHEMA, "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "blockers": blockers, "checks": checks, "gate": gate, "metrics": metrics}
+        payload = {"schema": P1_PRODUCTION_SCHEMA, "generated_at": utc_now(), "ok": blockers == 0, "status": "pass" if blockers == 0 else "blocked", "blockers": blockers, "checks": checks, "gate": gate, "metrics": metrics, "database": database}
         if write_report:
             path = self.reports_dir / "p1_production_latest.json"
             path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")

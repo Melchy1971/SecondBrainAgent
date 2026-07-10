@@ -3,7 +3,7 @@
     "secondbrain": {
       "command": "python",
       "args": [
-        "H:\\SecondBrainAgent\\SecondBrain-Agent\\mcp-server\\server.py"
+        "mcp-server/server.py"
       ]
     }
   }

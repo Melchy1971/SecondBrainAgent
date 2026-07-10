@@ -1,5 +1,5 @@
 from secondbrain.connectors.microsoft.transport import FakeTransport
-from secondbrain.connectors.microsoft.graph_client import GraphClient, GraphApiError
+from secondbrain.connectors.microsoft.graph_client import GraphApiError
 
 
 def test_paging_follows_nextlink(config, authed):

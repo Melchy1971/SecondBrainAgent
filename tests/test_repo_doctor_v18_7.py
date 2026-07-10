@@ -54,11 +54,14 @@ def _write_minimal_project(root: Path) -> None:
     workflow_dir = repo / ".github" / "workflows"
     workflow_dir.mkdir(parents=True, exist_ok=True)
     (workflow_dir / "secondbrain-ci.yml").write_text(
-        "cd SecondBrain-Agent\n"
         "pip install -e \".[dev]\"\n"
+        "python launcher.py version-sync\n"
+        "git diff --exit-code README.md docs/09_MASTERPLAN_STATUS.json\n"
         "python launcher.py repo-doctor --execute-runtime-checks\n"
         "python launcher.py dependency-inventory\n"
-        "pytest -q\n",
+        "pytest -q -m \"release or connector\" \\\n"
+        "pytest -q -m \"integration and not live\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice\n"
+        "python launcher.py rc-gate --write-report\n",
         encoding="utf-8",
     )
 
@@ -105,6 +108,18 @@ def test_repo_doctor_blocks_forbidden_root_artifacts(tmp_path: Path) -> None:
     assert payload["ok"] is False
     assert any(check["key"] == "repo:forbidden-artifacts" and check["status"] == "error" for check in payload["checks"])
 
+
+
+def test_repo_doctor_blocks_local_config_paths(tmp_path: Path) -> None:
+    _write_minimal_project(tmp_path)
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    (config_dir / "settings.yaml").write_text("vault_path: H:\\Local\\Vault\n", encoding="utf-8")
+
+    payload = run_repo_doctor(tmp_path).to_dict()
+
+    assert payload["ok"] is False
+    assert any(check["key"] == "repo:local-path-dependencies" and check["status"] == "error" for check in payload["checks"])
 
 def test_repo_doctor_reports_pycache_outside_virtualenv_as_diagnostic(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
@@ -158,4 +173,6 @@ def test_command_index_exposes_repo_doctor() -> None:
     registry = ModuleRegistry()
 
     assert registry.command_index()["repo-doctor"] == "core"
+    assert registry.command_index()["rc-gate"] == "core"
     assert registry.resolve_command("repo-doctor").key == "core"
+    assert registry.resolve_command("rc-gate").key == "core"

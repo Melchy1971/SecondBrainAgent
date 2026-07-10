@@ -1,6 +1,6 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.61.0
+# SecondBrain-Agent v30.77.0
 
 ## Version (Single Source of Truth)
 
@@ -9,7 +9,7 @@ Alles andere leitet sich daraus ab:
 
 - `secondbrain/version.py` liest pyproject (Fallback: installierte Paket-Metadaten) und liefert
   `get_version()`, `get_build_number()` und `version_info()`. Die Buildnummer wird deterministisch
-  aus der Version berechnet (30.61.0 -> Build 306100).
+  aus der Version berechnet (30.77.0 -> Build 307700).
 - Paket (`secondbrain.__version__`), GUI (`secondbrain.gui.version`), CLI (`secondbrain.cli.version`)
   und Launcher (`python launcher.py version`) beziehen die Version von dort.
 - `python launcher.py version-sync` schreibt die abgeleiteten Anker (README-Titel,
@@ -25,10 +25,10 @@ Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberfla
 Alle Befehle laufen aus dem Projektordner:
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+cd <repo-root>
 ```
 
-Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
+Wenn Befehle ausserhalb des Repo-Roots gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
 
 ## Installation
 
@@ -104,7 +104,7 @@ Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Jarvis
 Die UI-konfigurierten Pfade sind die kanonische Quelle fuer Vault- und Inbox-Aufloesung.
 
 - `data/desktop_app/settings.json` ueberschreibt `config/settings.yaml` fuer `paths.vault` und `paths.incoming`.
-- `secondbrain/path.py` kapselt die zentrale Pfadauflösung.
+- `secondbrain/path.py` kapselt die zentrale PfadauflÃ¶sung.
 - Verbraucher mit `vault_path`/`incoming_path` sind auf die zentrale Aufloesung umgestellt.
 - Import-Kollisionen bei `secondbrain.goal_engine` und `secondbrain.recommendations` bleiben ueber Kompatibilitaets-Wrapper stabil.
 
@@ -154,7 +154,7 @@ Beispiele:
 Jarvis Status
 Suche PostgreSQL pgvector
 Frage was fehlt noch
-Öffne Dokumente
+Ã–ffne Dokumente
 Repariere Index
 Importiere Datei C:\Pfad\datei.pdf
 ```
@@ -202,7 +202,22 @@ python launcher.py p3-pgvector-readiness
 python launcher.py p1-rag-migrate-postgres
 ```
 
-5. Jarvis neu starten. Der Dashboard-Status `database` wechselt von `not_configured` auf ready.
+5. Jarvis neu starten. Der Dashboard-Status `database` wechselt von `degraded_sqlite` auf `ready`.
+
+### Produktionsstatus DB/pgvector (Gate-relevant)
+
+Die Produktionsbewertung verwendet genau diese Statuswerte:
+
+- `ready`: PostgreSQL erreichbar, pgvector-Erweiterung vorhanden, Similarity-Smoke erfolgreich.
+- `degraded_sqlite`: keine produktive PostgreSQL-Konfiguration aktiv (z. B. fehlende `DATABASE_URL` oder SQLite aktiv).
+- `blocked_missing_database`: PostgreSQL erwartet, aber nicht erreichbar/ungueltig.
+- `blocked_missing_pgvector`: PostgreSQL erreichbar, aber pgvector nicht produktiv validiert.
+
+Auswirkung auf Gates:
+
+- `p1-production` kann nur mit Status `ready` passieren.
+- `degraded_sqlite` fuehrt immer zu einem blockierten Production-Gate.
+- Dashboard-Karte `database` zeigt diese Statuswerte direkt als `ready`/`warning`/`blocked` mit Grund an.
 
 ## Release-Gate-Reihenfolge
 
@@ -239,7 +254,7 @@ docs/releases/
 docs/09_MASTERPLAN_STATUS.json
 ```
 
-Aktueller dokumentierter Stand: v30.77 UI Path Override and Import Consolidation (siehe `RELEASE_NOTES.md`).
+Aktueller dokumentierter Stand: v30.77.0 UI Path Override and Import Consolidation (Quelle: `RELEASE_NOTES.md`; strukturierter Status in `docs/09_MASTERPLAN_STATUS.json`).
 
 Bekannte lokale Warnungen:
 

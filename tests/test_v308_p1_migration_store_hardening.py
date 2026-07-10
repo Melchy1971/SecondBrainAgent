@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -114,7 +115,45 @@ def test_p1_migration_launcher_and_command_index(tmp_path: Path, capsys, monkeyp
 
     rc = main(["--project-root", str(tmp_path), "p1-rag-migrate-postgres", "--allow-non-pgvector", "--write-report"])
     captured = capsys.readouterr().out
+    payload = json.loads(captured)
 
     assert rc == 0
-    assert "secondbrain.p1_rag.sqlite_to_pgvector.v1" in captured
+    assert payload["schema"] == "secondbrain.p1_rag.sqlite_to_pgvector.v1"
+    assert payload["status"] == "pass"
+    assert payload["applied"] is True
     assert ModuleRegistry().resolve_command("p1-rag-migrate-postgres").key == "core"
+
+
+def test_sqlite_to_pgvector_migration_applies_schema_before_upserts(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("SECONDBRAIN_PGVECTOR_ENABLED", raising=False)
+    runtime = P1RagRuntime(tmp_path)
+    runtime.ingest_text("Apply Schema Quelle", source="unit://migration-apply")
+
+    calls: dict[str, object] = {"apply": None}
+
+    class FakePgStore:
+        backend = "pgvector"
+
+        def upsert_document(self, document):
+            return {"ok": True, "status": "pass", "document_id": document.id}
+
+        def upsert_chunks(self, chunks):
+            return {"ok": True, "status": "pass", "chunks": len(chunks)}
+
+        def upsert_vectors(self, vectors):
+            return {"ok": True, "status": "pass", "vectors": len(vectors)}
+
+    monkeypatch.setattr("secondbrain.p1_rag_migration.create_rag_store", lambda *args, **kwargs: FakePgStore())
+
+    def fake_readiness(project_root, *, write_report=False, live=False, apply=False):
+        calls["apply"] = apply
+        return {"ok": True, "status": "pass", "write_report": write_report, "live": live, "applied": apply}
+
+    monkeypatch.setattr("secondbrain.p1_rag_migration.pgvector_readiness", fake_readiness)
+
+    result = migrate_sqlite_to_selected_store(tmp_path, dry_run=False)
+
+    assert result["ok"] is True
+    assert result["applied"] is True
+    assert calls["apply"] is True

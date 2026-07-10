@@ -9,11 +9,26 @@ SECRET_PATTERNS = [
     r"(token\s*[:=]\s*)[A-Za-z0-9_\-\.]{8,}",
 ]
 
+
+def _vault_redact(text: str) -> str:
+    """Apply the vault redactor (registered secret values + extended patterns).
+
+    Lazy import keeps this low-level module free of a hard vault dependency; if the
+    vault layer is unavailable the pattern-based redaction below still applies.
+    """
+    try:
+        from secondbrain.vault.redaction import get_default_redactor
+    except Exception:  # noqa: BLE001 - redaction must never break logging
+        return text
+    return get_default_redactor().redact_text(text)
+
+
 def redact(text: str) -> str:
     out = text
     for pattern in SECRET_PATTERNS:
         out = re.sub(pattern, lambda m: m.group(1) + "***REDACTED***" if m.groups() else "***REDACTED***", out, flags=re.IGNORECASE)
-    return out
+    return _vault_redact(out)
+
 
 def safe_log(project_root: Path, log_name: str, message: str) -> None:
     log_dir = project_root / "logs"

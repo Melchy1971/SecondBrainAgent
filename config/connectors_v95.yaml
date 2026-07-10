@@ -18,4 +18,4 @@ connectors_v95:
     port: 8845
   event_bus:
     enabled: true
-    file: H:\SecondBrainAgent\SecondBrain-Agent\events\event_bus.jsonl
+    file: events/event_bus.jsonl

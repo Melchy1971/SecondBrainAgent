@@ -5,7 +5,7 @@ Der historische Dateiname bleibt erhalten, weil Repo Doctor ihn als Pflichtdatei
 ## Arbeitsverzeichnis und Installation
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+cd <repo-root>
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip

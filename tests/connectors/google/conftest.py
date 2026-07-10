@@ -1,7 +1,6 @@
 import time
 import pytest
 from secondbrain.connectors.google.config import GoogleConfig
-from secondbrain.connectors.scaffold.transport import FakeTransport
 from secondbrain.connectors.google.auth import GoogleAuthenticator
 from secondbrain.connectors.google.client import GoogleClient
 
