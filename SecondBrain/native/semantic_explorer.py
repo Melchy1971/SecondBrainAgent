@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from secondbrain.native.knowledge_graph_foundation import GraphQueryAPI
 from secondbrain.native.memory_explorer import MemoryExplorer
 
 
@@ -51,6 +52,7 @@ class SemanticExplorerService:
     def __init__(self, project_root: str | Path = ".") -> None:
         self.project_root = Path(project_root).resolve()
         self.rag_path = self.project_root / "runtime" / "p1_rag" / "rag.sqlite3"
+        self.query_api = GraphQueryAPI()
 
     def graph(self, *, include_evidence=False, evidence_query="", evidence_limit=5000) -> dict[str, Any]:
         nodes: dict[str, dict[str, Any]] = {}
@@ -59,11 +61,13 @@ class SemanticExplorerService:
         safe_evidence_limit = max(1, min(int(evidence_limit), 5000))
         self._read_rag(nodes, edges, data_sources, include_evidence, evidence_query, safe_evidence_limit)
         self._read_memory(nodes, edges, data_sources, include_evidence, evidence_query, safe_evidence_limit)
-        return {
+        payload = {
             "nodes": sorted(nodes.values(), key=lambda row: (row["type"], row["label"].lower(), row["id"])),
             "edges": sorted(edges.values(), key=lambda row: (row["type"], row["source"], row["target"])),
             "data_sources": data_sources,
         }
+        self.query_api.update(nodes=payload["nodes"], edges=payload["edges"])
+        return payload
 
     def _node(self, nodes: dict[str, dict[str, Any]], node_id: str, label: str, kind: str, *, source="", metadata=None) -> str:
         current = nodes.get(node_id)
@@ -72,11 +76,34 @@ class SemanticExplorerService:
         nodes[node_id] = {"id": node_id, "label": label or node_id, "type": kind or "concept", "sources": sources, "metadata": merged}
         return node_id
 
-    def _edge(self, edges: dict[str, dict[str, Any]], source: str, target: str, kind: str, *, source_ref="", evidence="") -> None:
+    def _edge(
+        self,
+        edges: dict[str, dict[str, Any]],
+        source: str,
+        target: str,
+        kind: str,
+        *,
+        source_ref="",
+        evidence="",
+        confidence: float = 0.8,
+    ) -> None:
         if not source or not target or source == target:
             return
         edge_id = f"edge:{_hash(f'{source}|{target}|{kind}|{source_ref}')}"
-        edges[edge_id] = {"id": edge_id, "source": source, "target": target, "type": kind or "related_to", "source_ref": source_ref, "evidence": evidence}
+        edges[edge_id] = {
+            "id": edge_id,
+            "source": source,
+            "target": target,
+            "type": kind or "related_to",
+            "source_ref": source_ref,
+            "evidence": evidence,
+            "confidence": max(0.0, min(1.0, float(confidence))),
+            "evidence_link": {
+                "source": source_ref,
+                "snippet": str(evidence)[:180],
+                "target": target,
+            },
+        }
 
     def _source_node(self, nodes, edges, owner_id: str, source: str) -> None:
         if not source:
@@ -122,6 +149,47 @@ class SemanticExplorerService:
                 node_id = f"{kind}:{_hash(value.lower())}"
                 self._node(nodes, node_id, value, kind, source=source_ref)
                 self._edge(edges, owner_id, node_id, relation, source_ref=source_ref)
+                if relation in {"tagged_as", "mentions_person"}:
+                    self._edge(edges, owner_id, node_id, "mentions", source_ref=source_ref, confidence=0.72)
+                if relation in {"belongs_to_workspace", "belongs_to_project"}:
+                    self._edge(edges, owner_id, node_id, "belongs_to", source_ref=source_ref, confidence=0.78)
+
+        for value in _values(metadata, ("created_by", "author", "owner")):
+            node_id = f"person:{_hash(value.lower())}"
+            self._node(nodes, node_id, value, "person", source=source_ref)
+            self._edge(edges, owner_id, node_id, "created_by", source_ref=source_ref, confidence=0.82)
+
+        self._graph_suggestions(nodes, edges, owner_id, metadata, source_ref)
+
+    def _graph_suggestions(self, nodes, edges, owner_id: str, metadata: dict[str, Any], source_ref: str) -> None:
+        entities = metadata.get("graph_entity_suggestions")
+        relationships = metadata.get("graph_relationship_suggestions")
+        if isinstance(entities, list):
+            for row in entities:
+                if not isinstance(row, dict):
+                    continue
+                node_id = str(row.get("id") or "")
+                label = str(row.get("label") or node_id)
+                node_type = str(row.get("type") or "topic")
+                if not node_id:
+                    continue
+                self._node(nodes, node_id, label, node_type, source=source_ref, metadata=row.get("metadata") or {})
+                self._edge(edges, owner_id, node_id, "mentions", source_ref=source_ref, confidence=float(row.get("confidence", 0.6)))
+        if isinstance(relationships, list):
+            for row in relationships:
+                if not isinstance(row, dict):
+                    continue
+                left = str(row.get("source") or "")
+                right = str(row.get("target") or "")
+                relation = str(row.get("type") or "related_to")
+                if not left or not right:
+                    continue
+                evidence = row.get("evidence")
+                snippet = ""
+                if isinstance(evidence, dict):
+                    snippet = str(evidence.get("snippet") or "")
+                self._edge(edges, left, right, relation, source_ref=str(row.get("source_ref") or source_ref),
+                           evidence=snippet, confidence=float(row.get("confidence", 0.55)))
 
     def _read_rag(self, nodes, edges, data_sources, include_evidence: bool, evidence_query: str, evidence_limit: int) -> None:
         rows: list[dict[str, Any]] = []
@@ -269,6 +337,40 @@ class SemanticExplorerService:
     def graph_explorer(self, **filters: Any) -> dict[str, Any]:
         """Stable API used by the embedded AI Workspace explorer."""
         return self.explore(**filters)
+
+    def graph_query(self, query: str, *, node_types=(), relationship_types=(), limit=50) -> dict[str, Any]:
+        """Non-blocking query API over the in-memory graph projection."""
+        if not self.query_api.is_ready():
+            projection = self.graph(include_evidence=True, evidence_query=query, evidence_limit=max(500, min(int(limit) * 10, 5000)))
+            self.query_api.update(nodes=projection["nodes"], edges=projection["edges"])
+        return self.query_api.query(query, node_types=node_types, relationship_types=relationship_types, limit=limit)
+
+    def document_relationship_preview(self, document_ref: str, *, depth: int = 1) -> dict[str, Any]:
+        """Return one document plus its related nodes/edges for GUI preview."""
+        query = str(document_ref).strip().lower()
+        graph = self.graph(include_evidence=True)
+        nodes = {row["id"]: row for row in graph["nodes"]}
+        candidates = [row for row in graph["nodes"] if row["type"] == "document" and (query in row["id"].lower() or query in row["label"].lower())]
+        if not candidates:
+            return {"ok": False, "status": "document_not_found", "document_ref": document_ref, "nodes": [], "edges": []}
+        root_id = candidates[0]["id"]
+        return self.neighbors(root_id, depth=max(1, min(int(depth), 4)))
+
+    def export_json(self, target: str | Path | None = None, *, include_evidence: bool = True) -> dict[str, Any]:
+        graph = self.graph(include_evidence=include_evidence)
+        target_path = Path(target) if target else self.project_root / "runtime" / "native" / "semantic_graph_export.json"
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "ok": True,
+            "version": self.VERSION,
+            "node_count": len(graph["nodes"]),
+            "edge_count": len(graph["edges"]),
+            "nodes": graph["nodes"],
+            "edges": graph["edges"],
+            "data_sources": graph["data_sources"],
+        }
+        target_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+        return {"ok": True, "path": str(target_path), "node_count": payload["node_count"], "edge_count": payload["edge_count"]}
 
     def search(self, query: str, *, node_types=(), relationship_types=(), limit=50) -> dict[str, Any]:
         """Rank graph nodes and relationships without building another search index."""
