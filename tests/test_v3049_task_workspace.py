@@ -63,3 +63,19 @@ def test_dashboard_and_ai_workspace_integration(tmp_path):
     modules = {module.id: module for module in AIWorkspaceService(ROOT).snapshot().modules}
     assert modules["tasks"].status == "ready"
     assert AIWorkspaceService.VERSION == "v30.57"
+
+
+def test_task_workspace_exposes_agent_plans_and_explain(tmp_path):
+    service = TaskWorkspaceService(tmp_path)
+    created = service.create_plan("Status pruefen; danach Zusammenfassung")
+    assert created["ok"] is True
+    plan_id = created["plan"]["id"]
+
+    snapshot = service.snapshot()
+    assert snapshot["summary"]["plans"] >= 1
+    assert any(plan["id"] == plan_id for plan in snapshot["plans"])
+
+    explained = service.explain_plan(plan_id)
+    assert explained["ok"] is True
+    assert explained["step_count"] >= 1
+    assert isinstance(explained["audit"], list)

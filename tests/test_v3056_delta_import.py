@@ -102,6 +102,10 @@ def test_delta_pipeline_generates_all_existing_stages(tmp_path):
         assert connection.execute("SELECT COUNT(*) FROM chunk_embeddings").fetchone()[0] > 0
         metadata = json.loads(connection.execute("SELECT metadata_json FROM documents").fetchone()[0])
     assert {"memory_indexed_at", "graph_indexed_at", "search_indexed_at"} <= metadata.keys()
+    assert "graph_entity_suggestions" in metadata
+    assert "graph_relationship_suggestions" in metadata
+    assert isinstance(metadata["graph_entity_suggestions"], list)
+    assert isinstance(metadata["graph_relationship_suggestions"], list)
 
 
 class _Copy:

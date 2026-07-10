@@ -1,4 +1,6 @@
 from secondbrain.agent import AgentCore, AgentRequest, IntentRoute, IntentRouter, ToolDefinition, ToolRegistry
+from secondbrain.agent.safe_executor import SafeExecutor
+from secondbrain.agent.task_planner import TaskPlan, TaskStep
 from secondbrain.agent.task_planner import TaskStepState
 
 
@@ -44,6 +46,8 @@ def test_agent_core_executes_routed_tool():
     assert response.intent == "diagnostics"
     assert response.results == [{"status": "green"}]
     assert response.plan.steps[0].state == TaskStepState.COMPLETED
+    assert response.plan.metadata["used_tools"][0]["name"] == "diagnostics"
+    assert "timeout_seconds" in response.plan.metadata["used_tools"][0]
 
 
 def test_agent_core_isolates_tool_failure():
@@ -69,3 +73,39 @@ def test_agent_core_fallback_chat_plan():
     assert response.ok is True
     assert response.intent == "chat"
     assert response.results[0]["type"] == "chat"
+
+
+def test_safe_executor_rolls_back_completed_tools_on_later_failure():
+    events: list[str] = []
+    registry = ToolRegistry()
+    registry.register(
+        ToolDefinition(
+            name="step.one",
+            description="first",
+            category="workflow",
+            output_schema={"type": "object"},
+            handler=lambda payload: {"ok": True},
+            rollback_handler=lambda payload, result: events.append("rollback.one"),
+        )
+    )
+    registry.register(
+        ToolDefinition(
+            name="step.two",
+            description="second",
+            category="workflow",
+            output_schema={"type": "object"},
+            handler=lambda payload: (_ for _ in ()).throw(RuntimeError("boom")),
+        )
+    )
+    plan = TaskPlan(
+        plan_id="p1",
+        intent="workflow",
+        steps=[
+            TaskStep(step_id="s1", name="one", tool_name="step.one", payload={}),
+            TaskStep(step_id="s2", name="two", tool_name="step.two", payload={}),
+        ],
+    )
+
+    result = SafeExecutor(registry).execute(plan)
+    assert result.ok is False
+    assert events == ["rollback.one"]

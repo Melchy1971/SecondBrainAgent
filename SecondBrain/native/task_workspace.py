@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from secondbrain.agent.planner import AgentPlanService
 from secondbrain.native.agent_control_center import AgentControlCenter
 from secondbrain.native.approval import NativeApprovalQueue
 from secondbrain.native.job_queue_center.service import JobQueueService
@@ -19,6 +20,7 @@ class TaskWorkspaceService:
         self.tasks_service = AgentControlCenter(self.project_root)
         self.jobs_service = JobQueueService(self.project_root)
         self.approvals_service = NativeApprovalQueue(self.project_root)
+        self.plan_service = AgentPlanService(self.project_root)
 
     @staticmethod
     def _iso(value: str | None, field: str) -> str | None:
@@ -116,11 +118,29 @@ class TaskWorkspaceService:
         tasks = self.tasks()
         jobs = self.jobs_service.snapshot()
         approvals = self.approvals_service.list(status="pending")
+        plans = [plan.to_dict() for plan in self.plan_service.list()]
         completed_ids = {str(row.get("id")) for row in tasks if row.get("status") == "done"}
         summary = {"tasks": len(tasks), "open": sum(row.get("status") == "pending" for row in tasks),
             "reminders": len(self.reminders()), "calendar": len(self.calendar()), "agent_jobs": jobs["total"],
             "pending_approvals": len(approvals),
-            "blocked_dependencies": sum(bool(set(row.get("dependencies") or ()) - completed_ids) for row in tasks if row.get("status") == "pending")}
+            "blocked_dependencies": sum(bool(set(row.get("dependencies") or ()) - completed_ids) for row in tasks if row.get("status") == "pending"),
+            "plans": len(plans),
+            "plans_waiting_approval": sum(1 for plan in plans if plan.get("status") == "waiting_approval")}
         return {"ok": True, "version": "30.49", "mode": "existing_agent_task_queue",
             "tasks": tasks, "reminders": self.reminders(), "calendar": self.calendar(), "jobs": jobs,
-            "approvals": approvals, "history": self.history(), "summary": summary}
+            "approvals": approvals, "plans": plans, "history": self.history(), "summary": summary}
+
+    # Planner v1 integration -------------------------------------------------
+    def plans(self) -> list[dict[str, Any]]:
+        return [plan.to_dict() for plan in self.plan_service.list()]
+
+    def create_plan(self, goal: str, *, workspace_id: str | None = None) -> dict[str, Any]:
+        plan = self.plan_service.create(goal, workspace_id=workspace_id)
+        return {"ok": True, "plan": plan.to_dict()}
+
+    def resume_plan(self, plan_id: str) -> dict[str, Any]:
+        plan = self.plan_service.resume(plan_id)
+        return {"ok": True, "plan": plan.to_dict()}
+
+    def explain_plan(self, plan_id: str) -> dict[str, Any]:
+        return self.plan_service.explain(plan_id)

@@ -87,3 +87,35 @@ def test_approval_not_duplicated_on_repeated_resume(tmp_path):
     ex.resume(cp.workflow_id)
     # still exactly one approval request for the step
     assert len(NativeApprovalQueue(tmp_path).list()) == 1
+
+
+def test_risky_action_is_gated_even_without_step_flag(tmp_path):
+    ex, runner, jobs, notif, safety = _executor(tmp_path)
+    steps = [
+        WorkflowStep(id="a", name="Vorbereiten", tool_name="t.a"),
+        WorkflowStep(id="b", name="Delete ohne Flag", tool_name="file.delete", dependencies=["a"]),
+    ]
+    cp = ex.create("Risky ohne Flag", steps)
+
+    result = ex.run(cp.workflow_id)
+
+    assert result.state == WorkflowState.WAITING_APPROVAL
+    assert runner.calls == ["a"]
+    pending = NativeApprovalQueue(tmp_path).list(status="pending")
+    assert len(pending) == 1
+    assert pending[0]["command"] == "file.delete"
+    assert pending[0]["category"] == "delete_request"
+
+
+def test_deferred_approval_keeps_workflow_waiting(tmp_path):
+    ex, runner, jobs, notif, safety = _executor(tmp_path)
+    cp = ex.create("Kritischer Plan", _steps())
+    ex.run(cp.workflow_id)
+
+    approval_id = NativeApprovalQueue(tmp_path).list(status="pending")[0]["approval_id"]
+    deferred = safety.defer(approval_id, decided_by="markus", note="morgen")
+    assert deferred.status == "deferred"
+
+    result = ex.resume(cp.workflow_id)
+    assert result.state == WorkflowState.WAITING_APPROVAL
+    assert runner.calls == ["a"]

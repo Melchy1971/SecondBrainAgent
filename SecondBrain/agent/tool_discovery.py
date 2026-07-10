@@ -28,38 +28,38 @@ class ToolDiscovery:
         return [
             self._tool("search.query", "Hybrid search over existing RAG data", "search", ToolCapability.SEARCH,
                        self._search, {"query": "string", "limit": "integer"}, required=("query",)),
-            self._tool("documents.search", "Search existing documents", "documents", ToolCapability.DOCUMENTS,
+            self._tool("documents.search", "Search existing documents", "document", ToolCapability.DOCUMENT,
                        self._documents_search, {"query": "string", "limit": "integer"}, required=("query",)),
-            self._tool("import.file", "Import a file through the enterprise import engine", "import", ToolCapability.IMPORT,
+            self._tool("import.file", "Import a file through the enterprise import engine", "connector", ToolCapability.CONNECTOR,
                        self._import_file, {"path": "string", "source": "string"}, required=("path",), risk=ToolRiskLevel.HIGH),
-            self._tool("memory.search", "Search existing memory", "memory", ToolCapability.MEMORY,
+            self._tool("memory.search", "Search existing memory", "memory", ToolCapability.MEMORY_CORE,
                        self._memory_search, {"query": "string", "limit": "integer"}, required=("query",)),
-            self._tool("memory.add", "Add an entry to existing memory", "memory", ToolCapability.MEMORY,
+            self._tool("memory.add", "Add an entry to existing memory", "memory", ToolCapability.MEMORY_CORE,
                        self._memory_add, {"content": "string", "kind": "string"}, required=("content",), risk=ToolRiskLevel.HIGH),
-            self._tool("agents.status", "Read existing agent status", "agents", ToolCapability.AGENTS, self._agents_status),
-            self._tool("agents.plan.create", "Create a plan with the existing Agent Planner", "agents", ToolCapability.AGENTS,
+            self._tool("agents.status", "Read existing agent status", "workflow", ToolCapability.WORKFLOW_CORE, self._agents_status),
+            self._tool("agents.plan.create", "Create a plan with the existing Agent Planner", "workflow", ToolCapability.WORKFLOW_CORE,
                        self._agent_plan, {"goal": "string", "workspace_id": "string"}, required=("goal",), risk=ToolRiskLevel.HIGH),
-            self._tool("jobs.list", "List jobs from the native job queue", "jobs", ToolCapability.JOBS,
+            self._tool("jobs.list", "List jobs from the native job queue", "workflow", ToolCapability.WORKFLOW_CORE,
                        self._jobs_list, {"status": "string", "kind": "string"}),
-            self._tool("jobs.cancel", "Cancel a job in the native job queue", "jobs", ToolCapability.JOBS,
+            self._tool("jobs.cancel", "Cancel a job in the native job queue", "workflow", ToolCapability.WORKFLOW_CORE,
                        self._job_cancel, {"job_id": "string"}, required=("job_id",), risk=ToolRiskLevel.HIGH),
-            self._tool("notifications.list", "List native notifications", "notifications", ToolCapability.NOTIFICATIONS,
+            self._tool("notifications.list", "List native notifications", "system", ToolCapability.SYSTEM_CORE,
                        self._notifications_list, {"limit": "integer", "unread_only": "boolean"}),
-            self._tool("notifications.send", "Create a native notification", "notifications", ToolCapability.NOTIFICATIONS,
+            self._tool("notifications.send", "Create a native notification", "system", ToolCapability.SYSTEM_CORE,
                        self._notification_send, {"title": "string", "message": "string", "level": "string", "category": "string"},
                        required=("title", "message"), risk=ToolRiskLevel.HIGH),
-            self._tool("settings.show", "Show existing embedding and store settings", "settings", ToolCapability.SETTINGS,
+            self._tool("settings.show", "Show existing embedding and store settings", "system", ToolCapability.SYSTEM_CORE,
                        self._settings_show),
-            self._tool("voice.status", "Read native voice status", "voice", ToolCapability.VOICE, self._voice_status),
-            self._tool("voice.parse", "Parse a German voice command", "voice", ToolCapability.VOICE,
+            self._tool("voice.status", "Read native voice status", "system", ToolCapability.SYSTEM_CORE, self._voice_status),
+            self._tool("voice.parse", "Parse a German voice command", "system", ToolCapability.SYSTEM_CORE,
                        self._voice_parse, {"text": "string"}, required=("text",)),
-            self._tool("updates.check", "Check the existing local update manifest", "updates", ToolCapability.UPDATES,
+            self._tool("updates.check", "Check the existing local update manifest", "system", ToolCapability.SYSTEM_CORE,
                        self._updates_check, {"current_version": "string"}),
-            self._tool("github.status", "Check availability of the existing GitHub connector", "github", ToolCapability.GITHUB,
+            self._tool("github.status", "Check availability of the existing GitHub connector", "connector", ToolCapability.CONNECTOR,
                        self._github_status),
-            self._tool("filesystem.list", "List files below the project root", "filesystem", ToolCapability.FILESYSTEM,
+            self._tool("filesystem.list", "List files below the project root", "file", ToolCapability.FILE,
                        self._filesystem_list, {"path": "string", "limit": "integer"}),
-            self._tool("filesystem.read", "Read a UTF-8 text file below the project root", "filesystem", ToolCapability.FILESYSTEM,
+            self._tool("filesystem.read", "Read a UTF-8 text file below the project root", "file", ToolCapability.FILE,
                        self._filesystem_read, {"path": "string", "max_chars": "integer"}, required=("path",)),
         ]
 
@@ -113,7 +113,7 @@ class ToolDiscovery:
 
     def _memory_add(self, payload: Mapping[str, Any]) -> dict[str, Any]:
         from secondbrain.native.memory_explorer import MemoryExplorer
-        return MemoryExplorer(self.project_root).add(str(payload["content"]), kind=str(payload.get("kind") or "working"), source="tool_registry")
+        return MemoryExplorer(self.project_root).add(str(payload["content"]), kind=str(payload.get("kind") or "semantic"), source="tool_registry")
 
     def _agents_status(self, payload: Mapping[str, Any]) -> dict[str, Any]:
         from secondbrain.native.agent_control_center import AgentControlCenter
