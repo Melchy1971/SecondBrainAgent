@@ -25,6 +25,7 @@ class AIWorkspaceService:
         ("workspace", "Workspace", "workspace-center-gui", ("secondbrain/native/workspace_center.py",)),
         ("projects", "Projekte", "ai-workspace-gui", ("secondbrain/desktop_pro/projects.py",)),
         ("tasks", "Aufgaben", "ai-workspace-gui", ("secondbrain/native/task_workspace.py",)),
+        ("review_inbox", "Prüfungen & Freigaben", "ai-workspace-gui", ("secondbrain/gui/approval_inbox.py",)),
         ("semantic", "Semantic Explorer", "ai-workspace-gui", ("secondbrain/native/semantic_explorer.py",)),
         ("imports", "Import Center", "ai-workspace-gui", ("secondbrain/importing/streaming.py",)),
         ("chat", "Chat", "native-chat-status", ("secondbrain/native/chat.py",)),
@@ -37,7 +38,10 @@ class AIWorkspaceService:
         ("commands", "Command Center", "command-center-gui", ("secondbrain/native/command_center.py",)),
         ("jobs", "Job Queue", "job-queue-center-gui", ("secondbrain/native/job_queue_center",)),
         ("notifications", "Notification Center", "notification-center-gui", ("secondbrain/native/notification_center",)),
-        ("settings", "Settings Center", "gui-status", ("secondbrain/gui/settings_center.py",)),
+        ("settings", "Settings Center", "config-status", ("secondbrain/runtime_config/service.py",)),
+        ("observability", "Audit Viewer", "native-action-audit", ("secondbrain/observability",)),
+        ("import_history", "Import Historie", "import-history", ("secondbrain/import_pipeline",)),
+        ("tags", "Tag Editor", "import-history", ("secondbrain/classification",)),
         ("themes", "Theme Center", "theme-status", ("secondbrain/native/theme_center",)),
         ("updates", "Update Center", "status", ("secondbrain/update_system.py",)),
         ("health", "Desktop Health", "native-desktop-health", ("secondbrain/native/desktop_health",)),
@@ -169,6 +173,7 @@ class AIWorkspaceService:
             "workspace": self._workspace_payload,
             "projects": self._projects_payload,
             "tasks": self._tasks_payload,
+            "review_inbox": self._review_inbox_payload,
             "semantic": self._semantic_payload,
             "imports": self._imports_payload,
             "chat": self._chat_payload,
@@ -182,6 +187,9 @@ class AIWorkspaceService:
             "jobs": self._jobs_payload,
             "notifications": self._notifications_payload,
             "settings": self._settings_payload,
+            "observability": self._observability_payload,
+            "import_history": self._import_history_payload,
+            "tags": self._tags_payload,
             "themes": self._themes_payload,
             "updates": self._updates_payload,
             "health": self._health_payload,
@@ -210,6 +218,11 @@ class AIWorkspaceService:
     def _tasks_payload(self) -> dict[str, Any]:
         from secondbrain.native.task_workspace import TaskWorkspaceService
         return TaskWorkspaceService(self.project_root).snapshot()
+
+    def _review_inbox_payload(self) -> dict[str, Any]:
+        from secondbrain.gui.approval_inbox import ApprovalInboxViewModel
+
+        return ApprovalInboxViewModel(self.project_root).snapshot()
 
     def _semantic_payload(self) -> dict[str, Any]:
         from secondbrain.native.semantic_explorer import SemanticExplorerService
@@ -263,9 +276,31 @@ class AIWorkspaceService:
         from secondbrain.native.notification_center.service import NotificationCenterService
         return NotificationCenterService(self.project_root).status()
 
+    def _tags_payload(self) -> dict[str, Any]:
+        from secondbrain.classification import ReviewQueue
+        open_items = ReviewQueue(self.project_root).list_open(limit=200)
+        return {"ok": True, "status": "ready", "open_reviews": len(open_items), "items": open_items}
+
+    def _import_history_payload(self) -> dict[str, Any]:
+        from secondbrain.import_pipeline import ImportHistory
+        snapshot = ImportHistory(self.project_root).snapshot()
+        return {"ok": True, "status": "ready", **snapshot}
+
+    def _observability_payload(self) -> dict[str, Any]:
+        from secondbrain.observability import ObservabilityService
+        snapshot = ObservabilityService(self.project_root).snapshot()
+        return {"ok": True, "status": "ready", **snapshot}
+
     def _settings_payload(self) -> dict[str, Any]:
-        from secondbrain.gui.settings_center import SettingsCenter
-        return {"ok": True, **SettingsCenter().render_embedding_settings()}
+        from secondbrain.runtime_config import RuntimeConfig
+        snapshot = RuntimeConfig(self.project_root).snapshot()
+        config_status = snapshot.pop("status", {})
+        return {
+            "ok": config_status.get("status") == "ok",
+            "status": "ready" if config_status.get("status") == "ok" else "blocked",
+            "config_status": config_status,
+            **snapshot,
+        }
 
     def _themes_payload(self) -> dict[str, Any]:
         from secondbrain.native.theme_center.service import ThemeCenterService

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
+from secondbrain.events.domain_events import ReviewCreated, ReviewResolved
+from secondbrain.events.event_bus import EventBus
 from secondbrain.native.approval import REVIEW_CATEGORIES, NativeApprovalQueue, ReviewQueue
 
 from .approval_service import AgentApprovalService
@@ -18,6 +20,7 @@ class UnifiedReviewInbox:
         approval_queue: NativeApprovalQueue | None = None,
         review_queue: ReviewQueue | None = None,
         approval_service: AgentApprovalService | None = None,
+        event_bus: EventBus | None = None,
     ) -> None:
         root = Path(project_root or Path.cwd()).resolve()
         self.approvals = approval_queue or NativeApprovalQueue(root)
@@ -26,7 +29,63 @@ class UnifiedReviewInbox:
             raise ValueError("review_approval_root_mismatch")
         if approval_service is not None and approval_service.queue.path != self.approvals.path:
             raise ValueError("approval_service_queue_mismatch")
-        self.approval_service = approval_service or AgentApprovalService(queue=self.approvals)
+        if event_bus is not None and approval_service is not None and event_bus is not approval_service.event_bus:
+            raise ValueError("review_approval_event_bus_mismatch")
+        self.event_bus = event_bus or (approval_service.event_bus if approval_service is not None else EventBus())
+        self.approval_service = approval_service or AgentApprovalService(queue=self.approvals, event_bus=self.event_bus)
+
+    def create_review(
+        self,
+        *,
+        category: str,
+        title: str,
+        description: str = "",
+        source: str = "",
+        target: str = "",
+        approval_id: str = "",
+        metadata: Mapping[str, Any] | None = None,
+        workspace_id: str = "",
+        actor: str = "system",
+        correlation_id: str = "",
+        causation_id: str = "",
+    ) -> dict[str, Any]:
+        review_metadata = dict(metadata or {})
+        review = self.reviews.create(
+            category=category,
+            title=title,
+            description=description,
+            source=source,
+            target=target,
+            approval_id=approval_id,
+            metadata=review_metadata,
+        )
+        review_id = str(review["review_id"])
+        plan_id = str(review_metadata.get("plan_id") or "")
+        step_id = str(review_metadata.get("step_id") or "")
+        workspace = workspace_id or str(review_metadata.get("workspace_id") or "")
+        self.event_bus.publish(
+            ReviewCreated(
+                workspace_id=workspace,
+                actor=actor,
+                correlation_id=correlation_id or plan_id or approval_id or review_id,
+                causation_id=causation_id,
+                item_id=review_id,
+                plan_id=plan_id,
+                step_id=step_id,
+                category=str(review.get("category") or category),
+                sanitized_metadata={
+                    "approval_id": approval_id,
+                    "source": source,
+                    "target": target,
+                    "title": title,
+                    **review_metadata,
+                },
+            )
+        )
+        return review
+
+    def create(self, **kwargs: Any) -> dict[str, Any]:
+        return self.create_review(**kwargs)
 
     def list_all(self, *, category: str | None = None) -> list[dict[str, Any]]:
         self._validate_category(category)
@@ -78,11 +137,41 @@ class UnifiedReviewInbox:
                 return self._approval_view(approval, review)
         return self._review_view(review)
 
-    def approve(self, item_id: str, actor: str, note: str = "") -> dict[str, Any]:
-        return self._decide(item_id, "approved", actor=actor, note=note)
+    def approve(
+        self,
+        item_id: str,
+        actor: str,
+        note: str = "",
+        *,
+        correlation_id: str = "",
+        causation_id: str = "",
+    ) -> dict[str, Any]:
+        return self._decide(
+            item_id,
+            "approved",
+            actor=actor,
+            note=note,
+            correlation_id=correlation_id,
+            causation_id=causation_id,
+        )
 
-    def reject(self, item_id: str, actor: str, note: str = "") -> dict[str, Any]:
-        return self._decide(item_id, "rejected", actor=actor, note=note)
+    def reject(
+        self,
+        item_id: str,
+        actor: str,
+        note: str = "",
+        *,
+        correlation_id: str = "",
+        causation_id: str = "",
+    ) -> dict[str, Any]:
+        return self._decide(
+            item_id,
+            "rejected",
+            actor=actor,
+            note=note,
+            correlation_id=correlation_id,
+            causation_id=causation_id,
+        )
 
     def defer(
         self,
@@ -90,8 +179,19 @@ class UnifiedReviewInbox:
         actor: str,
         until: str = "",
         note: str = "",
+        *,
+        correlation_id: str = "",
+        causation_id: str = "",
     ) -> dict[str, Any]:
-        return self._decide(item_id, "deferred", actor=actor, until=until, note=note)
+        return self._decide(
+            item_id,
+            "deferred",
+            actor=actor,
+            until=until,
+            note=note,
+            correlation_id=correlation_id,
+            causation_id=causation_id,
+        )
 
     def _decide(
         self,
@@ -101,6 +201,8 @@ class UnifiedReviewInbox:
         actor: str,
         until: str = "",
         note: str,
+        correlation_id: str = "",
+        causation_id: str = "",
     ) -> dict[str, Any]:
         approval, reviews = self._linked_records(item_id)
         if approval is None and not reviews:
@@ -110,6 +212,8 @@ class UnifiedReviewInbox:
         for review in reviews:
             self._validate_transition("review", str(review.get("status") or "pending"), status)
 
+        correlation = self._correlation_id(approval, reviews, correlation_id)
+
         if approval is not None:
             method = {
                 "approved": self.approval_service.approve,
@@ -117,9 +221,22 @@ class UnifiedReviewInbox:
                 "deferred": self.approval_service.defer,
             }[status]
             if status == "deferred":
-                method(str(approval["approval_id"]), actor, until=until, note=note)
+                method(
+                    str(approval["approval_id"]),
+                    actor,
+                    until=until,
+                    note=note,
+                    correlation_id=correlation,
+                    causation_id=causation_id,
+                )
             else:
-                method(str(approval["approval_id"]), actor, note)
+                method(
+                    str(approval["approval_id"]),
+                    actor,
+                    note,
+                    correlation_id=correlation,
+                    causation_id=causation_id,
+                )
         for review in reviews:
             updated = self.reviews.transition(
                 str(review["review_id"]),
@@ -130,11 +247,48 @@ class UnifiedReviewInbox:
             )
             if updated is None:
                 raise RuntimeError(f"linked_review_missing:{review['review_id']}")
+            metadata = updated.get("metadata") if isinstance(updated.get("metadata"), dict) else {}
+            approval_workspace = str((approval or {}).get("workspace_id") or "")
+            approval_plan = str((approval or {}).get("plan_id") or "")
+            approval_step = str((approval or {}).get("step_id") or "")
+            self.event_bus.publish(
+                ReviewResolved(
+                    workspace_id=str(metadata.get("workspace_id") or approval_workspace),
+                    actor=actor,
+                    correlation_id=correlation,
+                    causation_id=causation_id,
+                    item_id=str(updated.get("review_id") or ""),
+                    plan_id=str(metadata.get("plan_id") or approval_plan),
+                    step_id=str(metadata.get("step_id") or approval_step),
+                    category=str(updated.get("category") or "risky_agent_action"),
+                    sanitized_metadata={
+                        "approval_id": str(updated.get("approval_id") or ""),
+                        "status": status,
+                        "decision_note": note,
+                        "deferred_until": until,
+                        "source": str(updated.get("source") or ""),
+                    },
+                )
+            )
         canonical_id = str(approval["approval_id"]) if approval is not None else str(reviews[0]["review_id"])
         result = self.get(canonical_id)
         if result is None:
             raise RuntimeError(f"inbox_item_missing_after_decision:{canonical_id}")
         return result
+
+    @staticmethod
+    def _correlation_id(
+        approval: dict[str, Any] | None,
+        reviews: list[dict[str, Any]],
+        requested: str,
+    ) -> str:
+        if requested:
+            return requested
+        if approval is not None:
+            return str(approval.get("plan_id") or approval.get("approval_id") or "")
+        review = reviews[0]
+        metadata = review.get("metadata") if isinstance(review.get("metadata"), dict) else {}
+        return str(metadata.get("plan_id") or review.get("approval_id") or review.get("review_id") or "")
 
     def _linked_records(self, item_id: str) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
         approval = self.approvals.get(item_id)

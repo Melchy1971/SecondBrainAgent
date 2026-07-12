@@ -69,6 +69,23 @@ class NativeActionDispatcher:
             NativeActionAuditLog(self.project_root).append(result.to_dict(), confirmed=confirmed, dry_run=dry_run)
         except Exception:
             pass
+        try:
+            from secondbrain.observability import ObservabilityService
+            if result.status == "confirmation_required":
+                status = "pending"
+            elif result.ok:
+                status = "ok"
+            else:
+                status = "failed"
+            ObservabilityService(self.project_root).track_action(
+                "agent",
+                f"native.action.{result.command or result.intent}",
+                resource=result.target or "",
+                status=status,
+                error=result.error if status == "failed" else None,
+            )
+        except Exception:
+            pass
         return result
 
     def dispatch(self, intent: GermanVoiceIntent, *, confirmed: bool = False, dry_run: bool = False) -> NativeActionResult:
