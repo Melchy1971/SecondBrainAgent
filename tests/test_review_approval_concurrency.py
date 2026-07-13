@@ -4,17 +4,20 @@ Acceptance coverage:
   1. Two parallel approves lead to only one execution.
   2. Approve and reject at once produce a controlled conflict.
   3. A stale version is rejected.
-  4. A process abort leaves a recovery status.
-  5. An idempotent tool can be resumed in a controlled way.
-  6. A non-idempotent tool requires a fresh review.
-  7. A corrupted main file can be restored from backup.
-  8. No record is lost.
+  4. A tool handler is consumed exactly once.
+  5. A process abort leaves a recovery status.
+  6. An idempotent tool can be resumed in a controlled way.
+  7. Send/delete and other non-idempotent tools require fresh review.
+  8. A corrupted main file can be restored from backup.
+  9. No record is lost.
 """
 
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from threading import Lock
+import time
 
 import pytest
 
@@ -22,9 +25,10 @@ from secondbrain.agent.approval_bridge import AgentApprovalBridge
 from secondbrain.agent.plan_store import AgentPlanStore, StalePlanError
 from secondbrain.agent.safe_executor import SafeExecutor
 from secondbrain.agent.task_planner import TaskPlan, TaskStep, TaskStepState
-from secondbrain.agent.tool_registry import ToolRegistry
+from secondbrain.agent.tool_registry import ToolDefinition, ToolRegistry, ToolRiskLevel
 from secondbrain.native.approval import (
     ApprovalConcurrencyError,
+    ConflictError,
     ExecutionTokenError,
     NativeApprovalQueue,
     approval_path,
@@ -77,8 +81,62 @@ def test_two_parallel_approves_yield_single_execution(tmp_path):
 
     execution = queue.begin_execution(approval_id, executor_id="worker-1")
     assert execution["execution_token"]
+    assert execution["lease_id"] == execution["execution_token"]
+    assert execution["owner"] == "worker-1"
+    assert execution["acquired_at"]
+    assert execution["expires_at"]
+    assert execution["heartbeat_at"]
+    renewed = queue.heartbeat_execution(approval_id, lease_id=execution["lease_id"])
+    assert renewed["version"] == execution["version"] + 1
     with pytest.raises((ApprovalConcurrencyError, ExecutionTokenError)):
         queue.begin_execution(approval_id, executor_id="worker-2")
+
+
+def test_parallel_resume_executes_handler_exactly_once(tmp_path):
+    calls = 0
+    calls_lock = Lock()
+
+    def handler(_payload):
+        nonlocal calls
+        time.sleep(0.05)
+        with calls_lock:
+            calls += 1
+        return {"deleted": True}
+
+    queue = NativeApprovalQueue(tmp_path)
+    bridge = AgentApprovalBridge(queue=queue)
+    registry = ToolRegistry()
+    registry.register(
+        ToolDefinition(
+            "records.delete",
+            "Delete a record",
+            risk_level=ToolRiskLevel.HIGH,
+            requires_approval=True,
+            handler=handler,
+        )
+    )
+    store = AgentPlanStore(tmp_path, registry=registry)
+    executor = SafeExecutor(registry, approval_bridge=bridge, plan_store=store)
+    plan = TaskPlan(
+        plan_id="parallel-plan",
+        intent="delete_record",
+        metadata={},
+        steps=[TaskStep("step-1", "delete", "records.delete", {})],
+    )
+    waiting = executor.execute(plan)
+    approval_id = waiting.approval_ids[0]
+    queue.transition(approval_id, "approved", actor="reviewer")
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: executor.resume_approved(approval_id), range(2)))
+
+    assert calls == 1
+    assert {result.status for result in results} <= {"completed", "execution_in_progress"}
+    stored = queue.get(approval_id)
+    assert stored["status"] == "executed"
+    assert stored["consumed_at"]
+    assert stored["execution_result_hash"]
+    assert stored["lease_id"] == ""
 
 
 # -- 2 ---------------------------------------------------------------------
@@ -110,8 +168,12 @@ def test_stale_version_is_rejected(tmp_path):
     approval_id = _delete_approval(queue)["approval_id"]
     queue.transition(approval_id, "approved", actor="reviewer")  # version 0 -> 1
 
-    with pytest.raises(ApprovalConcurrencyError):
+    with pytest.raises(ConflictError):
         queue.transition(approval_id, "executing", actor="reviewer", expected_version=0)
+
+    current = queue.get(approval_id)
+    assert current["previous_status"] == "pending"
+    assert current["updated_at"]
 
 
 def test_stale_plan_write_is_rejected(tmp_path):
@@ -156,6 +218,81 @@ def test_idempotent_tool_can_be_resumed(tmp_path):
     assert queue.get(approval_id)["status"] == "completed"
 
 
+def test_idempotent_plan_recovery_runs_handler_once(tmp_path):
+    calls = []
+    queue = NativeApprovalQueue(tmp_path)
+    bridge = AgentApprovalBridge(queue=queue)
+    registry = ToolRegistry()
+    registry.register(
+        ToolDefinition(
+            "data.read",
+            "Read data",
+            risk_level=ToolRiskLevel.LOW,
+            requires_approval=True,
+            handler=lambda payload: calls.append(dict(payload)) or {"ok": True},
+        )
+    )
+    store = AgentPlanStore(tmp_path, registry=registry)
+    executor = SafeExecutor(registry, approval_bridge=bridge, plan_store=store)
+    plan = TaskPlan(
+        plan_id="recovery-plan",
+        intent="read",
+        metadata={},
+        steps=[TaskStep("read-step", "read", "data.read", {"query": "safe"})],
+    )
+    waiting = executor.execute(plan)
+    approval_id = waiting.approval_ids[0]
+    queue.transition(approval_id, "approved", actor="reviewer")
+    queue.begin_execution(approval_id, executor_id="crashed", lease_seconds=1)
+    queue.recover_stale_leases(now=datetime.now(timezone.utc) + timedelta(hours=1))
+
+    recovered = executor.resume_after_recovery(approval_id, executor_id="recovery-worker")
+
+    assert recovered["ok"] is True
+    assert calls == [{"query": "safe"}]
+    assert store.load("recovery-plan").steps[0].state == TaskStepState.COMPLETED
+    assert queue.get(approval_id)["consumed_at"]
+
+
+def test_recovery_finalizes_completed_plan_without_rerunning_handler(tmp_path):
+    calls = []
+    queue = NativeApprovalQueue(tmp_path)
+    bridge = AgentApprovalBridge(queue=queue)
+    registry = ToolRegistry()
+    registry.register(
+        ToolDefinition(
+            "data.read",
+            "Read data",
+            risk_level=ToolRiskLevel.LOW,
+            requires_approval=True,
+            handler=lambda payload: calls.append(payload),
+        )
+    )
+    store = AgentPlanStore(tmp_path, registry=registry)
+    executor = SafeExecutor(registry, approval_bridge=bridge, plan_store=store)
+    plan = TaskPlan(
+        plan_id="completed-before-queue",
+        intent="read",
+        metadata={},
+        steps=[TaskStep("read-step", "read", "data.read", {})],
+    )
+    waiting = executor.execute(plan)
+    approval_id = waiting.approval_ids[0]
+    queue.transition(approval_id, "approved", actor="reviewer")
+    queue.begin_execution(approval_id, executor_id="crashed", lease_seconds=1)
+    queue.recover_stale_leases(now=datetime.now(timezone.utc) + timedelta(hours=1))
+    persisted = store.load(plan.plan_id)
+    persisted.steps[0].state = TaskStepState.COMPLETED
+    persisted.metadata["status"] = "completed"
+    store.update(persisted)
+
+    result = executor.resume_after_recovery(approval_id)
+
+    assert result["ok"] is True
+    assert calls == []
+    assert queue.get(approval_id)["status"] == "executed"
+
+
 # -- 6 ---------------------------------------------------------------------
 
 def test_non_idempotent_tool_requires_review(tmp_path):
@@ -176,6 +313,29 @@ def test_non_idempotent_tool_requires_review(tmp_path):
         queue.begin_execution(approval_id, executor_id="worker-2")
 
 
+@pytest.mark.parametrize(
+    ("command", "category"),
+    (("mail.send", "risky_agent_action"), ("records.delete", "delete_request")),
+)
+def test_send_and_delete_are_never_automatically_retried(tmp_path, command, category):
+    queue = NativeApprovalQueue(tmp_path)
+    approval = queue.create(
+        command=command,
+        intent=command,
+        text=command,
+        category=category,
+        risk_level="low",  # Deliberately misconfigured.
+        tool_name=command,
+        tool_idempotent=True,
+    )
+    queue.transition(approval["approval_id"], "approved", actor="reviewer")
+    queue.begin_execution(approval["approval_id"], executor_id="crashed", lease_seconds=1)
+    queue.recover_stale_leases(now=datetime.now(timezone.utc) + timedelta(hours=1))
+
+    with pytest.raises(ExecutionTokenError, match="manual_review_required"):
+        queue.begin_execution(approval["approval_id"], executor_id="recovery")
+
+
 # -- 7 ---------------------------------------------------------------------
 
 def test_corrupted_main_file_restored_from_backup(tmp_path):
@@ -189,6 +349,8 @@ def test_corrupted_main_file_restored_from_backup(tmp_path):
     rows = queue.get(approval_id)
     assert rows is not None
     assert rows["approval_id"] == approval_id
+    audit = tmp_path / "runtime" / "native" / "approval_recovery_audit.jsonl"
+    assert "backup_restored" in audit.read_text(encoding="utf-8")
 
 
 # -- 8 ---------------------------------------------------------------------

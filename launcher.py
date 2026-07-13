@@ -156,15 +156,22 @@ def _review_approval_gate_main(argv: list[str]) -> int:
 
 
 def _review_approval_release_gate_main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(prog="secondbrain", description="Review and approval final release gate")
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Production certification gate for review and approval governance",
+    )
     parser.add_argument("cmd")
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
     args, _ = parser.parse_known_args(argv)
     from secondbrain.agent.review_approval_gate import BLOCKED
     from secondbrain.agent.review_approval_release_gate import run_review_approval_release_gate
 
-    report = run_review_approval_release_gate(args.project_root_option or args.project_root)
+    report = run_review_approval_release_gate(
+        args.project_root_option or args.project_root,
+        write_report=not args.no_write_report,
+    )
     out(report)
     return 2 if report["overall_status"] == BLOCKED else 0
 

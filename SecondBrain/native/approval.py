@@ -3,10 +3,12 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from threading import local
+from typing import Any, Iterable, Iterator, Mapping
 from uuid import uuid4
 import os
 import shutil
@@ -58,7 +60,11 @@ def _sanitize_payload(value: Any, *, key: str = "") -> Any:
     return str(value)
 
 
-class ApprovalConcurrencyError(RuntimeError):
+class ConflictError(RuntimeError):
+    """Controlled compare-and-set or single-consumption conflict."""
+
+
+class ApprovalConcurrencyError(ConflictError):
     """Raised on a compare-and-set version conflict (controlled conflict)."""
 
 
@@ -66,8 +72,33 @@ class ExecutionTokenError(RuntimeError):
     """Raised when an execution is attempted without the valid execution token."""
 
 
+class ApprovalQueueCorruptionError(RuntimeError):
+    """Raised when neither the approval queue nor its backup is valid."""
+
+
 def _risk_is_idempotent(risk_level: Any) -> bool:
     return str(risk_level or "").strip().lower() in _IDEMPOTENT_RISK
+
+
+def _never_auto_retry(row: Mapping[str, Any]) -> bool:
+    payload = row.get("payload") if isinstance(row.get("payload"), Mapping) else {}
+    action = " ".join(
+        str(value or "").lower()
+        for value in (
+            row.get("command"), row.get("tool_name"), row.get("category"),
+            row.get("action_type"),
+            payload.get("action_type"), payload.get("effective_action"), payload.get("requested_action"),
+        )
+    )
+    return str(row.get("category") or "") == "delete_request" or any(
+        token in action for token in ("delete", "remove", "trash", "send", "forward", "publish")
+    )
+
+
+def _result_hash(value: Any) -> str:
+    safe = _sanitize_payload(value)
+    blob = json.dumps(safe, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 def _connector_audit_context(row: Mapping[str, Any], *, result: str) -> dict[str, Any]:
@@ -123,13 +154,52 @@ class _FileLock:
             age = time.time() - self.path.stat().st_mtime
         except OSError:
             return False
-        if age > _LOCK_STALE_SECONDS:
+        if age > _LOCK_STALE_SECONDS and not self._owner_is_alive():
             try:
                 self.path.unlink()
             except OSError:
                 return False
             return True
         return False
+
+    def _owner_is_alive(self) -> bool:
+        try:
+            pid = int(self.path.read_text(encoding="ascii").strip())
+        except (OSError, ValueError):
+            return False
+        if pid <= 0:
+            return False
+        if os.name == "nt":
+            try:
+                import ctypes
+
+                kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+                kernel32.OpenProcess.argtypes = (ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong)
+                kernel32.OpenProcess.restype = ctypes.c_void_p
+                kernel32.GetExitCodeProcess.argtypes = (ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong))
+                kernel32.GetExitCodeProcess.restype = ctypes.c_int
+                kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
+                kernel32.CloseHandle.restype = ctypes.c_int
+                process = kernel32.OpenProcess(0x1000, False, pid)
+                if not process:
+                    return ctypes.get_last_error() == 5  # Access denied implies a live protected process.
+                exit_code = ctypes.c_ulong()
+                try:
+                    is_running = kernel32.GetExitCodeProcess(process, ctypes.byref(exit_code))
+                    return bool(is_running) and exit_code.value == 259
+                finally:
+                    kernel32.CloseHandle(process)
+            except (AttributeError, OSError, ValueError):
+                return False
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        except OSError:
+            return False
+        return True
 
     def __exit__(self, *exc: Any) -> None:
         if self._fd is not None:
@@ -173,7 +243,7 @@ _VALID_REVIEW_TRANSITIONS: dict[str, frozenset[str]] = {
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
 
 def _runtime_native(root: str | Path) -> Path:
@@ -269,8 +339,17 @@ class ApprovalItem:
     decision_audit: list[dict[str, Any]] = field(default_factory=list)
     review_id: str = ""
     version: int = 0
+    updated_at: str = ""
+    previous_status: str = ""
     idempotency_key: str = ""
     tool_idempotent: bool = False
+    lease_id: str = ""
+    owner: str = ""
+    acquired_at: str = ""
+    expires_at: str = ""
+    heartbeat_at: str = ""
+    consumed_at: str = ""
+    execution_result_hash: str = ""
     execution_token: str = ""
     lease_expires_at: str = ""
     executor_id: str = ""
@@ -390,6 +469,7 @@ class NativeApprovalQueue:
     def __init__(self, project_root: str | Path):
         self.project_root = Path(project_root).resolve()
         self.path = approval_path(self.project_root)
+        self._execution_context = local()
 
     def create(
         self,
@@ -408,6 +488,8 @@ class NativeApprovalQueue:
         workspace_id: str | None = None,
         step_state: str = "",
         review_id: str = "",
+        idempotency_key: str = "",
+        tool_idempotent: bool | None = None,
     ) -> dict[str, Any]:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         created_at = _utc_now()
@@ -419,8 +501,18 @@ class NativeApprovalQueue:
             extra["risk_level"] = risk_level
         if reason is not None:
             extra["reason"] = _sanitize_text(reason)
-        extra.setdefault("idempotency_key", _stable_id(command, intent, text, target))
-        extra.setdefault("tool_idempotent", _risk_is_idempotent(risk_level if risk_level is not None else "write"))
+        requested_key = idempotency_key or str(safe_payload.get("idempotency_key") or "")
+        extra["idempotency_key"] = requested_key or _stable_id("approval", approval_id)
+        inferred_idempotent = _risk_is_idempotent(risk_level if risk_level is not None else "write")
+        candidate = {
+            "command": command,
+            "tool_name": tool_name,
+            "category": category,
+            "payload": safe_payload,
+        }
+        extra["tool_idempotent"] = bool(inferred_idempotent if tool_idempotent is None else tool_idempotent)
+        if _never_auto_retry(candidate):
+            extra["tool_idempotent"] = False
         record = ApprovalRequest(
             schema=APPROVAL_SCHEMA,
             approval_id=approval_id,
@@ -437,11 +529,13 @@ class NativeApprovalQueue:
             workspace_id=workspace_id,
             step_state=step_state,
             review_id=review_id,
+            updated_at=created_at,
             **extra,
         ).to_dict()
-        rows = self._read_all()
-        rows.append(record)
-        self._write_all(rows)
+        with _FileLock(self.path):
+            rows = self._read_all()
+            rows.append(record)
+            self._write_all(rows)
         return record
 
     def list(self, *, status: str | None = None) -> list[dict[str, Any]]:
@@ -453,8 +547,36 @@ class NativeApprovalQueue:
     def get(self, approval_id: str) -> dict[str, Any] | None:
         for row in self._read_all():
             if row.get("approval_id") == approval_id:
+                authorized = getattr(self._execution_context, "authorized", {})
+                token = authorized.get(approval_id) if isinstance(authorized, dict) else None
+                if token and row.get("status") == "executing" and row.get("lease_id") == token:
+                    # ToolRegistry still requires the historical approved view.
+                    # This copy is visible only to the thread holding the lease;
+                    # the persisted state remains executing for every other caller.
+                    return {**row, "status": "approved"}
                 return row
         return None
+
+    @contextmanager
+    def execution_authorization(self, approval_id: str, lease_id: str) -> Iterator[None]:
+        """Expose approval evidence only to the current valid lease holder."""
+
+        persisted = next(
+            (row for row in self._read_all() if row.get("approval_id") == approval_id),
+            None,
+        )
+        if (
+            persisted is None
+            or persisted.get("status") != "executing"
+            or persisted.get("lease_id") != lease_id
+        ):
+            raise ExecutionTokenError(f"execution_lease_mismatch:{approval_id}")
+        previous = getattr(self._execution_context, "authorized", {})
+        self._execution_context.authorized = {**previous, approval_id: lease_id}
+        try:
+            yield
+        finally:
+            self._execution_context.authorized = previous
 
     def transition(
         self,
@@ -490,11 +612,13 @@ class NativeApprovalQueue:
                     old_status = str(row.get("status") or "pending").strip().lower()
                     current_version = int(row.get("version") or 0)
                     if baseline != current_version:
+                        self._append_recovery_audit("stale_decision_conflict", 0)
                         raise ApprovalConcurrencyError(
                             f"approval_version_conflict:{approval_id}:{baseline}!={current_version}"
                         )
                     allowed = _VALID_APPROVAL_TRANSITIONS.get(old_status, frozenset())
                     if new_status not in allowed:
+                        self._append_recovery_audit("stale_decision_conflict", 0)
                         raise ValueError(f"invalid_approval_transition:{old_status}->{new_status}")
                     timestamp = _utc_now()
                     event = {
@@ -513,6 +637,8 @@ class NativeApprovalQueue:
                     if not isinstance(history, list):
                         history = []
                     row["status"] = new_status
+                    row["previous_status"] = old_status
+                    row["updated_at"] = timestamp
                     row["decision_note"] = safe_note
                     row["decided_by"] = actor
                     row["decided_at"] = timestamp
@@ -554,12 +680,22 @@ class NativeApprovalQueue:
                 old_status = str(row.get("status") or "").strip().lower()
                 current_version = int(row.get("version") or 0)
                 if expected_version is not None and int(expected_version) != current_version:
+                    self._append_recovery_audit("stale_decision_conflict", 0)
                     raise ApprovalConcurrencyError(
                         f"approval_version_conflict:{approval_id}:{expected_version}!={current_version}"
                     )
                 if old_status not in {"approved", "recovery_required"}:
+                    if old_status in {"executing", "executed", "completed", "failed"}:
+                        self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ApprovalConcurrencyError(f"approval_not_executable:{approval_id}:{old_status}")
-                if old_status == "recovery_required" and not bool(row.get("tool_idempotent")):
+                if row.get("consumed_at") or row.get("execution_result_hash"):
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
+                    raise ApprovalConcurrencyError(f"approval_already_consumed:{approval_id}")
+                if idempotency_key and row.get("idempotency_key") and idempotency_key != row.get("idempotency_key"):
+                    raise ExecutionTokenError(f"idempotency_key_mismatch:{approval_id}")
+                if old_status == "recovery_required" and (
+                    not bool(row.get("tool_idempotent")) or _never_auto_retry(row)
+                ):
                     raise ExecutionTokenError(f"manual_review_required:{approval_id}")
                 token = uuid4().hex
                 timestamp = _utc_now()
@@ -568,6 +704,13 @@ class NativeApprovalQueue:
                 if not isinstance(history, list):
                     history = []
                 row["status"] = "executing"
+                row["previous_status"] = old_status
+                row["updated_at"] = timestamp
+                row["lease_id"] = token
+                row["owner"] = executor_id
+                row["acquired_at"] = timestamp
+                row["expires_at"] = lease
+                row["heartbeat_at"] = timestamp
                 row["execution_token"] = token
                 row["executor_id"] = executor_id
                 row["lease_expires_at"] = lease
@@ -591,6 +734,35 @@ class NativeApprovalQueue:
                 return dict(row)
         raise KeyError(f"approval_not_found:{approval_id}")
 
+    def heartbeat_execution(
+        self,
+        approval_id: str,
+        *,
+        lease_id: str,
+        lease_seconds: int = DEFAULT_LEASE_SECONDS,
+    ) -> dict[str, Any]:
+        """Renew a running execution lease owned by ``lease_id``."""
+
+        with _FileLock(self.path):
+            rows = self._read_all()
+            for row in rows:
+                if row.get("approval_id") != approval_id:
+                    continue
+                if row.get("status") != "executing" or row.get("lease_id") != lease_id:
+                    raise ExecutionTokenError(f"execution_lease_mismatch:{approval_id}")
+                timestamp = _utc_now()
+                expires_at = (
+                    datetime.now(timezone.utc) + timedelta(seconds=max(1, int(lease_seconds)))
+                ).isoformat(timespec="seconds")
+                row["heartbeat_at"] = timestamp
+                row["expires_at"] = expires_at
+                row["lease_expires_at"] = expires_at
+                row["updated_at"] = timestamp
+                row["version"] = int(row.get("version") or 0) + 1
+                self._write_all(rows)
+                return dict(row)
+        raise KeyError(f"approval_not_found:{approval_id}")
+
     def complete_execution(
         self,
         approval_id: str,
@@ -598,6 +770,7 @@ class NativeApprovalQueue:
         execution_token: str,
         expected_version: int | None = None,
         result_status: str = "completed",
+        result: Any = None,
     ) -> dict[str, Any]:
         result_status = result_status if result_status in {"completed", "executed", "failed"} else "completed"
         with _FileLock(self.path):
@@ -606,11 +779,14 @@ class NativeApprovalQueue:
                 if row.get("approval_id") != approval_id:
                     continue
                 if str(row.get("status") or "") != "executing":
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ExecutionTokenError(f"approval_not_executing:{approval_id}:{row.get('status')}")
                 if str(row.get("execution_token") or "") != execution_token:
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ExecutionTokenError(f"execution_token_mismatch:{approval_id}")
                 current_version = int(row.get("version") or 0)
                 if expected_version is not None and int(expected_version) != current_version:
+                    self._append_recovery_audit("stale_decision_conflict", 0)
                     raise ApprovalConcurrencyError(
                         f"approval_version_conflict:{approval_id}:{expected_version}!={current_version}"
                     )
@@ -619,6 +795,16 @@ class NativeApprovalQueue:
                 if not isinstance(history, list):
                     history = []
                 row["status"] = result_status
+                row["previous_status"] = "executing"
+                row["updated_at"] = timestamp
+                row["consumed_at"] = timestamp
+                row["execution_result_hash"] = _result_hash(
+                    {"status": result_status, "result": result}
+                )
+                row["lease_id"] = ""
+                row["owner"] = ""
+                row["expires_at"] = ""
+                row["heartbeat_at"] = ""
                 row["execution_token"] = ""
                 row["lease_expires_at"] = ""
                 row["version"] = current_version + 1
@@ -650,14 +836,21 @@ class NativeApprovalQueue:
             for row in rows:
                 if str(row.get("status") or "") != "executing":
                     continue
-                expiry = self._parse_lease(row.get("lease_expires_at"))
+                expiry = self._parse_lease(row.get("expires_at") or row.get("lease_expires_at"))
                 if expiry is not None and moment < expiry:
                     continue
                 history = row.get("decision_audit")
                 if not isinstance(history, list):
                     history = []
                 row["status"] = "recovery_required"
+                row["previous_status"] = "executing"
+                row["updated_at"] = _utc_now()
+                row["lease_id"] = ""
+                row["owner"] = ""
+                row["expires_at"] = ""
+                row["heartbeat_at"] = ""
                 row["execution_token"] = ""
+                row["lease_expires_at"] = ""
                 row["version"] = int(row.get("version") or 0) + 1
                 row["decision_audit"] = [
                     *history,
@@ -702,19 +895,53 @@ class NativeApprovalQueue:
         return self.transition(approval_id, status, actor=actor, note=note)
 
     def link_review(self, approval_id: str, review_id: str) -> dict[str, Any]:
-        rows = self._read_all()
-        for row in rows:
-            if row.get("approval_id") == approval_id:
-                row["review_id"] = review_id
+        return self.update_metadata(approval_id, {"review_id": review_id})
+
+    def update_metadata(
+        self,
+        approval_id: str,
+        updates: Mapping[str, Any],
+        *,
+        expected_version: int | None = None,
+    ) -> dict[str, Any]:
+        """Atomically update non-state metadata without bypassing versioning."""
+
+        protected = {
+            "approval_id", "status", "version", "previous_status", "updated_at",
+            "lease_id", "execution_token", "consumed_at", "execution_result_hash",
+        }
+        safe_updates = {
+            str(key): _sanitize_payload(value, key=str(key))
+            for key, value in updates.items()
+            if str(key) not in protected
+        }
+        with _FileLock(self.path):
+            rows = self._read_all()
+            for row in rows:
+                if row.get("approval_id") != approval_id:
+                    continue
+                current_version = int(row.get("version") or 0)
+                if expected_version is not None and int(expected_version) != current_version:
+                    raise ApprovalConcurrencyError(
+                        f"approval_version_conflict:{approval_id}:{expected_version}!={current_version}"
+                    )
+                row.update(safe_updates)
+                row["updated_at"] = _utc_now()
+                row["version"] = current_version + 1
                 self._write_all(rows)
-                return row
+                return dict(row)
         raise KeyError(f"approval_not_found:{approval_id}")
 
     def _read_all(self) -> list[dict[str, Any]]:
         rows = self._read_raw()
-        if any(row.get("status") == "invalid_json" for row in rows) and self._backup_path().exists():
-            if self.restore_from_backup():
-                rows = self._read_raw()
+        backup_rows = self._parse_path(self._backup_path()) if self._backup_path().exists() else None
+        empty_with_nonempty_backup = self.path.exists() and not rows and bool(backup_rows)
+        if any(row.get("status") == "invalid_json" for row in rows) or empty_with_nonempty_backup:
+            if not self.restore_from_backup():
+                raise ApprovalQueueCorruptionError(f"approval_queue_corrupt:{self.path}")
+            rows = self._read_raw()
+            if any(row.get("status") == "invalid_json" for row in rows):
+                raise ApprovalQueueCorruptionError(f"approval_queue_backup_corrupt:{self.path}")
         return rows
 
     def _read_raw(self) -> list[dict[str, Any]]:
@@ -726,8 +953,10 @@ class NativeApprovalQueue:
                 continue
             try:
                 value = json.loads(line)
-                if isinstance(value, dict):
+                if isinstance(value, dict) and value.get("approval_id"):
                     rows.append(self._with_decision_defaults(value))
+                else:
+                    rows.append({"schema": APPROVAL_SCHEMA, "status": "invalid_json", "raw": line})
             except json.JSONDecodeError:
                 rows.append({"schema": APPROVAL_SCHEMA, "status": "invalid_json", "raw": line})
         return rows
@@ -739,25 +968,56 @@ class NativeApprovalQueue:
         backup = self._backup_path()
         if not backup.exists():
             return False
+        temporary: Path | None = None
         try:
-            shutil.copy2(backup, self.path)
+            backup_rows = self._parse_path(backup)
+            if backup_rows is None:
+                return False
+            temporary = self.path.with_name(f"{self.path.name}.{uuid4().hex}.recovery.tmp")
+            with temporary.open("w", encoding="utf-8") as handle:
+                for row in backup_rows:
+                    handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self.path)
+            self._append_recovery_audit("backup_restored", len(backup_rows))
         except OSError:
             return False
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
         return True
 
     def _write_all(self, rows: Iterable[dict[str, Any]]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        if self.path.exists():
-            try:
-                shutil.copy2(self.path, self._backup_path())
-            except OSError:
-                pass
+        materialized = [dict(row) for row in rows]
+        if self.path.exists() and self._parse_path(self.path) is not None:
+            self._write_backup_from(self.path)
         temporary = self.path.with_name(f"{self.path.name}.{uuid4().hex}.tmp")
         try:
             with temporary.open("w", encoding="utf-8") as fh:
-                for row in rows:
+                for row in materialized:
                     fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-            temporary.replace(self.path)
+                fh.flush()
+                os.fsync(fh.fileno())
+            os.replace(temporary, self.path)
+            self._fsync_directory(self.path.parent)
+            try:
+                self._write_backup_from(self.path)
+            except OSError:
+                pass
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def _write_backup_from(self, source: Path) -> None:
+        backup = self._backup_path()
+        temporary = backup.with_name(f"{backup.name}.{uuid4().hex}.tmp")
+        try:
+            with source.open("rb") as source_handle, temporary.open("wb") as destination:
+                shutil.copyfileobj(source_handle, destination)
+                destination.flush()
+                os.fsync(destination.fileno())
+            os.replace(temporary, backup)
         finally:
             temporary.unlink(missing_ok=True)
 
@@ -775,12 +1035,66 @@ class NativeApprovalQueue:
         normalized.setdefault("step_state", "")
         normalized.setdefault("review_id", "")
         normalized.setdefault("version", 0)
+        normalized.setdefault("updated_at", str(normalized.get("created_at") or ""))
+        normalized.setdefault("previous_status", "")
         normalized.setdefault("idempotency_key", "")
         normalized.setdefault("tool_idempotent", False)
         normalized.setdefault("execution_token", "")
         normalized.setdefault("lease_expires_at", "")
         normalized.setdefault("executor_id", "")
+        normalized.setdefault("lease_id", str(normalized.get("execution_token") or ""))
+        normalized.setdefault("owner", str(normalized.get("executor_id") or ""))
+        normalized.setdefault("acquired_at", "")
+        normalized.setdefault("expires_at", str(normalized.get("lease_expires_at") or ""))
+        normalized.setdefault("heartbeat_at", "")
+        normalized.setdefault("consumed_at", "")
+        normalized.setdefault("execution_result_hash", "")
         return normalized
+
+    @classmethod
+    def _parse_path(cls, path: Path) -> list[dict[str, Any]] | None:
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return None
+        rows: list[dict[str, Any]] = []
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError:
+                return None
+            if not isinstance(value, dict) or "approval_id" not in value:
+                return None
+            rows.append(cls._with_decision_defaults(value))
+        return rows
+
+    def _append_recovery_audit(self, action: str, recovered_items: int) -> None:
+        path = self.path.with_name("approval_recovery_audit.jsonl")
+        event = {
+            "schema": "secondbrain.native.approval_recovery.v1",
+            "timestamp": _utc_now(),
+            "action": action,
+            "recovered_items": int(recovered_items),
+        }
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(event, ensure_ascii=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+
+    @staticmethod
+    def _fsync_directory(path: Path) -> None:
+        if os.name == "nt":
+            return
+        try:
+            descriptor = os.open(str(path), os.O_RDONLY)
+        except OSError:
+            return
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
 
 
 class ReviewQueue:

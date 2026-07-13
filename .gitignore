@@ -16,6 +16,7 @@ env/
 
 # Local secrets / runtime config (enthaelt API-Keys / Kamera-Logins - nie committen)
 config/hud_settings.json
+backups/**/config/hud_settings.json
 config/mediamtx.yml
 auto.key
 mediamtx.exe

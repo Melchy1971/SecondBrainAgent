@@ -94,7 +94,7 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
     categories: dict[str, int] = {}
     for item in items:
         categories[item["category"]] = categories.get(item["category"], 0) + 1
-    from secondbrain.notifications.review_notifications import ReviewNotificationService, TimeRules
+    from secondbrain.notifications.review_notifications import TimeRules
 
     now = datetime.now(timezone.utc)
     rules = TimeRules()
@@ -115,10 +115,18 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
     expiring = [
         row
         for row in pending_enriched
-        if row.get("item_type") == "approval" and _age_seconds(row.get("created_at", "")) >= expiring_threshold
+        if row.get("item_type") == "approval"
+        and expiring_threshold <= _age_seconds(row.get("created_at", "")) < rules.approval_expiration.total_seconds()
     ]
     oldest_pending_age = int(max((_age_seconds(row.get("created_at", "")) for row in pending_enriched), default=0.0))
-    notification_count = len(ReviewNotificationService().evaluate(enriched, now=now))
+    notification_service = inbox.notification_service()
+    notification_service.evaluate(enriched, now=now)
+    open_notifications = notification_service.list_open(now=now)
+    critical_notifications = [
+        row for row in open_notifications if row.priority.value == "critical"
+    ]
+    overdue_notifications = notification_service.list_overdue(now=now)
+    notification_count = len(open_notifications)
     return {
         "pending_reviews": len(inbox.reviews.list(status="pending")),
         "pending_approvals": len(inbox.approvals.list(status="pending")),
@@ -127,7 +135,11 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
         "open_items": len(pending),
         "overdue_items": len(overdue),
         "expiring_items": len(expiring),
+        "expiring_approvals": len(expiring),
         "notification_count": notification_count,
+        "open_notifications": notification_count,
+        "critical_notifications": len(critical_notifications),
+        "overdue_notifications": len(overdue_notifications),
         "oldest_pending_age": oldest_pending_age,
         "inbox_summary": {
             "total": len(items),
@@ -188,7 +200,11 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
             "open_items": 0,
             "overdue_items": 0,
             "expiring_items": 0,
+            "expiring_approvals": 0,
             "notification_count": 0,
+            "open_notifications": 0,
+            "critical_notifications": 0,
+            "overdue_notifications": 0,
             "oldest_pending_age": 0,
             "inbox_summary": {"total": 0, "pending": 0, "deferred": 0, "completed": 0, "critical": 0},
         },
@@ -196,6 +212,10 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
     governance_metrics = _safe_call(
         lambda: _governance_metrics_status(base),
         {
+            "open_items": 0,
+            "critical_items": 0,
+            "overdue_items": 0,
+            "blocked_unsafe_actions": 0,
             "open_approvals": 0,
             "critical_approvals": 0,
             "overdue_reviews": 0,
@@ -234,7 +254,11 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "overdue_items": review_inbox.get("overdue_items", 0),
         "expiring_items": review_inbox.get("expiring_items", 0),
         "notification_count": review_inbox.get("notification_count", 0),
+        "open_notifications": review_inbox.get("open_notifications", 0),
+        "critical_notifications": review_inbox.get("critical_notifications", 0),
+        "overdue_notifications": review_inbox.get("overdue_notifications", 0),
         "oldest_pending_age": review_inbox.get("oldest_pending_age", 0),
+        "expiring_approvals": review_inbox.get("expiring_approvals", 0),
         "governance_metrics": governance_metrics,
         "voice": {
             "language": "de-DE",

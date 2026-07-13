@@ -1,0 +1,115 @@
+# Entity Extraction v9.9
+
+Aktualisiert: 2026-07-13
+
+## Häufigste Entitäten
+
+- **2026-07-13** (date): 112
+- **Aktualisiert** (person_or_topic): 45
+- **Aktualisiert** (project_or_topic): 21
+- **Aufgaben** (person_or_topic): 17
+- **Risiken** (project_or_topic): 15
+- **Score** (project_or_topic): 13
+- **Risiko** (project_or_topic): 12
+- **Risiken** (person_or_topic): 11
+- **Aufgaben** (project_or_topic): 10
+- **Index** (project_or_topic): 9
+- **Projekte** (project_or_topic): 9
+- **Agent** (organization): 9
+- **Entscheidungen** (project_or_topic): 9
+- **Score** (person_or_topic): 9
+- **Projekt** (project_or_topic): 9
+- **Entscheidungen** (person_or_topic): 8
+- **Keine** (person_or_topic): 8
+- **Markdown** (project_or_topic): 8
+- **Gelernte Tags** (organization): 8
+- **Quellen** (person_or_topic): 7
+- **Empfehlung** (project_or_topic): 6
+- **Entscheidung** (person_or_topic): 6
+- **Digital Twin** (project_or_topic): 6
+- **Review** (project_or_topic): 6
+- **Datensätze** (person_or_topic): 6
+- **Notizen** (person_or_topic): 5
+- **Fokus** (person_or_topic): 5
+- **Agent Dashboard** (organization): 5
+- **Notiz** (project_or_topic): 5
+- **Was** (person_or_topic): 5
+- **Process Agent** (organization): 5
+- **Project Agent** (organization): 5
+- **Keine** (project_or_topic): 5
+- **Gesundheit** (project_or_topic): 5
+- **Agentenläufe** (organization): 5
+- **Import** (person_or_topic): 4
+- **Review Queue** (project_or_topic): 4
+- **Ergebnis** (project_or_topic): 4
+- **Gewicht** (person_or_topic): 4
+- **Welche Risiken** (project_or_topic): 4
+- **Chief** (project_or_topic): 4
+- **Markdown** (person_or_topic): 4
+- **Ziel** (person_or_topic): 4
+- **Research Agent** (organization): 4
+- **Chief** (person_or_topic): 4
+- **Anzahl** (person_or_topic): 4
+- **Dateien** (project_or_topic): 4
+- **Review** (person_or_topic): 4
+- **Dashboard** (project_or_topic): 4
+- **Lernen** (project_or_topic): 4
+- **Blocker** (project_or_topic): 4
+- **Signale** (project_or_topic): 4
+- **Modul** (project_or_topic): 4
+- **Entscheidung** (project_or_topic): 4
+- **Relevante Notizen** (project_or_topic): 4
+- **Meeting** (project_or_topic): 4
+- **Relevante Notizen** (person_or_topic): 4
+- **Aktuelle Themen** (person_or_topic): 4
+- **Tags** (organization): 3
+- **Empfehlungen** (project_or_topic): 3
+- **Projektbezug** (project_or_topic): 3
+- **Vault** (project_or_topic): 3
+- **Wissenslücken** (project_or_topic): 3
+- **Claude** (technology): 3
+- **Keine Entscheidungen** (person_or_topic): 3
+- **Welche Entscheidungen** (project_or_topic): 3
+- **Review Queue** (person_or_topic): 3
+- **Prozesslandkarte** (person_or_topic): 3
+- **Wissenslücken** (person_or_topic): 3
+- **Arbeitsmuster** (project_or_topic): 3
+- **Priorität** (project_or_topic): 3
+- **Index** (person_or_topic): 3
+- **Signale** (person_or_topic): 3
+- **Notiz** (person_or_topic): 3
+- **Connector** (person_or_topic): 3
+- **Sicherheitsregel** (person_or_topic): 3
+- **Executive Dashboard** (project_or_topic): 3
+- **Executive Agent** (organization): 3
+- **Meeting Agent** (organization): 3
+- **Aufgabe** (person_or_topic): 3
+- **Staff** (person_or_topic): 3
+- **Google Calendar** (organization): 3
+- **MCP** (technology): 3
+- **Multi** (project_or_topic): 3
+- **Finanzen** (project_or_topic): 3
+- **Fokus** (project_or_topic): 3
+- **Wissen** (project_or_topic): 3
+- **Lernhistorie** (person_or_topic): 3
+- **Relevante Signale** (person_or_topic): 3
+- **Wird** (person_or_topic): 3
+- **Personal** (project_or_topic): 3
+- **Tagesplanung** (organization): 3
+- **Links** (project_or_topic): 3
+- **Cycle** (project_or_topic): 3
+- **Import** (project_or_topic): 3
+- **Alternativen** (project_or_topic): 3
+- **Decision Agent** (organization): 3
+- **Vector** (project_or_topic): 2
+- **Graph** (project_or_topic): 2
+- **Quellen** (project_or_topic): 2
+
+## Quellenverteilung
+
+### vault
+- project_or_topic: 545
+- person_or_topic: 500
+- organization: 118
+- date: 112
+- technology: 19

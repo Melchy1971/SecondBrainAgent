@@ -1,0 +1,95 @@
+[
+  {
+    "note": "88_VectorRAG\\Vector_RAG_Index.md",
+    "stem": "Vector_RAG_Index",
+    "chunk_id": 0,
+    "tokens": [
+      "chunks",
+      "index",
+      "json",
+      "secondbrain",
+      "secondbrainagent",
+      "system",
+      "vector"
+    ],
+    "preview": "# Vector RAG Index\n\nChunks: 0\n\nIndex: `H:\\SecondBrainAgent\\SecondBrain\\99_System\\vector_rag\\vector_index.json`"
+  },
+  {
+    "note": "06_Journal\\2026-07-13.md",
+    "stem": "2026-07-13",
+    "chunk_id": 0,
+    "tokens": [
+      "2026",
+      "aufgaben",
+      "entscheidungen",
+      "importlauf",
+      "inhalte",
+      "journal",
+      "keine",
+      "neue",
+      "neuen",
+      "notizen"
+    ],
+    "preview": "# Journal 2026-07-13\n\n## Neue Inhalte\n\n## Aufgaben\n\n## Entscheidungen\n\n## Notizen\n\n\n## Importlauf 2026-07-13 13:39:20\n\n- Keine neuen Inhalte.\n\n## Importlauf 2026-07-13 13:39:20\n\n- Keine neuen Inhalte."
+  },
+  {
+    "note": "07_Graph\\Index.md",
+    "stem": "Index",
+    "chunk_id": 0,
+    "tokens": [
+      "2026",
+      "import",
+      "keine",
+      "knoten",
+      "neuen"
+    ],
+    "preview": "## Import 2026-07-13\n\n- Keine neuen Knoten.\n\n## Import 2026-07-13\n\n- Keine neuen Knoten."
+  },
+  {
+    "note": "09_Recommendations\\2026-07-13_recommendations.md",
+    "stem": "2026-07-13_recommendations",
+    "chunk_id": 0,
+    "tokens": [
+      "2026",
+      "aktionen",
+      "aktualisieren",
+      "aufgaben",
+      "empfehlungen",
+      "empfohlene",
+      "fehlenden",
+      "graph",
+      "hinweise",
+      "inbox",
+      "index",
+      "leeren",
+      "nachbearbeiten",
+      "ohne",
+      "projektbezug",
+      "projekte",
+      "prüfen",
+      "quellen",
+      "queue",
+      "review",
+      "systemische",
+      "tags",
+      "vault"
+    ],
+    "preview": "# Empfehlungen 2026-07-13\n\n## Systemische Hinweise\n\n- Projekte im Vault: 0\n- Aufgaben im Vault: 0\n\n## Empfohlene Aktionen\n\n- Review Queue prüfen.\n- Inbox leeren.\n- Aufgaben ohne Projektbezug prüfen.\n- Graph-Index aktualisieren.\n- Quellen mit fehlenden Tags nachbearbeiten."
+  },
+  {
+    "note": "07_Graph\\Weights\\weighted_edges.md",
+    "stem": "weighted_edges",
+    "chunk_id": 0,
+    "tokens": [
+      "2026",
+      "aktualisiert",
+      "gewicht",
+      "graph",
+      "knowledge",
+      "quelle",
+      "weighted",
+      "ziel"
+    ],
+    "preview": "# Weighted Knowledge Graph\n\nAktualisiert: 2026-07-13\n\n| Quelle | Ziel | Gewicht |\n|---|---|---|"
+  }
+]

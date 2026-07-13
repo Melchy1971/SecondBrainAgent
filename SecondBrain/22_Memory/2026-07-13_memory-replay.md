@@ -1,0 +1,37 @@
+# Agent Memory Replay
+
+Thema: global
+
+## Verlaufskandidaten
+
+- [[2026-07-13]]
+- [[2026-07-13_recommendations]]
+- [[2026-07-13_knowledge-gaps]]
+- [[Decision_Register]]
+- [[2026-07-13_decision-intelligence]]
+- [[2026-07-13_daily-briefing]]
+- [[2026-07-13_prozesslandkarte]]
+- [[2026-07-13_chief-of-staff]]
+- [[Memory_Profile]]
+- [[Knowledge_Lineage]]
+- [[2026-07-13_research-backlog]]
+- [[2026-07-13_prediction-report]]
+- [[2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]
+- [[2026-07-13_process-mining]]
+- [[Process_Copilot_Commands]]
+- [[Executive_Dashboard]]
+- [[Agent_Swarm_Status]]
+- [[2026-07-13_chief-of-staff-v2]]
+- [[CRM_Index]]
+- [[DMS_Index]]
+- [[Projects_Index]]
+- [[Finance_Index]]
+- [[Health_Index]]
+- [[Verein_Index]]
+- [[Gesundheit_Index]]
+- [[Finanzen_Index]]
+- [[Reisen_Index]]
+- [[Verein_Index]]
+- [[weighted_edges]]
+- [[2026-07-13_project-monitor]]
+- [[2026-07-13_autonomy-report]]

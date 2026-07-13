@@ -13,6 +13,7 @@ Acceptance coverage:
 from __future__ import annotations
 
 from contextlib import contextmanager
+import json
 
 import pytest
 
@@ -22,6 +23,7 @@ from secondbrain.repositories.postgres_review_approval_repository import Postgre
 from secondbrain.repositories.review_approval_repository import (
     RepositoryConflict,
     RepositoryUnavailable,
+    ReviewApprovalRepository,
     create_review_approval_repository,
     migrate_repository,
     resolve_backend,
@@ -60,6 +62,34 @@ def test_service_operates_over_repository(tmp_path):
     assert repo.get_item(approval["approval_id"])["status"] == "approved"
 
 
+def test_service_decisions_and_leases_use_repository(tmp_path):
+    repo = _pg_repo()
+    service = AgentApprovalService(repository=repo, project_root=tmp_path)
+    approval = _delete(repo, workspace_id="w1")
+
+    approved = service.approve(approval["approval_id"], "markus", expected_version=0)
+    claimed = service.begin_execution(
+        approval["approval_id"],
+        executor_id="worker-1",
+        expected_version=approved["version"],
+    )
+    renewed = service.heartbeat_execution(
+        approval["approval_id"],
+        lease_id=claimed["execution_token"],
+    )
+    completed = service.complete_execution(
+        approval["approval_id"],
+        execution_token=claimed["execution_token"],
+        expected_version=renewed["version"],
+    )
+
+    assert isinstance(repo, ReviewApprovalRepository)
+    assert completed["status"] == "completed"
+    assert completed["consumed_at"]
+    assert service.queue.get(approval["approval_id"])["status"] == "completed"
+    assert not service.queue.path.exists()  # no hidden JSONL fallback was created
+
+
 # -- 2 ---------------------------------------------------------------------
 
 def test_jsonl_repository_stays_compatible(tmp_path):
@@ -72,6 +102,38 @@ def test_jsonl_repository_stays_compatible(tmp_path):
     assert updated["version"] == 1
     assert updated["decision_audit"]
     assert repo.list_items(item_type="approval", status="approved")[0]["approval_id"] == approval_id
+
+
+def test_jsonl_recovers_corrupt_primary_from_backup(tmp_path):
+    repo = JsonlReviewApprovalRepository(tmp_path)
+    approval = _delete(repo, workspace_id="w1")
+    repo.queue.path.write_text("{broken", encoding="utf-8")
+
+    recovered = repo.get_item(approval["approval_id"])
+
+    assert recovered is not None
+    assert recovered["approval_id"] == approval["approval_id"]
+    assert json.loads(repo.queue.path.read_text(encoding="utf-8").splitlines()[0])
+
+
+def test_jsonl_review_cas_and_recovery(tmp_path):
+    repo = JsonlReviewApprovalRepository(tmp_path)
+    review = repo.create_review(
+        category="sensitive_document",
+        title="Review",
+        metadata={"workspace_id": "w1"},
+    )
+    decided = repo.compare_and_set_status(
+        review["review_id"], 0, "approved", actor="markus", workspace_id="w1"
+    )
+    repo.reviews.path.write_text("{broken", encoding="utf-8")
+
+    recovered = repo.get_item(review["review_id"], workspace_id="w1")
+
+    assert decided["version"] == 1
+    assert recovered["status"] == "approved"
+    with pytest.raises(RepositoryConflict):
+        repo.compare_and_set_status(review["review_id"], 0, "rejected", actor="markus")
 
 
 # -- 3 ---------------------------------------------------------------------
@@ -116,6 +178,23 @@ def test_workspace_isolation():
     assert len(repo.list_items(workspace_id="w1")) == 1
     assert len(repo.list_items(workspace_id="w2")) == 2
     assert all(item["workspace_id"] == "w2" for item in repo.list_items(workspace_id="w2"))
+    item = repo.list_items(workspace_id="w1")[0]
+    assert repo.get_item(item["approval_id"], workspace_id="w2") is None
+    assert repo.update_status(
+        item["approval_id"], "approved", actor="markus", workspace_id="w2"
+    ) is None
+
+
+def test_postgres_requires_workspace_id():
+    with pytest.raises(ValueError, match="workspace_id_required"):
+        _delete(_pg_repo())
+
+
+def test_postgres_idempotency_key_is_unique():
+    repo = _pg_repo()
+    _delete(repo, workspace_id="w1", idempotency_key="action-1")
+    with pytest.raises(RepositoryConflict, match="idempotency_conflict"):
+        _delete(repo, workspace_id="w1", idempotency_key="action-1")
 
 
 # -- 6 ---------------------------------------------------------------------
@@ -127,8 +206,10 @@ def test_migration_preserves_ids_and_decisions(tmp_path):
     source.update_status(a1["approval_id"], "approved", actor="markus", note="ok")
 
     target = _pg_repo()
-    dry = migrate_repository(source, target, dry_run=True)
+    dry_report = tmp_path / "reports" / "dry-run.json"
+    dry = migrate_repository(source, target, dry_run=True, report_path=dry_report)
     assert dry["imported_count"] == 2
+    assert json.loads(dry_report.read_text(encoding="utf-8"))["dry_run"] is True
     assert target.get_item(a1["approval_id"]) is None  # dry run wrote nothing
 
     report = migrate_repository(source, target)
@@ -153,6 +234,8 @@ def test_production_health_marks_jsonl_degraded(tmp_path):
     assert dev.health().degraded is False
     assert prod.health().degraded is True
     assert prod.health().healthy is True  # still usable, just not production-grade
+    assert dev.health().gate_status == "PASS"
+    assert prod.health().gate_status == "CONDITIONAL_PASS"
 
 
 def test_postgres_backend_has_no_silent_fallback(tmp_path):
@@ -216,3 +299,31 @@ def test_postgres_repository_uses_parametrized_sql():
     assert ":id" in sql and ":data" in sql
     # Values are bound, never interpolated into the SQL text.
     assert "w-secret" not in sql
+    schema_sql = "\n".join(sql for sql, _ in executor.calls)
+    for index in ("idx_ra_status", "idx_ra_category", "idx_ra_workspace", "idx_ra_created", "idx_ra_approval", "idx_ra_plan"):
+        assert index in schema_sql
+
+
+class _UnavailableExecutor(_CapturingExecutor):
+    def transaction(self):
+        @contextmanager
+        def broken():
+            raise ConnectionError("database offline")
+            yield self
+
+        return broken()
+
+    def ping(self):
+        return False
+
+
+def test_database_outage_is_blocked_without_jsonl_fallback(tmp_path):
+    with pytest.raises(RepositoryUnavailable, match="postgres_backend_unavailable"):
+        create_review_approval_repository(
+            tmp_path,
+            env={"REVIEW_APPROVAL_BACKEND": "postgres"},
+            executor=_UnavailableExecutor(),
+        )
+
+    health = PostgresReviewApprovalRepository(_UnavailableExecutor()).health()
+    assert health.gate_status == "BLOCKED"

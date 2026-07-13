@@ -19,12 +19,15 @@ No notification ever contains raw secrets: every title/message passes through
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import StrEnum
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Iterable, Mapping
+from urllib.parse import quote
+from uuid import uuid4
 
 from secondbrain.agent.privacy import PrivacyDecision, PrivacyGuard, PrivacyMode
 
@@ -44,10 +47,12 @@ class NotificationType(StrEnum):
     CRITICAL_APPROVAL_REQUESTED = "critical_approval_requested"
     REVIEW_REQUIRED = "review_required"
     REVIEW_OVERDUE = "review_overdue"
-    DEFERRED_ITEM_DUE = "deferred_item_due"
+    DEFERRED_DUE = "deferred_due"
+    DEFERRED_ITEM_DUE = "deferred_item_due"  # Legacy persisted value.
     APPROVAL_EXPIRING = "approval_expiring"
     APPROVAL_EXPIRED = "approval_expired"
     DECISION_RECORDED = "decision_recorded"
+    RECOVERY_REQUIRED = "recovery_required"
 
 
 class NotificationPriority(StrEnum):
@@ -73,6 +78,7 @@ ESCALATION_RULES: dict[str, NotificationPriority] = {
     "sensitive_document": NotificationPriority.HIGH,
     "failed_import": NotificationPriority.NORMAL,
     "low_confidence_classification": NotificationPriority.NORMAL,
+    "recovery_required": NotificationPriority.CRITICAL,
 }
 
 _RISK_PRIORITY: dict[str, NotificationPriority] = {
@@ -115,6 +121,9 @@ class TimeRules:
     approval_expiration: timedelta = timedelta(hours=24)
     deferred_reminder: timedelta = timedelta(hours=1)
     escalation_interval: timedelta = timedelta(hours=1)
+    cooldown: timedelta = timedelta(minutes=15)
+    expiration_warning: timedelta = timedelta(hours=2)
+    # Historical name retained for callers from v30.78.
     expiring_window: timedelta = timedelta(hours=2)
 
 
@@ -151,6 +160,24 @@ class ReviewNotification:
             "metadata": dict(self.metadata),
         }
 
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "ReviewNotification":
+        return cls(
+            id=str(value.get("id") or ""),
+            type=NotificationType(str(value.get("type") or NotificationType.REVIEW_REQUIRED.value)),
+            priority=NotificationPriority(str(value.get("priority") or NotificationPriority.NORMAL.value)),
+            item_id=str(value.get("item_id") or ""),
+            item_type=str(value.get("item_type") or ""),
+            category=str(value.get("category") or ""),
+            title=_redact(str(value.get("title") or "")),
+            message=_redact(str(value.get("message") or "")),
+            deep_link=str(value.get("deep_link") or ""),
+            created_at=str(value.get("created_at") or ""),
+            dedup_key=str(value.get("dedup_key") or value.get("id") or ""),
+            system_critical=bool(value.get("system_critical")),
+            metadata=_safe_metadata(value.get("metadata")),
+        )
+
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -174,6 +201,17 @@ def _redact(text: str) -> str:
     if result.reason == "secret_redacted" and result.decision != PrivacyDecision.ALLOW:
         return result.redacted_text or "[REDACTED_SECRET]"
     return text or ""
+
+
+def _safe_metadata(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return {}
+    allowed = {"status", "reason", "escalated_from"}
+    return {
+        str(key): _redact(str(item))
+        for key, item in value.items()
+        if str(key) in allowed
+    }
 
 
 class ReviewNotificationService:
@@ -200,14 +238,70 @@ class ReviewNotificationService:
         now: datetime | None = None,
     ) -> list[ReviewNotification]:
         moment = now or _utc_now()
-        emitted: list[ReviewNotification] = []
+        candidates: list[ReviewNotification] = []
         for item in items:
             notification = self._notification_for(item, moment)
             if notification is None:
                 continue
-            if self._suppressed(notification.dedup_key, moment):
+            candidates.append(notification)
+        return self.deduplicate(candidates, now=moment)
+
+    def create(
+        self,
+        item: Mapping[str, Any],
+        *,
+        notification_type: NotificationType | str | None = None,
+        priority: NotificationPriority | str | None = None,
+        now: datetime | None = None,
+    ) -> ReviewNotification:
+        """Create and persist one sanitized notification for an inbox item."""
+
+        moment = now or _utc_now()
+        if notification_type is None:
+            notification = self._notification_for(item, moment)
+            if notification is None:
+                raise ValueError("notification_not_required")
+        else:
+            resolved_type = NotificationType(str(notification_type))
+            resolved_priority = (
+                NotificationPriority(str(priority))
+                if priority is not None
+                else priority_for(
+                    category=str(item.get("category") or ""),
+                    risk_level=str(item.get("risk_level") or ""),
+                    change_type=str(item.get("change_type") or ""),
+                )
+            )
+            notification = self._build(
+                resolved_type,
+                resolved_priority,
+                item,
+                _redact(str(item.get("title") or "")),
+                moment,
+            )
+        existing = self._stored_notification(notification.dedup_key)
+        if existing is not None:
+            return existing
+        self._remember(notification, moment)
+        self._save_state()
+        return notification
+
+    def deduplicate(
+        self,
+        notifications: Iterable[ReviewNotification],
+        *,
+        now: datetime | None = None,
+    ) -> list[ReviewNotification]:
+        """Return only notifications not suppressed by state or cooldown."""
+
+        moment = now or _utc_now()
+        emitted: list[ReviewNotification] = []
+        seen: set[str] = set()
+        for notification in notifications:
+            if notification.dedup_key in seen or self._suppressed(notification, moment):
                 continue
-            self._mark_emitted(notification.dedup_key, moment)
+            seen.add(notification.dedup_key)
+            self._remember(notification, moment)
             emitted.append(notification)
         self._save_state()
         return emitted
@@ -219,6 +313,9 @@ class ReviewNotificationService:
         *,
         now: datetime | None = None,
     ) -> ReviewNotification:
+        status = str(status or "").strip().lower()
+        if status not in {"approved", "rejected", "deferred", "completed", "expired"}:
+            raise ValueError(f"invalid_notification_decision_status:{status}")
         moment = now or _utc_now()
         item_id = str(item.get("item_id") or item.get("review_id") or item.get("approval_id") or "")
         category = str(item.get("category") or "")
@@ -233,23 +330,63 @@ class ReviewNotificationService:
             category=category,
             title=title,
             message=_redact(f"Entscheidung '{status}' erfasst"),
-            deep_link=self._deep_link(item_id),
+            deep_link=self.deep_link(item_id),
             created_at=moment.isoformat(timespec="seconds"),
             dedup_key=dedup,
             metadata={"status": status},
         )
+        self._dismiss_item_notifications(item_id)
+        self._remember(notification, moment)
+        self._save_state()
         return notification
 
-    def acknowledge(self, dedup_key: str) -> None:
+    def acknowledge(self, dedup_key: str, *, now: datetime | None = None) -> None:
         entry = self._state.setdefault(dedup_key, {})
         entry["acknowledged"] = True
+        entry["acknowledged_at"] = (now or _utc_now()).isoformat(timespec="seconds")
         self._save_state()
 
     def snooze(self, dedup_key: str, until: datetime | str) -> None:
         iso = until.isoformat(timespec="seconds") if isinstance(until, datetime) else str(until)
+        if _parse_ts(iso) is None:
+            raise ValueError("invalid_notification_snooze_until")
         entry = self._state.setdefault(dedup_key, {})
         entry["snoozed_until"] = iso
         self._save_state()
+
+    def dismiss(self, dedup_key: str, *, now: datetime | None = None) -> None:
+        entry = self._state.setdefault(dedup_key, {})
+        entry["dismissed"] = True
+        entry["dismissed_at"] = (now or _utc_now()).isoformat(timespec="seconds")
+        self._save_state()
+
+    def list_open(self, *, now: datetime | None = None) -> list[ReviewNotification]:
+        moment = now or _utc_now()
+        rows = []
+        for key, entry in self._state.items():
+            notification = self._stored_notification(key)
+            if notification is None or entry.get("acknowledged") or entry.get("dismissed"):
+                continue
+            if self._snoozed(key, moment):
+                continue
+            rows.append(notification)
+        return sorted(
+            rows,
+            key=lambda row: (-_PRIORITY_RANK[row.priority], row.created_at, row.id),
+        )
+
+    def list_overdue(self, *, now: datetime | None = None) -> list[ReviewNotification]:
+        overdue_types = {
+            NotificationType.REVIEW_OVERDUE,
+            NotificationType.APPROVAL_EXPIRED,
+            NotificationType.DEFERRED_DUE,
+            NotificationType.RECOVERY_REQUIRED,
+        }
+        return [row for row in self.list_open(now=now) if row.type in overdue_types]
+
+    def deep_link(self, item_id: str) -> str:
+        safe_id = quote(str(item_id or ""), safe="")
+        return f"{self.deep_link_base}/{safe_id}" if safe_id else self.deep_link_base
 
     def is_acknowledged(self, dedup_key: str) -> bool:
         return bool(self._state.get(dedup_key, {}).get("acknowledged"))
@@ -286,10 +423,21 @@ class ReviewNotificationService:
         created = _parse_ts(str(item.get("created_at") or ""))
         base_priority = priority_for(category=category, risk_level=risk_level, change_type=change_type)
 
+        if status == "recovery_required":
+            return self._build(
+                NotificationType.RECOVERY_REQUIRED,
+                NotificationPriority.CRITICAL,
+                item,
+                title,
+                now,
+            )
+
         if status == "deferred":
             due = _parse_ts(str(item.get("deferred_until") or ""))
             if due is not None and now >= due:
-                return self._build(NotificationType.DEFERRED_ITEM_DUE, base_priority, item, title, now)
+                return self._build(NotificationType.DEFERRED_DUE, base_priority, item, title, now)
+            if due is None and created is not None and now - created >= self.time_rules.deferred_reminder:
+                return self._build(NotificationType.DEFERRED_DUE, base_priority, item, title, now)
             return None
 
         if status != "pending":
@@ -307,7 +455,10 @@ class ReviewNotificationService:
                     title,
                     now,
                 )
-            if age >= (self.time_rules.approval_expiration - self.time_rules.expiring_window):
+            warning_window = self.time_rules.expiration_warning
+            if self.time_rules.expiring_window != timedelta(hours=2):
+                warning_window = self.time_rules.expiring_window
+            if age >= (self.time_rules.approval_expiration - warning_window):
                 return self._build(
                     NotificationType.APPROVAL_EXPIRING,
                     _max_priority(base_priority, NotificationPriority.HIGH),
@@ -324,6 +475,9 @@ class ReviewNotificationService:
                 title,
                 now,
             )
+
+        if age >= self.time_rules.warning_after:
+            base_priority = _max_priority(base_priority, NotificationPriority.NORMAL)
 
         if item_type == "approval":
             ntype = (
@@ -355,37 +509,78 @@ class ReviewNotificationService:
             category=str(item.get("category") or ""),
             title=title,
             message=_redact(_message_for(ntype, title)),
-            deep_link=self._deep_link(item_id),
+            deep_link=self.deep_link(item_id),
             created_at=now.isoformat(timespec="seconds"),
             dedup_key=dedup,
             system_critical=system_critical,
         )
 
-    def _deep_link(self, item_id: str) -> str:
-        return f"{self.deep_link_base}/{item_id}" if item_id else self.deep_link_base
-
     # -- state ------------------------------------------------------------
 
-    def _suppressed(self, dedup_key: str, now: datetime) -> bool:
+    def _suppressed(self, notification: ReviewNotification, now: datetime) -> bool:
+        dedup_key = notification.dedup_key
         if self.is_acknowledged(dedup_key):
             return True
-        if self._snoozed(dedup_key, now):
+        if bool(self._state.get(dedup_key, {}).get("dismissed")):
             return True
-        return self._in_cooldown(dedup_key, now)
+        if self._snoozed(dedup_key, now) or self._item_snoozed(notification.item_id, now):
+            return True
+        escalated = notification.type in {
+            NotificationType.REVIEW_OVERDUE,
+            NotificationType.APPROVAL_EXPIRING,
+            NotificationType.APPROVAL_EXPIRED,
+            NotificationType.DEFERRED_DUE,
+            NotificationType.RECOVERY_REQUIRED,
+        }
+        interval = self.time_rules.escalation_interval if escalated else self.time_rules.cooldown
+        return self._in_cooldown(dedup_key, now, interval)
 
     def _snoozed(self, dedup_key: str, now: datetime) -> bool:
         until = _parse_ts(str(self._state.get(dedup_key, {}).get("snoozed_until") or ""))
         return until is not None and now < until
 
-    def _in_cooldown(self, dedup_key: str, now: datetime) -> bool:
+    def _item_snoozed(self, item_id: str, now: datetime) -> bool:
+        if not item_id:
+            return False
+        for key, entry in self._state.items():
+            value = entry.get("notification")
+            if not isinstance(value, Mapping) or str(value.get("item_id") or "") != item_id:
+                continue
+            if self._snoozed(key, now):
+                return True
+        return False
+
+    def _in_cooldown(self, dedup_key: str, now: datetime, interval: timedelta) -> bool:
         last = _parse_ts(str(self._state.get(dedup_key, {}).get("last_emitted") or ""))
         if last is None:
             return False
-        return (now - last) < self.time_rules.escalation_interval
+        return (now - last) < interval
 
-    def _mark_emitted(self, dedup_key: str, now: datetime) -> None:
-        entry = self._state.setdefault(dedup_key, {})
+    def _remember(self, notification: ReviewNotification, now: datetime) -> None:
+        self._dismiss_item_notifications(notification.item_id, except_key=notification.dedup_key)
+        entry = self._state.setdefault(notification.dedup_key, {})
         entry["last_emitted"] = now.isoformat(timespec="seconds")
+        entry["notification"] = notification.to_dict()
+
+    def _stored_notification(self, dedup_key: str) -> ReviewNotification | None:
+        value = self._state.get(dedup_key, {}).get("notification")
+        if not isinstance(value, Mapping):
+            return None
+        try:
+            return ReviewNotification.from_dict(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _dismiss_item_notifications(self, item_id: str, *, except_key: str = "") -> None:
+        if not item_id:
+            return
+        for key, entry in self._state.items():
+            if key == except_key:
+                continue
+            value = entry.get("notification")
+            if isinstance(value, Mapping) and str(value.get("item_id") or "") == item_id:
+                entry["dismissed"] = True
+                entry["dismissed_at"] = _utc_now().isoformat(timespec="seconds")
 
     def _load_state(self) -> None:
         if self._state_path is None or not self._state_path.exists():
@@ -401,7 +596,15 @@ class ReviewNotificationService:
         if self._state_path is None:
             return
         self._state_path.parent.mkdir(parents=True, exist_ok=True)
-        self._state_path.write_text(json.dumps(self._state, ensure_ascii=False, indent=2), encoding="utf-8")
+        temporary = self._state_path.with_name(f"{self._state_path.name}.{uuid4().hex}.tmp")
+        try:
+            with temporary.open("w", encoding="utf-8") as handle:
+                handle.write(json.dumps(self._state, ensure_ascii=False, indent=2, sort_keys=True))
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self._state_path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
 
 def _dedup_key(ntype: NotificationType, item_id: str, discriminator: str) -> str:
@@ -414,10 +617,12 @@ _MESSAGES = {
     NotificationType.CRITICAL_APPROVAL_REQUESTED: "Kritische Freigabe erforderlich",
     NotificationType.REVIEW_REQUIRED: "Prüfung erforderlich",
     NotificationType.REVIEW_OVERDUE: "Überfällig - bitte entscheiden",
+    NotificationType.DEFERRED_DUE: "Zurückgestellter Eintrag ist fällig",
     NotificationType.DEFERRED_ITEM_DUE: "Zurückgestellter Eintrag ist fällig",
     NotificationType.APPROVAL_EXPIRING: "Freigabe läuft bald ab",
     NotificationType.APPROVAL_EXPIRED: "Freigabe abgelaufen",
     NotificationType.DECISION_RECORDED: "Entscheidung erfasst",
+    NotificationType.RECOVERY_REQUIRED: "Manuelle Wiederherstellung erforderlich",
 }
 
 
