@@ -70,6 +70,26 @@ def _risk_is_idempotent(risk_level: Any) -> bool:
     return str(risk_level or "").strip().lower() in _IDEMPOTENT_RISK
 
 
+def _connector_audit_context(row: Mapping[str, Any], *, result: str) -> dict[str, Any]:
+    """Return only the non-secret connector binding fields allowed in audit."""
+
+    payload = row.get("payload")
+    if not isinstance(payload, Mapping) or not payload.get("connector_id"):
+        return {}
+    return {
+        "requested_action": _sanitize_text(payload.get("requested_action") or payload.get("action") or ""),
+        "effective_action": _sanitize_text(payload.get("effective_action") or payload.get("action_type") or ""),
+        "connector_id": _sanitize_text(payload.get("connector_id") or ""),
+        "workspace_id": _sanitize_text(payload.get("workspace_id") or row.get("workspace_id") or ""),
+        "scope_diff": _sanitize_payload(payload.get("scope_diff") or {
+            "added": payload.get("added_scopes") or [],
+            "removed": payload.get("removed_scopes") or [],
+        }),
+        "payload_hash": _sanitize_text(payload.get("payload_hash") or ""),
+        "result": result,
+    }
+
+
 class _FileLock:
     """Portable advisory lock via O_CREAT|O_EXCL with stale-lock recovery.
 
@@ -428,6 +448,7 @@ class NativeApprovalQueue:
                         "step_id": str(row.get("step_id") or ""),
                         "tool_name": str(row.get("tool_name") or row.get("command") or ""),
                     }
+                    event.update(_connector_audit_context(row, result=new_status))
                     history = row.get("decision_audit")
                     if not isinstance(history, list):
                         history = []
@@ -493,16 +514,18 @@ class NativeApprovalQueue:
                 if idempotency_key:
                     row["idempotency_key"] = idempotency_key
                 row["version"] = current_version + 1
+                execution_event = {
+                    "approval_id": approval_id,
+                    "old_status": old_status,
+                    "new_status": "executing",
+                    "actor": executor_id,
+                    "note": "execution_lease_acquired",
+                    "timestamp": timestamp,
+                }
+                execution_event.update(_connector_audit_context(row, result="execution_started"))
                 row["decision_audit"] = [
                     *history,
-                    {
-                        "approval_id": approval_id,
-                        "old_status": old_status,
-                        "new_status": "executing",
-                        "actor": executor_id,
-                        "note": "execution_lease_acquired",
-                        "timestamp": timestamp,
-                    },
+                    execution_event,
                 ]
                 self._write_all(rows)
                 return dict(row)
@@ -539,16 +562,18 @@ class NativeApprovalQueue:
                 row["execution_token"] = ""
                 row["lease_expires_at"] = ""
                 row["version"] = current_version + 1
+                completion_event = {
+                    "approval_id": approval_id,
+                    "old_status": "executing",
+                    "new_status": result_status,
+                    "actor": str(row.get("executor_id") or "executor"),
+                    "note": "execution_completed",
+                    "timestamp": timestamp,
+                }
+                completion_event.update(_connector_audit_context(row, result=result_status))
                 row["decision_audit"] = [
                     *history,
-                    {
-                        "approval_id": approval_id,
-                        "old_status": "executing",
-                        "new_status": result_status,
-                        "actor": str(row.get("executor_id") or "executor"),
-                        "note": "execution_completed",
-                        "timestamp": timestamp,
-                    },
+                    completion_event,
                 ]
                 self._write_all(rows)
                 return dict(row)
