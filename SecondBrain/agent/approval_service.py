@@ -170,6 +170,7 @@ class AgentApprovalService:
         *,
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         return self._decide(
             approval_id,
@@ -178,6 +179,7 @@ class AgentApprovalService:
             note=note,
             correlation_id=correlation_id,
             causation_id=causation_id,
+            expected_version=expected_version,
         )
 
     def reject(
@@ -188,6 +190,7 @@ class AgentApprovalService:
         *,
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         return self._decide(
             approval_id,
@@ -196,6 +199,7 @@ class AgentApprovalService:
             note=note,
             correlation_id=correlation_id,
             causation_id=causation_id,
+            expected_version=expected_version,
         )
 
     def defer(
@@ -218,6 +222,39 @@ class AgentApprovalService:
             causation_id=causation_id,
         )
 
+    def begin_execution(
+        self,
+        approval_id: str,
+        *,
+        executor_id: str,
+        lease_seconds: int = 300,
+        expected_version: int | None = None,
+    ) -> dict[str, Any]:
+        return self.queue.begin_execution(
+            approval_id,
+            executor_id=executor_id,
+            lease_seconds=lease_seconds,
+            expected_version=expected_version,
+        )
+
+    def complete_execution(
+        self,
+        approval_id: str,
+        *,
+        execution_token: str,
+        expected_version: int | None = None,
+        result_status: str = "completed",
+    ) -> dict[str, Any]:
+        return self.queue.complete_execution(
+            approval_id,
+            execution_token=execution_token,
+            expected_version=expected_version,
+            result_status=result_status,
+        )
+
+    def recover_stale_leases(self) -> list[dict[str, Any]]:
+        return self.queue.recover_stale_leases()
+
     def get(self, approval_id: str) -> dict[str, Any] | None:
         return self.queue.get(approval_id)
 
@@ -237,6 +274,7 @@ class AgentApprovalService:
         deferred_until: str = "",
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         step_state = self.bridge.step_state_for_status(status)
         updated = self.queue.transition(
@@ -246,6 +284,7 @@ class AgentApprovalService:
             note=note,
             deferred_until=deferred_until,
             step_state=step_state.value,
+            expected_version=expected_version,
         )
         if updated is None:
             raise KeyError(f"approval_not_found:{approval_id}")

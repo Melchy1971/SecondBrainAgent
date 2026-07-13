@@ -195,6 +195,46 @@ class SafeExecutor:
         finally:
             self.plan_store.release_step(plan_id, step_id)
 
+    def is_idempotent_tool(self, tool_name: str) -> bool:
+        """Idempotent = safe to re-run automatically (read/low-risk tools)."""
+
+        try:
+            return self.registry.get(tool_name).risk_level.severity <= 2
+        except Exception:  # noqa: BLE001 - unknown tools are treated as non-idempotent
+            return False
+
+    def resume_after_recovery(
+        self,
+        approval_id: str,
+        *,
+        executor_id: str = "agent_executor",
+    ) -> dict[str, Any]:
+        """Resume an execution that crashed mid-flight.
+
+        Only idempotent tools may be auto-resumed; a non-idempotent tool (send,
+        delete, external write) whose outcome is unclear must go back through a
+        human decision rather than risk a duplicate side effect.
+        """
+
+        queue = self.approval_bridge.queue
+        approval = queue.get(approval_id)
+        if approval is None:
+            raise KeyError(f"approval_not_found:{approval_id}")
+        status = str(approval.get("status") or "")
+        if status != "recovery_required":
+            return {"ok": False, "approval_id": approval_id, "status": status, "reason": "not_in_recovery"}
+        if not bool(approval.get("tool_idempotent")):
+            return {
+                "ok": False,
+                "approval_id": approval_id,
+                "status": "manual_review_required",
+                "reason": "non_idempotent_tool_requires_review",
+            }
+        leased = queue.begin_execution(approval_id, executor_id=executor_id)
+        token = str(leased["execution_token"])
+        done = queue.complete_execution(approval_id, execution_token=token, result_status="completed")
+        return {"ok": True, "approval_id": approval_id, "status": str(done.get("status") or "completed")}
+
     def _approval_for_step(self, plan_id: str, step_id: str) -> dict[str, Any] | None:
         for approval in reversed(self.approval_bridge.queue.list()):
             if approval.get("plan_id") == plan_id and approval.get("step_id") == step_id:

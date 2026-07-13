@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -12,6 +13,10 @@ from .tool_registry import ToolRegistry
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+class StalePlanError(RuntimeError):
+    """Raised when a plan write would overwrite a newer version (stale resume)."""
 
 
 class AgentPlanStore:
@@ -47,6 +52,7 @@ class AgentPlanStore:
         metadata = dict(record.get("metadata") or {})
         metadata["status"] = str(record.get("status") or metadata.get("status") or "pending")
         metadata["approval_ids"] = list(record.get("approval_ids") or metadata.get("approval_ids") or [])
+        metadata["version"] = int(record.get("version") or 0)
         return TaskPlan(
             plan_id=str(record["plan_id"]),
             intent=str(record.get("intent") or ""),
@@ -54,8 +60,24 @@ class AgentPlanStore:
             steps=steps,
         )
 
-    def update(self, plan: TaskPlan) -> TaskPlan:
+    def update(self, plan: TaskPlan, *, expected_version: int | None = None) -> TaskPlan:
+        if expected_version is not None:
+            current = self.current_version(plan.plan_id)
+            if int(expected_version) != current:
+                raise StalePlanError(
+                    f"plan_version_conflict:{plan.plan_id}:{expected_version}!={current}"
+                )
         return self._write(plan)
+
+    def current_version(self, plan_id: str) -> int:
+        path = self._path(plan_id)
+        if not path.exists():
+            return 0
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, TypeError):
+            return 0
+        return int(record.get("version") or 0) if isinstance(record, dict) else 0
 
     def list_waiting(self) -> list[TaskPlan]:
         if not self.root.exists():
@@ -92,10 +114,12 @@ class AgentPlanStore:
         self.root.mkdir(parents=True, exist_ok=True)
         path = self._path(plan.plan_id)
         created_at = _utc_now()
+        previous_version = 0
         if path.exists():
             try:
                 existing = json.loads(path.read_text(encoding="utf-8"))
                 created_at = str(existing.get("created_at") or created_at)
+                previous_version = int(existing.get("version") or 0)
             except (OSError, json.JSONDecodeError, TypeError, AttributeError):
                 pass
 
@@ -121,6 +145,8 @@ class AgentPlanStore:
         status = self._plan_status(plan)
         plan.metadata["status"] = status
         plan.metadata["approval_ids"] = sorted(approval_ids)
+        new_version = previous_version + 1
+        plan.metadata["version"] = new_version
         record = {
             "plan_id": plan.plan_id,
             "intent": plan.intent,
@@ -128,9 +154,15 @@ class AgentPlanStore:
             "status": status,
             "steps": step_rows,
             "approval_ids": sorted(approval_ids),
+            "version": new_version,
             "created_at": created_at,
             "updated_at": _utc_now(),
         }
+        if path.exists():
+            try:
+                shutil.copy2(path, path.with_name(path.name + ".bak"))
+            except OSError:
+                pass
         temporary = path.with_name(f"{path.name}.{uuid4().hex}.tmp")
         try:
             temporary.write_text(json.dumps(record, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
@@ -146,7 +178,15 @@ class AgentPlanStore:
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
-            raise RuntimeError(f"agent_plan_corrupt:{plan_id}") from exc
+            backup = path.with_name(path.name + ".bak")
+            if backup.exists():
+                try:
+                    shutil.copy2(backup, path)
+                    record = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    raise RuntimeError(f"agent_plan_corrupt:{plan_id}") from exc
+            else:
+                raise RuntimeError(f"agent_plan_corrupt:{plan_id}") from exc
         if not isinstance(record, dict) or record.get("plan_id") != plan_id:
             raise RuntimeError(f"agent_plan_invalid:{plan_id}")
         return record
