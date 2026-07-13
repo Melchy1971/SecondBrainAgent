@@ -22,6 +22,7 @@ class UnifiedReviewInbox:
         approval_service: AgentApprovalService | None = None,
         event_bus: EventBus | None = None,
         memory_governance: Any | None = None,
+        notifier: Any | None = None,
     ) -> None:
         root = Path(project_root or Path.cwd()).resolve()
         self.approvals = approval_queue or NativeApprovalQueue(root)
@@ -38,6 +39,9 @@ class UnifiedReviewInbox:
         # memory-governed review is decided. Duck-typed to avoid an import cycle
         # with secondbrain.agent.memory_service.
         self.memory_governance = memory_governance
+        # Optional review-notification collaborator (decision events).
+        self.notifier = notifier
+        self._notification_service = None
 
     def create_review(
         self,
@@ -280,7 +284,50 @@ class UnifiedReviewInbox:
         result = self.get(canonical_id)
         if result is None:
             raise RuntimeError(f"inbox_item_missing_after_decision:{canonical_id}")
+        if self.notifier is not None and result is not None:
+            self.notifier.record_decision(result, status)
         return result
+
+    def notification_service(self):
+        """Lazily create the persistent review-notification service."""
+
+        if self._notification_service is None:
+            from secondbrain.notifications.review_notifications import ReviewNotificationService
+
+            state_path = self.approvals.project_root / "runtime" / "native" / "review_notifications_state.json"
+            self._notification_service = ReviewNotificationService(state_path=state_path)
+        return self._notification_service
+
+    def notification_items(self) -> list[dict[str, Any]]:
+        """Inbox items enriched with the fields notifications need.
+
+        The public list_all view is intentionally not changed; enrichment adds
+        ``deferred_until`` and ``change_type`` pulled from the raw records.
+        """
+
+        enriched: list[dict[str, Any]] = []
+        for view in self.list_all():
+            item = dict(view)
+            if view["item_type"] == "approval":
+                raw = self.approvals.get(view["item_id"])
+            else:
+                raw = self.reviews.get(view["item_id"])
+            if raw:
+                item["deferred_until"] = str(raw.get("deferred_until") or "")
+                meta = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
+                item["change_type"] = str(
+                    raw.get("change_type") or meta.get("change_type") or raw.get("intent") or ""
+                )
+            enriched.append(item)
+        return enriched
+
+    def evaluate_notifications(self, *, now=None, service=None):
+        svc = service or self.notification_service()
+        return svc.evaluate(self.notification_items(), now=now)
+
+    def notification_badge(self, *, now=None, service=None) -> int:
+        svc = service or self.notification_service()
+        return svc.badge_count(self.notification_items(), now=now)
 
     def _apply_memory_governance(
         self,

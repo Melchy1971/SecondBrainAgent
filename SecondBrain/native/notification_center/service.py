@@ -9,6 +9,19 @@ from typing import Any
 from .models import NotificationItem, NotificationSnapshot, VALID_CATEGORIES, VALID_LEVELS, normalize_project_root
 
 
+# Review-notification priority -> desktop notification level.
+_REVIEW_PRIORITY_LEVEL = {
+    "critical": ("error", True),
+    "high": ("warning", True),
+    "normal": ("info", False),
+    "info": ("info", False),
+}
+
+
+def _review_level(priority: str) -> tuple[str, bool]:
+    return _REVIEW_PRIORITY_LEVEL.get(str(priority).strip().lower(), ("info", False))
+
+
 class NotificationCenterService:
     """Native notification and event surface for the Jarvis desktop suite.
 
@@ -115,6 +128,63 @@ class NotificationCenterService:
         with self.notifications_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(item.to_dict(), ensure_ascii=False) + "\n")
         return {"ok": True, "notification": item.to_dict()}
+
+    def push_review_notifications(self, notifications, *, deduplicate: bool = True) -> dict[str, Any]:
+        """Bridge review/approval notifications into the desktop center.
+
+        Deduplicates on the review notification ``dedup_key`` so the same alert
+        is not surfaced twice, maps priority to a desktop level and flags
+        critical items as action-required system notifications.
+        """
+
+        existing: set[str] = set()
+        if deduplicate:
+            for row in self._load_raw():
+                key = str((row.get("metadata") or {}).get("dedup_key") or "")
+                if key:
+                    existing.add(key)
+        pushed: list[dict[str, Any]] = []
+        for notification in notifications:
+            data = notification.to_dict() if hasattr(notification, "to_dict") else dict(notification)
+            key = str(data.get("dedup_key") or "")
+            if deduplicate and key and key in existing:
+                continue
+            level, action_required = _review_level(str(data.get("priority") or "info"))
+            result = self.notify(
+                title=str(data.get("title") or "Review"),
+                message=str(data.get("message") or ""),
+                level=level,
+                category="security",
+                source="review_inbox",
+                action_required=action_required,
+                actions=["approve", "reject", "defer"],
+                metadata={
+                    "dedup_key": key,
+                    "deep_link": data.get("deep_link", ""),
+                    "type": data.get("type", ""),
+                    "priority": data.get("priority", ""),
+                    "item_id": data.get("item_id", ""),
+                    "system_critical": bool(data.get("system_critical")),
+                },
+            )
+            if key:
+                existing.add(key)
+            pushed.append(result["notification"])
+        return {"ok": True, "pushed": len(pushed), "badge": self.review_badge()}
+
+    def review_badge(self) -> int:
+        """Count of unread action-required review notifications (desktop badge)."""
+
+        read_state = self._read_state()
+        count = 0
+        for row in self._load_raw():
+            if str(row.get("source") or "") != "review_inbox":
+                continue
+            if read_state.get(str(row.get("id") or ""), bool(row.get("read"))):
+                continue
+            if bool(row.get("action_required")) or str(row.get("level")) in {"warning", "error", "action_required"}:
+                count += 1
+        return count
 
     def mark_read(self, notification_id: str) -> dict[str, Any]:
         state = self._read_state()
