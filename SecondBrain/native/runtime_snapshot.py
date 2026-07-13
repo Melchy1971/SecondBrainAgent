@@ -212,6 +212,10 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
     governance_metrics = _safe_call(
         lambda: _governance_metrics_status(base),
         {
+            "open_items": 0,
+            "critical_items": 0,
+            "overdue_items": 0,
+            "blocked_unsafe_actions": 0,
             "open_approvals": 0,
             "critical_approvals": 0,
             "overdue_reviews": 0,

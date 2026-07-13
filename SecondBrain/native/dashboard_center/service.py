@@ -182,6 +182,9 @@ class NativeDashboardService:
         critical = int(view.get("critical_approvals", 0))
         overdue = int(view.get("overdue_reviews", 0))
         blocked = int(view.get("blocked_unsafe_executions", 0))
+        open_items = int(view.get("open_items", open_approvals))
+        critical_items = int(view.get("critical_items", critical))
+        overdue_items = int(view.get("overdue_items", overdue))
         warnings: list[str] = []
         if overdue:
             warnings.append("reviews_overdue")
@@ -189,6 +192,10 @@ class NativeDashboardService:
             warnings.append("critical_approvals_pending")
         status = "warning" if warnings else "ready"
         value = {
+            "open_items": open_items,
+            "critical_items": critical_items,
+            "overdue_items": overdue_items,
+            "blocked_unsafe_actions": int(view.get("blocked_unsafe_actions", blocked)),
             "open_approvals": open_approvals,
             "critical_approvals": critical,
             "overdue_reviews": overdue,

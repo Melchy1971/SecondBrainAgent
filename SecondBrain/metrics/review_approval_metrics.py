@@ -15,11 +15,10 @@ Privacy guarantees for the export:
 from __future__ import annotations
 
 import json
-from bisect import bisect_left
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from secondbrain.agent.privacy import PrivacyDecision, PrivacyGuard, PrivacyMode
 
@@ -64,6 +63,7 @@ def _percentile(sorted_values: Sequence[float], pct: float) -> float:
 class MetricsResult:
     volume: dict[str, int]
     times: dict[str, float]
+    security: dict[str, int]
     quality: dict[str, float]
     segments: dict[str, dict[str, int]]
     trends: dict[str, dict[str, int]]
@@ -72,10 +72,11 @@ class MetricsResult:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "schema": "secondbrain.metrics.review_approval.v1",
+            "schema": "secondbrain.metrics.review_approval.v2",
             "generated_at": self.generated_at,
             "volume": dict(self.volume),
             "times": dict(self.times),
+            "security": dict(self.security),
             "quality": dict(self.quality),
             "segments": {dim: dict(counts) for dim, counts in self.segments.items()},
             "trends": {window: dict(counts) for window, counts in self.trends.items()},
@@ -92,6 +93,7 @@ class ReviewApprovalMetrics:
         now: datetime | None = None,
     ) -> None:
         self._now = now
+        self._corrupted = 0
         if inbox is not None:
             self.approvals_records = list(inbox.approvals.list())
             self.reviews_records = list(inbox.reviews.list())
@@ -100,29 +102,36 @@ class ReviewApprovalMetrics:
             self.project_root = Path(project_root or Path.cwd()).resolve()
             self.approvals_records = self._read_jsonl(self._native_path("approval_queue.jsonl"))[0]
             self.reviews_records = self._read_jsonl(self._native_path("review_queue.jsonl"))[0]
-        self._corrupted = 0
+        self._base_corrupted = self._corrupted
 
     # -- public -----------------------------------------------------------
 
     def compute(self, *, window_days: int | None = None) -> MetricsResult:
         now = self._now or _utc_now()
-        self._corrupted = 0
+        self._corrupted = self._base_corrupted
         items = self._items(window_days=window_days, now=now)
 
         volume = self._volume(items)
         times = self._times(items, now=now)
         quality = self._quality(items)
         segments = {dim: self._segment(items, dim) for dim in _SEGMENT_DIMENSIONS}
+        segments["time_range"] = self._time_segment(items, now=now)
         trends = {
             "7d": self._window_volume(items, now=now, days=7),
             "30d": self._window_volume(items, now=now, days=30),
         }
         # Audit-derived counters (tolerant of missing/corrupt files).
-        quality.update(self._audit_counters())
+        security, operational_quality = self._audit_metrics(items)
+        quality.update(operational_quality)
+        # Compatibility aliases used by the v30.78 dashboard/tests.
+        quality.update(security)
+        quality["duplicate_prevention_count"] = security["duplicate_execution_prevented_count"]
+        quality["resume_failure_count"] = int(operational_quality["resume_failure_count"])
 
         return MetricsResult(
             volume=volume,
             times=times,
+            security=security,
             quality=quality,
             segments=segments,
             trends=trends,
@@ -140,15 +149,26 @@ class ReviewApprovalMetrics:
 
         now = self._now or _utc_now()
         result = self.compute()
+        items = self._items(window_days=None, now=now)
         segments = result.segments["category"]
         most_common = max(segments.items(), key=lambda kv: kv[1])[0] if segments else ""
+        open_items = sum(
+            1 for item in items if item["status"] in {"pending", "deferred", "recovery_required"}
+        )
+        critical_items = self._critical_pending(now)
+        overdue_items = self._overdue_pending(now)
+        blocked_actions = result.security["blocked_unsafe_execution_count"]
         return _scrub(
             {
+                "open_items": open_items,
+                "critical_items": critical_items,
+                "overdue_items": overdue_items,
+                "blocked_unsafe_actions": blocked_actions,
                 "open_approvals": result.volume["pending_approvals"],
-                "critical_approvals": self._critical_pending(now),
-                "overdue_reviews": self._overdue_pending(now),
+                "critical_approvals": critical_items,
+                "overdue_reviews": overdue_items,
                 "average_decision_time": result.times["average_decision_time"],
-                "blocked_unsafe_executions": result.quality.get("blocked_unsafe_execution_count", 0),
+                "blocked_unsafe_executions": blocked_actions,
                 "most_common_category": most_common,
                 "trend_7d": sum(result.trends["7d"].values()),
                 "trend_30d": sum(result.trends["30d"].values()),
@@ -171,12 +191,25 @@ class ReviewApprovalMetrics:
     def _normalize(self, record: Mapping[str, Any], *, kind: str) -> dict[str, Any]:
         metadata = record.get("metadata") if isinstance(record.get("metadata"), dict) else {}
         payload = record.get("payload") if isinstance(record.get("payload"), dict) else {}
+        audit_events = [
+            event
+            for event in (record.get("decision_audit") or [])
+            if isinstance(event, Mapping)
+        ]
+        decisions = {
+            str(event.get("new_status") or "").strip().lower()
+            for event in audit_events
+            if event.get("new_status")
+        }
         workspace = str(record.get("workspace_id") or metadata.get("workspace_id") or "") or "unassigned"
         tool = str(record.get("tool_name") or record.get("command") or "") or "none"
         connector = str(
             record.get("connector")
+            or record.get("connector_id")
             or metadata.get("connector")
+            or metadata.get("connector_id")
             or payload.get("connector")
+            or payload.get("connector_id")
             or ""
         ) or "none"
         risk = str(record.get("risk_level") or metadata.get("risk_level") or "") or "unspecified"
@@ -193,6 +226,9 @@ class ReviewApprovalMetrics:
             "created_at": _parse(record.get("created_at")),
             "decided_at": _parse(record.get("decided_at")),
             "deferred_until": _parse(record.get("deferred_until")),
+            "decisions": decisions,
+            "audit_events": audit_events,
+            "has_plan": bool(record.get("plan_id")),
         }
 
     # -- metric groups ----------------------------------------------------
@@ -205,13 +241,22 @@ class ReviewApprovalMetrics:
             by_status[item["status"]] = by_status.get(item["status"], 0) + 1
             if item["status"] == "pending" and item["kind"] == "approval":
                 pending_approvals += 1
+
+        def outcome_count(status: str) -> int:
+            return sum(
+                1
+                for item in items
+                if item["status"] == status or status in item.get("decisions", set())
+            )
+
         return {
             "created_total": len(items),
             "pending_total": by_status.get("pending", 0),
-            "approved_total": by_status.get("approved", 0),
-            "rejected_total": by_status.get("rejected", 0),
-            "deferred_total": by_status.get("deferred", 0),
-            "expired_total": by_status.get("expired", 0),
+            "approved_total": outcome_count("approved"),
+            "rejected_total": outcome_count("rejected"),
+            "deferred_total": outcome_count("deferred"),
+            "expired_total": outcome_count("expired"),
+            "recovery_required_total": outcome_count("recovery_required"),
             "pending_approvals": pending_approvals,
         }
 
@@ -222,12 +267,25 @@ class ReviewApprovalMetrics:
         for item in items:
             created = item["created_at"]
             decided = item["decided_at"]
-            if item["status"] in _DECIDED and created is not None and decided is not None and decided >= created:
+            was_decided = item["status"] in _DECIDED or bool(
+                set(item.get("decisions", set())) & _DECIDED
+            )
+            if was_decided and created is not None and decided is not None and decided >= created:
                 decision_secs.append((decided - created).total_seconds())
             if item["status"] == "deferred" and item["deferred_until"] is not None:
                 anchor = decided or created
                 if anchor is not None and item["deferred_until"] >= anchor:
                     deferred_secs.append((item["deferred_until"] - anchor).total_seconds())
+            deferred_started: datetime | None = None
+            for event in item.get("audit_events", []):
+                event_status = str(event.get("new_status") or "").strip().lower()
+                event_time = _parse(event.get("timestamp"))
+                if event_status == "deferred" and event_time is not None:
+                    deferred_started = event_time
+                elif event_status in {"approved", "rejected"} and deferred_started is not None and event_time is not None:
+                    if event_time >= deferred_started:
+                        deferred_secs.append((event_time - deferred_started).total_seconds())
+                    deferred_started = None
             if item["status"] == "pending" and created is not None:
                 oldest_pending = max(oldest_pending, (now - created).total_seconds())
         decision_secs.sort()
@@ -241,9 +299,16 @@ class ReviewApprovalMetrics:
 
     @staticmethod
     def _quality(items: Sequence[Mapping[str, Any]]) -> dict[str, float]:
-        approved = sum(1 for item in items if item["status"] == "approved")
-        rejected = sum(1 for item in items if item["status"] == "rejected")
-        deferred = sum(1 for item in items if item["status"] == "deferred")
+        def count(status: str) -> int:
+            return sum(
+                1
+                for item in items
+                if item["status"] == status or status in item.get("decisions", set())
+            )
+
+        approved = count("approved")
+        rejected = count("rejected")
+        deferred = count("deferred")
         decided = approved + rejected + deferred
         rate = (lambda n: round(n / decided, 4) if decided else 0.0)
         return {
@@ -256,9 +321,27 @@ class ReviewApprovalMetrics:
     def _segment(items: Sequence[Mapping[str, Any]], dimension: str) -> dict[str, int]:
         counts: dict[str, int] = {}
         for item in items:
-            key = str(item.get(dimension) or "unknown")
+            key = str(_scrub(str(item.get(dimension) or "unknown")))
             counts[key] = counts.get(key, 0) + 1
         return dict(sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
+
+    @staticmethod
+    def _time_segment(items: Sequence[Mapping[str, Any]], *, now: datetime) -> dict[str, int]:
+        counts = {"last_24h": 0, "days_2_to_7": 0, "days_8_to_30": 0, "older": 0}
+        for item in items:
+            created = item.get("created_at")
+            if created is None:
+                continue
+            age = max(timedelta(0), now - created)
+            if age <= timedelta(days=1):
+                counts["last_24h"] += 1
+            elif age <= timedelta(days=7):
+                counts["days_2_to_7"] += 1
+            elif age <= timedelta(days=30):
+                counts["days_8_to_30"] += 1
+            else:
+                counts["older"] += 1
+        return counts
 
     @staticmethod
     def _window_volume(items: Sequence[Mapping[str, Any]], *, now: datetime, days: int) -> dict[str, int]:
@@ -276,6 +359,9 @@ class ReviewApprovalMetrics:
         critical = {"delete_request", "connector_permission_change", "credential_change", "sensitive_document"}
         count = 0
         for item in self._items(window_days=None, now=now):
+            if item["status"] == "recovery_required":
+                count += 1
+                continue
             if item["status"] != "pending":
                 continue
             if item["category"] in critical or item["risk"] in {"critical", "destructive"}:
@@ -289,41 +375,109 @@ class ReviewApprovalMetrics:
             created = item["created_at"]
             if item["status"] == "pending" and created is not None and (now - created).total_seconds() >= threshold:
                 count += 1
+            elif (
+                item["status"] == "deferred"
+                and item.get("deferred_until") is not None
+                and item["deferred_until"] <= now
+            ):
+                count += 1
+            elif item["status"] == "recovery_required":
+                count += 1
         return count
 
     # -- audit counters ---------------------------------------------------
 
-    def _audit_counters(self) -> dict[str, int]:
-        duplicate = 0
-        blocked = 0
-        resume_failures = 0
-        secret_redactions = 0
-
-        gov_rows, _ = self._read_jsonl(self._native_path("memory_governance_audit.jsonl"))
-        for row in gov_rows:
-            decision = str(row.get("decision") or "")
-            reason = str(row.get("reason") or "")
-            if decision == "duplicate":
-                duplicate += 1
-            if decision == "blocked":
-                blocked += 1
-                if reason in {"secret_blocked", "credential_blocked"}:
-                    secret_redactions += 1
-
-        action_rows, _ = self._read_jsonl(self._native_path("action_audit.jsonl"))
-        for row in action_rows:
-            status = str(row.get("status") or "")
-            if status in {"blocked", "rejected"}:
-                blocked += 1
-            if "resume" in str(row.get("command") or "").lower() and status in {"error", "failed"}:
-                resume_failures += 1
-
-        return {
-            "duplicate_prevention_count": duplicate,
-            "blocked_unsafe_execution_count": blocked,
-            "resume_failure_count": resume_failures,
-            "secret_redaction_count": secret_redactions,
+    def _audit_metrics(
+        self,
+        items: Sequence[Mapping[str, Any]],
+    ) -> tuple[dict[str, int], dict[str, float]]:
+        security = {
+            "blocked_unsafe_execution_count": 0,
+            "duplicate_execution_prevented_count": 0,
+            "stale_decision_conflict_count": 0,
+            "secret_redaction_count": 0,
+            "privacy_block_count": 0,
+            "workspace_mismatch_count": 0,
         }
+        resume_successes = sum(
+            1
+            for item in items
+            if item.get("kind") == "approval"
+            and item.get("has_plan")
+            and item.get("status") in {"executed", "completed"}
+        )
+        resume_failures = sum(
+            1
+            for item in items
+            if item.get("kind") == "approval"
+            and item.get("has_plan")
+            and item.get("status") == "failed"
+        )
+        reopened = 0
+
+        paths = (
+            "memory_governance_audit.jsonl",
+            "action_audit.jsonl",
+            "review_approval_audit.jsonl",
+            "approval_recovery_audit.jsonl",
+        )
+        fields = (
+            "event", "type", "status", "decision", "reason", "error",
+            "result", "command", "action", "note", "old_status", "new_status",
+        )
+        for name in paths:
+            rows, _ = self._read_jsonl(self._native_path(name))
+            for row in rows:
+                text = " ".join(str(row.get(field) or "").lower() for field in fields)
+                status = str(row.get("status") or row.get("decision") or row.get("result") or "").lower()
+                if status in {"blocked", "rejected", "denied", "approval_required"}:
+                    security["blocked_unsafe_execution_count"] += 1
+                duplicate_tokens = (
+                    "duplicate_execution", "already_consumed", "duplicate", "execution_in_progress",
+                )
+                if any(token in text for token in duplicate_tokens):
+                    security["duplicate_execution_prevented_count"] += 1
+                if any(token in text for token in ("version_conflict", "stale_decision", "stale_version")):
+                    security["stale_decision_conflict_count"] += 1
+                redaction_tokens = (
+                    "secret_blocked", "credential_blocked", "secret_redacted", "redaction",
+                )
+                if any(token in text for token in redaction_tokens):
+                    security["secret_redaction_count"] += 1
+                if any(token in text for token in ("privacy_mode", "privacy_block")):
+                    security["privacy_block_count"] += 1
+                if any(token in text for token in ("workspace_mismatch", "wrong_workspace", "binding_workspace")):
+                    security["workspace_mismatch_count"] += 1
+                if "resume" in text and status in {"completed", "executed", "success", "ok"}:
+                    resume_successes += 1
+                if "resume" in text and status in {"error", "failed", "failure"}:
+                    resume_failures += 1
+                if "reopen" in text:
+                    reopened += 1
+
+        for item in items:
+            for event in item.get("audit_events", []):
+                old_status = str(event.get("old_status") or "").lower()
+                new_status = str(event.get("new_status") or "").lower()
+                if old_status in {"approved", "rejected", "completed", "expired"} and new_status == "pending":
+                    reopened += 1
+
+        resume_total = resume_successes + resume_failures
+        resolved = sum(
+            1
+            for item in items
+            if item.get("status") in {"approved", "rejected", "executed", "completed", "expired"}
+            or bool(set(item.get("decisions", set())) & {"approved", "rejected"})
+        )
+        operational_quality = {
+            "resume_success_count": float(resume_successes),
+            "resume_failure_count": float(resume_failures),
+            "review_reopen_count": float(reopened),
+            "resume_success_rate": round(resume_successes / resume_total, 4) if resume_total else 0.0,
+            "resume_failure_rate": round(resume_failures / resume_total, 4) if resume_total else 0.0,
+            "review_reopen_rate": round(min(reopened / resolved, 1.0), 4) if resolved else 0.0,
+        }
+        return security, operational_quality
 
     # -- io ---------------------------------------------------------------
 

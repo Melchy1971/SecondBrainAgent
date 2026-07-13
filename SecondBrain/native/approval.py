@@ -552,11 +552,13 @@ class NativeApprovalQueue:
                     old_status = str(row.get("status") or "pending").strip().lower()
                     current_version = int(row.get("version") or 0)
                     if baseline != current_version:
+                        self._append_recovery_audit("stale_decision_conflict", 0)
                         raise ApprovalConcurrencyError(
                             f"approval_version_conflict:{approval_id}:{baseline}!={current_version}"
                         )
                     allowed = _VALID_APPROVAL_TRANSITIONS.get(old_status, frozenset())
                     if new_status not in allowed:
+                        self._append_recovery_audit("stale_decision_conflict", 0)
                         raise ValueError(f"invalid_approval_transition:{old_status}->{new_status}")
                     timestamp = _utc_now()
                     event = {
@@ -618,12 +620,16 @@ class NativeApprovalQueue:
                 old_status = str(row.get("status") or "").strip().lower()
                 current_version = int(row.get("version") or 0)
                 if expected_version is not None and int(expected_version) != current_version:
+                    self._append_recovery_audit("stale_decision_conflict", 0)
                     raise ApprovalConcurrencyError(
                         f"approval_version_conflict:{approval_id}:{expected_version}!={current_version}"
                     )
                 if old_status not in {"approved", "recovery_required"}:
+                    if old_status in {"executing", "executed", "completed", "failed"}:
+                        self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ApprovalConcurrencyError(f"approval_not_executable:{approval_id}:{old_status}")
                 if row.get("consumed_at") or row.get("execution_result_hash"):
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ApprovalConcurrencyError(f"approval_already_consumed:{approval_id}")
                 if idempotency_key and row.get("idempotency_key") and idempotency_key != row.get("idempotency_key"):
                     raise ExecutionTokenError(f"idempotency_key_mismatch:{approval_id}")
@@ -713,11 +719,14 @@ class NativeApprovalQueue:
                 if row.get("approval_id") != approval_id:
                     continue
                 if str(row.get("status") or "") != "executing":
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ExecutionTokenError(f"approval_not_executing:{approval_id}:{row.get('status')}")
                 if str(row.get("execution_token") or "") != execution_token:
+                    self._append_recovery_audit("duplicate_execution_prevented", 0)
                     raise ExecutionTokenError(f"execution_token_mismatch:{approval_id}")
                 current_version = int(row.get("version") or 0)
                 if expected_version is not None and int(expected_version) != current_version:
+                    self._append_recovery_audit("stale_decision_conflict", 0)
                     raise ApprovalConcurrencyError(
                         f"approval_version_conflict:{approval_id}:{expected_version}!={current_version}"
                     )
