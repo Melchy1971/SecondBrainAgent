@@ -8,6 +8,7 @@ import webbrowser
 from pathlib import Path
 from tkinter import messagebox, simpledialog, ttk
 from typing import Any, Mapping
+from urllib.parse import unquote, urlsplit
 
 from secondbrain.agent.review_service import UnifiedReviewInbox
 
@@ -38,6 +39,16 @@ class ApprovalInboxViewModel:
             items = self._filter_tab(all_items, tab)
             pending = [item for item in all_items if item["status"] == "pending"]
             critical = [item for item in pending if self.is_critical(item)]
+            notification_service = self.inbox.notification_service()
+            notification_service.evaluate(self.inbox.notification_items())
+            open_notifications = [
+                row
+                for row in notification_service.list_open()
+                if row.type.value != "decision_recorded"
+            ]
+            critical_notifications = [
+                row for row in open_notifications if row.priority.value == "critical"
+            ]
             return {
                 "ok": True,
                 "status": "ready",
@@ -45,6 +56,8 @@ class ApprovalInboxViewModel:
                 "items": [self._list_item(item) for item in items],
                 "pending_count": len(pending),
                 "critical_count": len(critical),
+                "open_notification_count": len(open_notifications),
+                "critical_notification_count": len(critical_notifications),
                 "empty_message": self.empty_message(tab),
             }
         except Exception as exc:  # noqa: BLE001 - GUI boundary returns controlled state
@@ -55,6 +68,8 @@ class ApprovalInboxViewModel:
                 "items": [],
                 "pending_count": 0,
                 "critical_count": 0,
+                "open_notification_count": 0,
+                "critical_notification_count": 0,
                 "empty_message": "Fehler beim Laden",
                 "error": f"{type(exc).__name__}: {exc}",
             }
@@ -117,9 +132,25 @@ class ApprovalInboxViewModel:
             "status": state["status"],
             "pending_count": state["pending_count"],
             "critical_count": state["critical_count"],
+            "open_notification_count": state["open_notification_count"],
+            "critical_notification_count": state["critical_notification_count"],
             "items": state["items"],
             "error": state.get("error", ""),
         }
+
+    def deep_link(self, item_id: str) -> str:
+        if self.inbox.get(item_id) is None:
+            raise KeyError(f"inbox_item_not_found:{item_id}")
+        return self.inbox.notification_service().deep_link(item_id)
+
+    def open_deep_link(self, link: str) -> dict[str, Any]:
+        parsed = urlsplit(str(link or ""))
+        if parsed.scheme != "secondbrain" or parsed.netloc != "inbox":
+            raise ValueError("invalid_review_notification_deep_link")
+        item_id = unquote(parsed.path.lstrip("/"))
+        if not item_id or "/" in item_id or "\\" in item_id:
+            raise ValueError("invalid_review_notification_item_id")
+        return self.detail(item_id)
 
     def _ensure_queue_health(self) -> None:
         rows = [*self.inbox.approvals.list(), *self.inbox.reviews.list()]
@@ -328,10 +359,20 @@ class ApprovalInboxFrame(ttk.Frame):
         error = ""
         pending_count = 0
         critical_count = 0
+        open_notification_count = 0
+        critical_notification_count = 0
         for tab, tree in self.trees.items():
             state = self.view_model.load(tab)
             pending_count = max(pending_count, int(state["pending_count"]))
             critical_count = max(critical_count, int(state["critical_count"]))
+            open_notification_count = max(
+                open_notification_count,
+                int(state.get("open_notification_count", 0)),
+            )
+            critical_notification_count = max(
+                critical_notification_count,
+                int(state.get("critical_notification_count", 0)),
+            )
             tree.delete(*tree.get_children())
             if not state["ok"]:
                 error = state.get("error") or "Fehler beim Laden"
@@ -354,8 +395,10 @@ class ApprovalInboxFrame(ttk.Frame):
                 )
             if not state["items"]:
                 tree.insert("", "end", iid=f"{tab}:__empty__", values=("", state["empty_message"], "", "", "", "", ""))
-        critical_suffix = f" · {critical_count} kritisch" if critical_count else ""
-        self.badge_var.set(f"{pending_count} offen{critical_suffix}")
+        visible_open = max(pending_count, open_notification_count)
+        visible_critical = critical_notification_count
+        critical_suffix = f" · {visible_critical} kritisch" if visible_critical else ""
+        self.badge_var.set(f"{visible_open} offen{critical_suffix}")
         self.message_var.set(f"Fehler beim Laden: {error}" if error else "")
         if selected:
             self._render_detail(selected)

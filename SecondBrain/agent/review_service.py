@@ -284,8 +284,8 @@ class UnifiedReviewInbox:
         result = self.get(canonical_id)
         if result is None:
             raise RuntimeError(f"inbox_item_missing_after_decision:{canonical_id}")
-        if self.notifier is not None and result is not None:
-            self.notifier.record_decision(result, status)
+        if result is not None:
+            (self.notifier or self.notification_service()).record_decision(result, status)
         return result
 
     def notification_service(self):
@@ -315,9 +315,18 @@ class UnifiedReviewInbox:
             if raw:
                 item["deferred_until"] = str(raw.get("deferred_until") or "")
                 meta = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
-                item["change_type"] = str(
+                change_type = str(
                     raw.get("change_type") or meta.get("change_type") or raw.get("intent") or ""
                 )
+                action_probe = " ".join(
+                    str(raw.get(key) or "").lower()
+                    for key in ("command", "tool_name", "category")
+                )
+                if "credential" in action_probe:
+                    change_type = "credential_change"
+                elif any(token in action_probe for token in ("send", "forward", "publish")):
+                    change_type = "external_send"
+                item["change_type"] = change_type
             enriched.append(item)
         return enriched
 
