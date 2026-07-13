@@ -69,6 +69,20 @@ def test_read_only_sync_within_effective_scopes_runs_without_approval(tmp_path) 
     assert service.list_pending() == []
 
 
+def test_scope_comparison_without_diff_runs_without_approval() -> None:
+    decision = ConnectorActionPolicy().evaluate(
+        connector_id="gmail",
+        action="oauth.scope.update",
+        method="GET",
+        effective_scopes=("mail.read",),
+        requested_scopes=("mail.read",),
+    )
+
+    assert decision.added_scopes == ()
+    assert decision.requires_approval is False
+    assert decision.policy_rule == "read_only"
+
+
 def test_scope_expansion_is_blocked_with_complete_scope_diff(tmp_path) -> None:
     gate, service, _ = _gate(tmp_path)
 

@@ -2,19 +2,60 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 from uuid import uuid4
 import os
 import shutil
 import time
 
+from secondbrain.events.domain_events import sanitize_metadata
+
 DEFAULT_LEASE_SECONDS = 300
 _LOCK_ACQUIRE_TIMEOUT = 10.0
 _LOCK_STALE_SECONDS = 60.0
 _IDEMPOTENT_RISK = {"read", "low", "medium"}
+_SENSITIVE_PAYLOAD_KEYS = (
+    "apikey",
+    "authorization",
+    "clientsecret",
+    "cookie",
+    "credential",
+    "password",
+    "passwd",
+    "privatekey",
+    "secret",
+    "token",
+)
+_SENSITIVE_WORD = re.compile(
+    r"(?i)\b(?:sk-[A-Za-z0-9_-]{8,}|[A-Za-z0-9_-]*(?:secret|token|password|passwd|api[_-]?key|private[_-]?key|credential)[A-Za-z0-9_-]*)\b"
+)
+
+
+def _sanitize_text(value: Any) -> str:
+    sanitized = str(sanitize_metadata({"value": "" if value is None else str(value)}).get("value") or "")
+    return _SENSITIVE_WORD.sub("***", sanitized)
+
+
+def _sanitize_payload(value: Any, *, key: str = "") -> Any:
+    normalized = "".join(character for character in key.lower() if character.isalnum())
+    if key and any(token in normalized for token in _SENSITIVE_PAYLOAD_KEYS):
+        return "***"
+    if isinstance(value, Mapping):
+        return {
+            str(item_key): _sanitize_payload(item, key=str(item_key))
+            for item_key, item in value.items()
+        }
+    if isinstance(value, (list, tuple, set, frozenset)):
+        return [_sanitize_payload(item) for item in value]
+    if isinstance(value, str):
+        return _sanitize_text(value)
+    if value is None or isinstance(value, (bool, int, float)):
+        return value
+    return str(value)
 
 
 class ApprovalConcurrencyError(RuntimeError):
@@ -291,12 +332,13 @@ class NativeApprovalQueue:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         created_at = _utc_now()
         approval_id = _stable_id(command, intent, text, target, created_at)
+        safe_payload = _sanitize_payload(dict(payload or {}))
         # Only override risk defaults when supplied, preserving legacy values.
         extra: dict[str, Any] = {}
         if risk_level is not None:
             extra["risk_level"] = risk_level
         if reason is not None:
-            extra["reason"] = reason
+            extra["reason"] = _sanitize_text(reason)
         extra.setdefault("idempotency_key", _stable_id(command, intent, text, target))
         extra.setdefault("tool_idempotent", _risk_is_idempotent(risk_level if risk_level is not None else "write"))
         record = ApprovalRequest(
@@ -304,14 +346,14 @@ class NativeApprovalQueue:
             approval_id=approval_id,
             created_at=created_at,
             command=command,
-            intent=intent,
-            text=text,
-            target=target,
+            intent=_sanitize_text(intent),
+            text=_sanitize_text(text),
+            target=_sanitize_text(target),
             category=category,
             plan_id=plan_id,
             step_id=step_id,
             tool_name=tool_name,
-            payload=dict(payload or {}),
+            payload=safe_payload if isinstance(safe_payload, dict) else {},
             workspace_id=workspace_id,
             step_state=step_state,
             review_id=review_id,
@@ -349,6 +391,7 @@ class NativeApprovalQueue:
         if not actor:
             raise ValueError("approval_actor_required")
         new_status = new_status.strip().lower()
+        safe_note = _sanitize_text(note)
         # Optimistic concurrency: read first (no exclusive lock), then commit
         # under a short write lock that re-checks the version (compare-and-set).
         # This lets concurrent readers observe the same baseline while still
@@ -379,7 +422,7 @@ class NativeApprovalQueue:
                         "old_status": old_status,
                         "new_status": new_status,
                         "actor": actor,
-                        "note": note,
+                        "note": safe_note,
                         "timestamp": timestamp,
                         "plan_id": str(row.get("plan_id") or ""),
                         "step_id": str(row.get("step_id") or ""),
@@ -389,7 +432,7 @@ class NativeApprovalQueue:
                     if not isinstance(history, list):
                         history = []
                     row["status"] = new_status
-                    row["decision_note"] = note
+                    row["decision_note"] = safe_note
                     row["decided_by"] = actor
                     row["decided_at"] = timestamp
                     if new_status == "deferred":
@@ -720,6 +763,7 @@ class ReviewQueue:
         if not actor:
             raise ValueError("review_actor_required")
         new_status = new_status.strip().lower()
+        safe_note = _sanitize_text(note)
         rows = self._read_all()
         for row in rows:
             if row.get("review_id") != review_id:
@@ -734,14 +778,14 @@ class ReviewQueue:
                 "old_status": old_status,
                 "new_status": new_status,
                 "actor": actor,
-                "note": note,
+                "note": safe_note,
                 "timestamp": timestamp,
             }
             history = row.get("decision_audit")
             if not isinstance(history, list):
                 history = []
             row["status"] = new_status
-            row["decision_note"] = note
+            row["decision_note"] = safe_note
             row["decided_by"] = actor
             row["decided_at"] = timestamp
             if new_status == "deferred":

@@ -13,10 +13,18 @@ def test_high_risk_tool_requires_approval():
     ))
 
     blocked = registry.run("demo.write", {})
-    approved = registry.run("demo.write", {}, approved=True)
+    boolean_bypass = registry.run("demo.write", {}, approved=True)
+    registry.set_approval_lookup(lambda approval_id: {
+        "approval_id": approval_id,
+        "status": "approved",
+        "tool_name": "demo.write",
+        "payload": {},
+    })
+    approved = registry.run("demo.write", {}, approval={"approval_id": "approval-1"})
 
     assert blocked.success is False
     assert "tool_requires_approval" in blocked.error
+    assert boolean_bypass.success is False
     assert approved.success is True
 
 
@@ -30,6 +38,23 @@ def test_legacy_scope_and_approval_contract_remains_enforced(tmp_path):
 
     with pytest.raises(PermissionError, match="approval"):
         registry.execute("demo.secure", {}, ["demo.execute"], approved=False)
+    registry.set_approval_lookup(lambda approval_id: {
+        "approval_id": approval_id,
+        "status": "approved",
+        "tool_name": "demo.secure",
+        "payload": {},
+    })
     with pytest.raises(PermissionError, match="scope"):
-        registry.execute("demo.secure", {}, [], approved=True)
-    assert registry.execute("demo.secure", {}, ["demo.execute"], approved=True)["status"] == "success"
+        registry.execute(
+            "demo.secure",
+            {},
+            [],
+            approval={"approval_id": "approval-2"},
+        )
+    result = registry.execute(
+        "demo.secure",
+        {},
+        ["demo.execute"],
+        approval={"approval_id": "approval-2"},
+    )
+    assert result["status"] == "success"

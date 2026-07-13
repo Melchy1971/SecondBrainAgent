@@ -179,7 +179,18 @@ def register(api):
     blocked = loader.tool_registry.run("plugin.acme.notes.write")
     assert blocked.success is False
     assert "requires_approval" in (blocked.error or "")
-    assert loader.tool_registry.run("plugin.acme.notes.write", approved=True).success is True
+    assert loader.tool_registry.run("plugin.acme.notes.write", approved=True).success is False
+    loader.tool_registry.set_approval_lookup(lambda approval_id: {
+        "approval_id": approval_id,
+        "status": "approved",
+        "tool_name": "plugin.acme.notes.write",
+        "payload": {},
+    })
+    approved = loader.tool_registry.run(
+        "plugin.acme.notes.write",
+        approval={"approval_id": "approval-1"},
+    )
+    assert approved.success is True
 
 
 def test_plugin_sandbox_blocks_traversal_and_unauthorized_writes(tmp_path: Path) -> None:
