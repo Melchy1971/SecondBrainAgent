@@ -1,6 +1,6 @@
 {
-  "version": "30.77.0",
-  "current_version": "v30.77.0",
+  "version": "30.86.0",
+  "current_version": "v30.86.0",
   "completed_capabilities": [
     {
       "release": "v30.61",
@@ -91,6 +91,11 @@
       "release": "v30.78",
       "capability": "Review- und Approval-Governance-Layer: Memory Governance, Notifications und Eskalation, Governance-Metriken, Concurrency mit Crash-Recovery und persistente Repository-Abstraktion (JSONL/PostgreSQL), zertifiziert per Release-Gate",
       "status": "completed"
+    },
+    {
+      "release": "v30.86",
+      "capability": "Produktives Review-/Approval-Release-Gate mit acht Prüfgruppen, harter PostgreSQL-Backendvalidierung und atomarem Zertifizierungsreport",
+      "status": "completed"
     }
   ],
   "remaining_blockers": [
@@ -98,17 +103,22 @@
     "provider_live_validation_openai_ollama_pending",
     "real_connector_runtime_rollout",
     "installer_exe_msi_pipeline",
-    "secret_vault_encryption_rollout"
+    "secret_vault_encryption_rollout",
+    "review_approval_postgresql_production_health_pending",
+    "windows_full_pytest_environment_failures_pending"
   ],
   "degraded_modes": [
     "sqlite_rag_prototype_without_database_url",
-    "local_embedding_provider_not_production_ready"
+    "local_embedding_provider_not_production_ready",
+    "review_approval_jsonl_development_only"
   ],
   "known_risks": [
     "test_environment_vs_target_environment_gap",
     "memory_injection_heuristic_ranking_conflicts",
     "background_agents_need_external_run_due_trigger",
-    "agent_control_gui_aggregator_without_caching"
+    "agent_control_gui_aggregator_without_caching",
+    "review_approval_release_requires_live_postgresql",
+    "full_suite_has_provider_memory_and_order_dependent_failures"
   ],
   "next_sprint": {
     "focus": "Production readiness hardening",
@@ -121,21 +131,22 @@
   },
   "release_readiness": {
     "state": "CONDITIONAL_READY",
-    "basis": "v30.61-v30.77 capabilities completed; remaining items are runtime/environment hardening",
+    "basis": "v30.61-v30.86 capabilities implemented; production certification remains blocked until the live PostgreSQL review/approval healthcheck passes",
     "required_gates": [
       "repo-doctor",
       "dependency-inventory",
       "gui-doctor",
       "p0-gate",
       "p1-gate",
-      "pytest"
+      "pytest",
+      "review-approval-release-gate"
     ]
   },
-  "build": 307700,
+  "build": 308600,
   "version_source": "pyproject.toml",
   "review_approval_release": {
-    "release": "v30.78",
-    "gate": "PASS",
+    "release": "v30.86",
+    "gate": "ENVIRONMENT_DEPENDENT",
     "gate_command": "python launcher.py review-approval-release-gate",
     "report": "runtime/reports/review_approval_release_gate.json",
     "components": {
@@ -148,7 +159,10 @@
       "Notifications": "completed",
       "Metrics": "completed",
       "Persistence": "completed",
-      "Release Readiness": "certified"
-    }
+      "Release Readiness": "blocked_without_postgresql"
+    },
+    "production_backend": "postgres",
+    "jsonl_status": "development_only",
+    "release_recommendation": "Run the gate with a reachable PostgreSQL backend; JSONL returns BLOCKED"
   }
 }
