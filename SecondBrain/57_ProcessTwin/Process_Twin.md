@@ -14,4 +14,4 @@
 
 - Risiken
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-07-13

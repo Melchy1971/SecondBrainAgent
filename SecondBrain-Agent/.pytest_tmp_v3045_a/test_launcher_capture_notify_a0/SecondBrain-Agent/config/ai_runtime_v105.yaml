@@ -1,4 +1,0 @@
-
-ai_runtime:
-  default_provider: echo
-  ollama_enabled: false

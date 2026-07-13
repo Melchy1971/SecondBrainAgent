@@ -1,0 +1,8 @@
+# Optional Voice extras (v30.83+) - offline, GPU-optional.
+#   pip install -r requirements-voice.txt
+faster-whisper>=1.0.0      # offline STT (CUDA for GPU)
+piper-tts>=1.2.0           # offline TTS
+# streaming / wake word (v30.84+):
+# sounddevice>=0.4.6
+# webrtcvad>=2.0.10
+# openwakeword>=0.6.0

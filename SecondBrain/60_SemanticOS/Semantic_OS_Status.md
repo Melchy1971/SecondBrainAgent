@@ -1,6 +1,6 @@
 # Semantic Operating System
 
-Aktualisiert: 2026-06-19
+Aktualisiert: 2026-07-13
 
 - Entitäten: vorbereitet
 - Beziehungen: vorbereitet

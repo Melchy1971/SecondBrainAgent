@@ -1,18 +1,34 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.21
+# SecondBrain-Agent v30.77.0
 
-Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, GUI/HUD, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
+## Version (Single Source of Truth)
+
+Die Version wird **ausschliesslich** in `pyproject.toml` (`[project].version`) gepflegt.
+Alles andere leitet sich daraus ab:
+
+- `secondbrain/version.py` liest pyproject (Fallback: installierte Paket-Metadaten) und liefert
+  `get_version()`, `get_build_number()` und `version_info()`. Die Buildnummer wird deterministisch
+  aus der Version berechnet (30.77.0 -> Build 307700).
+- Paket (`secondbrain.__version__`), GUI (`secondbrain.gui.version`), CLI (`secondbrain.cli.version`)
+  und Launcher (`python launcher.py version`) beziehen die Version von dort.
+- `python launcher.py version-sync` schreibt die abgeleiteten Anker (README-Titel,
+  `docs/09_MASTERPLAN_STATUS.json`) neu. Historische `vXX`-Referenzen im Fliesstext bleiben unberuehrt.
+
+Version anheben: nur `pyproject.toml` aendern, dann `version-sync` ausfuehren.
+
+
+Lokaler Jarvis-/SecondBrain-Agent mit modularer Runtime, nativer Desktop-Oberflaeche, deutscher Sprachsteuerung, P1-RAG, Desktop-Kommandos, Voice, Knowledge Graph, Mobile Companion und Release-Gates.
 
 ## Projektwurzel
 
 Alle Befehle laufen aus dem Projektordner:
 
 ```powershell
-cd H:\SecondBrainAgent\SecondBrain-Agent
+cd <repo-root>
 ```
 
-Wenn Befehle aus `H:\SecondBrainAgent` gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
+Wenn Befehle ausserhalb des Repo-Roots gestartet werden, findet Python `launcher.py`, `pytest.ini`, `pyproject.toml` und die lokalen Runtime-Pfade nicht zuverlaessig.
 
 ## Installation
 
@@ -34,7 +50,7 @@ pip install -e ".[openai]"
 pip install -e ".[all]"
 ```
 
-Minimaler Legacy-Pfad:
+Minimaler Installationspfad:
 
 ```powershell
 python -m pip install -r requirements-dev.txt
@@ -48,15 +64,22 @@ python launcher.py gui-doctor
 python launcher.py
 ```
 
-`python launcher.py` startet seit v30.21 den Jarvis-GUI-Bootstrap und danach die lokale Oberflaeche.
+`python launcher.py` startet seit v30.25 die native Desktop-App. Der Browser ist nicht mehr die Hauptoberflaeche.
 
 Alternative Startbefehle:
 
 ```powershell
 python launcher.py jarvis
+python launcher.py native-gui
 python launcher.py gui
 python launcher.py gui-start
-python launcher.py gui-open
+```
+
+Web-HUD nur bei Bedarf:
+
+```powershell
+python launcher.py hud
+python launcher.py gui-web
 ```
 
 Nach editable install zusaetzlich:
@@ -70,23 +93,37 @@ secondbrain command-index
 
 ```powershell
 .\Jarvis.bat
-.\Start-Jarvis-GUI.bat
+.\HUD.bat
 powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Desktop.ps1
 ```
 
-Die Desktop-/Startmenue-Verknuepfungen zeigen auf den Jarvis-Launcher. Alte HUD-Verknuepfungen sind nicht mehr die primaere Startflaeche.
+Die Desktop-/Startmenue-Verknuepfungen zeigen auf die native Jarvis-App. `Jarvis.bat` startet den nativen Desktop, `HUD.bat` das Web-HUD (127.0.0.1:8851).
+
+## Pfad- und Settings-Override
+
+Die UI-konfigurierten Pfade sind die kanonische Quelle fuer Vault- und Inbox-Aufloesung.
+
+- `data/desktop_app/settings.json` ueberschreibt `config/settings.yaml` fuer `paths.vault` und `paths.incoming`.
+- `secondbrain/path.py` kapselt die zentrale PfadauflÃ¶sung.
+- Verbraucher mit `vault_path`/`incoming_path` sind auf die zentrale Aufloesung umgestellt.
+- Import-Kollisionen bei `secondbrain.goal_engine` und `secondbrain.recommendations` bleiben ueber Kompatibilitaets-Wrapper stabil.
 
 ## Lokale Oberflaechen
 
 Primaer:
 
+```powershell
+python launcher.py native-gui
+```
+
+Optionaler Web-Kompatibilitaetsmodus:
+
 ```text
 http://127.0.0.1:8851
 ```
 
-Direkter HUD-Start bleibt kompatibel:
-
 ```powershell
+python launcher.py hud
 python scripts\start_hud.py
 ```
 
@@ -99,6 +136,88 @@ python scripts\web_dashboard.py
 ```text
 http://localhost:8765
 ```
+
+
+## Deutsche Sprachsteuerung
+
+Textbefehle funktionieren direkt in der nativen App. Mikrofon/TTS sind optional.
+
+```powershell
+python launcher.py voice-status
+python launcher.py voice-parse "Jarvis Status"
+pip install -e ".[voice]"
+```
+
+Beispiele:
+
+```text
+Jarvis Status
+Suche PostgreSQL pgvector
+Frage was fehlt noch
+Ã–ffne Dokumente
+Repariere Index
+Importiere Datei C:\Pfad\datei.pdf
+```
+
+## Native Desktop Health (seit v30.46)
+
+```powershell
+python launcher.py native-desktop-health
+python launcher.py native-desktop-doctor
+python launcher.py native-desktop-report
+```
+
+Reports liegen unter `runtime/reports`.
+
+## PostgreSQL / pgvector einrichten
+
+Ohne `DATABASE_URL` laeuft der SQLite/RAG-Prototyp; die App startet im Status DEGRADED. Umstellung auf PostgreSQL 16 + pgvector:
+
+1. Treiber installieren (nicht in den pyproject-Extras enthalten):
+
+```powershell
+pip install "psycopg[binary]"
+```
+
+2. Datenbank und Extension anlegen (psql oder pgAdmin):
+
+```sql
+CREATE DATABASE secondbrain;
+\c secondbrain
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+Schlaegt `CREATE EXTENSION vector` fehl, ist pgvector nicht installiert. Windows-Build oder Release-Paket von https://github.com/pgvector/pgvector einspielen, dann erneut ausfuehren.
+
+3. DSN in `.env` eintragen (Datei liegt im Projektordner, Passwort selbst einsetzen):
+
+```text
+DATABASE_URL=postgresql://postgres:PASSWORT@127.0.0.1:5432/secondbrain
+```
+
+4. Validieren und Migration ausfuehren:
+
+```powershell
+python launcher.py p3-pgvector-readiness
+python launcher.py p1-rag-migrate-postgres
+```
+
+5. Jarvis neu starten. Der Dashboard-Status `database` wechselt von `degraded_sqlite` auf `ready`.
+
+### Produktionsstatus DB/pgvector (Gate-relevant)
+
+Die Produktionsbewertung verwendet genau diese Statuswerte:
+
+- `ready`: PostgreSQL erreichbar, pgvector-Erweiterung vorhanden, Similarity-Smoke erfolgreich.
+- `degraded_sqlite`: keine produktive PostgreSQL-Konfiguration aktiv (z. B. fehlende `DATABASE_URL` oder SQLite aktiv).
+- `blocked_missing_database`: PostgreSQL erwartet, aber nicht erreichbar/ungueltig.
+- `blocked_missing_pgvector`: PostgreSQL erreichbar, aber pgvector nicht produktiv validiert.
+
+Auswirkung auf Gates:
+
+- `p1-production` kann nur mit Status `ready` passieren.
+- `degraded_sqlite` fuehrt immer zu einem blockierten Production-Gate.
+- Dashboard-Karte `database` zeigt diese Statuswerte direkt als `ready`/`warning`/`blocked` mit Grund an.
 
 ## Release-Gate-Reihenfolge
 
@@ -135,7 +254,7 @@ docs/releases/
 docs/09_MASTERPLAN_STATUS.json
 ```
 
-Aktueller dokumentierter Stand: v30.21 Unified Application Bootstrap.
+Aktueller dokumentierter Stand: v30.77.0 UI Path Override and Import Consolidation (Quelle: `RELEASE_NOTES.md`; strukturierter Status in `docs/09_MASTERPLAN_STATUS.json`).
 
 Bekannte lokale Warnungen:
 
@@ -182,3 +301,19 @@ python launcher.py module-health
 python launcher.py command-index
 python launcher.py core-status
 ```
+
+## v30.78 – Zentrale Konfiguration, Observability, Import-Pipeline, Klassifizierung
+
+- **RuntimeConfig** (`secondbrain/runtime_config/`): eine Konfigurationsquelle für GUI und CLI.
+  Priorität: `environ` > `.env` > `config.json` (Workspace) > `config.json` (AppData) > GUI-Legacy > Defaults.
+  Secrets nur als `{"ref": "ENV_NAME"}` in JSON; fehlende Pflichtwerte => Status BLOCKED.
+  Kommandos: `python launcher.py config-status | config-snapshot | config-set KEY=WERT | config-doctor`.
+- **Einstellungen-GUI**: editierbar, in Bereiche gegliedert (KI/Embedding, Datenbank, GUI, Sprache, Pfade, Secrets),
+  mit Herkunftsanzeige und BLOCKED-Banner — in der Desktop-Shell (Modul "Settings Center") und in `native/app.py`.
+- **Observability** (`secondbrain/observability/`): strukturierte JSONL-Logs, Audit Event Store mit JSON-Export,
+  Correlation-/Job-/Plan-/Sync-IDs, Redaction-Middleware, Error-Taxonomie, Health Timeline, GUI "Audit Viewer".
+- **Import-Pipeline** (`secondbrain/import_pipeline/`): eine ImportJob-Entität für lokale und Connector-Importe,
+  Statusmodell queued→parsing→classified→chunked→embedded→indexed (+ failed/dead_letter/duplicate/ocr_required),
+  Duplicate Detection, Retry, Partial Failure, Source Lineage, GUI "Import Historie".
+- **Klassifizierung** (`secondbrain/classification/`): regelbasiert + optional LLM, Confidence Score,
+  PII-/Secret-Erkennung, Review Queue bei niedriger Confidence, nachvollziehbare Tag-Historie, GUI "Tag Editor".

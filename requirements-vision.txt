@@ -1,0 +1,10 @@
+# Optional Vision/OCR extras (v30.80) - offline, GPU-optional.
+# Install only on machines that run the real engines:
+#   pip install -r requirements-vision.txt
+pytesseract>=0.3.10        # needs system 'tesseract' binary
+pillow>=10.0.0
+mss>=9.0.0                 # screen capture (Desktop/Screenshot analysis)
+opencv-python>=4.9.0       # camera capture + preprocessing
+# Object detection (GPU): choose one at deploy time
+# onnxruntime-gpu>=1.17.0
+# ultralytics>=8.1.0

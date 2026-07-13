@@ -1,0 +1,8 @@
+# Core streaming import dependency.
+ijson>=3.2.3
+
+# Remaining feature dependencies are optional.
+# Install optional feature sets through pyproject extras, for example:
+#   pip install -e ".[dev]"
+#   pip install -e ".[pdf]"
+#   pip install -e ".[all]"

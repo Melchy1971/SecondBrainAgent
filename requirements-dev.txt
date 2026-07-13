@@ -1,0 +1,8 @@
+-r requirements.txt
+
+# Development and test runner
+pytest>=8.0.0
+pytest-cov>=5.0.0
+
+# Editable install is preferred for local development:
+#   pip install -e ".[dev]"

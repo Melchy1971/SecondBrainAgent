@@ -1,0 +1,4 @@
+# Production data access (PostgreSQL). SQLite is development-only.
+#   pip install -r requirements-db.txt
+sqlalchemy>=2.0
+psycopg[binary]>=3.1      # driver for postgresql+psycopg://  (use psycopg2-binary for +psycopg2)
