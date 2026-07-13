@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ..approval_policy import MandatoryApprovalPolicy
+
 from .risk import RISK_LEVELS, level_rank, normalize_level
 
 # Possible policy verdicts.
@@ -61,6 +63,7 @@ class SafetyPolicy:
     blocked_levels: set[str] = field(default_factory=set)
     blocked_actions: set[str] = field(default_factory=set)
     allowlist_actions: set[str] = field(default_factory=set)
+    mandatory_policy: MandatoryApprovalPolicy = field(default_factory=MandatoryApprovalPolicy)
 
     @classmethod
     def from_config(cls, config: dict | None) -> "SafetyPolicy":
@@ -87,6 +90,10 @@ class SafetyPolicy:
         if level in self.blocked_levels:
             return PolicyVerdict(action, level, BLOCK, f"risk_level_blocked:{level}")
 
+        mandatory = self.mandatory_policy.evaluate(name=action, risk_level=level)
+        if mandatory.effective_requires_approval:
+            return PolicyVerdict(action, level, REQUIRE_APPROVAL, mandatory.policy_rule)
+
         if level in self.auto_allow_levels:
             return PolicyVerdict(action, level, ALLOW, f"auto_allowed:{level}")
         if level in self.approval_levels:
@@ -105,4 +112,5 @@ class SafetyPolicy:
             "blocked_levels": sorted(self.blocked_levels, key=level_rank),
             "blocked_actions": sorted(self.blocked_actions),
             "allowlist_actions": sorted(self.allowlist_actions),
+            "mandatory_approval_policy": self.mandatory_policy.VERSION,
         }

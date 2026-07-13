@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .review_queue import QueueStatus, ReviewApprovalQueue, ReviewCategory
+from .approval_bridge import AgentApprovalBridge
+from .approval_policy import MandatoryApprovalDecision
+from .plan_store import AgentPlanStore
 from .task_planner import TaskPlan, TaskStepState
 from .tool_registry import ToolRegistry, ToolRegistryError, ToolRiskLevel
 
@@ -14,81 +16,242 @@ class ExecutionResult:
     plan_id: str
     results: list[Any]
     errors: list[str]
-    pending_approval_ids: list[str] = field(default_factory=list)
+    status: str = "completed"
+    approval_ids: list[str] = field(default_factory=list)
+    waiting_step_ids: list[str] = field(default_factory=list)
 
 
 class SafeExecutor:
-    def __init__(self, registry: ToolRegistry, approval_queue: ReviewApprovalQueue | None = None) -> None:
+    def __init__(
+        self,
+        registry: ToolRegistry,
+        approval_bridge: AgentApprovalBridge | None = None,
+        plan_store: AgentPlanStore | None = None,
+    ) -> None:
         self.registry = registry
-        self.approval_queue = approval_queue
+        self.approval_bridge = approval_bridge or AgentApprovalBridge()
+        self.plan_store = plan_store
+        self.registry.set_approval_lookup(self.approval_bridge.queue.get)
 
-    def execute(self, plan: TaskPlan, *, confirmed: bool = False, workspace_id: str | None = None) -> ExecutionResult:
+    def execute(
+        self,
+        plan: TaskPlan,
+        *,
+        confirmed: bool = False,
+        workspace_id: str | None = None,
+        approved_step_id: str | None = None,
+    ) -> ExecutionResult:
         results: list[Any] = []
         errors: list[str] = []
-        pending: list[str] = []
+        approval_ids: list[str] = []
+        waiting_step_ids: list[str] = []
+        status = ""
         for step in plan.steps:
-            step.state = TaskStepState.RUNNING
+            if step.state in {TaskStepState.COMPLETED, TaskStepState.SKIPPED}:
+                continue
+            if step.state == TaskStepState.REJECTED:
+                status = "rejected"
+                break
+            if step.state == TaskStepState.FAILED:
+                status = "failed"
+                if step.error:
+                    errors.append(step.error)
+                break
+            if step.state == TaskStepState.RUNNING:
+                status = "execution_in_progress"
+                break
+
+            is_approved_step = step.step_id == approved_step_id
+            if step.state in {
+                TaskStepState.WAITING_FOR_APPROVAL,
+                TaskStepState.APPROVED,
+                TaskStepState.DEFERRED,
+            } and not is_approved_step:
+                approval = self._approval_for_step(plan.plan_id, step.step_id)
+                if approval is not None:
+                    approval_ids.append(str(approval["approval_id"]))
+                waiting_step_ids.append(step.step_id)
+                status = "waiting_for_approval"
+                break
+
             if not step.tool_name:
+                step.state = TaskStepState.RUNNING
+                self._persist(plan, "running")
                 step.result = {"type": "chat", "text": step.payload.get("text", "")}
                 step.state = TaskStepState.COMPLETED
                 results.append(step.result)
                 continue
             try:
-                tool = self.registry.get(step.tool_name)
-                requires_gate = tool.requires_approval or tool.risk_level in {ToolRiskLevel.HIGH, ToolRiskLevel.CRITICAL}
-                if requires_gate and not confirmed:
-                    if self.approval_queue is None:
-                        raise PermissionError(f"approval_queue_required:{step.tool_name}")
-                    item = self.approval_queue.create_approval(
-                        category=_category_for_tool(step.tool_name, tool.category),
-                        title=f"Freigabe erforderlich: {step.tool_name}",
-                        reason=f"Tool-Risiko {tool.risk_level.value}; Ausführung wurde angehalten.",
+                definition = self.registry.get(step.tool_name)
+                policy = self.registry.approval_policy.evaluate_tool(definition)
+                if policy.effective_requires_approval and not is_approved_step:
+                    approval = self.approval_bridge.create_approval(
                         plan_id=plan.plan_id,
                         step_id=step.step_id,
-                        tool_name=step.tool_name,
+                        tool=definition,
+                        intent=plan.intent,
                         payload=step.payload,
-                        risk_level=tool.risk_level.value,
                         workspace_id=workspace_id,
                     )
-                    step.result = {"status": QueueStatus.PENDING.value, "approval_id": item.item_id}
-                    step.state = TaskStepState.WAITING_APPROVAL
-                    pending.append(item.item_id)
+                    approval = self._enrich_approval(approval, policy)
+                    approval_id = str(approval["approval_id"])
+                    step.result = {
+                        "status": "waiting_for_approval",
+                        "approval_id": approval_id,
+                    }
+                    step.state = TaskStepState.WAITING_FOR_APPROVAL
+                    approval_ids.append(approval_id)
+                    waiting_step_ids.append(step.step_id)
+                    status = "waiting_for_approval"
                     break
-                step.result = self.registry.execute(step.tool_name, step.payload, confirmed=confirmed)
+
+                step.state = TaskStepState.RUNNING
+                self._persist(plan, "running")
+                approval_evidence = self._approval_for_step(plan.plan_id, step.step_id) if is_approved_step else None
+                step.result = self.registry.execute(
+                    step.tool_name,
+                    step.payload,
+                    confirmed=confirmed,
+                    approval=approval_evidence,
+                )
                 step.state = TaskStepState.COMPLETED
                 results.append(step.result)
-                executed_steps.append(step)
+                if is_approved_step:
+                    approval = self._approval_for_step(plan.plan_id, step.step_id)
+                    if approval is not None and approval.get("status") == "approved":
+                        self.approval_bridge.queue.transition(
+                            str(approval["approval_id"]),
+                            "executed",
+                            actor="agent_executor",
+                            note="Approved agent step executed.",
+                            step_state=TaskStepState.COMPLETED.value,
+                        )
             except (ToolRegistryError, Exception) as exc:  # noqa: BLE001 - isolate tool failures in agent boundary
                 step.error = str(exc)
                 step.state = TaskStepState.FAILED
                 errors.append(str(exc))
-                for completed in reversed(executed_steps):
-                    if completed.tool_name:
-                        rollback = self.registry.rollback(completed.tool_name, completed.payload, completed.result)
-                        if not rollback.get("ok", False):
-                            errors.append(str(rollback.get("error") or f"rollback_failed:{completed.tool_name}"))
+                status = "failed"
                 break
-        return ExecutionResult(ok=not errors and not pending, plan_id=plan.plan_id, results=results, errors=errors, pending_approval_ids=pending)
 
-    def resume(self, approval_id: str) -> ExecutionResult:
-        if self.approval_queue is None:
-            raise RuntimeError("approval_queue_not_configured")
-        item = self.approval_queue.get(approval_id)
-        if item is None:
-            raise KeyError(f"queue_item_not_found:{approval_id}")
-        if item.get("status") != QueueStatus.APPROVED.value:
-            raise PermissionError(f"approval_not_granted:{approval_id}:{item.get('status')}")
-        tool_name = str(item.get("tool_name") or "")
-        if not tool_name:
-            raise ValueError(f"approval_missing_tool:{approval_id}")
-        result = self.registry.execute(tool_name, dict(item.get("payload") or {}), confirmed=True)
-        return ExecutionResult(ok=True, plan_id=str(item.get("plan_id") or ""), results=[result], errors=[])
+        if not status:
+            status = "completed" if all(
+                step.state in {TaskStepState.COMPLETED, TaskStepState.SKIPPED} for step in plan.steps
+            ) else "pending"
+        self._persist(plan, status, approval_ids=approval_ids)
+        return ExecutionResult(
+            ok=status == "completed",
+            plan_id=plan.plan_id,
+            results=results,
+            errors=errors,
+            status=status,
+            approval_ids=approval_ids,
+            waiting_step_ids=waiting_step_ids,
+        )
 
+    def resume_approved(self, approval_id: str) -> ExecutionResult:
+        if self.plan_store is None:
+            raise RuntimeError("agent_plan_store_not_configured")
+        approval = self.approval_bridge.queue.get(approval_id)
+        if approval is None:
+            raise KeyError(f"approval_not_found:{approval_id}")
+        plan_id = str(approval.get("plan_id") or "")
+        step_id = str(approval.get("step_id") or "")
+        if not plan_id or not step_id:
+            raise ValueError(f"approval_missing_plan_step:{approval_id}")
+        if not self.plan_store.claim_step(plan_id, step_id):
+            return ExecutionResult(
+                ok=False,
+                plan_id=plan_id,
+                results=[],
+                errors=[],
+                status="execution_in_progress",
+            )
+        try:
+            approval = self.approval_bridge.queue.get(approval_id)
+            if approval is None:
+                raise KeyError(f"approval_not_found:{approval_id}")
+            plan = self.plan_store.load(plan_id)
+            step = next((item for item in plan.steps if item.step_id == step_id), None)
+            if step is None:
+                raise KeyError(f"approval_step_not_found:{approval_id}:{step_id}")
 
-def _category_for_tool(tool_name: str, category: str) -> ReviewCategory:
-    normalized = f"{category}:{tool_name}".lower()
-    if "delete" in normalized or "remove" in normalized or "trash" in normalized:
-        return ReviewCategory.DELETE_REQUEST
-    if "connector" in normalized and any(token in normalized for token in ("permission", "scope", "oauth")):
-        return ReviewCategory.CONNECTOR_PERMISSION_CHANGE
-    return ReviewCategory.RISKY_AGENT_ACTION
+            if step.state == TaskStepState.COMPLETED or approval.get("status") == "executed":
+                return self._existing_result(plan)
+            if step.state == TaskStepState.RUNNING:
+                return ExecutionResult(
+                    ok=False,
+                    plan_id=plan.plan_id,
+                    results=[],
+                    errors=[],
+                    status="execution_in_progress",
+                )
+            if approval.get("status") != "approved":
+                raise PermissionError(f"approval_not_approved:{approval_id}:{approval.get('status')}")
+            return self.execute(
+                plan,
+                approved_step_id=step_id,
+                workspace_id=str(approval.get("workspace_id")) if approval.get("workspace_id") else None,
+            )
+        finally:
+            self.plan_store.release_step(plan_id, step_id)
+
+    def _approval_for_step(self, plan_id: str, step_id: str) -> dict[str, Any] | None:
+        for approval in reversed(self.approval_bridge.queue.list()):
+            if approval.get("plan_id") == plan_id and approval.get("step_id") == step_id:
+                return approval
+        return None
+
+    def _enrich_approval(
+        self,
+        approval: dict[str, Any],
+        policy: MandatoryApprovalDecision,
+    ) -> dict[str, Any]:
+        enriched = {
+            **approval,
+            "category": policy.approval_category,
+            "action_type": policy.action_type,
+            **policy.audit_fields(),
+        }
+        queue = self.approval_bridge.queue
+        rows = queue._read_all()  # noqa: SLF001 - NativeApprovalQueue has no metadata update API
+        for index, row in enumerate(rows):
+            if row.get("approval_id") == approval.get("approval_id"):
+                rows[index] = enriched
+                queue._write_all(rows)  # noqa: SLF001 - preserves the single native queue
+                return enriched
+        raise RuntimeError(f"approval_record_missing:{approval.get('approval_id')}")
+
+    def _persist(self, plan: TaskPlan, status: str, *, approval_ids: list[str] | None = None) -> None:
+        plan.metadata["status"] = status
+        existing = {str(item) for item in plan.metadata.get("approval_ids", []) if item}
+        existing.update(approval_ids or [])
+        plan.metadata["approval_ids"] = sorted(existing)
+        if self.plan_store is not None:
+            self.plan_store.update(plan)
+
+    @staticmethod
+    def _existing_result(plan: TaskPlan) -> ExecutionResult:
+        status = str(plan.metadata.get("status") or "completed")
+        waiting = [
+            step
+            for step in plan.steps
+            if step.state in {
+                TaskStepState.WAITING_FOR_APPROVAL,
+                TaskStepState.APPROVED,
+                TaskStepState.DEFERRED,
+            }
+        ]
+        approval_ids = [
+            str(step.result["approval_id"])
+            for step in waiting
+            if isinstance(step.result, dict) and step.result.get("approval_id")
+        ]
+        return ExecutionResult(
+            ok=status == "completed",
+            plan_id=plan.plan_id,
+            results=[],
+            errors=[],
+            status=status,
+            approval_ids=approval_ids,
+            waiting_step_ids=[step.step_id for step in waiting],
+        )

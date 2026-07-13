@@ -14,6 +14,7 @@ from typing import Callable
 
 from secondbrain.connectors.token_repository import TokenRepository
 from secondbrain.connectors.token_refresh import TokenRefreshService
+from secondbrain.connectors.scaffold.approval import ApprovalGate
 from secondbrain.connectors.scaffold.transport import Transport, UrllibTransport
 
 
@@ -61,6 +62,7 @@ class OAuth2Authenticator:
         token_repo: TokenRepository | None = None,
         refresh_service: TokenRefreshService | None = None,
         clock: Callable[[], float] = time.time,
+        scope_gate: ApprovalGate | None = None,
     ) -> None:
         self.config = config
         self.transport = transport or UrllibTransport()
@@ -68,15 +70,31 @@ class OAuth2Authenticator:
         self.refresh_service = refresh_service or TokenRefreshService()
         self.clock = clock
         self.provider = config.provider
+        self.scope_gate = scope_gate or ApprovalGate(
+            project_root=self._project_root(),
+            connector_id=self.provider,
+            effective_scopes=self._effective_scopes(),
+            clock=clock,
+        )
 
     # ---- device code -----------------------------------------------------
     def begin_device_login(self) -> DeviceCodeStart:
         if not self.config.devicecode_url:
             raise OAuth2Error("device code flow not configured for this provider")
-        payload = self._form_post(self.config.devicecode_url, {
-            "client_id": self.config.client_id,
-            "scope": self.config.scope_string(),
-        })
+        effective_scopes = self._effective_scopes()
+        payload = self.scope_gate.guard(
+            action="oauth.scope.update",
+            resource=self.provider,
+            method="GET",
+            target=self.provider,
+            payload={"requested_scopes": list(self.config.scopes)},
+            effective_scopes=effective_scopes,
+            requested_scopes=self.config.scopes,
+            execute=lambda: self._form_post(self.config.devicecode_url, {
+                "client_id": self.config.client_id,
+                "scope": self.config.scope_string(),
+            }),
+        )
         code = payload.get("device_code")
         if not code:
             raise OAuth2Error(f"device code request failed: {payload.get('error_description') or payload}")
@@ -88,6 +106,26 @@ class OAuth2Authenticator:
             interval=int(payload.get("interval", 5)),
             message=payload.get("message", ""),
         )
+
+    def _effective_scopes(self) -> tuple[str, ...]:
+        token = self.token_repo.load_all().get(self.provider) or {}
+        raw = token.get("scope") or token.get("scopes")
+        if isinstance(raw, str):
+            scopes = tuple(scope for scope in raw.replace(",", " ").split() if scope)
+        elif isinstance(raw, (list, tuple, set)):
+            scopes = tuple(str(scope) for scope in raw if str(scope))
+        else:
+            scopes = ()
+        # Initial login establishes the explicitly configured baseline. Only later
+        # expansion relative to a persisted grant needs a separate approval.
+        return scopes or tuple(self.config.scopes)
+
+    def _project_root(self):
+        path = self.token_repo.path.resolve()
+        parent = path.parent
+        if parent.name == "connectors" and parent.parent.name == "runtime":
+            return parent.parent.parent
+        return parent
 
     def poll_once(self, device_code: str) -> tuple[str, dict | None]:
         form = {

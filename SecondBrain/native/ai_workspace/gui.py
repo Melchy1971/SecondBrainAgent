@@ -323,6 +323,12 @@ class AIWorkspaceApp(tk.Tk):
         ttk.Button(self.toolbar, text="Dashboard", command=lambda: self.navigate("dashboard")).pack(side="left")
         ttk.Button(self.toolbar, text="Zurueck", command=self.navigate_back).pack(side="left", padx=6)
         ttk.Button(self.toolbar, text="Aktualisieren", command=self.refresh).pack(side="left")
+        self.inbox_button = ttk.Button(
+            self.toolbar,
+            text="Prüfungen & Freigaben [0]",
+            command=lambda: self.navigate("review_inbox"),
+        )
+        self.inbox_button.pack(side="left", padx=6)
         self.module_title = ttk.Label(self.toolbar, text="", font=("Segoe UI", 11, "bold"))
         self.module_title.pack(side="right")
 
@@ -374,10 +380,20 @@ class AIWorkspaceApp(tk.Tk):
         self.project_workspace: Any = None
         # v30.49: bestehende Agent-Tasks, Queue und Freigaben in derselben Shell.
         self.task_workspace: Any = None
+        # Unified Review/Approval Inbox in derselben Shell (kein zweites Tk-Root).
+        self.review_inbox_workspace: Any = None
         # v30.50: read-only Projektion der bestehenden RAG-/Memory-Daten.
         self.semantic_workspace: Any = None
         # v30.51: zentrale resumierbare Streaming-Import-Pipeline.
         self.import_workspace: Any = None
+        # v30.78: editierbare Einstellungen ueber die zentrale RuntimeConfig.
+        self.settings_workspace: Any = None
+        # v30.78: Audit Viewer (Observability).
+        self.observability_workspace: Any = None
+        # v30.78: Import-Historie der einheitlichen Pipeline.
+        self.import_history_workspace: Any = None
+        # v30.78: Tag Editor (Review Queue, manuelle Korrekturen).
+        self.tag_editor_workspace: Any = None
 
     def _preview_frame(self) -> Any:
         if self.preview_workspace is None:
@@ -402,6 +418,18 @@ class AIWorkspaceApp(tk.Tk):
             self.task_workspace = TaskWorkspaceFrame(self.content_frame, self.project_root)
         return self.task_workspace
 
+    def _review_inbox_frame(self) -> Any:
+        if self.review_inbox_workspace is None:
+            from secondbrain.gui.approval_inbox import ApprovalInboxFrame
+
+            self.review_inbox_workspace = ApprovalInboxFrame(
+                self.content_frame,
+                self.project_root,
+                navigate_callback=self.navigate,
+                changed_callback=self.refresh,
+            )
+        return self.review_inbox_workspace
+
     def _semantic_frame(self) -> Any:
         if self.semantic_workspace is None:
             from secondbrain.native.semantic_explorer_panel import SemanticExplorerFrame
@@ -416,8 +444,41 @@ class AIWorkspaceApp(tk.Tk):
             self.import_workspace = StreamingImportFrame(self.content_frame, self.project_root)
         return self.import_workspace
 
+    def _settings_frame(self) -> Any:
+        if self.settings_workspace is None:
+            from secondbrain.native.settings_workspace_panel import SettingsWorkspaceFrame
+
+            self.settings_workspace = SettingsWorkspaceFrame(self.content_frame, self.project_root)
+        return self.settings_workspace
+
+    def _observability_frame(self) -> Any:
+        if self.observability_workspace is None:
+            from secondbrain.native.observability_panel import ObservabilityWorkspaceFrame
+
+            self.observability_workspace = ObservabilityWorkspaceFrame(self.content_frame, self.project_root)
+        return self.observability_workspace
+
+    def _import_history_frame(self) -> Any:
+        if self.import_history_workspace is None:
+            from secondbrain.native.import_history_panel import ImportHistoryWorkspaceFrame
+
+            self.import_history_workspace = ImportHistoryWorkspaceFrame(self.content_frame, self.project_root)
+        return self.import_history_workspace
+
+    def _tag_editor_frame(self) -> Any:
+        if self.tag_editor_workspace is None:
+            from secondbrain.native.tag_editor_panel import TagEditorWorkspaceFrame
+
+            self.tag_editor_workspace = TagEditorWorkspaceFrame(self.content_frame, self.project_root)
+        return self.tag_editor_workspace
+
     def refresh(self) -> None:
         snapshot = self.service.snapshot()
+        inbox = self.service.module_payload("review_inbox")
+        pending_count = int(inbox.get("pending_count", 0)) if inbox.get("ok") else 0
+        critical_count = int(inbox.get("critical_count", 0)) if inbox.get("ok") else 0
+        critical_marker = " !" if critical_count else ""
+        self.inbox_button.configure(text=f"Prüfungen & Freigaben [{pending_count}]{critical_marker}")
         self.state.version = snapshot.version
         self.state.replace_modules(snapshot.modules)
         self.version_label.configure(text=self.state.version)
@@ -425,10 +486,15 @@ class AIWorkspaceApp(tk.Tk):
         for item in self.navigation.get_children():
             self.navigation.delete(item)
         for module in self.state.modules:
-            self.navigation.insert("", "end", iid=module.id, text=module.title, values=(module.status,))
+            title = module.title
+            if module.id == "review_inbox":
+                title = f"{module.title} [{pending_count}]{critical_marker}"
+            self.navigation.insert("", "end", iid=module.id, text=title, values=(module.status,))
         if current_selection and self.navigation.exists(current_selection):
             self.navigation.selection_set(current_selection)
             self.navigation.focus(current_selection)
+        if self.review_inbox_workspace is not None:
+            self.review_inbox_workspace.reload()
         self._render_active_module()
 
     def navigate(self, module_id: str) -> None:
@@ -451,132 +517,55 @@ class AIWorkspaceApp(tk.Tk):
         if selected and selected[0] != self.state.active_module:
             self.navigate(selected[0])
 
+    WORKSPACE_MODULES = {
+        "chat": (None, "reload_conversation", "AI Chat Workspace bereit"),
+        "preview": ("_preview_frame", "reload_documents", "Document Preview Center bereit"),
+        "projects": ("_project_frame", "reload", "Projekte und Workspaces bereit"),
+        "tasks": ("_task_frame", "reload", "Aufgaben, Agent Jobs und Genehmigungen bereit"),
+        "semantic": ("_semantic_frame", "reload", "Semantic Explorer bereit"),
+        "imports": ("_import_frame", "reload", "Enterprise Streaming Import bereit"),
+        "settings": ("_settings_frame", "reload", "Einstellungen bereit (zentrale RuntimeConfig)"),
+        "observability": ("_observability_frame", "reload", "Audit Viewer bereit"),
+        "import_history": ("_import_history_frame", "reload", "Import-Historie bereit"),
+        "tags": ("_tag_editor_frame", "reload", "Tag Editor bereit"),
+    }
+
+    def _hide_content(self) -> None:
+        self.detail.pack_forget()
+        self.chat_workspace.pack_forget()
+        for frame in (
+            self.preview_workspace,
+            self.project_workspace,
+            self.task_workspace,
+            self.semantic_workspace,
+            self.import_workspace,
+            self.settings_workspace,
+            self.observability_workspace,
+            self.import_history_workspace,
+            self.tag_editor_workspace,
+        ):
+            if frame is not None:
+                frame.pack_forget()
+
     def _render_active_module(self) -> None:
         module = next((item for item in self.state.modules if item.id == self.state.active_module), None)
         if module is None:
             self._show({"ok": False, "status": "no_active_module"})
             self._update_status()
             return
-        if module.id == "chat":
-            self.detail.pack_forget()
-            if self.preview_workspace is not None:
-                self.preview_workspace.pack_forget()
-            if self.project_workspace is not None:
-                self.project_workspace.pack_forget()
-            if self.task_workspace is not None:
-                self.task_workspace.pack_forget()
-            if self.semantic_workspace is not None:
-                self.semantic_workspace.pack_forget()
-            if self.import_workspace is not None:
-                self.import_workspace.pack_forget()
-            self.chat_workspace.pack(fill="both", expand=True)
-            self.chat_workspace.reload_conversation()
+        spec = self.WORKSPACE_MODULES.get(module.id)
+        if spec is not None:
+            getter, reload_name, message = spec
+            self._hide_content()
+            frame = self.chat_workspace if getter is None else getattr(self, getter)()
+            frame.pack(fill="both", expand=True)
+            getattr(frame, reload_name)()
             self.state.status = "ready"
-            self.state.message = "AI Chat Workspace bereit"
+            self.state.message = message
             self.module_title.configure(text=module.title)
             self._update_status()
             return
-        if module.id == "preview":
-            self.detail.pack_forget()
-            self.chat_workspace.pack_forget()
-            if self.project_workspace is not None:
-                self.project_workspace.pack_forget()
-            if self.task_workspace is not None:
-                self.task_workspace.pack_forget()
-            if self.semantic_workspace is not None:
-                self.semantic_workspace.pack_forget()
-            if self.import_workspace is not None:
-                self.import_workspace.pack_forget()
-            preview = self._preview_frame()
-            preview.pack(fill="both", expand=True)
-            preview.reload_documents()
-            self.state.status = "ready"
-            self.state.message = "Document Preview Center bereit"
-            self.module_title.configure(text=module.title)
-            self._update_status()
-            return
-        if module.id == "projects":
-            self.detail.pack_forget()
-            self.chat_workspace.pack_forget()
-            if self.preview_workspace is not None:
-                self.preview_workspace.pack_forget()
-            if self.task_workspace is not None:
-                self.task_workspace.pack_forget()
-            if self.semantic_workspace is not None:
-                self.semantic_workspace.pack_forget()
-            if self.import_workspace is not None:
-                self.import_workspace.pack_forget()
-            projects = self._project_frame()
-            projects.pack(fill="both", expand=True)
-            projects.reload()
-            self.state.status = "ready"
-            self.state.message = "Projekte und Workspaces bereit"
-            self.module_title.configure(text=module.title)
-            self._update_status()
-            return
-        if module.id == "tasks":
-            self.detail.pack_forget()
-            self.chat_workspace.pack_forget()
-            if self.preview_workspace is not None:
-                self.preview_workspace.pack_forget()
-            if self.project_workspace is not None:
-                self.project_workspace.pack_forget()
-            if self.semantic_workspace is not None:
-                self.semantic_workspace.pack_forget()
-            if self.import_workspace is not None:
-                self.import_workspace.pack_forget()
-            tasks = self._task_frame()
-            tasks.pack(fill="both", expand=True)
-            tasks.reload()
-            self.state.status = "ready"
-            self.state.message = "Aufgaben, Agent Jobs und Genehmigungen bereit"
-            self.module_title.configure(text=module.title)
-            self._update_status()
-            return
-        if module.id == "semantic":
-            self.detail.pack_forget()
-            self.chat_workspace.pack_forget()
-            if self.preview_workspace is not None:
-                self.preview_workspace.pack_forget()
-            if self.project_workspace is not None:
-                self.project_workspace.pack_forget()
-            if self.task_workspace is not None:
-                self.task_workspace.pack_forget()
-            if self.import_workspace is not None:
-                self.import_workspace.pack_forget()
-            semantic = self._semantic_frame()
-            semantic.pack(fill="both", expand=True)
-            semantic.reload()
-            self.state.status = "ready"
-            self.state.message = "Semantic Explorer bereit"
-            self.module_title.configure(text=module.title)
-            self._update_status()
-            return
-        if module.id == "imports":
-            self.detail.pack_forget()
-            self.chat_workspace.pack_forget()
-            for frame in (self.preview_workspace, self.project_workspace, self.task_workspace, self.semantic_workspace):
-                if frame is not None:
-                    frame.pack_forget()
-            imports = self._import_frame()
-            imports.pack(fill="both", expand=True)
-            imports.reload()
-            self.state.status = "ready"
-            self.state.message = "Enterprise Streaming Import bereit"
-            self.module_title.configure(text=module.title)
-            self._update_status()
-            return
-        self.chat_workspace.pack_forget()
-        if self.preview_workspace is not None:
-            self.preview_workspace.pack_forget()
-        if self.project_workspace is not None:
-            self.project_workspace.pack_forget()
-        if self.task_workspace is not None:
-            self.task_workspace.pack_forget()
-        if self.semantic_workspace is not None:
-            self.semantic_workspace.pack_forget()
-        if self.import_workspace is not None:
-            self.import_workspace.pack_forget()
+        self._hide_content()
         self.detail.pack(fill="both", expand=True)
         payload = self.service.module_payload(module.id)
         if payload.get("status") == "module_error":

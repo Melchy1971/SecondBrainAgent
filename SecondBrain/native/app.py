@@ -59,7 +59,6 @@ class NativeJarvisApp:
         self.root.minsize(1040, 680)
         self._tab_by_name: dict[str, tk.Widget] = {}
         self._texts: list[tk.Text] = []
-        self._settings_vars: dict[str, tuple[str, Any]] = {}
         self._build()
 
     # ------------------------------------------------------------------ Theme
@@ -382,125 +381,14 @@ class NativeJarvisApp:
     def _add_settings_tab(self) -> None:
         frame = ttk.Frame(self.tabs, padding=12)
         self._add_tab("Einstellungen", frame)
+        from secondbrain.native.settings_workspace_panel import SettingsEditorFrame
+        self.settings_editor = SettingsEditorFrame(
+            frame, self.project_root, on_theme_change=self._on_settings_theme_change)
+        self.settings_editor.pack(fill="both", expand=True)
 
-        top = ttk.Frame(frame)
-        top.pack(fill="x", pady=(0, 8))
-        ttk.Label(top, text="Zentrale Konfiguration — identisch für GUI und CLI",
-                  font=(FONT, tokens.FONT_SIZES["subtitle"], "bold")).pack(side="left")
-        ttk.Button(top, text="Neu laden", command=self.reload_settings).pack(side="right", padx=(4, 0))
-        ttk.Button(top, text="Speichern", style="Primary.TButton",
-                   command=self.save_settings).pack(side="right")
-
-        self.settings_result_var = tk.StringVar(value="")
-        ttk.Label(frame, textvariable=self.settings_result_var, style="Muted.TLabel").pack(fill="x")
-
-        holder = ttk.Frame(frame)
-        holder.pack(fill="both", expand=True, pady=(6, 0))
-        self._settings_canvas = tk.Canvas(holder, highlightthickness=0, borderwidth=0)
-        scroll = ttk.Scrollbar(holder, orient="vertical", command=self._settings_canvas.yview)
-        self._settings_inner = ttk.Frame(self._settings_canvas)
-        self._settings_inner.bind(
-            "<Configure>",
-            lambda _e: self._settings_canvas.configure(scrollregion=self._settings_canvas.bbox("all")))
-        self._settings_window = self._settings_canvas.create_window(
-            (0, 0), window=self._settings_inner, anchor="nw")
-        self._settings_canvas.bind(
-            "<Configure>",
-            lambda e: self._settings_canvas.itemconfigure(self._settings_window, width=e.width))
-        self._settings_canvas.configure(yscrollcommand=scroll.set)
-        scroll.pack(side="right", fill="y")
-        self._settings_canvas.pack(side="left", fill="both", expand=True)
-        self._render_settings_sections()
-
-    def _render_settings_sections(self) -> None:
-        for child in self._settings_inner.winfo_children():
-            child.destroy()
-        self._settings_vars = {}
-        snapshot = self.settings_panel.render()
-        status = snapshot.get("status", {})
-        if status.get("status") == "blocked":
-            keys = ", ".join(sorted({b.get("key", "?") for b in status.get("blockers", [])}))
-            ttk.Label(self._settings_inner, style="Blocked.TLabel",
-                      text=f"  BLOCKED — Pflichtwerte fehlen oder sind ungültig: {keys}").pack(
-                fill="x", pady=(0, 8))
-        origin_names = {
-            "environ": "Umgebungsvariable", "dotenv": ".env", "workspace_config": "config.json (Workspace)",
-            "appdata_config": "config.json (AppData)", "gui_settings_legacy": "GUI-Settings (Alt)",
-            "default": "Default",
-        }
-        for section in snapshot.get("sections", []):
-            fields = section.get("fields", [])
-            if not fields:
-                continue
-            box = ttk.LabelFrame(self._settings_inner, text=section["title"], padding=10)
-            box.pack(fill="x", pady=(0, 10), padx=(0, 4))
-            box.columnconfigure(1, weight=1)
-            row_index = 0
-            for field in fields:
-                label = field["key"]
-                if field.get("required"):
-                    label += " *"
-                ttk.Label(box, text=label).grid(row=row_index, column=0, sticky="w",
-                                                padx=(0, 12), pady=(4, 0))
-                widget = self._settings_field_widget(box, field)
-                widget.grid(row=row_index, column=1, sticky="ew", pady=(4, 0))
-                origin = origin_names.get(field.get("origin", ""), field.get("origin", ""))
-                ttk.Label(box, text=origin, style="Muted.TLabel",
-                          font=(FONT, tokens.FONT_SIZES["caption"])).grid(
-                    row=row_index, column=2, sticky="e", padx=(12, 0), pady=(4, 0))
-                if field.get("description"):
-                    row_index += 1
-                    ttk.Label(box, text=field["description"], style="Muted.TLabel",
-                              font=(FONT, tokens.FONT_SIZES["caption"]), wraplength=760,
-                              justify="left").grid(row=row_index, column=0, columnspan=3,
-                                                   sticky="w", pady=(0, 2))
-                row_index += 1
-
-    def _settings_field_widget(self, parent: tk.Widget, field: dict[str, Any]) -> tk.Widget:
-        key = field["key"]
-        value = "" if field["value"] is None else str(field["value"])
-        if field["type"] == "choice":
-            var = tk.StringVar(value=value or field.get("default", ""))
-            widget = ttk.Combobox(parent, textvariable=var, values=field.get("choices", []),
-                                  state="readonly")
-            self._settings_vars[key] = ("choice", var)
-            return widget
-        if field["type"] == "bool":
-            var = tk.BooleanVar(value=value.lower() in ("true", "1"))
-            widget = ttk.Checkbutton(parent, variable=var)
-            self._settings_vars[key] = ("bool", var)
-            return widget
-        var = tk.StringVar(value=value)
-        show = "•" if field.get("secret") else ""
-        widget = ttk.Entry(parent, textvariable=var, show=show)
-        self._settings_vars[key] = (field["type"], var)
-        return widget
-
-    def save_settings(self) -> None:
-        values: dict[str, str] = {}
-        for key, (field_type, var) in self._settings_vars.items():
-            if field_type == "bool":
-                values[key] = "true" if var.get() else "false"
-            else:
-                values[key] = str(var.get())
-        result = self.settings_panel.save(values)
-        if result.get("ok"):
-            written = result.get("written", [])
-            theme = values.get("SECONDBRAIN_GUI_THEME")
-            if theme and theme != self.themes.current:
-                self._apply_theme(theme)
-            self.refresh(silent=True)
-            self._render_settings_sections()
-            if written:
-                self.settings_result_var.set("Gespeichert: " + ", ".join(written))
-            else:
-                self.settings_result_var.set("Keine Änderungen.")
-        else:
-            self.settings_result_var.set("Fehler: " + " | ".join(result.get("errors", [])[:3]))
-
-    def reload_settings(self) -> None:
-        self._render_settings_sections()
-        self.settings_result_var.set("Neu geladen.")
+    def _on_settings_theme_change(self, theme: str) -> None:
+        self._apply_theme(theme)
+        self.refresh(silent=True)
 
     # ---------------------------------------------------------------- Developer
     def _add_developer_tab(self) -> None:
@@ -565,7 +453,8 @@ class NativeJarvisApp:
         theme = self.themes.toggle()
         self._apply_theme()
         self.settings_panel.save({"SECONDBRAIN_GUI_THEME": theme.name})
-        self._render_settings_sections()
+        if hasattr(self, "settings_editor"):
+            self.settings_editor.reload()
 
     def refresh(self, silent: bool = False) -> None:
         self.model = build_native_view_model(self.project_root)

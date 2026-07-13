@@ -76,6 +76,39 @@ def _production_status(root: Path) -> dict[str, Any]:
     return _latest_report(root, "p1_production_latest.json")
 
 
+def _review_inbox_status(root: Path) -> dict[str, Any]:
+    from secondbrain.agent.review_service import UnifiedReviewInbox
+
+    inbox = UnifiedReviewInbox(root)
+    items = inbox.list_all()
+    pending = inbox.list_pending()
+    deferred = inbox.list_deferred()
+    completed = inbox.list_completed()
+    critical = [
+        item
+        for item in items
+        if item["category"] in {"delete_request", "connector_permission_change", "sensitive_document"}
+        or item["risk_level"] in {"high", "critical", "destructive"}
+    ]
+    categories: dict[str, int] = {}
+    for item in items:
+        categories[item["category"]] = categories.get(item["category"], 0) + 1
+    return {
+        "pending_reviews": len(inbox.reviews.list(status="pending")),
+        "pending_approvals": len(inbox.approvals.list(status="pending")),
+        "deferred_items": len(deferred),
+        "critical_items": len(critical),
+        "inbox_summary": {
+            "total": len(items),
+            "pending": len(pending),
+            "deferred": len(deferred),
+            "completed": len(completed),
+            "critical": len(critical),
+            "categories": categories,
+        },
+    }
+
+
 def _action_surface() -> dict[str, Any]:
     return {
         "schema": "secondbrain.native.actions.v30_29",
@@ -108,6 +141,16 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
     parser = GermanVoiceCommandParser()
     audit = native_audit_status(base, limit=10)
     chat = native_chat_status(base, limit=12)
+    review_inbox = _safe_call(
+        lambda: _review_inbox_status(base),
+        {
+            "pending_reviews": 0,
+            "pending_approvals": 0,
+            "deferred_items": 0,
+            "critical_items": 0,
+            "inbox_summary": {"total": 0, "pending": 0, "deferred": 0, "completed": 0, "critical": 0},
+        },
+    )
     return {
         "schema": "secondbrain.native.view_model.v30_29",
         "ok": bool(bootstrap.get("ok")),
@@ -127,6 +170,11 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "actions": _action_surface(),
         "audit": audit,
         "chat": chat,
+        "pending_reviews": review_inbox["pending_reviews"],
+        "pending_approvals": review_inbox["pending_approvals"],
+        "deferred_items": review_inbox["deferred_items"],
+        "critical_items": review_inbox["critical_items"],
+        "inbox_summary": review_inbox["inbox_summary"],
         "voice": {
             "language": "de-DE",
             "offline_intent_parser": True,

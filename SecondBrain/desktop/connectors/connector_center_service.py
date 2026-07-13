@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from secondbrain.connectors.scaffold.approval import ConnectorActionPolicy
+
 from .connector_actions import ConnectorActionResult, ConnectorActionService
 from .connector_config_store import ConnectorConfigStore
 from .connector_configuration import ConnectorConfigurationService
@@ -38,11 +40,13 @@ class ConnectorCenterService:
         config_store: ConnectorConfigStore | None = None,
         action_service: ConnectorActionService | None = None,
         configuration_service: ConnectorConfigurationService | None = None,
+        action_policy: ConnectorActionPolicy | None = None,
     ) -> None:
         self.registry = registry or ConnectorRegistry()
         self.config_store = config_store
         self.action_service = action_service or ConnectorActionService()
         self.configuration_service = configuration_service or ConnectorConfigurationService(self.registry)
+        self.action_policy = action_policy or ConnectorActionPolicy()
         self._configs: dict[str, ConnectorConfig] = config_store.load_all() if config_store else {}
         self._health: dict[str, ConnectorHealth] = {}
 
@@ -104,6 +108,28 @@ class ConnectorCenterService:
                 items_synced=self._health.get(connector_id, ConnectorHealth.ready(connector_id)).items_synced,
             )
         return result
+
+    def permission_preview(
+        self,
+        connector_id: str,
+        action: str,
+        *,
+        method: str = "GET",
+        effective_scopes: tuple[str, ...] | list[str] = (),
+        requested_scopes: tuple[str, ...] | list[str] | None = None,
+        payload: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Sanitized ViewModel for scope and write approval confirmation screens."""
+
+        self.registry.require(connector_id)
+        return self.action_policy.evaluate(
+            connector_id=connector_id,
+            action=action,
+            method=method,
+            effective_scopes=effective_scopes,
+            requested_scopes=requested_scopes,
+            payload=payload,
+        ).to_dict()
 
     def mark_sync_completed(self, connector_id: str, *, items_synced: int, cursor: str | None = None) -> ConnectorHealth:
         self.registry.require(connector_id)

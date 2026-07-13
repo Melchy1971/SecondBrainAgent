@@ -301,3 +301,19 @@ python launcher.py module-health
 python launcher.py command-index
 python launcher.py core-status
 ```
+
+## v30.78 – Zentrale Konfiguration, Observability, Import-Pipeline, Klassifizierung
+
+- **RuntimeConfig** (`secondbrain/runtime_config/`): eine Konfigurationsquelle für GUI und CLI.
+  Priorität: `environ` > `.env` > `config.json` (Workspace) > `config.json` (AppData) > GUI-Legacy > Defaults.
+  Secrets nur als `{"ref": "ENV_NAME"}` in JSON; fehlende Pflichtwerte => Status BLOCKED.
+  Kommandos: `python launcher.py config-status | config-snapshot | config-set KEY=WERT | config-doctor`.
+- **Einstellungen-GUI**: editierbar, in Bereiche gegliedert (KI/Embedding, Datenbank, GUI, Sprache, Pfade, Secrets),
+  mit Herkunftsanzeige und BLOCKED-Banner — in der Desktop-Shell (Modul "Settings Center") und in `native/app.py`.
+- **Observability** (`secondbrain/observability/`): strukturierte JSONL-Logs, Audit Event Store mit JSON-Export,
+  Correlation-/Job-/Plan-/Sync-IDs, Redaction-Middleware, Error-Taxonomie, Health Timeline, GUI "Audit Viewer".
+- **Import-Pipeline** (`secondbrain/import_pipeline/`): eine ImportJob-Entität für lokale und Connector-Importe,
+  Statusmodell queued→parsing→classified→chunked→embedded→indexed (+ failed/dead_letter/duplicate/ocr_required),
+  Duplicate Detection, Retry, Partial Failure, Source Lineage, GUI "Import Historie".
+- **Klassifizierung** (`secondbrain/classification/`): regelbasiert + optional LLM, Confidence Score,
+  PII-/Secret-Erkennung, Review Queue bei niedriger Confidence, nachvollziehbare Tag-Historie, GUI "Tag Editor".
