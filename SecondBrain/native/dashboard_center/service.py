@@ -169,6 +169,46 @@ class NativeDashboardService:
         status = "blocked" if blockers else "warning" if warnings else "ready"
         return self._card("security", "Security", status, {"approval_required": approval, "secret_vault": vault}, "Freigaben, Privacy Mode und Secret Vault.", "settings-center-gui", blockers, warnings)
 
+    def _governance_card(self) -> DashboardCard:
+        """Review/approval governance KPIs - counts and labels only, no ids."""
+
+        try:
+            from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+
+            view = ReviewApprovalMetrics(self.project_root).dashboard_view()
+        except Exception:
+            view = {}
+        open_approvals = int(view.get("open_approvals", 0))
+        critical = int(view.get("critical_approvals", 0))
+        overdue = int(view.get("overdue_reviews", 0))
+        blocked = int(view.get("blocked_unsafe_executions", 0))
+        warnings: list[str] = []
+        if overdue:
+            warnings.append("reviews_overdue")
+        if critical:
+            warnings.append("critical_approvals_pending")
+        status = "warning" if warnings else "ready"
+        value = {
+            "open_approvals": open_approvals,
+            "critical_approvals": critical,
+            "overdue_reviews": overdue,
+            "average_decision_time": view.get("average_decision_time", 0.0),
+            "blocked_unsafe_executions": blocked,
+            "most_common_category": view.get("most_common_category", ""),
+            "trend_7d": int(view.get("trend_7d", 0)),
+            "trend_30d": int(view.get("trend_30d", 0)),
+        }
+        return self._card(
+            "governance",
+            "Review & Approval",
+            status,
+            value,
+            "Freigaben, Prüfungen, Eskalationen und Entscheidungszeiten.",
+            "review-approval-inbox",
+            [],
+            warnings,
+        )
+
     def snapshot(self) -> DashboardSnapshot:
         cards = [
             self._desktop_card(),
@@ -185,6 +225,7 @@ class NativeDashboardService:
             self._module_card("updates", "Update Center", "secondbrain/native/update_center", "update-status"),
             self._runtime_card(),
             self._security_card(),
+            self._governance_card(),
         ]
         blockers = [item for card in cards for item in card.blockers]
         warnings = [item for card in cards for item in card.warnings]

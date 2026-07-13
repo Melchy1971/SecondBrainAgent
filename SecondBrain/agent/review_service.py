@@ -321,6 +321,13 @@ class UnifiedReviewInbox:
             enriched.append(item)
         return enriched
 
+    def metrics(self, *, window_days: int | None = None) -> dict[str, Any]:
+        """Governance metrics for this inbox (ids/payloads/secrets excluded)."""
+
+        from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+
+        return ReviewApprovalMetrics(inbox=self).export(window_days=window_days)
+
     def evaluate_notifications(self, *, now=None, service=None):
         svc = service or self.notification_service()
         return svc.evaluate(self.notification_items(), now=now)

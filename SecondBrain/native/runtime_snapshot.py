@@ -140,6 +140,12 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
     }
 
 
+def _governance_metrics_status(root: Path) -> dict[str, Any]:
+    from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+
+    return ReviewApprovalMetrics(root).dashboard_view()
+
+
 def _action_surface() -> dict[str, Any]:
     return {
         "schema": "secondbrain.native.actions.v30_29",
@@ -187,6 +193,19 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
             "inbox_summary": {"total": 0, "pending": 0, "deferred": 0, "completed": 0, "critical": 0},
         },
     )
+    governance_metrics = _safe_call(
+        lambda: _governance_metrics_status(base),
+        {
+            "open_approvals": 0,
+            "critical_approvals": 0,
+            "overdue_reviews": 0,
+            "average_decision_time": 0.0,
+            "blocked_unsafe_executions": 0,
+            "most_common_category": "",
+            "trend_7d": 0,
+            "trend_30d": 0,
+        },
+    )
     return {
         "schema": "secondbrain.native.view_model.v30_29",
         "ok": bool(bootstrap.get("ok")),
@@ -216,6 +235,7 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "expiring_items": review_inbox.get("expiring_items", 0),
         "notification_count": review_inbox.get("notification_count", 0),
         "oldest_pending_age": review_inbox.get("oldest_pending_age", 0),
+        "governance_metrics": governance_metrics,
         "voice": {
             "language": "de-DE",
             "offline_intent_parser": True,
