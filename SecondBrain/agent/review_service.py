@@ -21,6 +21,7 @@ class UnifiedReviewInbox:
         review_queue: ReviewQueue | None = None,
         approval_service: AgentApprovalService | None = None,
         event_bus: EventBus | None = None,
+        memory_governance: Any | None = None,
     ) -> None:
         root = Path(project_root or Path.cwd()).resolve()
         self.approvals = approval_queue or NativeApprovalQueue(root)
@@ -33,6 +34,10 @@ class UnifiedReviewInbox:
             raise ValueError("review_approval_event_bus_mismatch")
         self.event_bus = event_bus or (approval_service.event_bus if approval_service is not None else EventBus())
         self.approval_service = approval_service or AgentApprovalService(queue=self.approvals, event_bus=self.event_bus)
+        # Optional collaborator that commits/discards memory candidates when a
+        # memory-governed review is decided. Duck-typed to avoid an import cycle
+        # with secondbrain.agent.memory_service.
+        self.memory_governance = memory_governance
 
     def create_review(
         self,
@@ -270,11 +275,33 @@ class UnifiedReviewInbox:
                     },
                 )
             )
+            self._apply_memory_governance(metadata, status, actor)
         canonical_id = str(approval["approval_id"]) if approval is not None else str(reviews[0]["review_id"])
         result = self.get(canonical_id)
         if result is None:
             raise RuntimeError(f"inbox_item_missing_after_decision:{canonical_id}")
         return result
+
+    def _apply_memory_governance(
+        self,
+        review_metadata: Mapping[str, Any],
+        status: str,
+        actor: str,
+    ) -> None:
+        """Route a decided memory-governed review to the governance service.
+
+        Runs only after the review transition has succeeded, guaranteeing no
+        memory is written before a decision exists.
+        """
+
+        if self.memory_governance is None:
+            return
+        if str(review_metadata.get("governance") or "") != "memory":
+            return
+        candidate_id = str(review_metadata.get("candidate_id") or "")
+        if not candidate_id:
+            return
+        self.memory_governance.apply_memory_decision(candidate_id, status, actor=actor)
 
     @staticmethod
     def _correlation_id(
