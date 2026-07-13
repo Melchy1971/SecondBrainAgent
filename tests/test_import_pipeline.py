@@ -138,8 +138,10 @@ def test_approved_failed_import_can_retry_without_duplicate_review(tmp_path: Pat
     assert job.status == ImportStatus.FAILED_REVIEWABLE
     retried = pipeline.approve_review(job.review_id, "reviewer")
     assert retried.status == ImportStatus.FAILED_REVIEWABLE
-    assert retried.review_status == "approved"
-    assert len(pipeline.review_inbox.reviews.list()) == 1
+    assert retried.review_status == "pending"
+    reviews = pipeline.review_inbox.reviews.list(category="failed_import")
+    assert len([item for item in reviews if item["status"] == "pending"]) == 1
+    assert len([item for item in reviews if item["status"] == "approved"]) == 1
 
 
 # --- OCR ----------------------------------------------------------------------------------

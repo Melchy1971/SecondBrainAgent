@@ -107,6 +107,20 @@ def test_sensitive_document_enters_review_and_blocks_automatic_forwarding(tmp_pa
     assert index_calls == []
 
 
+def test_secret_signal_is_detected_even_when_classifier_does_not_flag_it(tmp_path: Path) -> None:
+    secret = "sk-abcdefghijklmnopqrstuvwxyz123456"
+    pipeline, index_calls = _pipeline(tmp_path, classifier=lambda text: _classification())
+
+    job = pipeline.process(
+        pipeline.submit_text(f"api_key={secret}", source_ref="doc://unflagged-secret").job_id
+    )
+
+    assert job.status == ImportStatus.REVIEW_REQUIRED
+    assert job.review_category == "sensitive_document"
+    assert secret not in review_path(tmp_path).read_text(encoding="utf-8")
+    assert index_calls == []
+
+
 def test_pii_threshold_and_confidential_classification_create_sensitive_review(tmp_path: Path) -> None:
     pipeline, _ = _pipeline(
         tmp_path,
@@ -152,9 +166,16 @@ def test_uncertain_classification_creates_review_without_losing_raw_import(
 
 
 def test_approve_continues_import_exactly_once(tmp_path: Path) -> None:
+    classification_calls = 0
+
+    def classifier(text: str) -> dict:
+        nonlocal classification_calls
+        classification_calls += 1
+        return _classification(sensitive=True, finding_type="private_key", finding_count=1)
+
     pipeline, index_calls = _pipeline(
         tmp_path,
-        classifier=lambda text: _classification(sensitive=True, finding_type="private_key", finding_count=1),
+        classifier=classifier,
     )
     waiting = pipeline.process(pipeline.submit_text("private material", source_ref="doc://approve").job_id)
 
@@ -163,8 +184,44 @@ def test_approve_continues_import_exactly_once(tmp_path: Path) -> None:
     assert completed.status == ImportStatus.INDEXED
     assert completed.review_status == "approved"
     assert len(index_calls) == 1
+    assert classification_calls == 1
+    assert [stage["stage"] for stage in completed.stage_history].count("classified") == 1
+    assert [stage["stage"] for stage in completed.stage_history].count("chunked") == 1
     assert pipeline.process(completed.job_id).status == ImportStatus.INDEXED
     assert len(index_calls) == 1
+
+
+def test_approve_after_index_failure_retries_only_incomplete_stage(tmp_path: Path) -> None:
+    calls = {"classification": 0, "chunking": 0, "indexing": 0}
+
+    def classifier(text: str) -> dict:
+        calls["classification"] += 1
+        return _classification()
+
+    def chunker(text: str) -> list[str]:
+        calls["chunking"] += 1
+        return [text]
+
+    def indexer(text: str, metadata: dict) -> dict:
+        calls["indexing"] += 1
+        if calls["indexing"] == 1:
+            raise RuntimeError("indexing failed")
+        return {"ok": True}
+
+    pipeline = UnifiedImportPipeline(
+        tmp_path,
+        classifier=classifier,
+        chunker=chunker,
+        indexer=indexer,
+    )
+    waiting = pipeline.process(
+        pipeline.submit_text("document", source_ref="doc://resume-index").job_id
+    )
+
+    completed = pipeline.approve_review(waiting.review_id, "reviewer")
+
+    assert completed.status == ImportStatus.INDEXED
+    assert calls == {"classification": 1, "chunking": 1, "indexing": 2}
 
 
 def test_reject_prevents_indexing_and_archives_inline_content(tmp_path: Path) -> None:
@@ -195,6 +252,24 @@ def test_defer_keeps_import_paused(tmp_path: Path) -> None:
     assert index_calls == []
 
 
+def test_restart_observes_external_review_decision_and_resumes_once(tmp_path: Path) -> None:
+    pipeline, index_calls = _pipeline(tmp_path, classifier=lambda text: _classification(confidence=0.1))
+    waiting = pipeline.process(pipeline.submit_text("raw content", source_ref="doc://restart").job_id)
+    pipeline.review_inbox.approve(waiting.review_id, "reviewer", "approved in inbox")
+
+    restarted = UnifiedImportPipeline(
+        tmp_path,
+        classifier=lambda text: pytest.fail("completed classification must not run again"),
+        indexer=lambda text, metadata: index_calls.append(metadata) or {"ok": True},
+    )
+    completed = restarted.process(waiting.job_id)
+
+    assert completed.status == ImportStatus.INDEXED
+    assert len(index_calls) == 1
+    assert restarted.process(waiting.job_id).status == ImportStatus.INDEXED
+    assert len(index_calls) == 1
+
+
 @pytest.mark.parametrize(
     ("error", "expected_code"),
     [
@@ -214,6 +289,45 @@ def test_parser_failure_codes_are_preserved_as_sanitized_metadata(
     pipeline.process(pipeline.submit_file(source).job_id)
 
     review = _single_review(pipeline)
+    assert review["metadata"]["error_code"] == expected_code
+
+
+@pytest.mark.parametrize(
+    ("chunker", "indexer", "expected_code", "resume_status"),
+    [
+        (
+            lambda text: (_ for _ in ()).throw(RuntimeError("chunk worker failed")),
+            lambda text, metadata: {"ok": True},
+            "chunking_failed",
+            ImportStatus.CLASSIFIED,
+        ),
+        (
+            lambda text: [text],
+            lambda text, metadata: (_ for _ in ()).throw(RuntimeError("embedding provider failed")),
+            "embedding_failed",
+            ImportStatus.CHUNKED,
+        ),
+    ],
+)
+def test_processing_failures_keep_exact_resume_stage(
+    tmp_path: Path,
+    chunker,
+    indexer,
+    expected_code: str,
+    resume_status: str,
+) -> None:
+    pipeline = UnifiedImportPipeline(
+        tmp_path,
+        classifier=lambda text: _classification(),
+        chunker=chunker,
+        indexer=indexer,
+    )
+
+    job = pipeline.process(pipeline.submit_text("document", source_ref="doc://stage-failure").job_id)
+    review = _single_review(pipeline)
+
+    assert job.status == ImportStatus.FAILED_REVIEWABLE
+    assert job.review_resume_status == resume_status
     assert review["metadata"]["error_code"] == expected_code
 
 
@@ -248,4 +362,3 @@ def test_review_metadata_and_audit_never_contain_document_or_secrets(tmp_path: P
     assert secret not in queue_text
     assert secret not in audit_text
     assert "document_content" not in metadata
-
