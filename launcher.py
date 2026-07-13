@@ -154,6 +154,21 @@ def _review_approval_gate_main(argv: list[str]) -> int:
     out(report)
     return 2 if report["status"] == BLOCKED else 0
 
+
+def _review_approval_release_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="Review and approval final release gate")
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.agent.review_approval_gate import BLOCKED
+    from secondbrain.agent.review_approval_release_gate import run_review_approval_release_gate
+
+    report = run_review_approval_release_gate(args.project_root_option or args.project_root)
+    out(report)
+    return 2 if report["overall_status"] == BLOCKED else 0
+
+
 def _mobile_main(argv: list[str] | None = None) -> int:
     from secondbrain.mobile_companion import MobileCompanionRuntime
 
@@ -848,6 +863,8 @@ def main(argv: list[str] | None = None) -> int:
         return _rc_gate_main(raw)
     if cmd == "review-approval-gate":
         return _review_approval_gate_main(raw)
+    if cmd == "review-approval-release-gate":
+        return _review_approval_release_gate_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
