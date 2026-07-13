@@ -17,6 +17,7 @@ import json
 
 import pytest
 
+from secondbrain.agent.memory import InMemoryMemoryStore, MemoryError, create_memory_record
 from secondbrain.agent.memory_extractor import MemoryExtractor
 from secondbrain.agent.memory_service import GovernanceDecision, GovernedMemoryService
 from secondbrain.agent.privacy import PrivacyMode
@@ -50,6 +51,21 @@ def test_non_sensitive_candidate_is_stored(tmp_path, extractor):
     assert outcome.memory_id
     assert len(service.store.list()) == 1
     assert inbox.list_pending() == []
+
+
+def test_memory_candidate_exposes_governance_fields(extractor):
+    candidate = _candidate(
+        extractor,
+        "Belegter Projektfakt",
+        evidence=[{"source": "doc:1", "quote": "Projektfakt"}],
+    )
+
+    assert candidate.content_preview == "Belegter Projektfakt"
+    assert candidate.expires_at
+    assert candidate.status == "pending"
+    assert candidate.sanitized_content_preview == candidate.content_preview
+    assert candidate.expiration == candidate.expires_at
+    assert "content" not in candidate.sanitized_dict()
 
 
 def test_sensitive_candidate_goes_to_review(tmp_path, extractor):
@@ -96,7 +112,8 @@ def test_approve_stores_exactly_once(tmp_path, extractor):
 
     assert result["status"] == "approved"
     assert len(service.store.list()) == 1
-    assert service.candidate_status(outcome.candidate_id) == "approved"
+    assert service.candidate_status(outcome.candidate_id) == "stored"
+    assert service.get_candidate(outcome.candidate_id).status == "stored"
 
     # A repeated governance decision must not create a second memory.
     again = service.apply_memory_decision(outcome.candidate_id, "approved", actor="markus")
@@ -138,6 +155,28 @@ def test_secrets_never_reach_memory_or_audit(tmp_path, extractor):
     dumped = json.dumps(service.audit.records(), ensure_ascii=False)
     assert secret not in dumped
     assert "password=" not in dumped
+
+
+@pytest.mark.parametrize(
+    "secret_text",
+    [
+        "password=hunter2_TOP_SECRET_VALUE",
+        "API Key: abcdefghijklmnop",
+        "token=eyJhbGciOiJIUzI1NiJ9.payload.signature",
+        "credentials=service-account-value",
+        "-----BEGIN PRIVATE KEY-----\nabc123secretmaterial\n-----END PRIVATE KEY-----",
+    ],
+)
+def test_all_secret_classes_are_hard_blocked(tmp_path, extractor, secret_text):
+    service, inbox = _service(tmp_path)
+
+    outcome = service.submit(_candidate(extractor, secret_text))
+
+    assert outcome.decision is GovernanceDecision.BLOCKED
+    assert service.candidate_status(outcome.candidate_id) == "blocked"
+    assert service.store.list() == []
+    assert inbox.list_pending() == []
+    assert secret_text not in json.dumps(service.audit.records(), ensure_ascii=False)
 
 
 def test_credential_hidden_inside_sensitive_text_is_blocked(tmp_path, extractor):
@@ -209,3 +248,53 @@ def test_no_write_bypasses_review_before_decision(tmp_path, extractor):
     # Candidate is pending; nothing written yet.
     assert service.store.list() == []
     assert service.candidate_status(outcome.candidate_id) == "pending"
+
+    with pytest.raises(PermissionError, match="decision_not_persisted"):
+        service.apply_memory_decision(outcome.candidate_id, "approved", actor="bypass")
+
+
+def test_privacy_mode_is_enforced_by_extractor():
+    extractor = MemoryExtractor(privacy_mode=PrivacyMode.STRICT)
+
+    with pytest.raises(PermissionError, match="privacy_mode_active"):
+        extractor.extract("Darf nicht extrahiert werden", source_id="chat:1")
+
+
+def test_direct_store_call_cannot_bypass_sensitive_review(tmp_path, extractor):
+    service, _ = _service(tmp_path)
+    record = create_memory_record(
+        "Diagnose Depression, Medikament Sertralin",
+        metadata={"source_id": "chat:1", "confidence": 0.95},
+    )
+
+    with pytest.raises(MemoryError, match="memory_review_required:health"):
+        service.store.add(record)
+
+    assert service.store.list() == []
+
+
+def test_standalone_store_blocks_secrets_and_privacy_mode():
+    store = InMemoryMemoryStore()
+    with pytest.raises(MemoryError, match="memory_write_blocked:secret"):
+        store.add(create_memory_record("api_key=standalone-secret"))
+
+    private_store = InMemoryMemoryStore(privacy_mode="strict")
+    with pytest.raises(MemoryError, match="privacy_mode_active"):
+        private_store.add(create_memory_record("Normale Notiz"))
+
+
+def test_secret_evidence_is_redacted_before_memory_and_audit(tmp_path, extractor):
+    service, _ = _service(tmp_path)
+    secret = "evidence-secret-value"
+    candidate = _candidate(
+        extractor,
+        "Belegter, nicht sensibler Projektfakt",
+        evidence=[{"source": "doc:1", "api_key": secret}],
+    )
+
+    outcome = service.submit(candidate)
+
+    assert outcome.decision is GovernanceDecision.STORED
+    stored = service.store.list()[0]
+    assert stored.metadata["evidence"][0]["api_key"] == "***"
+    assert secret not in json.dumps(service.audit.records(), ensure_ascii=False)

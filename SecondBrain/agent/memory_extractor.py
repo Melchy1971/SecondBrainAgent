@@ -31,6 +31,8 @@ __all__ = [
     "MemoryExtractor",
     "DEFAULT_PREVIEW_LENGTH",
     "RETENTION_POLICIES",
+    "detect_memory_secret",
+    "redact_memory_secrets",
 ]
 
 DEFAULT_PREVIEW_LENGTH = 160
@@ -46,6 +48,23 @@ RETENTION_POLICIES: dict[str, int | None] = {
 
 _DEFAULT_CONFIDENCE = 0.75
 
+_MEMORY_SECRET_PATTERNS = (
+    re.compile(
+        r"-----BEGIN(?: [A-Z0-9]+)? PRIVATE KEY-----.*?"
+        r"-----END(?: [A-Z0-9]+)? PRIVATE KEY-----",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(r"-----BEGIN(?: [A-Z0-9]+)? PRIVATE KEY-----[\s\S]*", re.IGNORECASE),
+    re.compile(
+        r"(?i)\b(api[\s_-]?key|access[_-]?token|auth[_-]?token|token|secret|"
+        r"client[_-]?secret|password|passwd|credential(?:s)?)\s*[:=]\s*[^\s,;]+"
+    ),
+    re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/-]+=*"),
+    re.compile(r"sk-[A-Za-z0-9_-]{12,}"),
+    re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+)
+
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -58,21 +77,23 @@ class MemoryCandidate:
     ``content`` holds the raw text and is the only field that may contain
     sensitive material; it is never exposed to review previews or audit logs.
     Everything a reviewer or auditor sees comes from
-    :attr:`sanitized_content_preview`.
+    :attr:`content_preview`.
     """
 
     candidate_id: str
     memory_type: str
-    content: str
-    sanitized_content_preview: str
+    content_preview: str
     source_id: str
+    workspace_id: str
     evidence: tuple[dict[str, Any], ...]
     confidence: float
     classification: DataClassification
-    workspace_id: str
     retention_policy: str
-    expiration: str | None
+    expires_at: str | None
     deduplication_key: str
+    # Raw content is internal-only and omitted from review/audit persistence.
+    content: str
+    status: str = "pending"
     # Governance signals.
     source_trusted: bool = True
     contradicts: bool = False
@@ -85,21 +106,36 @@ class MemoryCandidate:
     def has_evidence(self) -> bool:
         return bool(self.evidence)
 
+    @property
+    def sanitized_content_preview(self) -> str:
+        """Backward-compatible alias for the safe review preview."""
+
+        return self.content_preview
+
+    @property
+    def expiration(self) -> str | None:
+        """Backward-compatible alias for ``expires_at``."""
+
+        return self.expires_at
+
     def sanitized_dict(self) -> dict[str, Any]:
         """Representation safe to persist in reviews and audit - no raw content."""
 
         return {
             "candidate_id": self.candidate_id,
             "memory_type": self.memory_type,
-            "sanitized_content_preview": self.sanitized_content_preview,
-            "source_id": self.source_id,
-            "evidence": [dict(item) for item in self.evidence],
+            "content_preview": self.content_preview,
+            "sanitized_content_preview": self.content_preview,
+            "source_id": _sanitize_value(self.source_id, key="source_id"),
+            "evidence": [_sanitize_value(dict(item)) for item in self.evidence],
             "confidence": self.confidence,
             "classification": self.classification.value,
             "workspace_id": self.workspace_id,
             "retention_policy": self.retention_policy,
-            "expiration": self.expiration,
+            "expires_at": self.expires_at,
+            "expiration": self.expires_at,
             "deduplication_key": self.deduplication_key,
+            "status": self.status,
             "source_trusted": self.source_trusted,
             "contradicts": self.contradicts,
             "unsupported_preference": self.unsupported_preference,
@@ -117,10 +153,12 @@ class MemoryExtractor:
         classifier: ClassificationPolicy | None = None,
         preview_length: int = DEFAULT_PREVIEW_LENGTH,
         default_confidence: float = _DEFAULT_CONFIDENCE,
+        privacy_mode: PrivacyMode = PrivacyMode.OFF,
     ) -> None:
         self._classifier = classifier or ClassificationPolicy()
         # Guard in OFF mode is used only to redact previews, never to block here.
         self._redactor = PrivacyGuard(PrivacyMode.OFF)
+        self._privacy = PrivacyGuard(privacy_mode)
         self._preview_length = max(16, int(preview_length))
         self._default_confidence = _clamp(default_confidence)
 
@@ -139,6 +177,8 @@ class MemoryExtractor:
         known_facts: Iterable[Mapping[str, Any] | str] | None = None,
         metadata: Mapping[str, Any] | None = None,
     ) -> MemoryCandidate:
+        if self._privacy.mode != PrivacyMode.OFF:
+            raise PermissionError("privacy_mode_active")
         text = (content or "").strip()
         if not text:
             raise ValueError("memory_candidate_content_required")
@@ -153,27 +193,32 @@ class MemoryExtractor:
         unsupported_preference = memory_type.strip().lower() == "preference" and not normalized_evidence
         contradicts = self._contradicts(text, memory_type, known_facts)
 
+        declared_no_memory = bool(no_memory) or _declared_no_memory(meta)
+        secret_detected = classification.is_blocking or detect_memory_secret(text)
         return MemoryCandidate(
             candidate_id=str(uuid4()),
             memory_type=memory_type.strip().lower() or "fact",
-            content=text,
-            sanitized_content_preview=self._sanitized_preview(text, classification),
+            content_preview=self._sanitized_preview(text, classification),
             source_id=source_id,
+            workspace_id=workspace_id,
             evidence=normalized_evidence,
             confidence=resolved_confidence,
             classification=classification.classification,
-            workspace_id=workspace_id,
             retention_policy=retention_policy,
-            expiration=self._expiration(retention_policy),
+            expires_at=self._expiration(retention_policy),
             deduplication_key=_deduplication_key(memory_type, workspace_id, text),
+            content=text,
+            status="blocked" if declared_no_memory or secret_detected else "pending",
             source_trusted=bool(source_trusted),
             contradicts=contradicts,
             unsupported_preference=unsupported_preference,
-            no_memory=bool(no_memory) or _declared_no_memory(meta),
+            no_memory=declared_no_memory,
             metadata=meta,
         )
 
     def _sanitized_preview(self, text: str, classification: ClassificationResult) -> str:
+        if detect_memory_secret(text):
+            return "[REDACTED_SECRET]"
         redacted = self._redactor.inspect_memory_write(text).redacted_text or text
         # Credentials/secrets must never surface even truncated.
         if classification.is_secret or classification.classification == DataClassification.CREDENTIAL:
@@ -246,6 +291,37 @@ def _normalize_evidence(evidence: Sequence[Mapping[str, Any]] | None) -> tuple[d
         else:  # tolerate bare strings as source references
             normalized.append({"source": str(item)})
     return tuple(normalized)
+
+
+def _sanitize_value(value: Any, *, key: str = "") -> Any:
+    """Redact secret-bearing evidence before review or audit serialization."""
+
+    normalized_key = re.sub(r"[^a-z0-9]", "", key.lower())
+    if key and any(marker in normalized_key for marker in (
+        "apikey", "credential", "password", "passwd", "privatekey", "secret", "token",
+    )):
+        return "***"
+    if isinstance(value, Mapping):
+        return {str(item_key): _sanitize_value(item, key=str(item_key)) for item_key, item in value.items()}
+    if isinstance(value, (list, tuple, set, frozenset)):
+        return [_sanitize_value(item) for item in value]
+    if isinstance(value, str):
+        if detect_memory_secret(value):
+            return redact_memory_secrets(value)
+        result = PrivacyGuard(PrivacyMode.OFF).inspect_memory_write(value)
+        return result.redacted_text if result.reason == "secret_redacted" else value
+    return value
+
+
+def detect_memory_secret(text: str) -> bool:
+    return any(pattern.search(text or "") for pattern in _MEMORY_SECRET_PATTERNS)
+
+
+def redact_memory_secrets(text: str) -> str:
+    redacted = text or ""
+    for pattern in _MEMORY_SECRET_PATTERNS:
+        redacted = pattern.sub("[REDACTED_SECRET]", redacted)
+    return redacted
 
 
 def _declared_no_memory(metadata: Mapping[str, Any]) -> bool:
