@@ -17,6 +17,7 @@ from threading import RLock
 from typing import Any, Callable, Mapping, Protocol
 
 from secondbrain.agent.approval_service import AgentApprovalService
+from secondbrain.native.approval import ApprovalConcurrencyError, ExecutionTokenError
 
 
 class ApprovalRequired(RuntimeError):
@@ -47,24 +48,33 @@ class ConnectorActionDecision:
     removed_scopes: tuple[str, ...]
     risk_level: str
     requires_approval: bool
+    action_type: str = ""
+    existing_scopes: tuple[str, ...] = ()
     approval_category: str = "connector_permission_change"
     policy_rule: str = "read_only"
 
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)
-        for field_name in ("effective_scopes", "requested_scopes", "added_scopes", "removed_scopes"):
+        for field_name in (
+            "effective_scopes", "existing_scopes", "requested_scopes",
+            "added_scopes", "removed_scopes",
+        ):
             value[field_name] = list(value[field_name])
+        value["scope_diff"] = {
+            "added": value["added_scopes"],
+            "removed": value["removed_scopes"],
+        }
         return value
 
 
 class ConnectorActionPolicy:
     """Central default-deny policy for connector permissions and writes."""
 
-    WRITE_TOKENS = frozenset({
-        "send", "forward", "publish", "create", "update", "modify", "delete",
-        "remove", "upload", "write", "post", "draft", "credential", "scope",
-        "permission", "workspace", "issue", "pull_request", "disable",
+    ACTION_TYPES = frozenset({
+        "read", "sync", "create", "update", "delete", "send", "upload",
+        "permission_change", "credential_change", "workspace_change",
     })
+    APPROVAL_ACTION_TYPES = ACTION_TYPES - {"read", "sync"}
     READ_TOKENS = frozenset({"status", "health", "search", "sync", "read", "list", "fetch", "get"})
 
     def evaluate(
@@ -76,6 +86,7 @@ class ConnectorActionPolicy:
         effective_scopes: tuple[str, ...] | list[str] = (),
         requested_scopes: tuple[str, ...] | list[str] | None = None,
         payload: Mapping[str, Any] | None = None,
+        action_type: str = "",
     ) -> ConnectorActionDecision:
         effective = self._scopes(effective_scopes)
         requested = self._scopes(requested_scopes if requested_scopes is not None else effective)
@@ -83,40 +94,98 @@ class ConnectorActionPolicy:
         removed = tuple(scope for scope in effective if scope not in requested)
         normalized = action.strip().lower().replace("-", "_")
         tokens = {token for part in normalized.replace(".", "_").split("_") for token in (part,) if token}
-        mutating_method = method.strip().upper() not in {"GET", "HEAD", "OPTIONS"}
+        normalized_method = method.strip().upper()
+        mutating_method = normalized_method not in {"GET", "HEAD", "OPTIONS"}
         payload_data = dict(payload or {})
-        data_loss_disable = "disable" in tokens and bool(payload_data.get("data_loss_risk", True))
-        write_action = bool(tokens & self.WRITE_TOKENS) or mutating_method or data_loss_disable
-        # A GET-based scope comparison is read-only when it requests exactly
-        # the already effective grant. Only an actual expansion is a permission
-        # change; the action name alone must not block initial OAuth login.
-        scope_comparison_without_diff = "scope" in tokens and not mutating_method and not added
-        if scope_comparison_without_diff:
-            write_action = False
-        requires_approval = bool(added) or write_action
-        if "credential" in tokens:
+        effective_action = self._effective_action(
+            action_type=action_type,
+            tokens=tokens,
+            mutating_method=mutating_method,
+            delete_method=normalized_method == "DELETE",
+            scope_expansion=bool(added),
+            data_loss_disable="disable" in tokens and bool(payload_data.get("data_loss_risk", True)),
+        )
+        requires_approval = effective_action in self.APPROVAL_ACTION_TYPES
+        if effective_action == "credential_change":
             risk, rule = "critical", "credential_change"
         elif added:
             risk, rule = "high", "scope_expansion"
-        elif write_action:
-            risk, rule = "high", "connector_write"
-        elif scope_comparison_without_diff:
+        elif requires_approval:
+            risk, rule = "high", f"connector_{effective_action}"
+        elif effective_action in {"read", "sync"}:
             risk, rule = "low", "read_only"
-        elif tokens & self.READ_TOKENS:
-            risk, rule = "low", "read_only"
+        else:  # Defensive default; _effective_action currently resolves every case.
+            risk, rule = "high", "unknown_connector_action"
+            requires_approval = True
+        if effective_action in {"permission_change", "credential_change", "workspace_change"}:
+            category = "connector_permission_change"
+        elif effective_action == "delete":
+            category = "delete_request"
         else:
-            risk, rule = "low", "read_only_unknown"
+            category = "risky_agent_action"
         return ConnectorActionDecision(
             connector_id=connector_id,
             action=action,
+            action_type=effective_action,
             effective_scopes=effective,
+            existing_scopes=effective,
             requested_scopes=requested,
             added_scopes=added,
             removed_scopes=removed,
             risk_level=risk,
             requires_approval=requires_approval,
+            approval_category=category,
             policy_rule=rule,
         )
+
+    def _effective_action(
+        self,
+        *,
+        action_type: str,
+        tokens: set[str],
+        mutating_method: bool,
+        delete_method: bool,
+        scope_expansion: bool,
+        data_loss_disable: bool,
+    ) -> str:
+        explicit = action_type.strip().lower().replace("-", "_")
+        if explicit and explicit not in self.ACTION_TYPES:
+            raise ValueError(f"invalid_connector_action_type:{explicit}")
+        # Explicit labels may make the policy stricter, never downgrade what
+        # the action name, scope diff, or HTTP method already demonstrates.
+        if explicit == "credential_change" or "credential" in tokens or "credentials" in tokens:
+            return "credential_change"
+        if explicit == "workspace_change" or "workspace" in tokens:
+            return "workspace_change"
+        if explicit == "permission_change" or "permission" in tokens:
+            return "permission_change"
+        if scope_expansion:
+            return "permission_change"
+        # A GET scope comparison with no added grant is just an inspection.
+        if "scope" in tokens and not mutating_method:
+            return "read"
+        if "scope" in tokens and mutating_method:
+            return "permission_change"
+        if delete_method or tokens & {"delete", "remove"} or data_loss_disable:
+            return "delete"
+        if tokens & {"send", "forward", "publish"}:
+            return "send"
+        if "upload" in tokens:
+            return "upload"
+        if tokens & {"create", "post", "issue", "pull", "draft"}:
+            return "create"
+        if tokens & {"update", "modify", "write", "disable"}:
+            return "update"
+        if explicit in self.APPROVAL_ACTION_TYPES:
+            return explicit
+        if explicit in {"read", "sync"}:
+            return "update" if mutating_method else explicit
+        if "sync" in tokens and not mutating_method:
+            return "sync"
+        if tokens & self.READ_TOKENS and not mutating_method:
+            return "read"
+        # Unknown non-safe HTTP methods are external writes by default.
+        return "update" if mutating_method else "read"
 
     @staticmethod
     def _scopes(scopes: tuple[str, ...] | list[str]) -> tuple[str, ...]:
@@ -147,6 +216,9 @@ class ApprovalRequest:
     payload_hash: str = ""
     binding_hash: str = ""
     expires_at: float = 0.0
+    action_type: str = ""
+    existing_scopes: tuple[str, ...] = ()
+    idempotency_key: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -274,6 +346,8 @@ class ApprovalGate:
         actor: str = "",
         effective_scopes: tuple[str, ...] | list[str] | None = None,
         requested_scopes: tuple[str, ...] | list[str] | None = None,
+        action_type: str = "",
+        confirmed: bool = False,
     ) -> Any:
         resolved_connector = connector_id or self.connector_id or resource
         resolved_workspace = workspace_id or self.workspace_id
@@ -286,6 +360,7 @@ class ApprovalGate:
             effective_scopes=current_scopes,
             requested_scopes=requested_scopes,
             payload=payload if isinstance(payload, Mapping) else None,
+            action_type=action_type,
         )
         if not decision.requires_approval:
             return execute()
@@ -297,16 +372,28 @@ class ApprovalGate:
             "connector_id": resolved_connector,
             "workspace_id": resolved_workspace,
             "actor": resolved_actor,
-            "action": action,
+            "requested_action": action,
+            "effective_action": decision.action_type,
+            "action_type": decision.action_type,
+            "action": action,  # Backward-compatible alias.
             "method": method.upper(),
             "target": target,
+            "existing_scopes": list(decision.existing_scopes),
             "effective_scopes": list(decision.effective_scopes),
             "requested_scopes": list(decision.requested_scopes),
             "added_scopes": list(decision.added_scopes),
             "removed_scopes": list(decision.removed_scopes),
+            "scope_diff": {
+                "added": list(decision.added_scopes),
+                "removed": list(decision.removed_scopes),
+            },
             "payload_hash": payload_hash,
             "policy_rule": decision.policy_rule,
         }
+        # ``confirmed`` is intentionally ignored: only this persistent binding
+        # and its approved queue state authorize execution.
+        _ = confirmed
+        binding["idempotency_key"] = self._hash(binding)
         binding_hash = self._hash(binding)
         binding["binding_hash"] = binding_hash
         approval = self._bound_approval(binding_hash, approval_id)
@@ -320,6 +407,7 @@ class ApprovalGate:
                 binding=binding,
                 risk_level=decision.risk_level,
                 expires_at=expires_at,
+                approval_category=decision.approval_category,
             )
         stored_binding = approval.get("payload") if isinstance(approval.get("payload"), dict) else {}
         if stored_binding.get("binding_hash") != binding_hash:
@@ -327,18 +415,37 @@ class ApprovalGate:
         expires_at = float(stored_binding.get("expires_at") or 0.0)
         status = str(approval.get("status") or "pending")
         request = self._native_request(approval)
-        if status == "executed":
+        if status in {"executed", "completed", "executing", "failed", "recovery_required"}:
             raise ApprovalConflict("connector_approval_already_consumed")
         if status != "approved":
             raise ApprovalRequired(request)
         if not expires_at or self.clock() >= expires_at:
             raise ApprovalExpired("connector_approval_expired")
-        result = execute()
-        self.approval_service.queue.transition(
+        try:
+            claimed = self.approval_service.begin_execution(
+                str(approval["approval_id"]),
+                executor_id="connector_executor",
+                expected_version=int(approval.get("version") or 0),
+                idempotency_key=str(stored_binding.get("idempotency_key") or ""),
+            )
+        except (ApprovalConcurrencyError, ExecutionTokenError) as exc:
+            raise ApprovalConflict("connector_approval_execution_conflict") from exc
+        execution_token = str(claimed.get("execution_token") or "")
+        try:
+            result = execute()
+        except Exception:
+            self.approval_service.complete_execution(
+                str(approval["approval_id"]),
+                execution_token=execution_token,
+                expected_version=int(claimed.get("version") or 0),
+                result_status="failed",
+            )
+            raise
+        self.approval_service.complete_execution(
             str(approval["approval_id"]),
-            "executed",
-            actor="connector_executor",
-            note="Bound connector action executed exactly once.",
+            execution_token=execution_token,
+            expected_version=int(claimed.get("version") or 0),
+            result_status="executed",
         )
         return result
 
@@ -362,12 +469,15 @@ class ApprovalGate:
                 request_id=rid, action=action, resource=resource, method=method,
                 target=target, summary=_summarize(payload), created_at=self.clock(),
                 connector_id=decision.connector_id,
+                action_type=decision.action_type,
                 effective_scopes=decision.effective_scopes,
+                existing_scopes=decision.existing_scopes,
                 requested_scopes=decision.requested_scopes,
                 added_scopes=decision.added_scopes,
                 removed_scopes=decision.removed_scopes,
                 risk_level=decision.risk_level,
                 requires_approval=decision.requires_approval,
+                approval_category=decision.approval_category,
                 payload_hash=self._hash(payload),
             ))
         elif existing.status == "denied":
@@ -398,7 +508,7 @@ class ApprovalGate:
             return [
                 self._native_request(row)
                 for row in self.approval_service.list_pending()
-                if row.get("category") == "connector_permission_change"
+                if isinstance(row.get("payload"), dict) and row["payload"].get("connector_id")
             ]
         return [r for r in self.store.list() if r.status == "pending"]
 
@@ -424,7 +534,7 @@ class ApprovalGate:
         return ApprovalRequest(
             request_id=approval_id,
             approval_id=approval_id,
-            action=str(payload.get("action") or approval.get("intent") or ""),
+            action=str(payload.get("requested_action") or payload.get("action") or approval.get("intent") or ""),
             resource=str(payload.get("connector_id") or approval.get("target") or ""),
             method=str(payload.get("method") or "POST"),
             target=str(payload.get("target") or approval.get("target") or ""),
@@ -434,14 +544,18 @@ class ApprovalGate:
             connector_id=str(payload.get("connector_id") or ""),
             workspace_id=str(payload.get("workspace_id") or approval.get("workspace_id") or "default"),
             actor=str(payload.get("actor") or "connector_user"),
+            action_type=str(payload.get("action_type") or payload.get("effective_action") or ""),
             effective_scopes=tuple(payload.get("effective_scopes") or ()),
+            existing_scopes=tuple(payload.get("existing_scopes") or payload.get("effective_scopes") or ()),
             requested_scopes=tuple(payload.get("requested_scopes") or ()),
             added_scopes=tuple(payload.get("added_scopes") or ()),
             removed_scopes=tuple(payload.get("removed_scopes") or ()),
             risk_level=str(approval.get("risk_level") or "high"),
+            approval_category=str(approval.get("category") or "connector_permission_change"),
             payload_hash=str(payload.get("payload_hash") or ""),
             binding_hash=str(payload.get("binding_hash") or ""),
             expires_at=float(payload.get("expires_at") or 0.0),
+            idempotency_key=str(payload.get("idempotency_key") or approval.get("idempotency_key") or ""),
         )
 
     @staticmethod

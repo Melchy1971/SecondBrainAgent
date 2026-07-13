@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 
 import pytest
 
@@ -83,6 +85,28 @@ def test_scope_comparison_without_diff_runs_without_approval() -> None:
     assert decision.policy_rule == "read_only"
 
 
+def test_explicit_read_label_cannot_downgrade_a_write() -> None:
+    policy = ConnectorActionPolicy()
+
+    named_write = policy.evaluate(
+        connector_id="gmail",
+        action="gmail.send",
+        method="GET",
+        action_type="read",
+    )
+    mutating_method = policy.evaluate(
+        connector_id="custom",
+        action="custom.health",
+        method="POST",
+        action_type="read",
+    )
+
+    assert named_write.action_type == "send"
+    assert named_write.requires_approval is True
+    assert mutating_method.action_type == "update"
+    assert mutating_method.requires_approval is True
+
+
 def test_scope_expansion_is_blocked_with_complete_scope_diff(tmp_path) -> None:
     gate, service, _ = _gate(tmp_path)
 
@@ -116,8 +140,74 @@ def test_email_send_is_blocked_and_payload_is_only_persisted_as_hash(tmp_path) -
 
     stored = service.get(request.request_id)
     assert stored["status"] == "pending"
+    assert stored["category"] == "risky_agent_action"
+    assert stored["payload"]["action_type"] == "send"
     assert stored["payload"]["payload_hash"]
+    assert stored["payload"]["idempotency_key"]
     assert secret not in approval_path(tmp_path).read_text(encoding="utf-8")
+
+
+def test_file_upload_is_blocked_as_risky_agent_action(tmp_path) -> None:
+    gate, service, _ = _gate(tmp_path, scopes=("files.read",))
+
+    request, _ = _request(
+        gate,
+        action="drive.file.upload",
+        resource="drive",
+        target="external-folder",
+        payload={"name": "report.pdf", "content_hash": "sha256:document"},
+    )
+
+    stored = service.get(request.request_id)
+    assert request.action_type == "upload"
+    assert stored["category"] == "risky_agent_action"
+
+
+def test_external_delete_uses_delete_request_category(tmp_path) -> None:
+    gate, service, _ = _gate(tmp_path)
+
+    request, _ = _request(
+        gate,
+        action="calendar.event.delete",
+        resource="calendar",
+        method="DELETE",
+        target="event-42",
+        payload={"event_id": "event-42"},
+    )
+
+    assert request.action_type == "delete"
+    assert service.get(request.request_id)["category"] == "delete_request"
+
+
+def test_delete_http_method_cannot_hide_behind_generic_action_name() -> None:
+    decision = ConnectorActionPolicy().evaluate(
+        connector_id="calendar",
+        action="calendar.event",
+        method="DELETE",
+    )
+
+    assert decision.action_type == "delete"
+    assert decision.requires_approval is True
+    assert decision.approval_category == "delete_request"
+
+
+def test_confirmed_boolean_does_not_replace_persistent_approval(tmp_path) -> None:
+    gate, service, _ = _gate(tmp_path)
+    calls = []
+
+    with pytest.raises(ApprovalRequired):
+        gate.guard(
+            action="gmail.send",
+            resource="gmail",
+            method="POST",
+            target="recipient@example.com",
+            payload={"subject": "Hello"},
+            confirmed=True,
+            execute=lambda: calls.append("sent"),
+        )
+
+    assert calls == []
+    assert len(service.list_pending()) == 1
 
 
 def test_approved_scope_change_executes_exactly_once(tmp_path) -> None:
@@ -143,6 +233,27 @@ def test_approved_scope_change_executes_exactly_once(tmp_path) -> None:
 
     assert calls == ["changed"]
     assert service.get(approval_id)["status"] == "executed"
+
+
+def test_parallel_consumers_execute_approved_action_once(tmp_path) -> None:
+    gate, _, _ = _gate(tmp_path)
+    calls = []
+    request, values = _request(gate, execute=lambda: calls.append("sent") or "sent")
+    gate.approve(request.request_id, actor="reviewer")
+    start = Barrier(2)
+
+    def consume() -> str:
+        start.wait()
+        try:
+            return gate.guard(**values, approval_id=request.request_id)
+        except ApprovalConflict:
+            return "conflict"
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: consume(), range(2)))
+
+    assert sorted(results) == ["conflict", "sent"]
+    assert calls == ["sent"]
 
 
 def test_changed_payload_invalidates_existing_approval(tmp_path) -> None:
@@ -192,11 +303,20 @@ def test_decision_and_execution_are_present_in_native_audit(tmp_path) -> None:
     transitions = [(row["new_status"], row["actor"]) for row in stored["decision_audit"]]
     assert transitions == [
         ("approved", "security-reviewer"),
+        ("executing", "connector_executor"),
         ("executed", "connector_executor"),
     ]
     assert stored["payload"]["connector_id"] == "gmail"
     assert stored["payload"]["workspace_id"] == "workspace-1"
     assert stored["payload"]["actor"] == "alice"
+    execution_audit = stored["decision_audit"][-1]
+    assert execution_audit["requested_action"] == "gmail.send"
+    assert execution_audit["effective_action"] == "send"
+    assert execution_audit["connector_id"] == "gmail"
+    assert execution_audit["workspace_id"] == "workspace-1"
+    assert execution_audit["scope_diff"] == {"added": [], "removed": []}
+    assert execution_audit["payload_hash"] == stored["payload"]["payload_hash"]
+    assert execution_audit["result"] == "executed"
 
 
 def test_policy_covers_permission_and_connector_write_rules() -> None:
@@ -215,6 +335,8 @@ def test_policy_covers_permission_and_connector_write_rules() -> None:
     assert decision.risk_level == "high"
     assert decision.requires_approval is True
     assert decision.approval_category == "connector_permission_change"
+    assert decision.action_type == "permission_change"
+    assert decision.existing_scopes == ("obsolete", "repo.read")
     assert "payload" not in json.dumps(decision.to_dict())
 
 

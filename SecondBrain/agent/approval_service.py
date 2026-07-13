@@ -121,11 +121,16 @@ class AgentApprovalService:
         binding: Mapping[str, Any],
         risk_level: str = "high",
         expires_at: float,
+        approval_category: str = "connector_permission_change",
         correlation_id: str = "",
         causation_id: str = "",
     ) -> dict[str, Any]:
         """Create a connector-bound approval in the shared native queue."""
 
+        allowed_categories = {
+            "connector_permission_change", "risky_agent_action", "delete_request",
+        }
+        category = approval_category if approval_category in allowed_categories else "risky_agent_action"
         safe_binding = sanitize_metadata(binding)
         safe_binding.update(
             connector_id=connector_id,
@@ -141,7 +146,7 @@ class AgentApprovalService:
             target=connector_id,
             risk_level=risk_level,
             reason="Connector permission or external write requires explicit approval.",
-            category="connector_permission_change",
+            category=category,
             tool_name=f"connector.{action}",
             payload=safe_binding,
             workspace_id=workspace_id,
@@ -156,7 +161,7 @@ class AgentApprovalService:
                 correlation_id=correlation,
                 causation_id=causation_id,
                 item_id=approval_id,
-                category="connector_permission_change",
+                category=category,
                 sanitized_metadata={
                     "connector_id": connector_id,
                     "action": action,
@@ -235,12 +240,14 @@ class AgentApprovalService:
         executor_id: str,
         lease_seconds: int = 300,
         expected_version: int | None = None,
+        idempotency_key: str = "",
     ) -> dict[str, Any]:
         return self.queue.begin_execution(
             approval_id,
             executor_id=executor_id,
             lease_seconds=lease_seconds,
             expected_version=expected_version,
+            idempotency_key=idempotency_key,
         )
 
     def complete_execution(
