@@ -34,13 +34,19 @@ class AgentApprovalService:
         bridge: AgentApprovalBridge | None = None,
         plan_store: AgentPlanStore | None = None,
         event_bus: EventBus | None = None,
+        repository: Any | None = None,
     ) -> None:
         if queue is not None and bridge is not None and queue.path != bridge.queue.path:
             raise ValueError("approval_queue_mismatch")
+        # A repository lets the service run over the persistence abstraction; the
+        # JSONL repository exposes the native queue, so existing logic is reused.
+        if repository is not None and queue is None and getattr(repository, "queue", None) is not None:
+            queue = repository.queue
         self.queue = queue or (bridge.queue if bridge is not None else NativeApprovalQueue(project_root or Path.cwd()))
         self.bridge = bridge or AgentApprovalBridge(queue=self.queue)
         self.plan_store = plan_store
         self.event_bus = event_bus or EventBus()
+        self.repository = repository
         self._correlation_ids: dict[str, str] = {}
 
     def create_approval(
@@ -254,6 +260,11 @@ class AgentApprovalService:
 
     def recover_stale_leases(self) -> list[dict[str, Any]]:
         return self.queue.recover_stale_leases()
+
+    def health(self) -> dict[str, Any]:
+        if self.repository is not None:
+            return self.repository.health().to_dict()
+        return {"backend": "jsonl", "healthy": True, "degraded": False, "detail": "native queue"}
 
     def get(self, approval_id: str) -> dict[str, Any] | None:
         return self.queue.get(approval_id)
