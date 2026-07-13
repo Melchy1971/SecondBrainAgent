@@ -20,12 +20,15 @@ from .audit import ApprovalAudit
 from .guard import DEFAULT_TTL_SECONDS, ActionGuard, SafetyService
 from .models import (
     APPROVED,
+    DEFERRED,
     EXPIRED,
     PENDING,
     REJECTED,
     ApprovalDecision,
+    ApprovalItem,
     ApprovalRequest,
     GuardDecision,
+    ReviewItem,
 )
 from .policy import ALLOW, BLOCK, REQUIRE_APPROVAL, PolicyVerdict, SafetyPolicy
 from .risk import RISK_LEVELS, RiskClassifier
@@ -43,9 +46,12 @@ __all__ = [
     "DEFAULT_TTL_SECONDS",
     "ApprovalAudit",
     "ApprovalRequest",
+    "ApprovalItem",
+    "ReviewItem",
     "ApprovalDecision",
     "GuardDecision",
     "APPROVED",
+    "DEFERRED",
     "REJECTED",
     "EXPIRED",
     "PENDING",

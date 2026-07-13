@@ -19,7 +19,7 @@ from typing import Any
 from secondbrain.native.approval import NativeApprovalQueue
 
 from .audit import ApprovalAudit
-from .models import APPROVED, EXPIRED, PENDING, REJECTED, ApprovalDecision, GuardDecision
+from .models import APPROVED, DEFERRED, EXPIRED, PENDING, REJECTED, ApprovalDecision, GuardDecision
 from .policy import ALLOW, BLOCK, REQUIRE_APPROVAL, SafetyPolicy
 from .risk import RiskClassifier
 
@@ -85,6 +85,7 @@ class SafetyService:
         text: str = "",
         target: str = "",
         risk_hint: str | None = None,
+        category: str | None = None,
     ) -> dict[str, Any]:
         """Create a pending approval in the existing queue and audit it."""
 
@@ -97,6 +98,7 @@ class SafetyService:
             target=target,
             risk_level=risk_level,
             reason=reason,
+            category=category,
         )
         self.audit.write(
             actor=actor,
@@ -148,6 +150,46 @@ class SafetyService:
 
     def reject(self, approval_id: str, *, decided_by: str = "user") -> ApprovalDecision:
         return self._decide(approval_id, REJECTED, decided_by, "reject")
+
+    def defer(
+        self,
+        approval_id: str,
+        *,
+        decided_by: str = "user",
+        until: str = "",
+        note: str = "",
+    ) -> ApprovalDecision:
+        decided_at = _utc_now().isoformat(timespec="seconds")
+        record = self.queue.defer(approval_id, until=until, note=note)
+        if record is None:
+            self.audit.write(
+                actor=decided_by,
+                action="approval",
+                event="defer",
+                outcome="not_found",
+                approval_id=approval_id,
+                ok=False,
+            )
+            return ApprovalDecision.not_found(approval_id, decided_by, decided_at)
+        self.audit.write(
+            actor=decided_by,
+            action=str(record.get("command", "approval")),
+            event="defer",
+            outcome=DEFERRED,
+            reason=str(record.get("reason", "")),
+            approval_id=approval_id,
+            risk_level=str(record.get("risk_level", "")),
+            ok=True,
+            requires_approval=True,
+        )
+        return ApprovalDecision(
+            approval_id=approval_id,
+            status=DEFERRED,
+            decided_by=decided_by,
+            decided_at=decided_at,
+            ok=True,
+            record=record,
+        )
 
     def expire(
         self,
@@ -265,7 +307,9 @@ class ActionGuard:
     def _find_open(self, action: str, target: str) -> dict[str, Any] | None:
         if not target:
             return None
-        for row in self.service.queue.list(status=PENDING):
+        for row in self.service.queue.list():
+            if row.get("status") not in {PENDING, DEFERRED}:
+                continue
             if row.get("command") == action and row.get("target") == target:
                 return row
         return None

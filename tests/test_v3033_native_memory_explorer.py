@@ -57,3 +57,57 @@ def test_memory_explorer_timeline(tmp_path: Path) -> None:
     timeline = explorer.timeline()
     assert timeline["ok"] is True
     assert timeline["days"]
+
+
+def test_memory_hardening_privacy_mode_blocks_writes(tmp_path: Path) -> None:
+    explorer = MemoryExplorer(tmp_path)
+    blocked = explorer.add("Soll nicht gespeichert werden", privacy_mode=True)
+    assert blocked["ok"] is False
+    assert blocked["status"] == "privacy_mode_blocks_writes"
+
+
+def test_memory_hardening_sensitive_block_and_review(tmp_path: Path) -> None:
+    explorer = MemoryExplorer(tmp_path)
+    blocked = explorer.add("password=hunter2", kind="semantic")
+    assert blocked["ok"] is False
+    assert blocked["status"] == "sensitive_blocked"
+
+    review_required = explorer.add("Private Information zum Projekt", kind="project")
+    assert review_required["ok"] is False
+    assert review_required["status"] == "review_required"
+    review_id = review_required["review"]["review_id"]
+    approve = explorer.review_decide(review_id, approved=True)
+    assert approve["ok"] is True
+    assert approve["status"] == "approved"
+    assert explorer.entries(query="Private Information")["count"] == 1
+
+
+def test_memory_hardening_dedup_delete_and_forget(tmp_path: Path) -> None:
+    explorer = MemoryExplorer(tmp_path)
+    created = explorer.add(
+        "Deduplizierter Fakt",
+        kind="semantic",
+        confidence=0.1,
+        evidence=["ticket-42"],
+        expires_in_seconds=1,
+    )
+    assert created["ok"] is True
+    memory_id = created["memory"]["memory_id"]
+    assert created["memory"]["kind"] == "semantic"
+    assert created["memory"]["evidence"] == ["ticket-42"]
+
+    dedup = explorer.add("Deduplizierter   Fakt", kind="semantic")
+    assert dedup["ok"] is True
+    assert dedup["status"] == "deduplicated"
+
+    deleted = explorer.delete(memory_id)
+    assert deleted["ok"] is True
+    assert explorer.entries(query="Deduplizierter", include_archived=True, include_expired=True)["count"] == 0
+
+
+def test_memory_hardening_forget_policy_archives_expired(tmp_path: Path) -> None:
+    explorer = MemoryExplorer(tmp_path)
+    explorer.add("Kurzlebige Erinnerung", kind="task", expires_in_seconds=-1)
+    result = explorer.apply_forget_policy(max_age_days=1, min_confidence=0.2)
+    assert result["ok"] is True
+    assert result["expired"] >= 1

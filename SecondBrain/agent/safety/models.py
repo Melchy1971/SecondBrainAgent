@@ -14,12 +14,13 @@ from typing import Any
 # Re-export the ONE canonical approval record type. Any code importing
 # ApprovalRequest from the safety package gets the exact same class the native
 # queue writes, guaranteeing there is no divergent second definition.
-from secondbrain.native.approval import ApprovalRequest  # noqa: F401
+from secondbrain.native.approval import ApprovalItem, ApprovalRequest, ReviewItem  # noqa: F401
 
 # Terminal decision states an approval can reach.
 APPROVED = "approved"
 REJECTED = "rejected"
 EXPIRED = "expired"
+DEFERRED = "deferred"
 PENDING = "pending"
 
 

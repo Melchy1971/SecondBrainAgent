@@ -10,6 +10,7 @@ from .intent_router import IntentRouter
 from .plan_store import AgentPlanStore
 from .safe_executor import ExecutionResult, SafeExecutor
 from .task_planner import TaskPlan, TaskPlanner
+from .tool_discovery import ToolDiscovery
 from .tool_registry import ToolRegistry
 
 
@@ -153,3 +154,27 @@ class AgentCore:
             status=result.status,
             approval_ids=result.approval_ids,
         )
+
+    def _decorate_plan_with_tools(self, plan: TaskPlan) -> None:
+        used_tools: list[dict[str, Any]] = []
+        for step in plan.steps:
+            if not step.tool_name:
+                continue
+            try:
+                definition = self.registry.get(step.tool_name)
+            except Exception:  # noqa: BLE001 - plan decoration must not block execution
+                continue
+            contract = {
+                "name": definition.name,
+                "category": definition.category,
+                "risk_level": definition.risk_level.value,
+                "requires_approval": definition.requires_approval,
+                "timeout_seconds": definition.timeout_seconds,
+                "retry_count": definition.retry_count,
+                "input_schema": definition.input_schema.to_dict(),
+                "output_schema": dict(definition.output_schema),
+            }
+            step.tool_contract = contract
+            used_tools.append(contract)
+        if used_tools:
+            plan.metadata["used_tools"] = used_tools

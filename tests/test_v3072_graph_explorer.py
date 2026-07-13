@@ -83,6 +83,30 @@ def test_all_graph_views_reuse_rag_and_memory(tmp_path: Path) -> None:
     }
 
 
+def test_graph_foundation_relationships_include_source_and_confidence(tmp_path: Path) -> None:
+    service = _seed_sources(tmp_path)
+    export = service.export_json()
+    assert export["ok"] is True
+
+    payload = service.relationship_graph(query="atlas")
+    edges = payload["edges"]
+    assert edges
+    assert all("source_ref" in edge for edge in edges)
+    assert all("confidence" in edge for edge in edges)
+
+
+def test_graph_query_api_and_document_preview(tmp_path: Path) -> None:
+    service = _seed_sources(tmp_path)
+    query = service.graph_query("atlas", relationship_types=["belongs_to", "mentions"]) 
+    assert query["ok"] is True
+    assert query["non_blocking"] is True
+
+    preview = service.document_relationship_preview("Atlas Architecture")
+    assert preview["ok"] is True
+    assert preview["nodes"]
+    assert preview["edges"]
+
+
 def test_graph_search_ranks_entities_and_relationship_evidence(tmp_path: Path) -> None:
     service = _seed_sources(tmp_path)
 
