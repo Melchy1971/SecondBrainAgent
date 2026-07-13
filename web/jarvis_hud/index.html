@@ -1208,7 +1208,11 @@ async function loadMetrics(){
   try{
     const m = await getJSON("/api/metrics");
     setConn(true);
-    if(m.psutil===false){ return; }
+    if(m.psutil===false){
+      ["t-cpu","t-ram","t-swap","t-disk","cpu-big","s-cpu","s-ram","s-swap"].forEach(id=>{ const el=$(id); if(el) el.textContent="n/a"; });
+      if($("s-uptime")) $("s-uptime").textContent = m.note || "psutil nicht installiert";
+      return;
+    }
     ring("r-cpu","t-cpu",m.cpu);        ringColor("r-cpu",m.cpu);
     ring("r-ram","t-ram",m.ram);        ringColor("r-ram",m.ram);
     ring("r-swap","t-swap",m.swap);     ringColor("r-swap",m.swap);
