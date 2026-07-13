@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from enum import StrEnum
 from pathlib import Path
@@ -35,7 +35,7 @@ from .memory import (
     create_memory_record,
 )
 from .memory_classification import ClassificationPolicy, DataClassification
-from .memory_extractor import MemoryCandidate
+from .memory_extractor import MemoryCandidate, detect_memory_secret, redact_memory_secrets
 from .privacy import PrivacyDecision, PrivacyGuard, PrivacyMode
 
 __all__ = [
@@ -139,8 +139,15 @@ class GovernedMemoryService:
         self.confidence_threshold = max(0.0, min(1.0, float(confidence_threshold)))
         self.audit = audit or MemoryGovernanceAudit(project_root)
         self._candidates: dict[str, _CandidateEntry] = {}
+        self._candidate_statuses: dict[str, str] = {}
         self._committed_dedup_keys: set[str] = set()
         self._committed_candidate_ids: set[str] = set()
+        self._store_governance_token = object()
+        self.store.bind_governance(
+            self._store_governance_token,
+            privacy_mode=self.privacy.mode.value,
+            confidence_threshold=self.confidence_threshold,
+        )
         # Register with the inbox so decisions route back here.
         if inbox is not None:
             setattr(inbox, "memory_governance", self)
@@ -171,10 +178,11 @@ class GovernedMemoryService:
         if entry is None:
             raise KeyError(f"unknown_memory_candidate:{candidate_id}")
         status = status.strip().lower()
+        self._require_persisted_decision(entry, status)
         if status == "approved":
             return self._commit(entry, actor=actor)
         if status == "rejected":
-            entry.status = "rejected"
+            self._set_status(entry, "rejected")
             self.audit.write(
                 {
                     "decision": GovernanceDecision.DISCARDED.value,
@@ -194,7 +202,7 @@ class GovernedMemoryService:
                 review_category=entry.review_category,
             )
         if status == "deferred":
-            entry.status = "deferred"
+            self._set_status(entry, "deferred")
             self.audit.write(
                 {
                     "decision": GovernanceDecision.DEFERRED.value,
@@ -223,7 +231,7 @@ class GovernedMemoryService:
 
     def candidate_status(self, candidate_id: str) -> str | None:
         entry = self._candidates.get(candidate_id)
-        return entry.status if entry is not None else None
+        return entry.status if entry is not None else self._candidate_statuses.get(candidate_id)
 
     def list_candidates(self, *, status: str | None = None) -> list[MemoryCandidate]:
         entries = self._candidates.values()
@@ -238,6 +246,8 @@ class GovernedMemoryService:
             return "no_memory_flag"
         if self.privacy.mode != PrivacyMode.OFF:
             return "privacy_mode_active"
+        if candidate.status == "blocked" or detect_memory_secret(candidate.content):
+            return "secret_blocked"
         if candidate.classification == DataClassification.CREDENTIAL:
             return "credential_blocked"
         # Defence in depth: re-scan raw content for secrets regardless of class.
@@ -281,11 +291,13 @@ class GovernedMemoryService:
     def _blocked(self, candidate: MemoryCandidate, reason: str) -> GovernanceOutcome:
         # Do not persist the candidate: blocked content (esp. secrets) must not
         # linger in the registry. Only sanitized metadata reaches the audit.
+        self._candidate_statuses[candidate.candidate_id] = "blocked"
         self.audit.write(
             {
                 "decision": GovernanceDecision.BLOCKED.value,
                 "reason": reason,
                 **candidate.sanitized_dict(),
+                "status": "blocked",
             }
         )
         return GovernanceOutcome(
@@ -298,12 +310,13 @@ class GovernedMemoryService:
     def _route_to_review(self, candidate: MemoryCandidate, reason: str) -> GovernanceOutcome:
         category = self._review_category(candidate, reason)
         review_id = ""
+        safe_candidate = candidate.sanitized_dict()
         if self.inbox is not None:
             review = self.inbox.create_review(
                 category=category,
                 title=f"Memory review: {candidate.memory_type}",
                 description=candidate.sanitized_content_preview,
-                source=candidate.source_id,
+                source=str(safe_candidate["source_id"]),
                 # Unique per candidate so the queue's content-hashed review id
                 # never collides for two same-second same-title candidates.
                 target=candidate.candidate_id,
@@ -319,11 +332,12 @@ class GovernedMemoryService:
             )
             review_id = str(review.get("review_id") or "")
         self._candidates[candidate.candidate_id] = _CandidateEntry(
-            candidate=candidate,
+            candidate=replace(candidate, status="pending"),
             status="pending",
             review_id=review_id,
             review_category=category,
         )
+        self._candidate_statuses[candidate.candidate_id] = "pending"
         self.audit.write(
             {
                 "decision": GovernanceDecision.REVIEW.value,
@@ -350,7 +364,11 @@ class GovernedMemoryService:
                 reason="duplicate_deduplication_key",
                 classification=candidate.classification.value,
             )
-        self._candidates[candidate.candidate_id] = _CandidateEntry(candidate=candidate, status="pending")
+        self._candidates[candidate.candidate_id] = _CandidateEntry(
+            candidate=replace(candidate, status="pending"),
+            status="pending",
+        )
+        self._candidate_statuses[candidate.candidate_id] = "pending"
         return self._commit(self._candidates[candidate.candidate_id], actor="system", auto=True, reason=reason)
 
     def _commit(
@@ -364,7 +382,7 @@ class GovernedMemoryService:
         candidate = entry.candidate
         # Idempotency: never write the same candidate or dedup key twice.
         if candidate.candidate_id in self._committed_candidate_ids or candidate.deduplication_key in self._committed_dedup_keys:
-            entry.status = "approved"
+            self._set_status(entry, "stored")
             return GovernanceOutcome(
                 decision=GovernanceDecision.DUPLICATE,
                 candidate_id=candidate.candidate_id,
@@ -374,8 +392,10 @@ class GovernedMemoryService:
                 review_category=entry.review_category,
                 memory_id=entry.memory_id,
             )
+        self._set_status(entry, "approved")
         memory_id = self._write_memory(candidate)
-        entry.status = "approved"
+        self._set_status(entry, "stored")
+        candidate = entry.candidate
         entry.memory_id = memory_id
         self._committed_candidate_ids.add(candidate.candidate_id)
         self._committed_dedup_keys.add(candidate.deduplication_key)
@@ -404,6 +424,7 @@ class GovernedMemoryService:
     def _write_memory(self, candidate: MemoryCandidate) -> str:
         scope = MemoryScope.WORKSPACE if candidate.workspace_id else MemoryScope.SESSION
         tags = tuple({tag for tag in (candidate.memory_type, candidate.classification.value) if tag})
+        safe_candidate = candidate.sanitized_dict()
         record = create_memory_record(
             candidate.content,
             scope=scope,
@@ -412,21 +433,36 @@ class GovernedMemoryService:
             tags=tags,
             metadata={
                 "candidate_id": candidate.candidate_id,
-                "source_id": candidate.source_id,
+                "source_id": safe_candidate["source_id"],
                 "classification": candidate.classification.value,
                 "deduplication_key": candidate.deduplication_key,
                 "retention_policy": candidate.retention_policy,
-                "expiration": candidate.expiration,
-                "evidence": [dict(item) for item in candidate.evidence],
+                "expires_at": candidate.expires_at,
+                "expiration": candidate.expires_at,
+                "evidence": safe_candidate["evidence"],
                 "confidence": candidate.confidence,
             },
         )
         try:
-            stored = self.store.add(record)
+            stored = self.store.add(record, governance_token=self._store_governance_token)
         except MemoryError:
             # Underlying store already holds an identical fingerprint.
             return record.memory_id
         return stored.memory_id
+
+    def _require_persisted_decision(self, entry: _CandidateEntry, status: str) -> None:
+        if status not in {"approved", "rejected", "deferred"}:
+            return
+        if self.inbox is None or not entry.review_id:
+            raise PermissionError("memory_review_decision_not_persisted")
+        item = self.inbox.get(entry.review_id)
+        if item is None or str(item.get("status") or "") != status:
+            raise PermissionError("memory_review_decision_not_persisted")
+
+    def _set_status(self, entry: _CandidateEntry, status: str) -> None:
+        entry.status = status
+        entry.candidate = replace(entry.candidate, status=status)
+        self._candidate_statuses[entry.candidate.candidate_id] = status
 
 
 def _utc_now() -> str:
@@ -438,6 +474,8 @@ def _redact_secrets(record: Mapping[str, Any]) -> dict[str, Any]:
 
     def _scrub(value: Any) -> Any:
         if isinstance(value, str):
+            if detect_memory_secret(value):
+                return redact_memory_secrets(value)
             result = _SECRET_SWEEP.inspect_memory_write(value)
             return result.redacted_text if result.reason == "secret_redacted" else value
         if isinstance(value, Mapping):

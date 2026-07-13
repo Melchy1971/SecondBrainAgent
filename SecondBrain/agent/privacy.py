@@ -28,8 +28,20 @@ class PrivacyRuleResult:
 
 class PrivacyGuard:
     SECRET_PATTERNS = (
-        re.compile(r"(?i)(api[_-]?key|token|secret|password)\s*[:=]\s*[^\s]+"),
+        re.compile(
+            r"-----BEGIN(?: [A-Z0-9]+)? PRIVATE KEY-----.*?"
+            r"-----END(?: [A-Z0-9]+)? PRIVATE KEY-----",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        re.compile(r"-----BEGIN(?: [A-Z0-9]+)? PRIVATE KEY-----[\s\S]*", re.IGNORECASE),
+        re.compile(
+            r"(?i)\b(api[\s_-]?key|access[_-]?token|auth[_-]?token|token|secret|"
+            r"client[_-]?secret|password|passwd|credential(?:s)?)\s*[:=]\s*[^\s,;]+"
+        ),
+        re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/-]+=*"),
         re.compile(r"sk-[A-Za-z0-9_-]{12,}"),
+        re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
+        re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     )
 
     def __init__(self, mode: PrivacyMode = PrivacyMode.OFF) -> None:
