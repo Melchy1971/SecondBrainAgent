@@ -18,6 +18,7 @@ from secondbrain.p1_embeddings import embedding_index_provider, provider_from_pr
 from secondbrain.p1_rag_runtime import chunk_text, tokenize
 from secondbrain.p3_rag_store import RagChunkRecord, RagDocumentRecord, RagVectorRecord, create_rag_store
 from secondbrain.importing.quality import ImportQualityEvaluator
+from secondbrain.native.knowledge_graph_foundation import KnowledgeGraphFoundation
 
 PIPELINE_STAGES: tuple[JobKind, ...] = ("chunk", "embedding", "memory", "graph", "search")
 
@@ -146,6 +147,7 @@ class ImportScheduler:
         self.queue = queue or QueueManager(self.root)
         self.embedding_provider = embedding_provider
         self.selected_store = create_rag_store(self.root, sqlite_db_path=self.db_path)
+        self.graph_foundation = KnowledgeGraphFoundation()
         self.pool = WorkerPool(self.queue, {"chunk": self._chunk, "embedding": self._embedding, "memory": self._memory, "graph": self._graph, "search": self._search}, workers=workers)
 
     def schedule(self, session_id: str, document_ids: list[str], *, batch_position: int, parent_job_id: str | None = None) -> QueueJob:
@@ -225,7 +227,43 @@ class ImportScheduler:
 
     def _graph(self, job: QueueJob) -> None:
         self._mark_projection(job, "graph_indexed_at")
+        payload = job.payload or {}
+        db_path = payload.get("db_path")
+        document_ids = list(payload.get("document_ids") or [])
+        if db_path and document_ids:
+            self._extract_graph_suggestions(db_path, document_ids)
         self._next(job, "search")
+
+    def _extract_graph_suggestions(self, db_path: str | Path, document_ids: list[str]) -> None:
+        marks = ",".join("?" for _ in document_ids)
+        with sqlite3.connect(db_path) as connection:
+            rows = connection.execute(
+                f"SELECT d.id,d.source,d.title,d.metadata_json,s.content FROM documents d "
+                f"JOIN import_stage_records s ON s.document_id=d.id "
+                f"WHERE d.id IN ({marks})",
+                document_ids,
+            ).fetchall()
+            for row in rows:
+                document_id, source, title, metadata_json, content = row
+                try:
+                    metadata = json.loads(metadata_json or "{}")
+                    metadata = metadata if isinstance(metadata, dict) else {}
+                except (TypeError, ValueError, json.JSONDecodeError):
+                    metadata = {}
+                suggestion = self.graph_foundation.suggest(
+                    document_id=str(document_id),
+                    title=str(title or document_id),
+                    text=str(content or ""),
+                    metadata=metadata,
+                    source=str(source or "import"),
+                ).to_dict()
+                metadata["graph_entity_suggestions"] = suggestion["entities"]
+                metadata["graph_relationship_suggestions"] = suggestion["relationships"]
+                metadata["graph_foundation_version"] = self.graph_foundation.VERSION
+                connection.execute(
+                    "UPDATE documents SET metadata_json=? WHERE id=?",
+                    (json.dumps(metadata, ensure_ascii=False), document_id),
+                )
 
     def _search(self, job: QueueJob) -> None:
         # Search reads the existing RAG store; terminal payloads can be released.

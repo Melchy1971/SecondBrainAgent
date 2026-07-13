@@ -8,6 +8,7 @@ Commands wired into launcher.py:
                                        background_agents|approvals|goals|audit|logs)
     agent-control-plan-create --goal TEXT
     agent-control-plan-inspect <plan_id>
+    agent-control-plan-explain <plan_id>
     agent-control-plan-start <plan_id>
     agent-control-approve <approval_id> [--by NAME]
     agent-control-reject  <approval_id> [--by NAME]
@@ -72,6 +73,8 @@ def main(argv: list[str] | None = None, *, root: str | Path | None = None) -> in
     try:
         if cmd == "agent-control-plan-inspect":
             payload = service.inspect_plan(args.target)
+        elif cmd == "agent-control-plan-explain":
+            payload = service.explain_plan(args.target)
         elif cmd == "agent-control-plan-start":
             payload = service.start_plan(args.target)
         elif cmd == "agent-control-approve":

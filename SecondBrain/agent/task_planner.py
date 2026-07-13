@@ -24,6 +24,7 @@ class TaskStep:
     name: str
     tool_name: str | None = None
     payload: dict[str, Any] = field(default_factory=dict)
+    tool_contract: dict[str, Any] = field(default_factory=dict)
     state: TaskStepState = TaskStepState.PENDING
     result: Any = None
     error: str | None = None

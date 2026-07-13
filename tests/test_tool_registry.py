@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import time
+
 from secondbrain.agent import (
     ToolCapability,
     ToolDefinition,
@@ -53,3 +55,68 @@ def test_documented_positional_contract_is_supported():
     assert definition.category == "demo"
     assert definition.risk_level == ToolRiskLevel.MEDIUM
     assert definition.handler is handler
+
+
+def test_high_risk_auto_requires_approval_even_when_not_explicit(tmp_path):
+    registry = ToolRegistry(tmp_path)
+    definition = ToolDefinition(
+        "demo.danger",
+        "Dangerous",
+        risk_level=ToolRiskLevel.HIGH,
+        requires_approval=False,
+        handler=lambda payload: {"ok": True},
+        output_schema={"type": "object"},
+    )
+    registry.register(definition)
+
+    blocked = registry.run("demo.danger", {})
+    assert blocked.success is False
+    assert "tool_requires_approval" in (blocked.error or "")
+
+
+def test_timeout_retry_and_audit_metadata(tmp_path):
+    registry = ToolRegistry(tmp_path)
+    attempts = {"count": 0}
+
+    def flaky(payload):
+        attempts["count"] += 1
+        if attempts["count"] == 1:
+            raise RuntimeError("transient")
+        return {"ok": True}
+
+    registry.register(
+        ToolDefinition(
+            "demo.flaky",
+            "Flaky",
+            category="system",
+            input_schema=ToolInputSchema({}, (), False),
+            output_schema={"type": "object"},
+            handler=flaky,
+            retry_count=1,
+            timeout_seconds=1.0,
+        )
+    )
+
+    success = registry.run("demo.flaky", {})
+    assert success.success is True
+    assert success.metadata.get("attempts") == 2
+
+    registry.register(
+        ToolDefinition(
+            "demo.slow",
+            "Slow",
+            category="system",
+            input_schema=ToolInputSchema({}, (), False),
+            output_schema={"type": "object"},
+            handler=lambda payload: (time.sleep(0.05), {"ok": True})[1],
+            timeout_seconds=0.01,
+        )
+    )
+    timeout = registry.run("demo.slow", {})
+    assert timeout.success is False
+    assert "tool_timeout" in (timeout.error or "")
+
+    audit_rows = registry.audit(limit=10)
+    assert audit_rows
+    assert any(row.get("event") == "tool_run" for row in audit_rows)
+    assert any("metadata" in row for row in audit_rows)

@@ -13,6 +13,8 @@ def test_agent_planner_decomposes_goal_with_existing_services(tmp_path):
     assert plan.steps[0].tool == "command.center"
     assert plan.steps[1].tool == "chat.ask"
     assert all(step.id and step.intent and step.expected_output for step in plan.steps)
+    assert plan.steps[1].dependencies == [plan.steps[0].id]
+    assert plan.steps[0].preconditions
     assert plan.workspace_id == "workspace-1"
 
 
@@ -68,3 +70,32 @@ def test_resume_synchronizes_successful_queue_job(tmp_path):
     completed = service.resume(plan.id)
     assert completed.status == PlanStatus.COMPLETED
     assert completed.steps[0].status == PlanStatus.COMPLETED
+
+
+def test_explain_plan_contains_dependencies_tool_mapping_and_audit(tmp_path):
+    service = AgentPlanService(tmp_path)
+    plan = service.create("Status prüfen; danach beantworte die Projektfrage")
+
+    explained = service.explain(plan.id)
+
+    assert explained["ok"] is True
+    assert explained["dependencies"][plan.steps[1].id] == [plan.steps[0].id]
+    assert plan.steps[0].id in explained["tool_mapping"]
+    assert isinstance(explained["audit"], list)
+
+
+def test_failed_step_gets_recovery_suggestion(tmp_path):
+    service = AgentPlanService(tmp_path)
+    plan = service.resume(service.create("Index aktualisieren").id)
+    job_id = next(item["job_id"] for item in plan.steps[0].evidence if item["type"] == "queue")
+
+    # Keep approval granted and force a queue failure.
+    approval_id = next(item["approval_id"] for item in plan.steps[0].evidence if item["type"] == "approval")
+    service.approvals.mark(approval_id, "approved")
+    service.queue.approve(job_id)
+    service.queue.update_status(job_id, "failed")
+
+    failed = service.resume(plan.id)
+    assert failed.status == PlanStatus.FAILED
+    assert failed.steps[0].status == PlanStatus.FAILED
+    assert failed.steps[0].recovery_suggestion["strategy"] in {"RETRY", "FAIL_FAST", "WAIT_FOR_APPROVAL"}

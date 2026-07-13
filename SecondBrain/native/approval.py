@@ -211,6 +211,29 @@ class ApprovalRequest:
     status: str = "pending"
     risk_level: str = "write"
     reason: str = "Schreibende Aktion erfordert explizite Bestätigung."
+    category: str = "risky_agent_action"
+    deferred_until: str = ""
+    decision_note: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True, slots=True)
+class ApprovalItem:
+    schema: str
+    approval_id: str
+    created_at: str
+    command: str
+    intent: str
+    text: str
+    target: str = ""
+    status: str = "pending"
+    risk_level: str = "write"
+    reason: str = "Schreibende Aktion erfordert explizite Bestätigung."
+    category: str = "risky_agent_action"
+    deferred_until: str = ""
+    decision_note: str = ""
 
     category: str = "risky_agent_action"
     plan_id: str = ""
@@ -261,6 +284,43 @@ class ReviewItem:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True, slots=True)
+class ReviewItem:
+    schema: str
+    review_id: str
+    created_at: str
+    category: str
+    status: str = "pending"
+    title: str = ""
+    description: str = ""
+    source: str = ""
+    target: str = ""
+    approval_id: str = ""
+    metadata: dict[str, Any] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def _normalize_category(category: str | None, *, command: str = "", risk_level: str = "") -> str:
+    value = (category or "").strip().lower()
+    if value in REVIEW_CATEGORIES:
+        return value
+    cmd = (command or "").strip().lower()
+    lvl = (risk_level or "").strip().lower()
+    if "delete" in cmd or lvl == "destructive":
+        return "delete_request"
+    if "permission" in cmd or "role" in cmd:
+        return "connector_permission_change"
+    if "import" in cmd:
+        return "failed_import"
+    if "classif" in cmd or "confidence" in cmd:
+        return "low_confidence_classification"
+    if "sensitive" in cmd or "pii" in cmd:
+        return "sensitive_document"
+    return "risky_agent_action"
 
 
 class NativeActionAuditLog:
@@ -836,6 +896,86 @@ class ReviewQueue:
         normalized.setdefault("deferred_until", "")
         normalized.setdefault("decision_audit", [])
         return normalized
+
+
+class ReviewQueue:
+    def __init__(self, project_root: str | Path):
+        self.project_root = Path(project_root).resolve()
+        self.path = review_path(self.project_root)
+
+    def create(
+        self,
+        *,
+        category: str,
+        title: str,
+        description: str = "",
+        source: str = "",
+        target: str = "",
+        approval_id: str = "",
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        created_at = _utc_now()
+        cat = _normalize_category(category)
+        review_id = _stable_id(cat, title, source, target, created_at)
+        record = ReviewItem(
+            schema=REVIEW_SCHEMA,
+            review_id=review_id,
+            created_at=created_at,
+            category=cat,
+            title=title,
+            description=description,
+            source=source,
+            target=target,
+            approval_id=approval_id,
+            metadata=metadata or {},
+        ).to_dict()
+        rows = self._read_all()
+        rows.append(record)
+        self._write_all(rows)
+        return record
+
+    def list(self, *, status: str | None = None, category: str | None = None) -> list[dict[str, Any]]:
+        rows = self._read_all()
+        if status:
+            rows = [row for row in rows if row.get("status") == status]
+        if category:
+            cat = _normalize_category(category)
+            rows = [row for row in rows if row.get("category") == cat]
+        return rows
+
+    def mark(self, review_id: str, status: str, *, note: str = "") -> dict[str, Any] | None:
+        rows = self._read_all()
+        updated: dict[str, Any] | None = None
+        for row in rows:
+            if row.get("review_id") == review_id:
+                row["status"] = status
+                row["decision_note"] = note
+                row["updated_at"] = _utc_now()
+                updated = row
+        self._write_all(rows)
+        return updated
+
+    def _read_all(self) -> list[dict[str, Any]]:
+        if not self.path.exists():
+            return []
+        rows: list[dict[str, Any]] = []
+        for line in self.path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                value = json.loads(line)
+                if isinstance(value, dict):
+                    rows.append(value)
+            except json.JSONDecodeError:
+                rows.append({"schema": REVIEW_SCHEMA, "status": "invalid_json", "raw": line})
+        return rows
+
+    def _write_all(self, rows: Iterable[dict[str, Any]]) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("w", encoding="utf-8") as fh:
+            for row in rows:
+                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 def native_audit_status(project_root: str | Path, *, limit: int = 20) -> dict[str, Any]:

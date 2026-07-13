@@ -7,7 +7,7 @@ from .approval_bridge import AgentApprovalBridge
 from .approval_policy import MandatoryApprovalDecision
 from .plan_store import AgentPlanStore
 from .task_planner import TaskPlan, TaskStepState
-from .tool_registry import ToolRegistry, ToolRegistryError
+from .tool_registry import ToolRegistry, ToolRegistryError, ToolRiskLevel
 
 
 @dataclass(frozen=True)
