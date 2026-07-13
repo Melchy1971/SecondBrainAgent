@@ -160,7 +160,15 @@ class UnifiedImportPipeline:
         job = self.store.get(job_id)
         if job is None:
             raise KeyError(f"unbekannter ImportJob: {job_id}")
-        if job.terminal or job.status in REVIEW_HOLD_STATUSES:
+        if job.terminal:
+            return job
+        if job.status in REVIEW_HOLD_STATUSES:
+            if self._review_was_rejected(job):
+                return self._apply_rejected_review(job)
+            if self._review_is_deferred(job):
+                return self._apply_deferred_review(job)
+            if self._review_was_approved(job):
+                return self._resume_approved_review(job)
             return job
         job.attempts += 1
         try:
@@ -170,15 +178,11 @@ class UnifiedImportPipeline:
                 self._audit(job, status="pending", action="import.ocr_required")
                 return job
             classification = self._stage_classified(job, text)
-            review = self._classification_review(job, text, classification)
-            if review is not None and not self._review_was_approved(job, review[0]):
-                return self._hold_for_review(
-                    job,
-                    category=review[0],
-                    error_code=review[1],
-                    sanitized_error=review[2],
-                    retry_allowed=True,
-                )
+            review = self._classification_review(job, classification)
+            if review is not None:
+                job.review_category = str(review["category"])
+                if not self._review_was_approved(job):
+                    return self._hold_for_review(job, review, ImportStatus.REVIEW_REQUIRED)
             chunks = self._stage_chunked(job, text)
             self._stage_embedded_indexed(job, text, title, chunks)
             self.dedup.register(job.content_hash, job.job_id)
@@ -249,7 +253,10 @@ class UnifiedImportPipeline:
         return parsed.text, getattr(parsed, "title", job.source_ref)
 
     def _stage_classified(self, job: ImportJob, text: str) -> dict[str, Any]:
-        result = self.classifier(text)
+        result = dict(self.classifier(text))
+        # Only the boolean signal is carried into review routing. Raw matched
+        # secret values never become review metadata or classification lineage.
+        result["_secret_detected"] = any(pattern.search(text) for pattern in SECRET_PATTERNS)
         job.document_type = str(result.get("document_type", ""))
         job.tags = list(result.get("tags", []))
         job.confidence = float(result.get("confidence", 0.0))
@@ -278,25 +285,33 @@ class UnifiedImportPipeline:
     def _classification_review(
         self,
         job: ImportJob,
-        text: str,
         result: dict[str, Any],
-    ) -> tuple[str, str, str] | None:
+    ) -> dict[str, Any] | None:
         pii = result.get("pii") if isinstance(result.get("pii"), dict) else {}
         findings = pii.get("findings") if isinstance(pii.get("findings"), list) else []
         finding_types = {str(item.get("type") or "").lower() for item in findings if isinstance(item, dict)}
         pii_count = sum(int(item.get("count") or 0) for item in findings if isinstance(item, dict))
         markers = [str(item).lower() for item in pii.get("markers", [])]
         credential_types = {"api_key", "passwort_zuweisung", "password", "private_key", "credential"}
-        credential_detected = bool(finding_types & credential_types) or any(pattern.search(text) for pattern in SECRET_PATTERNS)
+        credential_detected = bool(finding_types & credential_types) or bool(result.get("_secret_detected"))
         classification = str(result.get("classification") or job.document_type or "").lower()
         confidential = bool(markers) or classification in {"confidential", "vertraulich", "secret", "restricted"}
         explicit_sensitive = bool(result.get("contains_credentials") or result.get("credential_detected"))
         if credential_detected or explicit_sensitive:
-            return "sensitive_document", "credentials_detected", "Sensitive credentials require manual review."
+            return self._review_request(
+                "sensitive_document", "credentials_detected",
+                "Sensitive credentials require manual review.", retry_allowed=True,
+            )
         if confidential or (bool(result.get("sensitive")) and not findings):
-            return "sensitive_document", "confidential_classification", "Confidential content requires manual review."
+            return self._review_request(
+                "sensitive_document", "confidential_classification",
+                "Confidential content requires manual review.", retry_allowed=True,
+            )
         if pii_count >= self.pii_review_threshold:
-            return "sensitive_document", "pii_threshold_exceeded", "PII threshold exceeded; manual review required."
+            return self._review_request(
+                "sensitive_document", "pii_threshold_exceeded",
+                "PII threshold exceeded; manual review required.", retry_allowed=True,
+            )
 
         conflicting = bool(
             result.get("conflict")
@@ -306,24 +321,50 @@ class UnifiedImportPipeline:
         missing_type = not job.document_type.strip()
         low_confidence = job.confidence < self.classification_confidence_threshold
         if conflicting:
-            return "low_confidence_classification", "conflicting_classifications", "Conflicting classifications."
+            return self._review_request(
+                "low_confidence_classification", "conflicting_classifications",
+                "Conflicting classifications.", retry_allowed=True,
+            )
         if missing_type:
-            return "low_confidence_classification", "missing_document_type", "Document type is missing."
+            return self._review_request(
+                "low_confidence_classification", "missing_document_type",
+                "Document type is missing.", retry_allowed=True,
+            )
         if low_confidence or bool(result.get("needs_review")):
-            return "low_confidence_classification", "low_confidence", "Classification confidence is below threshold."
+            return self._review_request(
+                "low_confidence_classification", "low_confidence",
+                "Classification confidence is below threshold.", retry_allowed=True,
+            )
         return None
+
+    @staticmethod
+    def _review_request(
+        category: str,
+        error_code: str,
+        sanitized_error: str,
+        *,
+        retry_allowed: bool,
+    ) -> dict[str, Any]:
+        return {
+            "category": category,
+            "error_code": error_code,
+            "sanitized_error": sanitized_error,
+            "retry_allowed": retry_allowed,
+        }
 
     def _hold_for_review(
         self,
         job: ImportJob,
-        *,
-        category: str,
-        error_code: str,
-        sanitized_error: str,
-        retry_allowed: bool,
+        review_item: dict[str, Any],
+        status: str,
     ) -> ImportJob:
+        category = str(review_item["category"])
+        error_code = str(review_item.get("error_code") or "")
+        retry_allowed = bool(review_item.get("retry_allowed", True))
+        sanitized_error = str(review_item.get("sanitized_error") or "")
         safe_error = self._safe_text(sanitized_error)
-        review = self._find_review(job.job_id, category)
+        resume_status = job.status
+        review = self._find_review(job.job_id, category, open_only=True)
         if review is None:
             review = self.review_inbox.create_review(
                 category=category,
@@ -350,6 +391,7 @@ class UnifiedImportPipeline:
         job.review_id = str(review.get("review_id") or "")
         job.review_category = category
         job.review_status = str(review.get("status") or "pending")
+        job.review_resume_status = resume_status
         job.retry_allowed = bool(retry_allowed)
         job.indexing_blocked = True
         if category == "sensitive_document":
@@ -357,8 +399,7 @@ class UnifiedImportPipeline:
             job.connector_forwarding_blocked = True
         if category == "low_confidence_classification":
             job.classification_blocked = True
-        hold_status = ImportStatus.FAILED_REVIEWABLE if category == "failed_import" else ImportStatus.REVIEW_REQUIRED
-        job.transition(hold_status, safe_error)
+        job.transition(status, safe_error)
         self.store.upsert(job)
         self._audit(job, status="pending", action=f"import.review_required.{category}")
         return job
@@ -374,38 +415,16 @@ class UnifiedImportPipeline:
         review, job = self._job_for_review(review_id)
         if str(review.get("status") or "pending") != "approved":
             self.review_inbox.approve(review_id, actor, self._safe_text(note))
-        approved = list(job.lineage.get("approved_review_categories") or [])
-        if job.review_category not in approved:
-            approved.append(job.review_category)
-        job.lineage["approved_review_categories"] = approved
         if classification:
             job.document_type = classification
-        job.review_status = "approved"
-        job.error = ""
-        job.error_category = ""
-        job.indexing_blocked = False
-        job.classification_blocked = False
-        job.memory_forwarding_blocked = False
-        job.connector_forwarding_blocked = False
-        job.transition(ImportStatus.QUEUED, "manual review approved")
         self.store.upsert(job)
-        self._audit(job, status="ok", action="import.review_approved")
         return self.process(job.job_id)
 
     def reject_review(self, review_id: str, actor: str, note: str = "") -> ImportJob:
         review, job = self._job_for_review(review_id)
         if str(review.get("status") or "pending") != "rejected":
             self.review_inbox.reject(review_id, actor, self._safe_text(note))
-        job.review_status = "rejected"
-        job.retry_allowed = False
-        job.indexing_blocked = True
-        job.memory_forwarding_blocked = True
-        job.connector_forwarding_blocked = True
-        job.lineage.pop("text", None)
-        job.transition(ImportStatus.REJECTED, "manual review rejected")
-        self.store.upsert(job)
-        self._audit(job, status="blocked", action="import.review_rejected")
-        return job
+        return self.process(job.job_id)
 
     def defer_review(
         self,
@@ -418,12 +437,74 @@ class UnifiedImportPipeline:
         review, job = self._job_for_review(review_id)
         if str(review.get("status") or "pending") != "deferred":
             self.review_inbox.defer(review_id, actor, until=until, note=self._safe_text(note))
+        return self.process(job.job_id)
+
+    def _apply_rejected_review(self, job: ImportJob) -> ImportJob:
+        job.review_status = "rejected"
+        job.retry_allowed = False
+        job.indexing_blocked = True
+        job.classification_blocked = True
+        job.memory_forwarding_blocked = True
+        job.connector_forwarding_blocked = True
+        job.lineage.pop("text", None)
+        job.transition(ImportStatus.REJECTED, "manual review rejected")
+        self.store.upsert(job)
+        self._audit(job, status="blocked", action="import.review_rejected")
+        return job
+
+    def _apply_deferred_review(self, job: ImportJob) -> ImportJob:
+        if job.status == ImportStatus.REVIEW_DEFERRED and job.review_status == "deferred":
+            return job
         job.review_status = "deferred"
         job.indexing_blocked = True
         job.transition(ImportStatus.REVIEW_DEFERRED, "manual review deferred")
         self.store.upsert(job)
         self._audit(job, status="pending", action="import.review_deferred")
         return job
+
+    def _resume_approved_review(self, job: ImportJob) -> ImportJob:
+        resume_status = job.resume_after_review()
+        job.review_status = "approved"
+        job.error = ""
+        job.error_category = ""
+        job.indexing_blocked = False
+        job.classification_blocked = False
+        job.memory_forwarding_blocked = False
+        job.connector_forwarding_blocked = False
+        self._audit(job, status="ok", action="import.review_approved")
+        try:
+            if resume_status in {ImportStatus.CLASSIFIED, ImportStatus.CHUNKED, ImportStatus.EMBEDDED}:
+                text, title = self._read_source(job)
+                if resume_status == ImportStatus.CLASSIFIED:
+                    chunks = self._stage_chunked(job, text)
+                else:
+                    chunks = []
+                self._stage_embedded_indexed(job, text, title, chunks)
+                self.dedup.register(job.content_hash, job.job_id)
+                job.lineage.pop("text", None)
+                job.review_resume_status = ""
+                self.store.upsert(job)
+                self._audit(job, status="ok", action="import.indexed")
+                return job
+
+            # Parsing did not complete, so this is a controlled retry from the
+            # first incomplete stage rather than a replay of completed stages.
+            self.store.upsert(job)
+            return self.process(job.job_id)
+        except Exception as exc:
+            return self._fail(job, exc)
+
+    def _read_source(self, job: ImportJob) -> tuple[str, str]:
+        if job.lineage.get("inline_text"):
+            return str(job.lineage.get("text") or ""), str(job.lineage.get("title") or job.source_ref)
+        parsed = self.parser_registry.parse(job.source_ref)
+        status = getattr(parsed, "status", None)
+        status_value = getattr(status, "value", str(status))
+        text = str(getattr(parsed, "text", "") or "")
+        if status_value in {"failed", "unsupported", "ocr_required"} or not text:
+            errors = ", ".join(getattr(parsed, "errors", []) or [status_value])
+            raise ValueError(f"Parser: {errors}")
+        return text, str(getattr(parsed, "title", job.source_ref))
 
     def _job_for_review(self, review_id: str) -> tuple[dict[str, Any], ImportJob]:
         review = self.review_inbox.reviews.get(review_id)
@@ -436,19 +517,43 @@ class UnifiedImportPipeline:
             raise KeyError(f"import_job_for_review_not_found:{review_id}")
         return review, job
 
-    def _find_review(self, job_id: str, category: str) -> dict[str, Any] | None:
+    def _find_review(
+        self,
+        job_id: str,
+        category: str,
+        *,
+        open_only: bool = False,
+    ) -> dict[str, Any] | None:
         for review in self.review_inbox.reviews.list(category=category):
             metadata = review.get("metadata") if isinstance(review.get("metadata"), dict) else {}
-            if metadata.get("import_job_id") == job_id:
+            is_open = str(review.get("status") or "pending") in {"pending", "deferred"}
+            if metadata.get("import_job_id") == job_id and (not open_only or is_open):
                 return review
         return None
 
-    @staticmethod
-    def _review_was_approved(job: ImportJob, category: str) -> bool:
-        return category in set(job.lineage.get("approved_review_categories") or [])
+    def _review_status(self, job: ImportJob) -> str:
+        review = self.review_inbox.reviews.get(job.review_id) if job.review_id else None
+        if review is not None:
+            review_category = str(review.get("category") or "")
+            if not job.review_category or review_category == job.review_category:
+                return str(review.get("status") or "pending")
+            return "pending"
+        return str(job.review_status or "pending")
+
+    def _review_was_approved(self, job: ImportJob) -> bool:
+        return self._review_status(job) == "approved"
+
+    def _review_was_rejected(self, job: ImportJob) -> bool:
+        return self._review_status(job) == "rejected"
+
+    def _review_is_deferred(self, job: ImportJob) -> bool:
+        return self._review_status(job) == "deferred"
 
     def _stage_chunked(self, job: ImportJob, text: str) -> list[str]:
-        chunks = self.chunker(text)
+        try:
+            chunks = self.chunker(text)
+        except Exception as exc:
+            raise RuntimeError(f"Chunking failed: {self._safe_text(str(exc))}") from exc
         if not chunks:
             raise ValueError("Chunker lieferte keine Chunks (leerer Inhalt)")
         job.chunk_count = len(chunks)
@@ -485,10 +590,13 @@ class UnifiedImportPipeline:
         )
         return self._hold_for_review(
             job,
-            category="failed_import",
-            error_code=job.error_category,
-            sanitized_error=job.error,
-            retry_allowed=retry_allowed,
+            self._review_request(
+                "failed_import",
+                job.error_category,
+                job.error,
+                retry_allowed=retry_allowed,
+            ),
+            ImportStatus.FAILED_REVIEWABLE,
         )
 
     def _audit(self, job: ImportJob, *, status: str, action: str,
@@ -517,6 +625,8 @@ class UnifiedImportPipeline:
             return "ocr_failed"
         if "embedding" in value or "vector" in value:
             return "embedding_failed"
+        if "chunk" in value:
+            return "chunking_failed"
         if "index" in value or stage in {ImportStatus.CHUNKED, ImportStatus.EMBEDDED}:
             return "indexing_failed"
         if stage == ImportStatus.PARSING or "parser" in value:

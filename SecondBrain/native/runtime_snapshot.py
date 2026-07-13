@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -93,11 +94,41 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
     categories: dict[str, int] = {}
     for item in items:
         categories[item["category"]] = categories.get(item["category"], 0) + 1
+    from secondbrain.notifications.review_notifications import ReviewNotificationService, TimeRules
+
+    now = datetime.now(timezone.utc)
+    rules = TimeRules()
+    enriched = inbox.notification_items()
+
+    def _age_seconds(value: str) -> float:
+        try:
+            parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except ValueError:
+            return 0.0
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return max(0.0, (now - parsed).total_seconds())
+
+    pending_enriched = [row for row in enriched if row.get("status") == "pending"]
+    overdue = [row for row in pending_enriched if _age_seconds(row.get("created_at", "")) >= rules.overdue_after.total_seconds()]
+    expiring_threshold = (rules.approval_expiration - rules.expiring_window).total_seconds()
+    expiring = [
+        row
+        for row in pending_enriched
+        if row.get("item_type") == "approval" and _age_seconds(row.get("created_at", "")) >= expiring_threshold
+    ]
+    oldest_pending_age = int(max((_age_seconds(row.get("created_at", "")) for row in pending_enriched), default=0.0))
+    notification_count = len(ReviewNotificationService().evaluate(enriched, now=now))
     return {
         "pending_reviews": len(inbox.reviews.list(status="pending")),
         "pending_approvals": len(inbox.approvals.list(status="pending")),
         "deferred_items": len(deferred),
         "critical_items": len(critical),
+        "open_items": len(pending),
+        "overdue_items": len(overdue),
+        "expiring_items": len(expiring),
+        "notification_count": notification_count,
+        "oldest_pending_age": oldest_pending_age,
         "inbox_summary": {
             "total": len(items),
             "pending": len(pending),
@@ -107,6 +138,12 @@ def _review_inbox_status(root: Path) -> dict[str, Any]:
             "categories": categories,
         },
     }
+
+
+def _governance_metrics_status(root: Path) -> dict[str, Any]:
+    from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+
+    return ReviewApprovalMetrics(root).dashboard_view()
 
 
 def _action_surface() -> dict[str, Any]:
@@ -148,7 +185,25 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
             "pending_approvals": 0,
             "deferred_items": 0,
             "critical_items": 0,
+            "open_items": 0,
+            "overdue_items": 0,
+            "expiring_items": 0,
+            "notification_count": 0,
+            "oldest_pending_age": 0,
             "inbox_summary": {"total": 0, "pending": 0, "deferred": 0, "completed": 0, "critical": 0},
+        },
+    )
+    governance_metrics = _safe_call(
+        lambda: _governance_metrics_status(base),
+        {
+            "open_approvals": 0,
+            "critical_approvals": 0,
+            "overdue_reviews": 0,
+            "average_decision_time": 0.0,
+            "blocked_unsafe_executions": 0,
+            "most_common_category": "",
+            "trend_7d": 0,
+            "trend_30d": 0,
         },
     )
     return {
@@ -175,6 +230,12 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "deferred_items": review_inbox["deferred_items"],
         "critical_items": review_inbox["critical_items"],
         "inbox_summary": review_inbox["inbox_summary"],
+        "open_items": review_inbox.get("open_items", 0),
+        "overdue_items": review_inbox.get("overdue_items", 0),
+        "expiring_items": review_inbox.get("expiring_items", 0),
+        "notification_count": review_inbox.get("notification_count", 0),
+        "oldest_pending_age": review_inbox.get("oldest_pending_age", 0),
+        "governance_metrics": governance_metrics,
         "voice": {
             "language": "de-DE",
             "offline_intent_parser": True,

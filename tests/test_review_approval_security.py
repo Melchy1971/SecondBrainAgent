@@ -45,5 +45,7 @@ def test_gate_handles_corruption_and_reports_parallel_decision_conflict(tmp_path
     checks = {check["check_id"]: check for check in report["checks"]}
 
     assert checks["corrupt_queue_controlled"]["status"] == PASS
-    assert checks["parallel_decision_conflict_safe"]["status"] == CONDITIONAL_PASS
-    assert "accepted=2" in checks["parallel_decision_conflict_safe"]["detail"]
+    # Prompt 14 makes parallel decisions conflict-safe: exactly one decision
+    # wins and the other is a controlled version conflict.
+    assert checks["parallel_decision_conflict_safe"]["status"] == PASS
+    assert "accepted=1" in checks["parallel_decision_conflict_safe"]["detail"]

@@ -36,16 +36,16 @@ def gate_report(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
 
 def test_review_approval_gate_reports_all_e2e_checks(gate_report: dict[str, object]) -> None:
     checks = gate_report["checks"]
-    assert gate_report["status"] == CONDITIONAL_PASS
+    assert gate_report["status"] == PASS
     assert gate_report["ok"] is True
-    assert gate_report["summary"] == {"total": 15, "passed": 14, "conditional": 1, "blocked": 0}
+    assert gate_report["summary"] == {"total": 15, "passed": 15, "conditional": 0, "blocked": 0}
     assert {check["check_id"] for check in checks} == EXPECTED_CHECKS
     assert all(
-        check["status"] == (CONDITIONAL_PASS if check["check_id"] == "parallel_decision_conflict_safe" else PASS)
+        check["status"] == PASS
         for check in checks
     )
     assert gate_report["blockers"] == []
-    assert len(gate_report["warnings"]) == 1
+    assert len(gate_report["warnings"]) == 0
 
 
 def test_gate_covers_pause_decide_resume_and_inbox(gate_report: dict[str, object]) -> None:
@@ -81,5 +81,5 @@ def test_launcher_exposes_review_approval_gate(tmp_path: Path) -> None:
 
     assert completed.returncode == 0, completed.stderr
     report = json.loads(completed.stdout)
-    assert report["status"] == CONDITIONAL_PASS
+    assert report["status"] == PASS
     assert report["summary"]["total"] == 15

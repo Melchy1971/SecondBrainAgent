@@ -86,6 +86,11 @@
       "release": "v30.77",
       "capability": "UI Path Override, zentrale Pfadkonsolidierung und Legacy-Import-Kompatibilitaet",
       "status": "completed"
+    },
+    {
+      "release": "v30.78",
+      "capability": "Review- und Approval-Governance-Layer: Memory Governance, Notifications und Eskalation, Governance-Metriken, Concurrency mit Crash-Recovery und persistente Repository-Abstraktion (JSONL/PostgreSQL), zertifiziert per Release-Gate",
+      "status": "completed"
     }
   ],
   "remaining_blockers": [
@@ -127,5 +132,23 @@
     ]
   },
   "build": 307700,
-  "version_source": "pyproject.toml"
+  "version_source": "pyproject.toml",
+  "review_approval_release": {
+    "release": "v30.78",
+    "gate": "PASS",
+    "gate_command": "python launcher.py review-approval-release-gate",
+    "report": "runtime/reports/review_approval_release_gate.json",
+    "components": {
+      "Review Queue": "completed",
+      "Approval Inbox": "completed",
+      "Agent Resume": "completed",
+      "Import Review": "completed",
+      "Connector Approval": "completed",
+      "Memory Governance": "completed",
+      "Notifications": "completed",
+      "Metrics": "completed",
+      "Persistence": "completed",
+      "Release Readiness": "certified"
+    }
+  }
 }

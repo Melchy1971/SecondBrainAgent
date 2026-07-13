@@ -70,6 +70,7 @@ class ImportJob:
     review_id: str = ""
     review_category: str = ""
     review_status: str = ""
+    review_resume_status: str = ""
     retry_allowed: bool = True
     indexing_blocked: bool = False
     classification_blocked: bool = False
@@ -93,6 +94,16 @@ class ImportJob:
         if detail:
             entry["detail"] = detail[:300]
         self.stage_history.append(entry)
+
+    def resume_after_review(self) -> str:
+        """Restore the last processing stage without recording it twice."""
+
+        status = self.review_resume_status or ImportStatus.QUEUED
+        if status not in ImportStatus.ALL or status in REVIEW_HOLD_STATUSES:
+            status = ImportStatus.QUEUED
+        self.status = status
+        self.updated_at = _now()
+        return status
 
     @property
     def terminal(self) -> bool:

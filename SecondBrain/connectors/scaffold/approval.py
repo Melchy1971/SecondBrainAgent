@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass
 from hashlib import sha256
 from pathlib import Path
 from threading import RLock
@@ -87,6 +87,12 @@ class ConnectorActionPolicy:
         payload_data = dict(payload or {})
         data_loss_disable = "disable" in tokens and bool(payload_data.get("data_loss_risk", True))
         write_action = bool(tokens & self.WRITE_TOKENS) or mutating_method or data_loss_disable
+        # A GET-based scope comparison is read-only when it requests exactly
+        # the already effective grant. Only an actual expansion is a permission
+        # change; the action name alone must not block initial OAuth login.
+        scope_comparison_without_diff = "scope" in tokens and not mutating_method and not added
+        if scope_comparison_without_diff:
+            write_action = False
         requires_approval = bool(added) or write_action
         if "credential" in tokens:
             risk, rule = "critical", "credential_change"
@@ -94,6 +100,8 @@ class ConnectorActionPolicy:
             risk, rule = "high", "scope_expansion"
         elif write_action:
             risk, rule = "high", "connector_write"
+        elif scope_comparison_without_diff:
+            risk, rule = "low", "read_only"
         elif tokens & self.READ_TOKENS:
             risk, rule = "low", "read_only"
         else:

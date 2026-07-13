@@ -130,6 +130,9 @@ def test_detail_redacts_payload_and_audit_secret_values(tmp_path):
     assert detail["payload"]["token"] == "***"
     assert detail["payload"]["nested"]["password"] == "***"
     assert "Sendeaktion" in detail["warning"]
+    queue_text = approval_path(tmp_path).read_text(encoding="utf-8")
+    assert secret not in queue_text
+    assert "nested-secret" not in queue_text
 
 
 def test_corrupt_queue_returns_controlled_loading_error(tmp_path):

@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 
 from secondbrain.event_bus_v121 import EventBus
 from secondbrain.tool_registry_v121 import ToolDefinition, ToolRegistry
@@ -27,7 +26,18 @@ def test_tool_registry_scope_and_approval(tmp_path: Path):
         assert False
     except PermissionError:
         pass
-    result = reg.execute('demo.echo', {'text':'x'}, ['demo.use'], approved=True)
+    reg.set_approval_lookup(lambda approval_id: {
+        'approval_id': approval_id,
+        'status': 'approved',
+        'tool_name': 'demo.echo',
+        'payload': {'text': 'x'},
+    })
+    result = reg.execute(
+        'demo.echo',
+        {'text':'x'},
+        ['demo.use'],
+        approval={'approval_id': 'approval-1'},
+    )
     assert result['result']['echo'] == 'x'
     assert reg.audit(1)[0]['tool'] == 'demo.echo'
 

@@ -21,6 +21,8 @@ class UnifiedReviewInbox:
         review_queue: ReviewQueue | None = None,
         approval_service: AgentApprovalService | None = None,
         event_bus: EventBus | None = None,
+        memory_governance: Any | None = None,
+        notifier: Any | None = None,
     ) -> None:
         root = Path(project_root or Path.cwd()).resolve()
         self.approvals = approval_queue or NativeApprovalQueue(root)
@@ -33,6 +35,13 @@ class UnifiedReviewInbox:
             raise ValueError("review_approval_event_bus_mismatch")
         self.event_bus = event_bus or (approval_service.event_bus if approval_service is not None else EventBus())
         self.approval_service = approval_service or AgentApprovalService(queue=self.approvals, event_bus=self.event_bus)
+        # Optional collaborator that commits/discards memory candidates when a
+        # memory-governed review is decided. Duck-typed to avoid an import cycle
+        # with secondbrain.agent.memory_service.
+        self.memory_governance = memory_governance
+        # Optional review-notification collaborator (decision events).
+        self.notifier = notifier
+        self._notification_service = None
 
     def create_review(
         self,
@@ -270,11 +279,83 @@ class UnifiedReviewInbox:
                     },
                 )
             )
+            self._apply_memory_governance(metadata, status, actor)
         canonical_id = str(approval["approval_id"]) if approval is not None else str(reviews[0]["review_id"])
         result = self.get(canonical_id)
         if result is None:
             raise RuntimeError(f"inbox_item_missing_after_decision:{canonical_id}")
+        if self.notifier is not None and result is not None:
+            self.notifier.record_decision(result, status)
         return result
+
+    def notification_service(self):
+        """Lazily create the persistent review-notification service."""
+
+        if self._notification_service is None:
+            from secondbrain.notifications.review_notifications import ReviewNotificationService
+
+            state_path = self.approvals.project_root / "runtime" / "native" / "review_notifications_state.json"
+            self._notification_service = ReviewNotificationService(state_path=state_path)
+        return self._notification_service
+
+    def notification_items(self) -> list[dict[str, Any]]:
+        """Inbox items enriched with the fields notifications need.
+
+        The public list_all view is intentionally not changed; enrichment adds
+        ``deferred_until`` and ``change_type`` pulled from the raw records.
+        """
+
+        enriched: list[dict[str, Any]] = []
+        for view in self.list_all():
+            item = dict(view)
+            if view["item_type"] == "approval":
+                raw = self.approvals.get(view["item_id"])
+            else:
+                raw = self.reviews.get(view["item_id"])
+            if raw:
+                item["deferred_until"] = str(raw.get("deferred_until") or "")
+                meta = raw.get("metadata") if isinstance(raw.get("metadata"), dict) else {}
+                item["change_type"] = str(
+                    raw.get("change_type") or meta.get("change_type") or raw.get("intent") or ""
+                )
+            enriched.append(item)
+        return enriched
+
+    def metrics(self, *, window_days: int | None = None) -> dict[str, Any]:
+        """Governance metrics for this inbox (ids/payloads/secrets excluded)."""
+
+        from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+
+        return ReviewApprovalMetrics(inbox=self).export(window_days=window_days)
+
+    def evaluate_notifications(self, *, now=None, service=None):
+        svc = service or self.notification_service()
+        return svc.evaluate(self.notification_items(), now=now)
+
+    def notification_badge(self, *, now=None, service=None) -> int:
+        svc = service or self.notification_service()
+        return svc.badge_count(self.notification_items(), now=now)
+
+    def _apply_memory_governance(
+        self,
+        review_metadata: Mapping[str, Any],
+        status: str,
+        actor: str,
+    ) -> None:
+        """Route a decided memory-governed review to the governance service.
+
+        Runs only after the review transition has succeeded, guaranteeing no
+        memory is written before a decision exists.
+        """
+
+        if self.memory_governance is None:
+            return
+        if str(review_metadata.get("governance") or "") != "memory":
+            return
+        candidate_id = str(review_metadata.get("candidate_id") or "")
+        if not candidate_id:
+            return
+        self.memory_governance.apply_memory_decision(candidate_id, status, actor=actor)
 
     @staticmethod
     def _correlation_id(

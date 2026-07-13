@@ -129,9 +129,10 @@ def test_pipeline_classifies_and_routes_low_confidence_to_review(tmp_path: Path)
     assert job_clear.document_type == "rechnung"
     assert "finanzen" in job_clear.tags
 
-    open_reviews = ReviewQueue(tmp_path).list_open()
+    open_reviews = pipeline.review_inbox.list_pending(category="low_confidence_classification")
     assert len(open_reviews) == 1
-    assert open_reviews[0]["job_id"] == job_unclear.job_id
+    assert open_reviews[0]["target"] == job_unclear.job_id
+    assert ReviewQueue(tmp_path).list_open() == []  # Legacy-Queue bleibt unbenutzt.
 
     # Vorschläge sind in der Tag-Historie dokumentiert
     history = TagHistory(tmp_path).for_document(str(clear))

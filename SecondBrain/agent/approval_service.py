@@ -34,13 +34,19 @@ class AgentApprovalService:
         bridge: AgentApprovalBridge | None = None,
         plan_store: AgentPlanStore | None = None,
         event_bus: EventBus | None = None,
+        repository: Any | None = None,
     ) -> None:
         if queue is not None and bridge is not None and queue.path != bridge.queue.path:
             raise ValueError("approval_queue_mismatch")
+        # A repository lets the service run over the persistence abstraction; the
+        # JSONL repository exposes the native queue, so existing logic is reused.
+        if repository is not None and queue is None and getattr(repository, "queue", None) is not None:
+            queue = repository.queue
         self.queue = queue or (bridge.queue if bridge is not None else NativeApprovalQueue(project_root or Path.cwd()))
         self.bridge = bridge or AgentApprovalBridge(queue=self.queue)
         self.plan_store = plan_store
         self.event_bus = event_bus or EventBus()
+        self.repository = repository
         self._correlation_ids: dict[str, str] = {}
 
     def create_approval(
@@ -170,6 +176,7 @@ class AgentApprovalService:
         *,
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         return self._decide(
             approval_id,
@@ -178,6 +185,7 @@ class AgentApprovalService:
             note=note,
             correlation_id=correlation_id,
             causation_id=causation_id,
+            expected_version=expected_version,
         )
 
     def reject(
@@ -188,6 +196,7 @@ class AgentApprovalService:
         *,
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         return self._decide(
             approval_id,
@@ -196,6 +205,7 @@ class AgentApprovalService:
             note=note,
             correlation_id=correlation_id,
             causation_id=causation_id,
+            expected_version=expected_version,
         )
 
     def defer(
@@ -218,6 +228,44 @@ class AgentApprovalService:
             causation_id=causation_id,
         )
 
+    def begin_execution(
+        self,
+        approval_id: str,
+        *,
+        executor_id: str,
+        lease_seconds: int = 300,
+        expected_version: int | None = None,
+    ) -> dict[str, Any]:
+        return self.queue.begin_execution(
+            approval_id,
+            executor_id=executor_id,
+            lease_seconds=lease_seconds,
+            expected_version=expected_version,
+        )
+
+    def complete_execution(
+        self,
+        approval_id: str,
+        *,
+        execution_token: str,
+        expected_version: int | None = None,
+        result_status: str = "completed",
+    ) -> dict[str, Any]:
+        return self.queue.complete_execution(
+            approval_id,
+            execution_token=execution_token,
+            expected_version=expected_version,
+            result_status=result_status,
+        )
+
+    def recover_stale_leases(self) -> list[dict[str, Any]]:
+        return self.queue.recover_stale_leases()
+
+    def health(self) -> dict[str, Any]:
+        if self.repository is not None:
+            return self.repository.health().to_dict()
+        return {"backend": "jsonl", "healthy": True, "degraded": False, "detail": "native queue"}
+
     def get(self, approval_id: str) -> dict[str, Any] | None:
         return self.queue.get(approval_id)
 
@@ -237,6 +285,7 @@ class AgentApprovalService:
         deferred_until: str = "",
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         step_state = self.bridge.step_state_for_status(status)
         updated = self.queue.transition(
@@ -246,6 +295,7 @@ class AgentApprovalService:
             note=note,
             deferred_until=deferred_until,
             step_state=step_state.value,
+            expected_version=expected_version,
         )
         if updated is None:
             raise KeyError(f"approval_not_found:{approval_id}")
