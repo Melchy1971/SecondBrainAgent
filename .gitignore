@@ -5,6 +5,7 @@ SecondBrain-Agent/SecondBrain-Inbox/**/*.zip
 # Local runtime/cache artifacts.
 runtime/
 logs/
+.git-rewrite/
 .pytest_cache/
 .pytest_tmp/
 
