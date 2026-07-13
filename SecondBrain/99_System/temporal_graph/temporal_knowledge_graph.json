@@ -1,0 +1,770 @@
+[
+  {
+    "date": "2026-07-13",
+    "note": "Vector_RAG_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\88_VectorRAG\\Vector_RAG_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\06_Journal\\2026-07-13.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\07_Graph\\Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_recommendations",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\09_Recommendations\\2026-07-13_recommendations.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_knowledge-gaps",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\20_KnowledgeGaps\\2026-07-13_knowledge-gaps.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Decision_Register",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\12_Decisions\\Decision_Register.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_decision-intelligence",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\12_Decisions\\2026-07-13_decision-intelligence.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_daily-briefing",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\10_DailyBriefings\\2026-07-13_daily-briefing.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_evening-review",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\11_Reviews\\2026-07-13_evening-review.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_prozesslandkarte",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\15_Prozesse\\2026-07-13_prozesslandkarte.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_learning-report",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\16_Lernsystem\\2026-07-13_learning-report.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Digital_Twin_Profile",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\Digital_Twin_Profile.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Digital_Twin_v5",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\Digital_Twin_v5.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_chief-of-staff",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\18_AgentOps\\2026-07-13_chief-of-staff.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_context-map",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\21_Context\\2026-07-13_context-map.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Memory_Profile",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\22_Memory\\Memory_Profile.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_memory-replay",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\22_Memory\\2026-07-13_memory-replay.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Temporal_Graph",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\23_TemporalGraph\\Temporal_Graph.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Knowledge_Lineage",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\24_Lineage\\Knowledge_Lineage.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_knowledge-compression",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\25_Compression\\2026-07-13_knowledge-compression.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_semantic-deduplication",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\26_Deduplication\\2026-07-13_semantic-deduplication.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_research-backlog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\27_Research\\2026-07-13_research-backlog.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_prediction-report",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\28_Predictions\\2026-07-13_prediction-report.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\29_Simulations\\2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_process-mining",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\30_ProcessMining\\2026-07-13_process-mining.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Process_Copilot_Commands",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\31_ProcessCopilot\\Process_Copilot_Commands.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Executive_Dashboard",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\32_ExecutiveDashboard\\Executive_Dashboard.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Agent_Swarm_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\34_AgentSwarm\\Agent_Swarm_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_chief-of-staff-v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\35_ChiefOfStaff\\2026-07-13_chief-of-staff-v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_event-summary",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\36_EventBus\\2026-07-13_event-summary.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "MCP_Hub_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\37_MCPHub\\MCP_Hub_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Plugin_Marketplace",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\37_MCPHub\\Plugin_Marketplace.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Federation_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\38_MultiVault\\Federation_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Ontology_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\39_Ontology\\Ontology_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_quality-scores",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\40_QualityScores\\2026-07-13_quality-scores.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_refactoring-proposals",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\41_Refactoring\\2026-07-13_refactoring-proposals.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_autonomous-project-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\45_AutonomousProjectManager\\2026-07-13_autonomous-project-plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_process-design-backlog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\46_AutonomousProcessDesigner\\2026-07-13_process-design-backlog.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_agent-economy",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\42_AgentEconomy\\2026-07-13_agent-economy.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_life-os-dashboard",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\47_LifeOS\\2026-07-13_life-os-dashboard.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Research_Memory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\48_AgentMemory\\Research_Memory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Project_Memory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\48_AgentMemory\\Project_Memory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Process_Memory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\48_AgentMemory\\Process_Memory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Executive_Memory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\48_AgentMemory\\Executive_Memory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "ChiefOfStaff_Memory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\48_AgentMemory\\ChiefOfStaff_Memory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Agent_Collaboration_Protocol",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\49_AgentCollaboration\\Agent_Collaboration_Protocol.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Goal_Map",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\50_Goals\\Goal_Map.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Daily_Plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\51_Planner\\Daily_Plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Weekly_Plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\51_Planner\\Weekly_Plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Monthly_Plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\51_Planner\\Monthly_Plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Quarterly_Plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\51_Planner\\Quarterly_Plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_personal-kpis",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\52_KPIs\\2026-07-13_personal-kpis.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Decision_Journal",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\53_DecisionJournal\\Decision_Journal.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Enterprise_RAG_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\55_EnterpriseRAG\\Enterprise_RAG_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Digital_Twin_v4",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\56_DigitalTwinV4\\Digital_Twin_v4.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Process_Twin",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\57_ProcessTwin\\Process_Twin.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Knowledge_Twin",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\58_KnowledgeTwin\\Knowledge_Twin.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Semantic_OS_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\60_SemanticOS\\Semantic_OS_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Local_AI_Cluster",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\61_LocalAICluster\\Local_AI_Cluster.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_software-factory",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\62_SoftwareFactory\\2026-07-13_software-factory.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Business_OS_Modules",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\63_BusinessOS\\Business_OS_Modules.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Personal_AGI_OS",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\64_PersonalAGIOS\\Personal_AGI_OS.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Semantic_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\65_SemanticSearch\\Semantic_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Full_Knowledge_Graph",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\66_KnowledgeGraph\\Full_Knowledge_Graph.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_project-intelligence",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\67_ProjectIntelligence\\2026-07-13_project-intelligence.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Decision_Intelligence_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\68_DecisionIntelligence\\Decision_Intelligence_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_meeting-intelligence",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\69_MeetingIntelligence\\2026-07-13_meeting-intelligence.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_calendar-intelligence",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\70_CalendarIntelligence\\2026-07-13_calendar-intelligence.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_documents",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\71_DataWarehouse\\facts_documents.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_tasks",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\71_DataWarehouse\\facts_tasks.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_decisions",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\71_DataWarehouse\\facts_decisions.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_tags",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\71_DataWarehouse\\facts_tags.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_projects",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\71_DataWarehouse\\facts_projects.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "MCP_Ecosystem_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\72_MCPEcosystem\\MCP_Ecosystem_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_self-improvement-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\74_SelfImprovingKnowledge\\2026-07-13_self-improvement-plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "SecondBrain_OS_Dashboard",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\75_SecondBrainOS\\SecondBrain_OS_Dashboard.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Workflow_Catalog",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\76_WorkflowEngine\\Workflow_Catalog.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_learning-plan",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\78_LearningEngine\\2026-07-13_learning-plan.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\79_SimulationEngineV2\\2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Personal_CRM_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\80_PersonalCRM\\Personal_CRM_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Executive_Dashboard_v9",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\81_ExecutiveDashboard\\Executive_Dashboard_v9.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Voice_Assistant_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\82_VoiceAssistant\\Voice_Assistant_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_monitoring",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\84_MonitoringTelemetry\\2026-07-13_monitoring.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Plugin_Ecosystem",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\85_PluginEcosystem\\Plugin_Ecosystem.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Digital_Twin_v6",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\86_DigitalTwinV6\\Digital_Twin_v6.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "SecondBrain_OS_Control_Center",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\87_ControlCenter\\SecondBrain_OS_Control_Center.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Meeting_Transcription_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\89_MeetingTranscripts\\Meeting_Transcription_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Calendar_Connector_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\90_CalendarOps\\Calendar_Connector_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Email_Connector_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\91_EmailOps\\Email_Connector_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_event-bus",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\93_RealtimeEventBus\\2026-07-13_event-bus.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Autonomous_Agents_Status",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\94_AutonomousAgents\\Autonomous_Agents_Status.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "SecondBrain_v9_5_Control_Center",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\98_V95ControlCenter\\SecondBrain_v9_5_Control_Center.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Memory_Engine_Profile",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\100_MemoryEngine\\Memory_Engine_Profile.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_self-reflection",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\101_SelfReflection\\2026-07-13_self-reflection.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_reasoning-map",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\102_ReasoningEngine\\2026-07-13_reasoning-map.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_daily-assistant",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\104_DailyAssistant\\2026-07-13_daily-assistant.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_weekly-review",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\105_WeeklyReview\\2026-07-13_weekly-review.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_task-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\106_TaskAgent\\2026-07-13_task-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_research-backlog-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\107_ResearchAgent\\2026-07-13_research-backlog-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_meeting-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\108_MeetingAgent\\2026-07-13_meeting-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_project-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\109_ProjectAgent\\2026-07-13_project-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_decision-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\110_DecisionAgent\\2026-07-13_decision-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_process-agent",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\111_ProcessAgent\\2026-07-13_process-agent.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "2026-07-13_chief-of-staff-v98",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\112_ChiefOfStaff\\2026-07-13_chief-of-staff-v98.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Entity_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\113_EntityExtraction\\Entity_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Relationship_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\114_RelationshipEngine\\Relationship_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_documents",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_documents.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_tasks",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_tasks.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "facts_decisions",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Facts\\facts_decisions.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "dim_note_types",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\59_DataWarehouse\\Dimensions\\dim_note_types.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "CRM_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\CRM\\CRM_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "DMS_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\DMS\\DMS_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Projects_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\Projects\\Projects_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Finance_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\Finance\\Finance_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Health_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\Health\\Health_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Verein_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\33_PersonalERP\\Verein\\Verein_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Research_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Research_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Project_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Project_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Decision_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Decision_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Meeting_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Meeting_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Calendar_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Calendar_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Process_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Process_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Executive_Agent_Memory_v2",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\73_DigitalTwin\\AgentMemory\\Executive_Agent_Memory_v2.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Gesundheit_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\14_LifeOS\\Gesundheit\\Gesundheit_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Finanzen_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\14_LifeOS\\Finanzen\\Finanzen_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Reisen_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\14_LifeOS\\Reisen\\Reisen_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "Verein_Index",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\14_LifeOS\\Verein\\Verein_Index.md",
+    "source": "vault"
+  },
+  {
+    "date": "2026-07-13",
+    "note": "weighted_edges",
+    "path": "H:\\SecondBrainAgent\\SecondBrain\\07_Graph\\Weights\\weighted_edges.md",
+    "source": "vault"
+  }
+]

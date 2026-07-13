@@ -480,6 +480,7 @@
       <a class="nav-item" id="nav-connectoren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>Connectoren</a>
       <a class="nav-item" id="nav-security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 4 5v6c0 5 3.4 8.3 8 10 4.6-1.7 8-5 8-10V5z"/><circle cx="12" cy="11" r="2.2"/><path d="M9.2 15.2a4 4 0 0 1 5.6 0"/></svg>Security</a>
       <a class="nav-item" id="nav-agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg>Agents<span class="badge">NEW</span></a>
+      <a class="nav-item" id="nav-review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/><path d="m9 11 3 3 8-8"/></svg>Review &amp; Approval</a>
       <a class="nav-item" id="nav-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>Settings</a>
       <a class="nav-item" id="nav-developer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Developer</a>
       <a class="nav-item" id="nav-coding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3"/><path d="M13 15h4"/></svg>Coding<span class="badge">NEW</span></a>
@@ -892,6 +893,22 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
         <button class="btn" id="agt-refresh">↻ Neu laden</button>
       </div>
       <div class="jobs-grid" id="agt-grid"><div class="docs-empty">… lädt</div></div>
+    </section>
+
+    <!-- ===================== REVIEW & APPROVAL ===================== -->
+    <section id="view-review" class="view-docs" hidden>
+      <div class="docs-head">
+        <h2>REVIEW &amp; APPROVAL</h2>
+        <div class="docs-count" id="rev-count">—</div>
+        <button class="btn" id="rev-refresh">↻ Neu laden</button>
+      </div>
+      <div class="jobs-grid" id="rev-kpis"><div class="docs-empty">… lädt</div></div>
+      <div class="docs-head" style="margin-top:16px"><h3 style="margin:0;font-size:13px;letter-spacing:.08em;color:var(--muted)">RELEASE-GATE</h3></div>
+      <div class="jobs-grid" id="rev-gate"><div class="docs-empty">… lädt</div></div>
+      <div class="docs-head" style="margin-top:16px"><h3 style="margin:0;font-size:13px;letter-spacing:.08em;color:var(--muted)">NOTIFICATIONS</h3><div class="docs-count" id="rev-badge">—</div></div>
+      <div class="jobs-grid" id="rev-notifs"><div class="docs-empty">… lädt</div></div>
+      <div class="docs-head" style="margin-top:16px"><h3 style="margin:0;font-size:13px;letter-spacing:.08em;color:var(--muted)">INBOX</h3></div>
+      <div class="jobs-grid" id="rev-inbox"><div class="docs-empty">… lädt</div></div>
     </section>
 
     <!-- ===================== DEVELOPER-ANSICHT ===================== -->
@@ -1356,9 +1373,10 @@ function showView(view){
   $("view-connectoren").hidden = (view!=="connectoren");
   $("view-security").hidden  = (view!=="security");
   $("view-agents").hidden    = (view!=="agents");
+  $("view-review").hidden    = (view!=="review");
   $("view-developer").hidden = (view!=="developer");
   $("view-coding").hidden    = (view!=="coding");
-  ["dashboard","assistant","documents","memory","knowledge","search","imports","jobs","connectoren","security","agents","developer","coding"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
+  ["dashboard","assistant","documents","memory","knowledge","search","imports","jobs","connectoren","security","agents","review","developer","coding"].forEach(v=>{ const n=$("nav-"+v); if(n) n.classList.toggle("active", v===view); });
   if(view==="assistant"){ loadAssistantModels(); $("asst-q").focus(); }
   if(view==="documents"){ docsInit(); }
   if(view==="memory"){ memInit(); }
@@ -1369,6 +1387,7 @@ function showView(view){
   if(view==="connectoren"){ connInit(); }
   if(view==="security"){ secInit(); }
   if(view==="agents"){ agtInit(); }
+  if(view==="review"){ revInit(); }
   if(view==="developer"){ devInit(); }
   if(view==="coding"){ codInit(); }
 }
@@ -2079,6 +2098,66 @@ async function agtLoad(){
 function agtInit(){ if(AGT_LOADED) return; AGT_LOADED=true; agtLoad(); }
 $("nav-agents").addEventListener("click", ()=>showView("agents"));
 $("agt-refresh").addEventListener("click", agtLoad);
+
+let REV_LOADED=false;
+function revFmtDur(s){ s=Number(s)||0; if(s<60) return Math.round(s)+"s"; if(s<3600) return Math.round(s/60)+"m"; return (s/3600).toFixed(1)+"h"; }
+function revCard(title, tag, tagOff, meta, detail){
+  const c=document.createElement("div"); c.className="job-card";
+  let h="<div class='jn'>"+docEsc(title);
+  if(tag!==undefined && tag!==null && tag!=="") h+="<span class='kg-tag"+(tagOff?" off":"")+"'>"+docEsc(String(tag))+"</span>";
+  h+="</div>";
+  if(meta) h+="<div class='jm'>"+docEsc(meta)+"</div>";
+  if(detail) h+="<div class='conn-detail'>"+docEsc(detail)+"</div>";
+  c.innerHTML=h; return c;
+}
+async function revLoad(){
+  // KPIs (Governance-Metriken)
+  try{
+    const m=await getJSON("/api/review/metrics");
+    const d=(m.ok&&m.dashboard)?m.dashboard:{};
+    const kpis=[
+      ["Offene Freigaben", d.open_approvals],
+      ["Kritische Freigaben", d.critical_approvals],
+      ["Überfällige Reviews", d.overdue_reviews],
+      ["Ø Entscheidungszeit", revFmtDur(d.average_decision_time)],
+      ["Blockierte Ausführungen", d.blocked_unsafe_executions],
+      ["Häufigste Kategorie", d.most_common_category||"—"],
+    ];
+    const g=$("rev-kpis"); g.innerHTML="";
+    kpis.forEach(kv=>{ const c=document.createElement("div"); c.className="job-card";
+      const v=(kv[1]===undefined||kv[1]===null||kv[1]==="")?"—":String(kv[1]);
+      c.innerHTML="<div class='jm'>"+docEsc(kv[0])+"</div><div class='jn'>"+docEsc(v)+"</div>"; g.appendChild(c); });
+  }catch(e){ if($("rev-kpis")) $("rev-kpis").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  // Release-Gate-Status
+  try{
+    const rg=await getJSON("/api/release-gate");
+    const g=$("rev-gate"); g.innerHTML="";
+    if(rg.status==="not_run"){ g.appendChild(revCard("Release-Gate","nicht ausgeführt",true,rg.hint||"",null)); }
+    else{ const s=rg.summary||{}; const off=(rg.status==="BLOCKED");
+      g.appendChild(revCard("Gesamt-Status", rg.status, off, (s.passed||0)+"/"+(s.total||0)+" Checks · Blocker: "+((rg.blockers||[]).length), rg.timestamp||"")); }
+  }catch(e){ if($("rev-gate")) $("rev-gate").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  // Notifications
+  try{
+    const n=await getJSON("/api/review/notifications");
+    if($("rev-badge")) $("rev-badge").textContent = n.ok ? (n.badge+" aktiv / "+n.total) : "";
+    const g=$("rev-notifs"); g.innerHTML="";
+    if(!n.ok || !(n.notifications||[]).length){ g.innerHTML="<div class='docs-empty'>Keine Benachrichtigungen.</div>"; }
+    else n.notifications.forEach(x=>{ const crit=(x.priority==="critical"||x.priority==="high");
+      g.appendChild(revCard(x.title||x.type, x.priority, !crit, x.type, null)); });
+  }catch(e){ if($("rev-notifs")) $("rev-notifs").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+  // Inbox (keine technischen IDs in der Hauptansicht)
+  try{
+    const r=await getJSON("/api/review/inbox");
+    if($("rev-count")) $("rev-count").textContent = r.ok ? (r.pending+" offen / "+r.total) : "";
+    const g=$("rev-inbox"); g.innerHTML="";
+    if(!r.ok || !(r.items||[]).length){ g.innerHTML="<div class='docs-empty'>"+(r.error?("Fehler: "+docEsc(r.error)):"Keine Einträge.")+"</div>"; return; }
+    r.items.forEach(it=>{ const pend=(it.status==="pending");
+      g.appendChild(revCard(it.title||it.category||"—", it.status, !pend, (it.category||"")+" · Risiko: "+(it.risk_level||"—"), it.description?String(it.description).slice(0,160):null)); });
+  }catch(e){ if($("rev-inbox")) $("rev-inbox").innerHTML="<div class='docs-empty'>Fehler: "+e+"</div>"; }
+}
+function revInit(){ if(REV_LOADED) return; REV_LOADED=true; revLoad(); }
+$("nav-review").addEventListener("click", ()=>showView("review"));
+$("rev-refresh").addEventListener("click", ()=>{ REV_LOADED=false; revInit(); });
 
 // ===================== DEVELOPER =====================
 let DEV_LOADED=false;

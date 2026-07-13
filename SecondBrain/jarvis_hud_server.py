@@ -516,6 +516,14 @@ class Handler(BaseHTTPRequestHandler):
             self._json(connectors_overview())
         elif path == "/api/agents":
             self._json(agents_overview())
+        elif path == "/api/review/inbox":
+            self._json(review_inbox())
+        elif path == "/api/review/metrics":
+            self._json(review_metrics())
+        elif path == "/api/review/notifications":
+            self._json(review_notifications())
+        elif path == "/api/release-gate":
+            self._json(release_gate_status())
         elif path == "/api/dev/info":
             self._json(dev_info())
         elif path == "/api/stats":
@@ -1495,6 +1503,85 @@ def agents_overview() -> dict:
             "enabled_count": sum(1 for a in out if a["enabled"])}
 
 
+# --- Review & Approval Governance (read-only) --------------------------------
+_CRITICAL_REVIEW_CATEGORIES = {
+    "delete_request", "connector_permission_change", "credential_change", "sensitive_document",
+}
+
+
+def review_inbox() -> dict:
+    """Unified review/approval inbox items (already sanitized by the view model)."""
+    try:
+        from secondbrain.agent.review_service import UnifiedReviewInbox
+        inbox = UnifiedReviewInbox(ROOT)
+        items = inbox.list_all()
+        pending = deferred = completed = critical = 0
+        for item in items:
+            status = str(item.get("status") or "")
+            if status == "pending":
+                pending += 1
+            elif status == "deferred":
+                deferred += 1
+            else:
+                completed += 1
+            if item.get("category") in _CRITICAL_REVIEW_CATEGORIES or str(item.get("risk_level")) in {"high", "critical", "destructive"}:
+                critical += 1
+        return {"ok": True, "items": items, "total": len(items),
+                "pending": pending, "deferred": deferred, "completed": completed, "critical": critical}
+    except Exception as exc:
+        log_event("hud.review_inbox_error", {"error": str(exc)})
+        return {"ok": False, "error": str(exc), "items": [], "total": 0}
+
+
+def review_metrics() -> dict:
+    """Governance metrics (no ids, payloads or secrets in the export)."""
+    try:
+        from secondbrain.metrics.review_approval_metrics import ReviewApprovalMetrics
+        engine = ReviewApprovalMetrics(ROOT)
+        return {"ok": True, "dashboard": engine.dashboard_view(), "metrics": engine.export()}
+    except Exception as exc:
+        log_event("hud.review_metrics_error", {"error": str(exc)})
+        return {"ok": False, "error": str(exc), "dashboard": {}, "metrics": {}}
+
+
+def review_notifications() -> dict:
+    """Pending notifications and desktop badge count (stateless, no cooldown persistence)."""
+    try:
+        from secondbrain.agent.review_service import UnifiedReviewInbox
+        from secondbrain.notifications.review_notifications import ReviewNotificationService
+        inbox = UnifiedReviewInbox(ROOT)
+        items = inbox.notification_items()
+        service = ReviewNotificationService()
+        notifications = [n.to_dict() for n in service.evaluate(items)]
+        badge = service.badge_count(items)
+        return {"ok": True, "notifications": notifications, "badge": badge, "total": len(notifications)}
+    except Exception as exc:
+        log_event("hud.review_notifications_error", {"error": str(exc)})
+        return {"ok": False, "error": str(exc), "notifications": [], "badge": 0}
+
+
+def release_gate_status() -> dict:
+    """Latest persisted review/approval release-gate verdict (read-only)."""
+    report_path = ROOT / "runtime" / "reports" / "review_approval_release_gate.json"
+    try:
+        if not report_path.exists():
+            return {"ok": True, "status": "not_run", "report": None,
+                    "hint": "python launcher.py review-approval-release-gate"}
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        return {"ok": True,
+                "status": report.get("overall_status", "unknown"),
+                "summary": report.get("summary", {}),
+                "blockers": report.get("blockers", []),
+                "warnings": report.get("warnings", []),
+                "security_summary": report.get("security_summary", {}),
+                "backend_status": report.get("backend_status", {}),
+                "timestamp": report.get("timestamp", ""),
+                "version": report.get("version", "")}
+    except Exception as exc:
+        log_event("hud.release_gate_error", {"error": str(exc)})
+        return {"ok": False, "error": str(exc), "status": "error"}
+
+
 # --- Developer (Diagnose + Endpunkt-Katalog, read-only) ----------------------
 _API_ENDPOINTS = [
     ("GET", "/api/metrics", "CPU/RAM/Swap/Disk/Uptime/Netz"),
@@ -1524,6 +1611,10 @@ _API_ENDPOINTS = [
     ("GET", "/api/jobs", "Jobs + Lauf-Historie"),
     ("GET", "/api/connectors", "Connector-Status"),
     ("GET", "/api/agents", "Agent-Registry"),
+    ("GET", "/api/review/inbox", "Review/Approval-Inbox"),
+    ("GET", "/api/review/metrics", "Governance-Metriken"),
+    ("GET", "/api/review/notifications", "Review-Notifications + Badge"),
+    ("GET", "/api/release-gate", "Release-Gate-Status"),
     ("GET", "/api/dev/info", "Developer-Diagnose"),
     ("GET", "/api/coding/models", "Coding-Modelle"),
     ("POST", "/api/coding/generate", "Code generieren (Ollama)"),

@@ -1,0 +1,7800 @@
+[
+  {
+    "source": "2026-07-13_daily-briefing",
+    "target": "2026-07-13_project-monitor",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Vector_RAG_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_recommendations",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_daily-briefing",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_evening-review",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_learning-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Digital_Twin_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "weighted_edges",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_quality-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "vault_index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_daily-digest",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "Vector_RAG_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_project-monitor",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_daily-briefing",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "2026-07-13_quality-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "../reports/2026-07-13_import-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_context-map",
+    "target": "../claude_review/2026-07-13_review-queue",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "Decision_Register",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "Decision_Register",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13_context-map",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "weighted_edges",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Profile",
+    "target": "2026-07-13_autonomy-report",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "DMS_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Projects_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Finance_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Health_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_memory-replay",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_daily-briefing",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_daily-digest",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_evening-review",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_governance-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_import-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_learning-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_project-monitor",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_quality-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "2026-07-13_recommendations",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Digital_Twin_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "RAG_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "SecondBrain-Agent Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "vault_index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Temporal_Graph",
+    "target": "weighted_edges",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_semantic-deduplication",
+    "target": "Knowledge_Lineage",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_prediction-report",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_recommendations",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_daily-briefing",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_evening-review",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "Digital_Twin_Profile",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_context-map",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "Temporal_Graph",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-mining",
+    "target": "2026-07-13_self-healing-report",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Vector_RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "DMS_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Projects_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Ontology_Index",
+    "target": "MCP_Hub_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_event-summary",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "DMS_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Federation_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Finance_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Health_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Projects_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Vector_RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "MCP_Hub_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_quality-scores",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Vector_RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_event-summary",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "MCP_Hub_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Federation_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "DMS_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Projects_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Finance_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Health_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_quality-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "vault_index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_daily-digest",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_import-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "SecondBrain-Agent Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_governance-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_refactoring-proposals",
+    "target": "2026-07-13_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "Digital_Twin_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_process-mining",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "Ontology_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-design-backlog",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_research-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "weighted_edges",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Knowledge_Lineage",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "Agent_Swarm_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_recommendations",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_process-mining",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_learning-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Memory",
+    "target": "2026-07-13_agent-economy",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Memory",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "Digital_Twin_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_process-mining",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "Ontology_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Memory",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_prediction-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "SecondBrain-Agent Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "Ontology_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_project-monitor",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Memory",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "weighted_edges",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_daily-briefing",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13_agent-economy",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "ChiefOfStaff_Memory",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-intelligence",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-intelligence",
+    "target": "Agent_Swarm_Status",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-intelligence",
+    "target": "Meeting_Agent_Memory_v2",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-intelligence",
+    "target": "Full_Knowledge_Graph",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_calendar-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_event-summary",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "DMS_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Daily_Plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Digital_Twin_v4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Enterprise_RAG_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Federation_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Finance_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Full_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Goal_Map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Health_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Knowledge_Twin",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Local_AI_Cluster",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "MCP_Ecosystem_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Monthly_Plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Personal_AGI_OS",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Plugin_Marketplace",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Process_Twin",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Projects_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Quarterly_Plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Semantic_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Semantic_OS_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Vector_RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Weekly_Plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "dim_note_types",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_documents",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_documents",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_projects",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_tags",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_agent-economy",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Agent_Swarm_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "MCP_Hub_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Meeting_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "ChiefOfStaff_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Decision_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Executive_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Executive_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Process_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Process_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Research_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Research_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-improvement-plan",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "facts_projects",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Arbeitsmuster",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#BPMN",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Entscheidungen",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Fokuszeiten",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Gesundheit",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#KPIs",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Keine",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Kommunikation",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Lernmuster",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Markdown-first",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Meeting-Vorbereitung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Multi-Agent-Swarm",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Nachbereitung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Prioritäten",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Produktivität",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Prozesslandkarte",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#RACI",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Review-first",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Risiken",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Systemlandkarte",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Tagesplanung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Digital_Twin_v6",
+    "target": "#Wochenplanung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Vector_RAG_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "SecondBrain_v9_5_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "SecondBrain_OS_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Meeting_Transcription_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Email_Connector_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Calendar_Connector_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Autonomous_Agents_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_event-bus",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Plugin_Ecosystem",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_monitoring",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "SecondBrain_OS_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "facts_tags",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "facts_projects",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "facts_documents",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "MCP_Ecosystem_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Arbeitsmuster",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#BPMN",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Entscheidungen",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Fokuszeiten",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Gesundheit",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#KPIs",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Keine",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Kommunikation",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Lernmuster",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Markdown-first",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Meeting-Vorbereitung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Multi-Agent-Swarm",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Nachbereitung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Prioritäten",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Produktivität",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Prozesslandkarte",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#RACI",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Review-first",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Risiken",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Systemlandkarte",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Tagesplanung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Memory_Engine_Profile",
+    "target": "#Wochenplanung",
+    "type": "tagged_as",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Semantic_OS_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Digital_Twin_v4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_self-reflection",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Executive_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Research_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Research_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Executive_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Process_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Process_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "ChiefOfStaff_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Decision_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Digital_Twin_v4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Semantic_OS_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "Meeting_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_reasoning-map",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_daily-assistant",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "SecondBrain_OS_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_monitoring",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_evening-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Enterprise_RAG_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_task-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_daily-briefing",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "weighted_edges",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Verein_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "SecondBrain_v9_5_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "SecondBrain_OS_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Reisen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Knowledge_Lineage",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Gesundheit_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Finanzen_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_research-backlog-agent",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "2026-07-13_self-reflection",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "2026-07-13_reasoning-map",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Memory_Engine_Profile",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Executive_Dashboard_v9",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Digital_Twin_v6",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "SecondBrain_v9_5_Control_Center",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "SecondBrain_OS_Dashboard",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Plugin_Ecosystem",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Meeting_Transcription_Status",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Meeting_Agent_Memory_v2",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Full_Knowledge_Graph",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Autonomous_Agents_Status",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "Agent_Swarm_Status",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_meeting-agent",
+    "target": "2026-07-13_calendar-intelligence",
+    "type": "decides",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_research-backlog-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_task-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "facts_projects",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_project-agent",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Semantic_OS_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Digital_Twin_v4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_weekly-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_meeting-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_decision-agent",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_research-backlog-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "SecondBrain_OS_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Research_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Research_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Process_Twin",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Process_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Process_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_process-agent",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Decision_Journal",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_research-backlog-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_project-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Project_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_task-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "facts_projects",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_Prof\n\n",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "facts_decisions",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Voice_Assistant_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Semantic_OS_Status",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v4",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Decision_Register",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Decision_Intelligence_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_weekly-review",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-reflection",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_reasoning-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_meeting-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_meeting-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_daily-assistant",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Executive_Dashboard_v9",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_project-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Memory_Engine_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_research-backlog-agent",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Process_Copilot_Commands",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Calendar_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_self-improvement-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v6",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Personal_CRM_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_v5",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Workflow_Catalog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "SecondBrain_OS_Control_Center",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Research_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Research_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Process_Twin",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Process_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Process_Agent_Memory_v2",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_learning-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "2026-07-13_chief-of-staff-v98",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_research-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Enterprise_RAG_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "weighted_edges",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "facts_tasks",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "facts_decisions",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Verein_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Reisen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Knowledge_Lineage",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Gesundheit_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Finanzen_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Decision_Journal",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_recommendations",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_process-mining",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_learning-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Research_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Ontology_Index",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "facts_tasks",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Project_Memory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_recommendations",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_memory-replay",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_autonomy-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Full_Knowledge_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Digital_Twin_Profile",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "Business_OS_Modules",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Project_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Memory_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Decision_Journal",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Decision_Register",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "facts_decisions",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Semantic_OS_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Digital_Twin_v4",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Decision_Agent_Memory_v2",
+    "target": "2026-07-13",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Meeting_Agent_Memory_v2",
+    "target": "Full_Knowledge_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Meeting_Agent_Memory_v2",
+    "target": "Agent_Swarm_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "Temporal_Graph",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_software-factory",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_semantic-deduplication",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_self-healing-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_research-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_quality-scores",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_project-monitor",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_process-mining",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_prediction-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_personal-kpis",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_learning-report",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_knowledge-gaps",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_knowledge-compression",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_event-summary",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_context-map",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Calendar_Agent_Memory_v2",
+    "target": "2026-07-13_agent-economy",
+    "type": "blocks",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Process_Twin",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Digital_Twin_Profile",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_prozesslandkarte",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_process-mining",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_personal-kpis",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Research_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Process_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Ontology_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Business_OS_Modules",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Process_Agent_Memory_v2",
+    "target": "2026-07-13_context-map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Business_OS_Modules",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_refactoring-proposals",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Ontology_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Executive_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_self-healing-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_quality-scores",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_prediction-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_life-os-dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "SecondBrain-Agent Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Research_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Project_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "MCP_Hub_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Enterprise_RAG_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "ChiefOfStaff_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Agent_Swarm_Status",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_personal-kpis",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_memory-replay",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Temporal_Graph",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Process_Memory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Process_Copilot_Commands",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Plugin_Marketplace",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Goal_Map",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Federation_Index",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Executive_Dashboard",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "Agent_Collaboration_Protocol",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_software-factory",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_project-monitor",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_process-design-backlog",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_decision-intelligence",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff-v2",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_chief-of-staff",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_autonomy-report",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_autonomous-project-plan",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "Executive_Agent_Memory_v2",
+    "target": "2026-07-13_agent-economy",
+    "type": "mentions",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "weighted_edges",
+    "target": "2026-07-13_daily-briefing",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  },
+  {
+    "source": "weighted_edges",
+    "target": "2026-07-13_project-monitor",
+    "type": "references",
+    "source_origin": "vault",
+    "weight": 1
+  }
+]
