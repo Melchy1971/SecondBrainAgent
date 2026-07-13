@@ -13,11 +13,12 @@ verdict.
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 from secondbrain.agent.review_approval_gate import (
     BLOCKED,
@@ -28,7 +29,7 @@ from secondbrain.agent.review_approval_gate import (
     run_review_approval_gate,
 )
 
-RELEASE_VERSION = "v30.78"
+RELEASE_VERSION = "v30.86"
 SCHEMA = "secondbrain.review_approval_release_gate.v1"
 
 TEST_COMMANDS = [
@@ -52,7 +53,69 @@ _SECURITY_CHECK_IDS = {
     "workspace_isolation",
     "parallel_decision_conflict_safe",
     "no_double_execution",
+    "credential_change_requires_approval",
+    "scope_change_requires_approval",
+    "confirmed_boolean_blocked",
+    "connector_payload_bound",
+    "connector_workspace_bound",
+    "connector_expiration_enforced",
+    "connector_single_use",
+    "gui_no_secret_leak",
+    "production_backend",
+    "postgresql_health",
 }
+
+_CHECK_GROUPS = {
+    "data_model": {
+        "review_item_model", "approval_item_model", "status_transitions",
+        "optimistic_versioning", "workspace_isolation",
+    },
+    "agent": {
+        "low_risk_direct", "risky_tool_pauses", "approval_persisted",
+        "approve_exactly_once", "reject_prevents_execution", "defer_holds_plan",
+        "restart_retains_pending",
+    },
+    "security": {
+        "delete_requires_approval", "send_requires_approval",
+        "external_write_requires_approval", "credential_change_requires_approval",
+        "scope_change_requires_approval", "memory_privacy_mode_blocked",
+        "sensitive_payload_redacted", "confirmed_boolean_blocked",
+    },
+    "import": {
+        "import_failed_review", "import_sensitive_review",
+        "import_low_confidence_review", "import_approve_resumes",
+        "import_reject_stops", "import_defer_pauses", "import_no_duplicates",
+    },
+    "memory": {
+        "memory_sensitive_blocked", "memory_low_confidence_review",
+        "memory_privacy_mode_blocked", "memory_no_secret_leak",
+        "memory_approve_once", "memory_evidence_present",
+    },
+    "connector": {
+        "connector_scope_diff_bound", "connector_payload_bound",
+        "connector_workspace_bound", "connector_expiration_enforced",
+        "connector_single_use",
+    },
+    "operations": {
+        "decision_audit", "notifications_risky_alert", "notifications_escalation",
+        "metrics_no_secret_leak", "metrics_computable", "no_double_execution",
+        "parallel_decision_conflict_safe", "crash_recovery_status",
+        "corrupt_queue_recoverable", "repository_health", "production_backend",
+        "postgresql_health",
+    },
+    "gui": {
+        "viewmodel_visible", "gui_inbox_reachable", "gui_badge_correct",
+        "gui_decisions", "gui_error_state", "gui_no_secret_leak",
+        "gui_no_technical_ids", "corrupt_queue_controlled",
+    },
+}
+
+
+def _check_group(check_id: str) -> str:
+    for group, check_ids in _CHECK_GROUPS.items():
+        if check_id in check_ids:
+            return group
+    return "operations"
 
 
 def _utc_now() -> str:
@@ -67,8 +130,16 @@ def _guard(check_id: str, title: str, fn: Callable[[], GateCheck], *, hard_block
 
 
 class ReviewApprovalReleaseGate:
-    def __init__(self, project_root: str | Path = ".") -> None:
+    def __init__(
+        self,
+        project_root: str | Path = ".",
+        *,
+        env: Mapping[str, str] | None = None,
+        repository_executor: Any | None = None,
+    ) -> None:
         self.project_root = Path(project_root).resolve()
+        self.env = env
+        self.repository_executor = repository_executor
         self.backend_status: dict[str, Any] = {}
         self.metrics: dict[str, Any] = {}
 
@@ -77,16 +148,23 @@ class ReviewApprovalReleaseGate:
         checks.extend(self._foundation_checks())
         with tempfile.TemporaryDirectory(prefix="secondbrain-release-gate-") as directory:
             root = Path(directory)
+            checks.extend(self._data_model_checks(root))
+            checks.extend(self._import_checks(root))
             checks.extend(self._memory_checks(root))
+            checks.extend(self._connector_checks(root))
             checks.extend(self._notification_checks(root))
             checks.extend(self._metrics_checks(root))
             checks.extend(self._concurrency_checks(root))
             checks.extend(self._recovery_checks(root))
             checks.extend(self._repository_checks(root))
+            checks.extend(self._gui_checks(root))
             self.metrics = self._collect_metrics(root)
 
         overall = evaluate_gate_status(checks)
-        check_dicts = [check.to_dict() for check in checks]
+        check_dicts = [
+            {**check.to_dict(), "group": _check_group(check.check_id)}
+            for check in checks
+        ]
         blockers = [c["check_id"] for c in check_dicts if c["status"] == BLOCKED]
         warnings = [c["check_id"] for c in check_dicts if c["status"] == CONDITIONAL_PASS]
         report = {
@@ -112,6 +190,11 @@ class ReviewApprovalReleaseGate:
                 for c in check_dicts
                 if c["check_id"] in _SECURITY_CHECK_IDS
             },
+            "release_recommendation": {
+                PASS: "RELEASE",
+                CONDITIONAL_PASS: "RELEASE_WITH_NONCRITICAL_WARNINGS",
+                BLOCKED: "DO_NOT_RELEASE",
+            }[overall],
         }
         if write_report:
             self._write_report(report)
@@ -120,7 +203,119 @@ class ReviewApprovalReleaseGate:
     def _write_report(self, report: dict[str, Any]) -> None:
         path = self.project_root / "runtime" / "reports" / "review_approval_release_gate.json"
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary = path.with_suffix(path.suffix + ".tmp")
+        with temporary.open("w", encoding="utf-8") as handle:
+            json.dump(report, handle, indent=2, ensure_ascii=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+
+    # -- data model -------------------------------------------------------
+
+    def _data_model_checks(self, root: Path) -> list[GateCheck]:
+        from secondbrain.native.approval import APPROVAL_SCHEMA, REVIEW_SCHEMA
+        from secondbrain.repositories.jsonl_review_approval_repository import (
+            JsonlReviewApprovalRepository,
+        )
+        from secondbrain.repositories.postgres_review_approval_repository import (
+            PostgresReviewApprovalRepository,
+        )
+        from secondbrain.repositories.review_approval_repository import RepositoryConflict
+        from secondbrain.storage.db_executor import SqliteExecutor
+
+        repository = JsonlReviewApprovalRepository(root / "model")
+        approval = repository.create_approval(
+            command="records.delete",
+            intent="delete",
+            text="Delete",
+            category="delete_request",
+            risk_level="high",
+            workspace_id="workspace-a",
+        )
+        review = repository.create_review(
+            category="sensitive_document",
+            title="Sensitive document",
+            metadata={"workspace_id": "workspace-a"},
+        )
+
+        def approval_model() -> GateCheck:
+            required = {
+                "approval_id", "status", "version", "workspace_id",
+                "idempotency_key", "decision_audit",
+            }
+            ok = approval.get("schema") == APPROVAL_SCHEMA and required.issubset(approval)
+            return GateCheck(
+                "approval_item_model", "ApprovalItem production fields are present",
+                ok, f"required_fields={len(required)}", hard_blocker=True,
+            )
+
+        def review_model() -> GateCheck:
+            required = {"review_id", "status", "category", "metadata", "decision_audit"}
+            ok = review.get("schema") == REVIEW_SCHEMA and required.issubset(review)
+            return GateCheck(
+                "review_item_model", "ReviewItem production fields are present",
+                ok, f"required_fields={len(required)}", hard_blocker=True,
+            )
+
+        def transitions() -> GateCheck:
+            deferred = repository.compare_and_set_status(
+                approval["approval_id"], 0, "deferred", actor="gate"
+            )
+            approved = repository.compare_and_set_status(
+                approval["approval_id"], deferred["version"], "approved", actor="gate"
+            )
+            rejected_review = repository.compare_and_set_status(
+                review["review_id"], 0, "rejected", actor="gate"
+            )
+            ok = approved["status"] == "approved" and rejected_review["status"] == "rejected"
+            return GateCheck(
+                "status_transitions", "Review and approval transitions are validated",
+                ok, "deferred->approved; pending->rejected", hard_blocker=True,
+            )
+
+        def versioning() -> GateCheck:
+            stale_rejected = False
+            try:
+                repository.compare_and_set_status(
+                    approval["approval_id"], 0, "rejected", actor="stale"
+                )
+            except RepositoryConflict:
+                stale_rejected = True
+            current = repository.get_item(approval["approval_id"]) or {}
+            ok = stale_rejected and int(current.get("version") or 0) == 2
+            return GateCheck(
+                "optimistic_versioning", "Stale item versions are rejected",
+                ok, f"version={current.get('version')}", hard_blocker=True,
+            )
+
+        def workspace_isolation() -> GateCheck:
+            pg = PostgresReviewApprovalRepository(SqliteExecutor(":memory:"))
+            pg.ensure_schema()
+            first = pg.create_approval(
+                command="records.delete", intent="delete", text="A",
+                category="delete_request", risk_level="high", workspace_id="w1",
+            )
+            pg.create_approval(
+                command="records.delete", intent="delete", text="B",
+                category="delete_request", risk_level="high", workspace_id="w2",
+            )
+            ok = (
+                len(pg.list_items(workspace_id="w1")) == 1
+                and len(pg.list_items(workspace_id="w2")) == 1
+                and pg.get_item(first["approval_id"], workspace_id="w2") is None
+            )
+            return GateCheck(
+                "workspace_isolation", "Repository isolates workspaces",
+                ok, "create/list/get isolation", hard_blocker=True,
+            )
+
+        return [
+            _guard("approval_item_model", "ApprovalItem production fields are present", approval_model, hard_blocker=True),
+            _guard("review_item_model", "ReviewItem production fields are present", review_model, hard_blocker=True),
+            _guard("status_transitions", "Review and approval transitions are validated", transitions, hard_blocker=True),
+            _guard("optimistic_versioning", "Stale item versions are rejected", versioning, hard_blocker=True),
+            _guard("workspace_isolation", "Repository isolates workspaces", workspace_isolation, hard_blocker=True),
+        ]
 
     # -- foundation (existing e2e gate) -----------------------------------
 
