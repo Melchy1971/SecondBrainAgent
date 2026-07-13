@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,13 +10,14 @@ from uuid import uuid4
 
 from .task_planner import TaskPlan, TaskStep, TaskStepState
 from .tool_registry import ToolRegistry
+from secondbrain.native.approval import ConflictError, _FileLock
 
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-class StalePlanError(RuntimeError):
+class StalePlanError(ConflictError):
     """Raised when a plan write would overwrite a newer version (stale resume)."""
 
 
@@ -61,13 +63,7 @@ class AgentPlanStore:
         )
 
     def update(self, plan: TaskPlan, *, expected_version: int | None = None) -> TaskPlan:
-        if expected_version is not None:
-            current = self.current_version(plan.plan_id)
-            if int(expected_version) != current:
-                raise StalePlanError(
-                    f"plan_version_conflict:{plan.plan_id}:{expected_version}!={current}"
-                )
-        return self._write(plan)
+        return self._write(plan, expected_version=expected_version)
 
     def current_version(self, plan_id: str) -> int:
         path = self._path(plan_id)
@@ -103,6 +99,8 @@ class AgentPlanStore:
         try:
             with path.open("x", encoding="utf-8") as handle:
                 handle.write(_utc_now())
+                handle.flush()
+                os.fsync(handle.fileno())
         except FileExistsError:
             return False
         return True
@@ -110,9 +108,19 @@ class AgentPlanStore:
     def release_step(self, plan_id: str, step_id: str) -> None:
         self._claim_path(plan_id, step_id).unlink(missing_ok=True)
 
-    def _write(self, plan: TaskPlan) -> TaskPlan:
+    def _write(self, plan: TaskPlan, *, expected_version: int | None = None) -> TaskPlan:
         self.root.mkdir(parents=True, exist_ok=True)
         path = self._path(plan.plan_id)
+        with _FileLock(path):
+            return self._write_locked(plan, path, expected_version=expected_version)
+
+    def _write_locked(
+        self,
+        plan: TaskPlan,
+        path: Path,
+        *,
+        expected_version: int | None,
+    ) -> TaskPlan:
         created_at = _utc_now()
         previous_version = 0
         if path.exists():
@@ -122,6 +130,10 @@ class AgentPlanStore:
                 previous_version = int(existing.get("version") or 0)
             except (OSError, json.JSONDecodeError, TypeError, AttributeError):
                 pass
+        if expected_version is not None and int(expected_version) != previous_version:
+            raise StalePlanError(
+                f"plan_version_conflict:{plan.plan_id}:{expected_version}!={previous_version}"
+            )
 
         runtime_payloads = self._runtime_payloads.setdefault(plan.plan_id, {})
         step_rows = []
@@ -165,8 +177,11 @@ class AgentPlanStore:
                 pass
         temporary = path.with_name(f"{path.name}.{uuid4().hex}.tmp")
         try:
-            temporary.write_text(json.dumps(record, indent=2, ensure_ascii=False, sort_keys=True), encoding="utf-8")
-            temporary.replace(path)
+            with temporary.open("w", encoding="utf-8") as handle:
+                handle.write(json.dumps(record, indent=2, ensure_ascii=False, sort_keys=True))
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, path)
         finally:
             temporary.unlink(missing_ok=True)
         return plan

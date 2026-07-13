@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -15,7 +16,7 @@ from secondbrain.events.domain_events import (
     sanitize_metadata,
 )
 from secondbrain.events.event_bus import EventBus
-from secondbrain.native.approval import NativeApprovalQueue
+from secondbrain.native.approval import ConflictError, NativeApprovalQueue
 
 from .approval_bridge import AgentApprovalBridge
 from .plan_store import AgentPlanStore
@@ -150,6 +151,8 @@ class AgentApprovalService:
             tool_name=f"connector.{action}",
             payload=safe_binding,
             workspace_id=workspace_id,
+            idempotency_key=str(safe_binding.get("idempotency_key") or ""),
+            tool_idempotent=False,
         )
         approval_id = str(approval["approval_id"])
         correlation = correlation_id or f"connector:{workspace_id}:{connector_id}:{action}"
@@ -222,6 +225,7 @@ class AgentApprovalService:
         *,
         correlation_id: str = "",
         causation_id: str = "",
+        expected_version: int | None = None,
     ) -> dict[str, Any]:
         return self._decide(
             approval_id,
@@ -231,6 +235,7 @@ class AgentApprovalService:
             deferred_until=until,
             correlation_id=correlation_id,
             causation_id=causation_id,
+            expected_version=expected_version,
         )
 
     def begin_execution(
@@ -257,16 +262,31 @@ class AgentApprovalService:
         execution_token: str,
         expected_version: int | None = None,
         result_status: str = "completed",
+        result: Any = None,
     ) -> dict[str, Any]:
         return self.queue.complete_execution(
             approval_id,
             execution_token=execution_token,
             expected_version=expected_version,
             result_status=result_status,
+            result=result,
         )
 
-    def recover_stale_leases(self) -> list[dict[str, Any]]:
-        return self.queue.recover_stale_leases()
+    def heartbeat_execution(
+        self,
+        approval_id: str,
+        *,
+        lease_id: str,
+        lease_seconds: int = 300,
+    ) -> dict[str, Any]:
+        return self.queue.heartbeat_execution(
+            approval_id,
+            lease_id=lease_id,
+            lease_seconds=lease_seconds,
+        )
+
+    def recover_stale_leases(self, *, now: datetime | None = None) -> list[dict[str, Any]]:
+        return self.queue.recover_stale_leases(now=now)
 
     def health(self) -> dict[str, Any]:
         if self.repository is not None:

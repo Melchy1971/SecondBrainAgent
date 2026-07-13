@@ -40,7 +40,11 @@ class SafeExecutor:
         confirmed: bool = False,
         workspace_id: str | None = None,
         approved_step_id: str | None = None,
+        _execution_approval_id: str = "",
+        _execution_lease_id: str = "",
     ) -> ExecutionResult:
+        if approved_step_id and (not _execution_approval_id or not _execution_lease_id):
+            raise PermissionError(f"approved_step_requires_execution_lease:{approved_step_id}")
         results: list[Any] = []
         errors: list[str] = []
         approval_ids: list[str] = []
@@ -118,14 +122,8 @@ class SafeExecutor:
                 results.append(step.result)
                 if is_approved_step:
                     approval = self._approval_for_step(plan.plan_id, step.step_id)
-                    if approval is not None and approval.get("status") == "approved":
-                        self.approval_bridge.queue.transition(
-                            str(approval["approval_id"]),
-                            "executed",
-                            actor="agent_executor",
-                            note="Approved agent step executed.",
-                            step_state=TaskStepState.COMPLETED.value,
-                        )
+                    if approval is None or str(approval.get("approval_id") or "") != _execution_approval_id:
+                        raise PermissionError(f"execution_approval_step_mismatch:{step.step_id}")
             except (ToolRegistryError, Exception) as exc:  # noqa: BLE001 - isolate tool failures in agent boundary
                 step.error = str(exc)
                 step.state = TaskStepState.FAILED
@@ -149,6 +147,9 @@ class SafeExecutor:
         )
 
     def resume_approved(self, approval_id: str) -> ExecutionResult:
+        return self._resume_with_lease(approval_id, allowed_status="approved")
+
+    def _resume_with_lease(self, approval_id: str, *, allowed_status: str) -> ExecutionResult:
         if self.plan_store is None:
             raise RuntimeError("agent_plan_store_not_configured")
         approval = self.approval_bridge.queue.get(approval_id)
@@ -158,6 +159,12 @@ class SafeExecutor:
         step_id = str(approval.get("step_id") or "")
         if not plan_id or not step_id:
             raise ValueError(f"approval_missing_plan_step:{approval_id}")
+        plan = self.plan_store.load(plan_id)
+        step = next((item for item in plan.steps if item.step_id == step_id), None)
+        if step is None:
+            raise KeyError(f"approval_step_not_found:{approval_id}:{step_id}")
+        if approval.get("status") in {"executed", "completed"}:
+            return self._existing_result(plan)
         if not self.plan_store.claim_step(plan_id, step_id):
             return ExecutionResult(
                 ok=False,
@@ -175,9 +182,26 @@ class SafeExecutor:
             if step is None:
                 raise KeyError(f"approval_step_not_found:{approval_id}:{step_id}")
 
-            if step.state == TaskStepState.COMPLETED or approval.get("status") == "executed":
+            if approval.get("status") in {"executed", "completed"}:
                 return self._existing_result(plan)
-            if step.state == TaskStepState.RUNNING:
+            if approval.get("status") != allowed_status:
+                raise PermissionError(f"approval_not_approved:{approval_id}:{approval.get('status')}")
+            if step.state == TaskStepState.COMPLETED:
+                leased = self.approval_bridge.queue.begin_execution(
+                    approval_id,
+                    executor_id="agent_executor",
+                    expected_version=int(approval.get("version") or 0),
+                    idempotency_key=str(approval.get("idempotency_key") or ""),
+                )
+                lease_id = str(leased.get("lease_id") or leased.get("execution_token") or "")
+                self.approval_bridge.queue.complete_execution(
+                    approval_id,
+                    execution_token=lease_id,
+                    result_status="executed",
+                    result={"recovery": "plan_already_completed"},
+                )
+                return self._existing_result(plan)
+            if step.state == TaskStepState.RUNNING and allowed_status != "recovery_required":
                 return ExecutionResult(
                     ok=False,
                     plan_id=plan.plan_id,
@@ -185,13 +209,34 @@ class SafeExecutor:
                     errors=[],
                     status="execution_in_progress",
                 )
-            if approval.get("status") != "approved":
-                raise PermissionError(f"approval_not_approved:{approval_id}:{approval.get('status')}")
-            return self.execute(
-                plan,
-                approved_step_id=step_id,
-                workspace_id=str(approval.get("workspace_id")) if approval.get("workspace_id") else None,
+            if allowed_status == "recovery_required" and step.state == TaskStepState.RUNNING:
+                step.state = TaskStepState.APPROVED
+                self.plan_store.update(plan)
+            leased = self.approval_bridge.queue.begin_execution(
+                approval_id,
+                executor_id="agent_executor",
+                expected_version=int(approval.get("version") or 0),
+                idempotency_key=str(approval.get("idempotency_key") or ""),
             )
+            lease_id = str(leased.get("lease_id") or leased.get("execution_token") or "")
+            with self.approval_bridge.queue.execution_authorization(approval_id, lease_id):
+                result = self.execute(
+                    plan,
+                    approved_step_id=step_id,
+                    workspace_id=str(approval.get("workspace_id")) if approval.get("workspace_id") else None,
+                    _execution_approval_id=approval_id,
+                    _execution_lease_id=lease_id,
+                )
+            persisted = self.plan_store.load(plan_id)
+            persisted_step = next(item for item in persisted.steps if item.step_id == step_id)
+            terminal_status = "executed" if persisted_step.state == TaskStepState.COMPLETED else "failed"
+            self.approval_bridge.queue.complete_execution(
+                approval_id,
+                execution_token=lease_id,
+                result_status=terminal_status,
+                result={"status": result.status, "ok": result.ok, "errors": result.errors},
+            )
+            return result
         finally:
             self.plan_store.release_step(plan_id, step_id)
 
@@ -230,9 +275,26 @@ class SafeExecutor:
                 "status": "manual_review_required",
                 "reason": "non_idempotent_tool_requires_review",
             }
+        plan_id = str(approval.get("plan_id") or "")
+        step_id = str(approval.get("step_id") or "")
+        if plan_id and step_id and self.plan_store is not None:
+            # The queue lease has expired, so a claim file left by the crashed
+            # process cannot represent a live owner anymore.
+            self.plan_store.release_step(plan_id, step_id)
+            result = self._resume_with_lease(approval_id, allowed_status="recovery_required")
+            return {
+                "ok": result.status != "failed",
+                "approval_id": approval_id,
+                "status": result.status,
+            }
         leased = queue.begin_execution(approval_id, executor_id=executor_id)
-        token = str(leased["execution_token"])
-        done = queue.complete_execution(approval_id, execution_token=token, result_status="completed")
+        token = str(leased.get("lease_id") or leased["execution_token"])
+        done = queue.complete_execution(
+            approval_id,
+            execution_token=token,
+            result_status="completed",
+            result={"recovery": "lease_only"},
+        )
         return {"ok": True, "approval_id": approval_id, "status": str(done.get("status") or "completed")}
 
     def _approval_for_step(self, plan_id: str, step_id: str) -> dict[str, Any] | None:
@@ -253,13 +315,11 @@ class SafeExecutor:
             **policy.audit_fields(),
         }
         queue = self.approval_bridge.queue
-        rows = queue._read_all()  # noqa: SLF001 - NativeApprovalQueue has no metadata update API
-        for index, row in enumerate(rows):
-            if row.get("approval_id") == approval.get("approval_id"):
-                rows[index] = enriched
-                queue._write_all(rows)  # noqa: SLF001 - preserves the single native queue
-                return enriched
-        raise RuntimeError(f"approval_record_missing:{approval.get('approval_id')}")
+        return queue.update_metadata(
+            str(approval.get("approval_id") or ""),
+            enriched,
+            expected_version=int(approval.get("version") or 0),
+        )
 
     def _persist(self, plan: TaskPlan, status: str, *, approval_ids: list[str] | None = None) -> None:
         plan.metadata["status"] = status
