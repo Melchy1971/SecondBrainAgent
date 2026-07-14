@@ -1,3 +1,4 @@
+import zipfile
 from pathlib import Path
 
 from secondbrain.document_understanding import (
@@ -90,3 +91,46 @@ def test_document_understanding_runtime_ingests_valid_file(tmp_path: Path):
     result = runtime.ingest_file(path)
     assert result["ok"] is True
     assert result["parse_status"] == "parsed"
+
+
+def test_parser_rejects_lexical_path_traversal(tmp_path: Path):
+    target = tmp_path / "note.txt"
+    target.write_text("safe", encoding="utf-8")
+    traversing_path = tmp_path / "folder" / ".." / "note.txt"
+
+    parsed = default_parser_registry().parse(traversing_path)
+
+    assert parsed.status == ParseStatus.FAILED
+    assert parsed.errors == ("path_traversal_not_allowed",)
+
+
+def test_json_parser_rejects_excessive_nesting(tmp_path: Path):
+    path = tmp_path / "deep.json"
+    path.write_text("[" * 70 + "0" + "]" * 70, encoding="utf-8")
+
+    parsed = default_parser_registry().parse(path)
+
+    assert parsed.status == ParseStatus.FAILED
+    assert parsed.errors == ("json_depth_limit_exceeded",)
+
+
+def test_docx_parser_rejects_zip_bomb_ratio_before_extraction(tmp_path: Path):
+    path = tmp_path / "bomb.docx"
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("word/document.xml", b"0" * (2 * 1024 * 1024))
+
+    parsed = default_parser_registry().parse(path)
+
+    assert parsed.status == ParseStatus.FAILED
+    assert parsed.errors == ("archive_compression_ratio_exceeded",)
+
+
+def test_docx_parser_rejects_archive_traversal_member(tmp_path: Path):
+    path = tmp_path / "traversal.docx"
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("../escape.xml", "x")
+
+    parsed = default_parser_registry().parse(path)
+
+    assert parsed.status == ParseStatus.FAILED
+    assert parsed.errors == ("archive_path_traversal",)

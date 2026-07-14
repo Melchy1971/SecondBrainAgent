@@ -13,6 +13,7 @@ from hashlib import sha256
 from typing import Any, Iterable, Mapping
 
 from secondbrain.rag.retrieval.score_fusion import SearchResult
+from secondbrain.security_v107 import PromptSanitizer
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class ContextChunk:
     score: float
     token_count: int
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    trust_status: str = "untrusted"
 
 
 @dataclass(frozen=True)
@@ -63,8 +65,14 @@ class BuiltContext:
 class ContextBuilder:
     """Build a prompt-ready context from ranked retrieval results."""
 
-    def __init__(self, config: ContextBuilderConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: ContextBuilderConfig | None = None,
+        *,
+        sanitizer: PromptSanitizer | None = None,
+    ) -> None:
         self.config = config or ContextBuilderConfig()
+        self.sanitizer = sanitizer or PromptSanitizer()
 
     def build(self, results: Iterable[SearchResult]) -> BuiltContext:
         selected: list[ContextChunk] = []
@@ -77,6 +85,18 @@ class ContextBuilder:
             normalized_text = _normalize_text(result.text)
             if not normalized_text:
                 continue
+
+            report = self.sanitizer.sanitize(normalized_text, source="rag_document")
+            trust_status = "sanitized" if report.findings else _trust_status(result.metadata)
+            normalized_text = _normalize_text(report.sanitized_text)
+            safe_metadata = dict(result.metadata)
+            safe_metadata.update(
+                {
+                    "trust_status": trust_status,
+                    "prompt_risk_level": report.risk_level.value,
+                    "prompt_risk_findings": [finding.rule for finding in report.findings],
+                }
+            )
 
             text_hash = _text_hash(normalized_text)
             if text_hash in seen_text_hashes:
@@ -99,7 +119,8 @@ class ContextBuilder:
                     text=normalized_text,
                     score=float(result.score),
                     token_count=token_count,
-                    metadata=dict(result.metadata),
+                    metadata=safe_metadata,
+                    trust_status=trust_status,
                 )
             )
             seen_text_hashes.add(text_hash)
@@ -122,6 +143,7 @@ class ContextBuilder:
             header = f"[Source {index}: document={chunk.document_id}, chunk={chunk.chunk_id}"
             if self.config.include_scores:
                 header += f", score={chunk.score:.4f}"
+            header += f", trust={chunk.trust_status}"
             header += "]"
             rendered.append(f"{header}\n{chunk.text}")
         return self.config.separator.join(rendered)
@@ -151,6 +173,13 @@ def _normalize_text(text: str) -> str:
 
 def _text_hash(text: str) -> str:
     return sha256(text.encode("utf-8")).hexdigest()
+
+
+def _trust_status(metadata: Mapping[str, Any]) -> str:
+    requested = str(metadata.get("trust_status") or "").strip().lower()
+    if requested == "trusted" or metadata.get("trusted") is True or metadata.get("source_trusted") is True:
+        return "trusted"
+    return "untrusted"
 
 
 def _stable_result_order(result: SearchResult) -> tuple[float, str, str]:

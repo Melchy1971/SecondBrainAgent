@@ -103,7 +103,7 @@ class PromptAssembler(FinalPromptBuilder):
         if context:
             system_budget = self.budget.section_budget("system") + self.budget.input_budget // 2
             limited = self.limiter.trim_text(context, max_tokens=system_budget)
-            layers.append(SystemPrompt(SYSTEM_CONTEXT_PREFIX + limited))
+            layers.append(DocumentPrompt(SYSTEM_CONTEXT_PREFIX + limited))
         if provider_prompt:
             layers.append(ProviderPrompt(provider_prompt))
         effective_prompt = self.compressor.compress(prompt) if compress_prompt else prompt
