@@ -116,6 +116,11 @@
       "release": "v31.16",
       "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
       "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.17",
+      "capability": "PostgreSQL-first Long-Running-Job-Runtime mit Leases, Checkpoints, Worker Registry, Monitoring sowie Import-/Planner-Integration",
+      "status": "feature_branch_pending_merge"
     }
   ],
   "remaining_blockers": [
@@ -128,6 +133,7 @@
     "windows_full_pytest_environment_failures_pending",
     "task_postgresql_branch_merge_pending",
     "planner_parallel_runtime_branch_merge_pending"
+    ,"remaining_job_type_migrations_pending"
   ],
   "degraded_modes": [
     "sqlite_rag_prototype_without_database_url",
@@ -166,7 +172,7 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.16",
+  "documented_feature_level": "v31.17",
   "documentation_updated_at": "2026-07-15",
   "review_approval_release": {
     "release": "v30.86",

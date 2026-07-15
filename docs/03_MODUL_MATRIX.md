@@ -12,6 +12,7 @@ Die Einstufung trennt vorhandene Foundation von belegter Produktreife.
 | PostgreSQL/pgvector | `p3-*` | produktiver Pfad mit Live-Checks | Zielinstanz und pgvector muessen live validiert werden |
 | Tasks / Projekte | Task Center / `SecondBrain/tasks` | integriert; PostgreSQL-Nacharbeit auf v31.15-Branch | echter PostgreSQL-Lauf benoetigt `TEST_DATABASE_URL` |
 | Planner v2 | `SecondBrain/planner_v2` | DAG, Recovery und Parallel Runtime | v31.16-Branch noch in `main` integrieren |
+| Long-running Jobs | `SecondBrain/jobs` | PostgreSQL Repository, Worker, Monitor, Metrics | Import/Planner integriert; Connector/Memory/Backup/Reindex folgen schrittweise |
 | Update Center | Update GUI / Update Runtime | signiert und rollbackfaehig | reale Signatur-/Rollout-Infrastruktur extern abnehmen |
 | Windows Distribution | Packaging / Installer Smoke | Portable und Installer-Pipeline | Zielsystem-Smoke und Signierung extern abnehmen |
 | GA Readiness | `python launcher.py ga-readiness-gate` | verbindliches aggregiertes Gate | PASS bleibt umgebungsabhaengig |

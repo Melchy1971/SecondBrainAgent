@@ -49,3 +49,13 @@ Fehlerzusammenfassungen enthalten nur kontrollierte Fehlercodes und redigierte t
 3. Pro Phase hoechstens zwei Jobtypen ueber Adapter migrieren: zuerst Import und Planner, danach Connector/Memory, danach Backup/Reindex.
 4. Job Monitor und Monitoring auf die zentrale read-only Projektion umstellen.
 5. Legacy-Queues erst entfernen, wenn Restart-, Lease-, Approval- und Datenintegritaetstests fuer den jeweiligen Typ gruen sind.
+
+## Implementierungsstand v31.17
+
+- Das kanonische Modell enthaelt alle Jobtypen, Status inklusive `claimed`, benannte Prioritaeten und kompatible `job_type`-/`JobLease`-Aliase.
+- `PostgresJobRepository` implementiert atomisches Claiming, Leases, Checkpoints, optimistische Versionierung, Idempotency und Workspace Isolation. Produktion blockiert JSONL und fehlende DSNs.
+- Handler-/Worker-Registry, Heartbeats, Timeout, Graceful Shutdown, Retry-/Recovery-Regeln und content-freie Metriken sind vorhanden.
+- Import Pipeline und Planner v2 sind als erste zwei fachliche Handler an die zentrale Runtime angebunden.
+- Job Monitor zeigt Status, Fortschritt, Checkpoint-/Approval-Verfuegbarkeit und workspacegebundene Aktionen, aber keine Payload-Referenzen oder rohen Exceptions.
+
+Noch nicht migriert sind Connector Sync, Memory Consolidation, Backup und Reindex. Sie folgen in weiteren Phasen mit maximal zwei Typen pro Phase; ihre bestehenden Queues bleiben bis dahin aktiv.
