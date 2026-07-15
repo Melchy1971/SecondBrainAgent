@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 import hashlib
@@ -19,6 +20,200 @@ PII_PATTERNS = [
     re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I),
     re.compile(r"\b(?:\+?49|0)[\s-]?(?:\d[\s-]?){7,}\b"),
 ]
+
+
+class PromptRiskLevel(StrEnum):
+    """Severity of instructions embedded in untrusted prompt material."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+_PROMPT_RISK_ORDER = {
+    PromptRiskLevel.LOW: 0,
+    PromptRiskLevel.MEDIUM: 1,
+    PromptRiskLevel.HIGH: 2,
+    PromptRiskLevel.CRITICAL: 3,
+}
+
+
+@dataclass(frozen=True, slots=True)
+class PromptRiskFinding:
+    rule: str
+    risk_level: PromptRiskLevel
+    count: int
+
+
+@dataclass(frozen=True, slots=True)
+class PromptRiskReport:
+    """Content-minimal result of prompt inspection and sanitization."""
+
+    risk_level: PromptRiskLevel
+    findings: tuple[PromptRiskFinding, ...]
+    sanitized_text: str
+    original_hash: str
+    source: str = "untrusted"
+
+    @property
+    def safe(self) -> bool:
+        return not self.findings
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "risk_level": self.risk_level.value,
+            "findings": [
+                {"rule": finding.rule, "risk_level": finding.risk_level.value, "count": finding.count}
+                for finding in self.findings
+            ],
+            "original_hash": self.original_hash,
+            "source": self.source,
+            "sanitized": not self.safe,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class _PromptRule:
+    name: str
+    risk_level: PromptRiskLevel
+    pattern: re.Pattern[str]
+
+
+class PromptSanitizer:
+    """Detect and neutralize common instruction-injection payloads locally."""
+
+    MAX_INPUT_CHARS = 500_000
+    _ZERO_WIDTH = re.compile(r"[\u200b\u200c\u200d\u2060\ufeff]")
+    _RULES = (
+        _PromptRule(
+            "ignore_previous_instructions",
+            PromptRiskLevel.CRITICAL,
+            re.compile(
+                r"(?is)\b(?:ignore|disregard|forget)\s+(?:all\s+)?(?:previous|prior|above)\s+"
+                r"(?:instructions?|rules?|prompts?)\b[^\r\n]{0,200}"
+            ),
+        ),
+        _PromptRule(
+            "system_prompt_override",
+            PromptRiskLevel.CRITICAL,
+            re.compile(
+                r"(?is)(?:\byou\s+are\s+now\b|\breplace\s+(?:the\s+)?system\s+prompt\b|"
+                r"\bsystem\s+prompt\s+(?:override|is|:)\b)[^\r\n]{0,240}"
+            ),
+        ),
+        _PromptRule(
+            "jailbreak_pattern",
+            PromptRiskLevel.HIGH,
+            re.compile(r"(?is)\b(?:jailbreak|developer\s+mode|DAN\s+mode|do\s+anything\s+now)\b[^\r\n]{0,160}"),
+        ),
+        _PromptRule(
+            "hidden_markdown",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?ims)(?:<!--.*?(?:ignore|system|assistant|tool|function).*?-->|"
+                r"^\s*\[//\]:\s*#\s*\(.*?(?:ignore|system|assistant|tool|function).*?\)\s*$)"
+            ),
+        ),
+        _PromptRule(
+            "html_prompt_injection",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?is)<(?:script|iframe|object|meta)\b[^>]*>.*?</(?:script|iframe|object)>|"
+                r"<(?:script|iframe|object|meta)\b[^>]*(?:onerror|onload|prompt|instruction)[^>]*>"
+            ),
+        ),
+        _PromptRule(
+            "xml_prompt_injection",
+            PromptRiskLevel.CRITICAL,
+            re.compile(
+                r"(?is)<(?:system|assistant|tool|function|instructions?)\b[^>]*>.*?"
+                r"</(?:system|assistant|tool|function|instructions?)\s*>"
+            ),
+        ),
+        _PromptRule(
+            "tool_override",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?is)\b(?:call|invoke|execute|run|use)\s+(?:the\s+)?(?:tool|plugin|connector)"
+                r"(?:\s+named)?\s+[\w.-]+[^\r\n]{0,180}"
+            ),
+        ),
+        _PromptRule(
+            "function_override",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?is)(?:[\"']?function_call[\"']?\s*:|\b(?:call|invoke|override)\s+function\s+"
+                r"[\w.-]+)[^\r\n]{0,180}"
+            ),
+        ),
+        _PromptRule(
+            "agent_control_instruction",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?is)\b(?:the\s+)?(?:assistant|agent|model)\s+(?:must|shall|should|will)\s+"
+                r"(?:ignore|obey|execute|call|invoke|send|delete|publish|upload)\b[^\r\n]{0,200}"
+            ),
+        ),
+        _PromptRule(
+            "external_action_instruction",
+            PromptRiskLevel.HIGH,
+            re.compile(
+                r"(?is)\b(?:send|forward|publish|upload|delete|remove|post)\s+"
+                r"(?:an?\s+|the\s+|this\s+)?(?:email|message|file|document|record|event|request|data)\b"
+                r"[^\r\n]{0,200}"
+            ),
+        ),
+    )
+
+    _CONTEXT_ONLY_RULES = {
+        "tool_override",
+        "function_override",
+        "agent_control_instruction",
+        "external_action_instruction",
+    }
+
+    def _rules_for_source(self, source: str) -> tuple[_PromptRule, ...]:
+        # A direct user request may legitimately ask for a tool or external
+        # action; persistent approval remains authoritative for those effects.
+        # Retrieved/history/context material is data and may never issue them.
+        direct_user = source == "prompt_layer:user"
+        return tuple(
+            rule for rule in self._RULES
+            if not direct_user or rule.name not in self._CONTEXT_ONLY_RULES
+        )
+
+    def inspect(self, text: str, *, source: str = "untrusted") -> PromptRiskReport:
+        value = str(text or "")[: self.MAX_INPUT_CHARS]
+        findings: list[PromptRiskFinding] = []
+        rules = self._rules_for_source(source)
+        for rule in rules:
+            count = len(tuple(rule.pattern.finditer(value)))
+            if count:
+                findings.append(PromptRiskFinding(rule.name, rule.risk_level, count))
+        zero_width_count = len(self._ZERO_WIDTH.findall(value))
+        if zero_width_count:
+            findings.append(PromptRiskFinding("hidden_zero_width_text", PromptRiskLevel.MEDIUM, zero_width_count))
+
+        sanitized = self._ZERO_WIDTH.sub("", value)
+        for rule in rules:
+            replacement = f"[PROMPT-INJECTION BLOCKED: {rule.name}]"
+            sanitized = rule.pattern.sub(replacement, sanitized)
+        risk_level = max(
+            (finding.risk_level for finding in findings),
+            key=_PROMPT_RISK_ORDER.__getitem__,
+            default=PromptRiskLevel.LOW,
+        )
+        return PromptRiskReport(
+            risk_level=risk_level,
+            findings=tuple(findings),
+            sanitized_text=sanitized,
+            original_hash=hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest(),
+            source=str(source or "untrusted"),
+        )
+
+    def sanitize(self, text: str, *, source: str = "untrusted") -> PromptRiskReport:
+        return self.inspect(text, source=source)
 
 @dataclass(frozen=True)
 class RiskAssessment:
@@ -107,14 +302,18 @@ class RiskScorer:
         reasons = [f"level:{numeric_level}"]
         action_l = action.lower()
         if any(x in action_l for x in ["delete", "trash", "remove", "exec", "shell", "system"]):
-            score += 35; reasons.append("destructive_or_execution_action")
+            score += 35
+            reasons.append("destructive_or_execution_action")
         if any(x in action_l for x in ["send", "email", "calendar.create", "publish"]):
-            score += 20; reasons.append("external_side_effect")
+            score += 20
+            reasons.append("external_side_effect")
         text = json.dumps(payload, ensure_ascii=False)
         if contains_secret(text):
-            score += 45; reasons.append("secret_detected")
+            score += 45
+            reasons.append("secret_detected")
         if contains_pii(text):
-            score += 15; reasons.append("pii_detected")
+            score += 15
+            reasons.append("pii_detected")
         score = min(score, 100)
         return RiskAssessment(action=action, level=numeric_level, score=score, reasons=reasons, requires_approval=score >= 60 or numeric_level >= 3, blocked=score >= 95)
 

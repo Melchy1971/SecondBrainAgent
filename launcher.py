@@ -176,6 +176,26 @@ def _review_approval_release_gate_main(argv: list[str]) -> int:
     return 2 if report["overall_status"] == BLOCKED else 0
 
 
+def _security_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Local prompt, RAG and document parser security gate",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.security_gate_v3095 import PASS, run_security_gate
+
+    report = run_security_gate(
+        args.project_root_option or args.project_root,
+        write_report=not args.no_write_report,
+    )
+    out(report)
+    return 0 if report["status"] == PASS else 2
+
+
 def _mobile_main(argv: list[str] | None = None) -> int:
     from secondbrain.mobile_companion import MobileCompanionRuntime
 
@@ -872,6 +892,8 @@ def main(argv: list[str] | None = None) -> int:
         return _review_approval_gate_main(raw)
     if cmd == "review-approval-release-gate":
         return _review_approval_release_gate_main(raw)
+    if cmd == "security-gate":
+        return _security_gate_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":

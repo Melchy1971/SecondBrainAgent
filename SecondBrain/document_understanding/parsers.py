@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import csv
 import json
+import stat
+import zipfile
 from email import policy
 from email.parser import BytesParser
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable
 
 from .parser_contract import ParsedDocument, ParsedPage, ParseStatus, build_parsed_document, normalize_text
@@ -36,6 +38,20 @@ MIME_BY_EXTENSION = {
 
 
 MAX_TEXT_BYTES = 25 * 1024 * 1024
+MAX_FILE_BYTES = 100 * 1024 * 1024
+MAX_JSON_BYTES = 10 * 1024 * 1024
+MAX_JSON_DEPTH = 64
+MAX_JSON_NODES = 500_000
+MAX_JSONL_RECORDS = 100_000
+MAX_ARCHIVE_MEMBERS = 10_000
+MAX_ARCHIVE_MEMBER_BYTES = 64 * 1024 * 1024
+MAX_ARCHIVE_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
+MAX_ARCHIVE_COMPRESSION_RATIO = 100
+MAX_ARCHIVE_PATH_DEPTH = 16
+MAX_PDF_PAGES = 2_000
+MAX_PARSED_CHARS = 10_000_000
+MAX_PST_FOLDERS = 10_000
+MAX_PST_MESSAGES = 100_000
 
 
 class ParserValidationError(ValueError):
@@ -44,10 +60,16 @@ class ParserValidationError(ValueError):
 
 def _ensure_existing_file(path: str | Path) -> Path:
     p = Path(path)
+    if ".." in p.parts:
+        raise ParserValidationError("path_traversal_not_allowed")
+    if p.is_symlink():
+        raise ParserValidationError("symlink_not_allowed")
     if not p.exists():
         raise ParserValidationError("file_not_found")
     if not p.is_file():
         raise ParserValidationError("not_a_file")
+    if p.stat().st_size > MAX_FILE_BYTES:
+        raise ParserValidationError("file_size_limit_exceeded")
     return p
 
 
@@ -55,6 +77,52 @@ def _read_text(path: Path) -> str:
     if path.stat().st_size > MAX_TEXT_BYTES:
         raise ParserValidationError("file_too_large_for_text_parser")
     return path.read_text(encoding="utf-8", errors="replace")
+
+
+def _validate_json_structure(value: Any) -> None:
+    stack: list[tuple[Any, int]] = [(value, 1)]
+    nodes = 0
+    while stack:
+        current, depth = stack.pop()
+        nodes += 1
+        if nodes > MAX_JSON_NODES:
+            raise ParserValidationError("json_node_limit_exceeded")
+        if depth > MAX_JSON_DEPTH:
+            raise ParserValidationError("json_depth_limit_exceeded")
+        if isinstance(current, dict):
+            stack.extend((item, depth + 1) for item in current.values())
+        elif isinstance(current, list):
+            stack.extend((item, depth + 1) for item in current)
+
+
+def _validate_zip_container(path: Path) -> None:
+    try:
+        with zipfile.ZipFile(path) as archive:
+            members = archive.infolist()
+    except (OSError, zipfile.BadZipFile) as exc:
+        raise ParserValidationError("invalid_archive") from exc
+    if len(members) > MAX_ARCHIVE_MEMBERS:
+        raise ParserValidationError("archive_member_limit_exceeded")
+
+    total_uncompressed = 0
+    for member in members:
+        member_path = PurePosixPath(member.filename.replace("\\", "/"))
+        if member_path.is_absolute() or ".." in member_path.parts:
+            raise ParserValidationError("archive_path_traversal")
+        if len(member_path.parts) > MAX_ARCHIVE_PATH_DEPTH:
+            raise ParserValidationError("archive_depth_limit_exceeded")
+        member_mode = member.external_attr >> 16
+        if stat.S_ISLNK(member_mode):
+            raise ParserValidationError("archive_symlink_not_allowed")
+        if member.file_size > MAX_ARCHIVE_MEMBER_BYTES:
+            raise ParserValidationError("archive_member_size_limit_exceeded")
+        total_uncompressed += member.file_size
+        if total_uncompressed > MAX_ARCHIVE_UNCOMPRESSED_BYTES:
+            raise ParserValidationError("archive_size_limit_exceeded")
+        if member.file_size >= 1024 * 1024:
+            ratio = member.file_size / max(1, member.compress_size)
+            if ratio > MAX_ARCHIVE_COMPRESSION_RATIO:
+                raise ParserValidationError("archive_compression_ratio_exceeded")
 
 
 class PlainTextParser:
@@ -102,15 +170,26 @@ class JsonParser:
 
     def parse(self, path: str | Path) -> ParsedDocument:
         p = _ensure_existing_file(path)
+        if p.stat().st_size > MAX_JSON_BYTES:
+            raise ParserValidationError("json_size_limit_exceeded")
         raw = _read_text(p)
         try:
             if p.suffix.lower() == ".jsonl":
-                records = [json.loads(line) for line in raw.splitlines() if line.strip()]
+                records = []
+                for line in raw.splitlines():
+                    if not line.strip():
+                        continue
+                    if len(records) >= MAX_JSONL_RECORDS:
+                        raise ParserValidationError("jsonl_record_limit_exceeded")
+                    record = json.loads(line)
+                    _validate_json_structure(record)
+                    records.append(record)
                 text = "\n".join(json.dumps(record, ensure_ascii=False, sort_keys=True) for record in records)
                 metadata = {"parser": "jsonl", "records": len(records), "bytes": p.stat().st_size}
                 mime_type = "application/x-ndjson"
             else:
                 data = json.loads(raw) if raw.strip() else None
+                _validate_json_structure(data)
                 text = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) if data is not None else ""
                 metadata = {"parser": "json", "bytes": p.stat().st_size}
                 mime_type = "application/json"
@@ -216,18 +295,33 @@ class PstParser:
         store = pypff.file()
         lines: list[str] = []
         attachments: list[dict[str, Any]] = []
+        counters = {"folders": 0, "messages": 0, "chars": 0}
         try:
             store.open(str(p))
-            def visit(folder) -> None:
+            def visit(folder, depth: int = 0) -> None:
+                if depth > MAX_ARCHIVE_PATH_DEPTH:
+                    raise ParserValidationError("pst_depth_limit_exceeded")
+                counters["folders"] += 1
+                if counters["folders"] > MAX_PST_FOLDERS:
+                    raise ParserValidationError("pst_folder_limit_exceeded")
                 for index in range(folder.number_of_sub_messages):
+                    counters["messages"] += 1
+                    if counters["messages"] > MAX_PST_MESSAGES:
+                        raise ParserValidationError("pst_message_limit_exceeded")
                     message = folder.get_sub_message(index)
-                    lines.extend((f"## {message.subject or 'Message'}", f"From: {message.sender_name or ''}", str(message.plain_text_body or ""), ""))
+                    body = str(message.plain_text_body or "")
+                    counters["chars"] += len(body)
+                    if counters["chars"] > MAX_PARSED_CHARS:
+                        raise ParserValidationError("parsed_text_limit_exceeded")
+                    lines.extend((f"## {message.subject or 'Message'}", f"From: {message.sender_name or ''}", body, ""))
                     for attachment_index in range(message.number_of_attachments):
                         attachment = message.get_attachment(attachment_index)
                         attachments.append({"name": attachment.name or f"attachment-{attachment_index + 1}", "bytes": attachment.size})
                 for index in range(folder.number_of_sub_folders):
-                    visit(folder.get_sub_folder(index))
+                    visit(folder.get_sub_folder(index), depth + 1)
             visit(store.get_root_folder())
+        except ParserValidationError:
+            raise
         except Exception as exc:
             return build_parsed_document(title=p.name, text="", mime_type=MIME_BY_EXTENSION[".pst"], source_path=p,
                 status=ParseStatus.FAILED, metadata={"parser": "pypff", "bytes": p.stat().st_size}, errors=[f"pst_parse_failed:{exc}"])
@@ -251,8 +345,15 @@ class PdfTextParser:
             import fitz  # type: ignore[import-not-found]
 
             with fitz.open(p) as doc:
+                if doc.page_count > MAX_PDF_PAGES:
+                    raise ParserValidationError("pdf_page_limit_exceeded")
+                parsed_chars = 0
                 for index, page in enumerate(doc, start=1):
-                    pages.append(ParsedPage(number=index, text=page.get_text("text") or ""))
+                    page_text = page.get_text("text") or ""
+                    parsed_chars += len(page_text)
+                    if parsed_chars > MAX_PARSED_CHARS:
+                        raise ParserValidationError("pdf_text_limit_exceeded")
+                    pages.append(ParsedPage(number=index, text=page_text))
             parsed = build_parsed_document(
                 title=p.name,
                 text=None,
@@ -273,6 +374,8 @@ class PdfTextParser:
                     status=ParseStatus.OCR_REQUIRED,
                 )
             return parsed
+        except ParserValidationError:
+            raise
         except Exception as exc:  # noqa: BLE001 - parser fallback boundary
             errors.append(f"pymupdf:{exc}")
 
@@ -280,8 +383,15 @@ class PdfTextParser:
             from pypdf import PdfReader  # type: ignore[import-not-found]
 
             reader = PdfReader(str(p))
+            if len(reader.pages) > MAX_PDF_PAGES:
+                raise ParserValidationError("pdf_page_limit_exceeded")
+            parsed_chars = 0
             for index, page in enumerate(reader.pages, start=1):
-                pages.append(ParsedPage(number=index, text=page.extract_text() or ""))
+                page_text = page.extract_text() or ""
+                parsed_chars += len(page_text)
+                if parsed_chars > MAX_PARSED_CHARS:
+                    raise ParserValidationError("pdf_text_limit_exceeded")
+                pages.append(ParsedPage(number=index, text=page_text))
             parsed = build_parsed_document(
                 title=p.name,
                 text=None,
@@ -303,6 +413,8 @@ class PdfTextParser:
                     status=ParseStatus.OCR_REQUIRED,
                 )
             return parsed
+        except ParserValidationError:
+            raise
         except Exception as exc:  # noqa: BLE001
             errors.append(f"pypdf:{exc}")
 
@@ -337,6 +449,7 @@ class DocxParser:
                 metadata={"parser": "docx", "dependency": "python-docx", "bytes": p.stat().st_size},
                 errors=[f"docx_reader_missing:{type(exc).__name__}"],
             )
+        _validate_zip_container(p)
         from secondbrain.office_import import extract_docx
 
         text = extract_docx(p)
@@ -369,6 +482,7 @@ class XlsxParser:
                 metadata={"parser": "xlsx", "dependency": "openpyxl", "bytes": p.stat().st_size},
                 errors=[f"xlsx_reader_missing:{type(exc).__name__}"],
             )
+        _validate_zip_container(p)
         from secondbrain.office_import import extract_xlsx
 
         text = extract_xlsx(p)
