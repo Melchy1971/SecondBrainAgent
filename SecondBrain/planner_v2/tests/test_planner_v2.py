@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from threading import Barrier, Lock
+from time import sleep
+
 import pytest
 
 from secondbrain.planner_v2.models import (
@@ -37,10 +40,14 @@ def _tools(calls=None):
 
 
 class ApprovalAuthority:
-    def __init__(self, allowed): self.allowed = set(allowed); self.claimed = set()
+    def __init__(self, allowed):
+        self.allowed = set(allowed)
+        self.claimed = set()
+
     def claim(self, *, plan, node):
         binding = (plan.plan_id, plan.workspace_id, node.node_id)
-        if node.node_id not in self.allowed or binding in self.claimed: return False
+        if node.node_id not in self.allowed or binding in self.claimed:
+            return False
         self.claimed.add(binding)
         return True
 
@@ -75,6 +82,58 @@ def test_independent_parallel():
     assert set(layers[0]) == {"a", "b"}  # independent
     groups = p.parallel_groups(plan)
     assert any(set(g) == {"a", "b"} for g in groups)
+
+
+def test_independent_nodes_actually_run_in_parallel():
+    p = _planner(max_parallelism=2)
+    plan = p.create_plan(goal="G", workspace_id=WS, nodes=[_node("a"), _node("b")])
+    barrier = Barrier(2, timeout=1)
+
+    def rendezvous(inp):
+        barrier.wait()
+        return inp
+
+    res = p.execute_plan(plan, tools={"fetch": rendezvous})
+    assert res["status"] == PlanStatus.COMPLETED.value
+    assert res["executed"] == ["a", "b"]
+
+
+def test_shared_resource_is_serialized():
+    p = _planner(max_parallelism=2)
+    plan = p.create_plan(goal="G", workspace_id=WS, nodes=[
+        _node("a", resource_locks=["workspace:file"]),
+        _node("b", resource_locks=["workspace:file"]),
+    ])
+    guard = Lock()
+    state = {"active": 0, "peak": 0}
+
+    def guarded(inp):
+        with guard:
+            state["active"] += 1
+            state["peak"] = max(state["peak"], state["active"])
+        sleep(0.02)
+        with guard:
+            state["active"] -= 1
+        return inp
+
+    res = p.execute_plan(plan, tools={"fetch": guarded})
+    assert res["status"] == PlanStatus.COMPLETED.value
+    assert state["peak"] == 1
+
+
+def test_parallel_success_is_checkpointed_when_sibling_fails():
+    p = _planner(max_parallelism=2)
+    plan = p.create_plan(goal="G", workspace_id=WS, nodes=[
+        _node("a", tool="fetch"), _node("b", tool="summarize")])
+
+    def fail(inp):
+        raise RuntimeError("boom")
+
+    res = p.execute_plan(plan, tools={"fetch": lambda inp: inp, "summarize": fail})
+    assert res["status"] == PlanStatus.RECOVERY_REQUIRED.value
+    assert res["executed"] == ["a"]
+    assert res["failed"] == ["b"]
+    assert plan.checkpoint == ["a"]
 
 
 # 4: risky step pauses (requires approval)

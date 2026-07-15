@@ -92,6 +92,7 @@ class PlanNode:
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
     rollback_policy: RollbackPolicy = field(default_factory=RollbackPolicy)
     alt_tools: list[str] = field(default_factory=list)
+    resource_locks: list[str] = field(default_factory=list)
     idempotent: bool = True
     status: str = NodeStatus.PENDING.value
 
@@ -103,7 +104,8 @@ class PlanNode:
             "risk": self.risk, "approval_required": self.approval_required,
             "estimated_cost": self.estimated_cost, "estimated_duration": self.estimated_duration,
             "retry_policy": self.retry_policy.to_dict(), "rollback_policy": self.rollback_policy.to_dict(),
-            "alt_tools": list(self.alt_tools), "status": self.status,
+            "alt_tools": list(self.alt_tools), "resource_locks": list(self.resource_locks),
+            "status": self.status,
             "idempotent": self.idempotent,
         }
 
