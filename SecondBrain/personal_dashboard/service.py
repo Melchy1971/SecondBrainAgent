@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Mapping, Sequence
 
 from secondbrain.personal_dashboard.models import (
-    CardArea, CardItem, CardStatus, DashboardCard, DashboardConfig, DEFAULT_CARD_ORDER,
+    CardArea, CardItem, CardStatus, DashboardCard, DashboardConfig, DashboardSnapshot, DEFAULT_CARD_ORDER,
 )
 
 __all__ = ["Dashboard", "redact_dashboard_text"]
@@ -84,8 +84,15 @@ class Dashboard:
         moment = now or _now()
         cards: list[DashboardCard] = []
         order = config.order or list(self._CARDS)
+        forced = []
+        if any(item.get("critical") for item in self._ws(self._source(context, "approvals"), config.workspace_id)):
+            forced.append("open_approvals")
+        system = context.get("system", {}) or {}
+        if isinstance(system, Mapping) and any(value is False for value in system.values()):
+            forced.append("system")
+        order = list(dict.fromkeys([*forced, *order]))
         for card_id in order:
-            if config.enabled and card_id not in config.enabled:
+            if config.enabled and card_id not in config.enabled and card_id not in forced:
                 continue
             spec = self._CARDS.get(card_id)
             if spec is None:
@@ -102,6 +109,13 @@ class Dashboard:
         self._cache[config.workspace_id] = cards
         return cards
 
+    def snapshot(self, *, config: DashboardConfig, context: Mapping[str, Any],
+                 now: datetime | None = None) -> DashboardSnapshot:
+        moment = now or _now()
+        cards = self.build(config=config, context=context, now=moment)
+        return DashboardSnapshot(workspace=config.workspace_id, generated_at=moment.isoformat(timespec="seconds"),
+                                 cards=cards, source_status={card.card_id: card.status for card in cards})
+
     def resolve_async(self, *, card_id: str, config: DashboardConfig, context: Mapping[str, Any],
                       now: datetime | None = None) -> DashboardCard:
         spec = self._CARDS[card_id]
@@ -115,7 +129,11 @@ class Dashboard:
         return self.build(config=config, context=context, now=now)
 
     def cached(self, *, workspace_id: str) -> list[DashboardCard] | None:
-        return self._cache.get(workspace_id)
+        cards = self._cache.get(workspace_id)
+        if cards is not None:
+            for card in cards:
+                card.cached = True
+        return cards
 
     def _safe_build(self, card: DashboardCard, builder: str, config: DashboardConfig,
                     context: Mapping[str, Any], moment: datetime) -> None:
@@ -123,7 +141,8 @@ class Dashboard:
             items = getattr(self, builder)(config, context, moment)
         except Exception as exc:  # noqa: BLE001 - fault isolation is the whole point
             card.status = CardStatus.ERROR.value
-            card.error = f"{type(exc).__name__}: {exc}"
+            card.error = "Quelle vorübergehend nicht verfügbar"
+            card.error_state = type(exc).__name__
             return
         card.items = items
         card.status = CardStatus.OK.value if items else CardStatus.EMPTY.value
@@ -228,13 +247,23 @@ class Dashboard:
 
     # -- interactions -----------------------------------------------------
 
-    def quick_action(self, *, action: str, reference: str, workspace_id: str) -> dict[str, Any]:
+    def quick_action(self, *, action: str, reference: str, workspace_id: str,
+                     approval_queue: Any | None = None) -> dict[str, Any]:
         risky = action in _RISKY_ACTIONS
+        approval_id = ""
+        if risky and approval_queue is not None:
+            approval = approval_queue.create(command=f"dashboard.{action}", intent=action,
+                                             text="Riskante Dashboard-Aktion prüfen", target=reference,
+                                             category="risky_agent_action", risk_level="high",
+                                             tool_name=f"dashboard.{action}", workspace_id=workspace_id,
+                                             payload={"reference": reference, "action": action})
+            approval_id = str(approval.get("approval_id") or "")
         return {
             "action": action, "reference": reference, "workspace_id": workspace_id,
             "executed": False,  # dashboard never executes; hands off to the owning service
             "approval_required": risky,
             "route": "approval_inbox" if risky else "detail_view",
+            "approval_id": approval_id,
         }
 
     def drill_down(self, *, card_id: str, reference: str) -> dict[str, Any]:

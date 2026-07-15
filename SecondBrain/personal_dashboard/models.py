@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-__all__ = ["CardArea", "CardStatus", "CardItem", "DashboardCard", "DashboardConfig", "DEFAULT_CARD_ORDER"]
+__all__ = ["CardArea", "CardStatus", "CardItem", "DashboardCard", "DashboardConfig", "DashboardSnapshot", "DEFAULT_CARD_ORDER"]
 
 
 class CardArea(StrEnum):
@@ -53,6 +53,12 @@ class DashboardCard:
     items: list[CardItem] = field(default_factory=list)
     error: str = ""
     priority: int = 0
+    summary: str = ""
+    source: str = ""
+    updated_at: str = ""
+    deep_link: str = ""
+    error_state: str = ""
+    cached: bool = False
 
     @property
     def visible_items(self) -> list[CardItem]:
@@ -61,7 +67,9 @@ class DashboardCard:
     def to_dict(self) -> dict[str, Any]:
         return {"card_id": self.card_id, "title": self.title, "area": self.area,
                 "status": self.status, "items": [i.to_dict() for i in self.items],
-                "error": self.error, "priority": self.priority}
+                "error": self.error, "error_state": self.error_state, "priority": self.priority,
+                "summary": self.summary, "source": self.source, "updated_at": self.updated_at,
+                "deep_link": self.deep_link, "cached": self.cached}
 
 
 @dataclass
@@ -70,10 +78,31 @@ class DashboardConfig:
     order: list[str] = field(default_factory=list)
     timeframe: str = "today"     # today | week | custom
     workspace_id: str = ""
+    density: str = "comfortable"
+    preferred_home: str = "dashboard"
 
     def to_dict(self) -> dict[str, Any]:
         return {"enabled": list(self.enabled), "order": list(self.order),
-                "timeframe": self.timeframe, "workspace_id": self.workspace_id}
+                "timeframe": self.timeframe, "workspace_id": self.workspace_id,
+                "density": self.density, "preferred_home": self.preferred_home}
+
+
+@dataclass
+class DashboardSnapshot:
+    workspace: str
+    generated_at: str
+    cards: list[DashboardCard] = field(default_factory=list)
+    source_status: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        by_id = {card.card_id: card.to_dict() for card in self.cards}
+        return {"workspace": self.workspace, "generated_at": self.generated_at,
+                "today": by_id.get("next_up", {}), "tasks": by_id.get("tasks", {}),
+                "calendar": by_id.get("calendar", {}), "mail": by_id.get("important_mail", {}),
+                "projects": by_id.get("projects", {}), "approvals": by_id.get("open_approvals", {}),
+                "suggestions": by_id.get("suggestions", {}), "documents": by_id.get("documents", {}),
+                "knowledge": by_id.get("knowledge", {}), "system_health": by_id.get("system", {}),
+                "source_status": dict(self.source_status)}
 
 
 DEFAULT_CARD_ORDER: tuple[str, ...] = (
