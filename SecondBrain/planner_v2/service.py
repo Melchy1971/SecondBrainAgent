@@ -11,7 +11,10 @@ controlled abort, rollback). Every state change is appended to the plan audit.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
 from datetime import datetime, timezone
+from threading import Lock, RLock
 from typing import Any, Callable, Iterable, Mapping, Sequence
 from uuid import uuid4
 
@@ -50,6 +53,9 @@ class Planner:
         self.tool_scopes = dict(tool_scopes or {})
         self.unsafe_tools = set(unsafe_tools or [])
         self.max_parallelism = max(1, int(max_parallelism))
+        self._audit_lock = RLock()
+        self._resource_locks: dict[str, Lock] = {}
+        self._resource_locks_guard = Lock()
 
     # -- construction -----------------------------------------------------
 
@@ -203,6 +209,7 @@ class Planner:
         cost = 0.0
         completed = set(plan.checkpoint)
         for layer in self.execution_layers(plan):
+            runnable: list[PlanNode] = []
             for node_id in layer:
                 n = plan.node(node_id)
                 if node_id in completed:
@@ -234,17 +241,39 @@ class Planner:
                     plan.status = PlanStatus.PAUSED.value
                     return RunResult(status="budget_exceeded", executed=executed, paused=paused,
                                      failed=failed, audit=plan.audit, cost=round(cost, 3))
-                outcome = self._run_node(plan, n, tools)
+                cost += n.estimated_cost
+                runnable.append(n)
+
+            safe = [n for n in runnable
+                    if not n.approval_required and n.tool not in self.unsafe_tools]
+            safe_ids = {n.node_id for n in safe}
+            serial = [n for n in runnable if n.node_id not in safe_ids]
+            outcomes: dict[str, dict[str, Any]] = {}
+            if safe:
+                with ThreadPoolExecutor(max_workers=min(self.max_parallelism, len(safe)),
+                                        thread_name_prefix="planner") as pool:
+                    futures = {n.node_id: pool.submit(self._run_node_locked, plan, n, tools)
+                               for n in safe}
+                    for node_id in sorted(futures):
+                        outcomes[node_id] = futures[node_id].result()
+            for n in serial:
+                outcomes[n.node_id] = self._run_node_locked(plan, n, tools)
+
+            layer_failed: list[str] = []
+            for n in runnable:
+                node_id = n.node_id
+                outcome = outcomes[node_id]
                 if outcome["ok"]:
                     completed.add(node_id)
                     plan.checkpoint = sorted(completed)
                     executed.append(node_id)
-                    cost += n.estimated_cost
                 else:
                     failed.append(node_id)
-                    plan.status = PlanStatus.RECOVERY_REQUIRED.value
-                    return RunResult(status=PlanStatus.RECOVERY_REQUIRED.value, executed=executed,
-                                     paused=paused, failed=failed, audit=plan.audit, cost=round(cost, 3))
+                    layer_failed.append(node_id)
+            if layer_failed:
+                plan.status = PlanStatus.RECOVERY_REQUIRED.value
+                return RunResult(status=PlanStatus.RECOVERY_REQUIRED.value, executed=executed,
+                                 paused=paused, failed=failed, audit=plan.audit, cost=round(cost, 3))
         if paused:
             plan.status = PlanStatus.PAUSED.value
             status = PlanStatus.PAUSED.value
@@ -273,6 +302,16 @@ class Planner:
         return self.execute_plan(plan, tools=tools, approval_authority=approval_authority)
 
     # -- node runner with recovery ---------------------------------------
+
+    def _run_node_locked(self, plan: PlanGraph, node: PlanNode,
+                         tools: Mapping[str, Callable[[dict[str, Any]], Any]]) -> dict[str, Any]:
+        with self._resource_locks_guard:
+            locks = [self._resource_locks.setdefault(key, Lock())
+                     for key in sorted(set(node.resource_locks))]
+        with ExitStack() as stack:
+            for lock in locks:
+                stack.enter_context(lock)
+            return self._run_node(plan, node, tools)
 
     def _run_node(self, plan: PlanGraph, node: PlanNode,
                   tools: Mapping[str, Callable[[dict[str, Any]], Any]]) -> dict[str, Any]:
@@ -322,6 +361,6 @@ class Planner:
                     stack.append(m)
         return seen != len(ids)
 
-    @staticmethod
-    def _audit(plan: PlanGraph, node_id: str, event: str, detail: str) -> None:
-        plan.audit.append({"at": _now(), "node": node_id, "event": event, "detail": detail})
+    def _audit(self, plan: PlanGraph, node_id: str, event: str, detail: str) -> None:
+        with self._audit_lock:
+            plan.audit.append({"at": _now(), "node": node_id, "event": event, "detail": detail})
