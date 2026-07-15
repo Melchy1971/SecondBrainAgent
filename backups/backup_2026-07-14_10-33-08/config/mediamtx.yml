@@ -1,0 +1,20 @@
+# Lokales Media-Gateway fuer das Jarvis Security-Panel (MediaMTX).
+# ----------------------------------------------------------------------------
+# ENTHAELT KAMERA-ZUGANGSDATEN -> NIEMALS committen. Steht in .gitignore.
+# BENUTZER/PASSWORT unten durch die echten Reolink-Logindaten ersetzen.
+#
+# Reolink-RTSP-Pfade:
+#   Hauptstream:  h264Preview_01_main   (hohe Aufloesung, mehr Last)
+#   Substream:    h264Preview_01_sub    (kleiner, fluessiger)
+#
+# Start (im Ordner mit mediamtx.exe):
+#   mediamtx.exe "config\mediamtx.yml"
+# ----------------------------------------------------------------------------
+
+webrtcAddress: :8889
+hlsAddress: :8888
+
+paths:
+  reolink:
+    source: rtsp://BENUTZER:PASSWORT@192.168.2.108:554/h264Preview_01_main
+    sourceOnDemand: yes
