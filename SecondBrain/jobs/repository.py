@@ -48,6 +48,7 @@ class PostgresJobRepository:
         self.executor = executor
         self.dialect = getattr(executor, "dialect", "postgresql")
         self.lease_seconds = lease_seconds
+        self.lease_conflicts = 0
 
     def ensure_schema(self) -> None:
         with self._transaction() as tx:
@@ -215,9 +216,9 @@ class PostgresJobRepository:
             raise KeyError("unknown_job")
         return job
 
-    @staticmethod
-    def _require_owner(job: Job, worker_id: str) -> None:
+    def _require_owner(self, job: Job, worker_id: str) -> None:
         if not job.lease.worker_id or job.lease.worker_id != worker_id:
+            self.lease_conflicts += 1
             raise PermissionError("lease_held_by_other_worker")
 
     def _save(self, tx: Any, job: Job, expected_version: int) -> None:
