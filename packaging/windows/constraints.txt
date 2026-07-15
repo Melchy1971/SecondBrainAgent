@@ -6,3 +6,8 @@ pillow==12.1.0
 mss==10.1.0
 opencv-python==4.13.0.92
 pyinstaller==6.18.0
+pytest==8.4.2
+pytest-cov==7.0.0
+ruff==0.14.10
+mypy==1.19.1
+pip-audit==2.10.0
