@@ -171,7 +171,7 @@ Reports liegen unter `runtime/reports`.
 
 ## PostgreSQL / pgvector einrichten
 
-Ohne `DATABASE_URL` laeuft der SQLite/RAG-Prototyp; die App startet im Status DEGRADED. Umstellung auf PostgreSQL 16 + pgvector:
+Ohne `DATABASE_URL` duerfen lokale Entwicklungsmodi SQLite beziehungsweise JSONL verwenden; produktive Repositorys blockieren statt still zurueckzufallen. Umstellung auf PostgreSQL 16 + pgvector:
 
 1. Treiber installieren (nicht in den pyproject-Extras enthalten):
 

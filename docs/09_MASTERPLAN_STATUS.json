@@ -96,6 +96,26 @@
       "release": "v30.86",
       "capability": "Produktives Review-/Approval-Release-Gate mit acht Prüfgruppen, harter PostgreSQL-Backendvalidierung und atomarem Zertifizierungsreport",
       "status": "completed"
+    },
+    {
+      "release": "v31.01-v31.04",
+      "capability": "Signierte Updates, Windows-Distribution, CI/CD-Releaseautomation und aggregiertes GA-Readiness-Gate",
+      "status": "completed_on_main"
+    },
+    {
+      "release": "v31.05-v31.14",
+      "capability": "Tasks, Kalender, Mail, Briefings, Knowledge Graph, Memory, Planner, Jobs, proaktive Assistenz und Dashboard",
+      "status": "completed_on_main"
+    },
+    {
+      "release": "v31.15",
+      "capability": "Produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks und Projekte",
+      "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.16",
+      "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
+      "status": "feature_branch_pending_merge"
     }
   ],
   "remaining_blockers": [
@@ -105,7 +125,9 @@
     "installer_exe_msi_pipeline",
     "secret_vault_encryption_rollout",
     "review_approval_postgresql_production_health_pending",
-    "windows_full_pytest_environment_failures_pending"
+    "windows_full_pytest_environment_failures_pending",
+    "task_postgresql_branch_merge_pending",
+    "planner_parallel_runtime_branch_merge_pending"
   ],
   "degraded_modes": [
     "sqlite_rag_prototype_without_database_url",
@@ -131,7 +153,7 @@
   },
   "release_readiness": {
     "state": "CONDITIONAL_READY",
-    "basis": "v30.61-v30.86 capabilities implemented; production certification remains blocked until the live PostgreSQL review/approval healthcheck passes",
+    "basis": "v31.01-v31.14 are integrated on main; v31.15-v31.16 await merge; production certification still requires live PostgreSQL/provider/installer evidence",
     "required_gates": [
       "repo-doctor",
       "dependency-inventory",
@@ -144,6 +166,8 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
+  "documented_feature_level": "v31.16",
+  "documentation_updated_at": "2026-07-15",
   "review_approval_release": {
     "release": "v30.86",
     "gate": "ENVIRONMENT_DEPENDENT",

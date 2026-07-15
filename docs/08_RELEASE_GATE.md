@@ -1,22 +1,23 @@
-# Release Gate v30.25
+# Release Gate: aktueller Nachweisstand
 
 ## Aktuelle Bewertung
 
 | Bereich | Status | Evidenz |
 |---|---|---|
-| Packaging / Version | PASS | `pyproject.toml` meldet 30.25.0 |
-| Command Index | PASS | am 2026-06-30 erfolgreich ausgefuehrt |
-| Native Desktop v30.25 | PASS laut Release-Artefakt | fokussierte Tests im v30.25-Manifest dokumentiert |
+| Paketversion | KONSISTENT, ABER HISTORISCH | `pyproject.toml` meldet weiterhin 30.77.0; Funktionsstand ist v31.16 |
+| v31.01-v31.14 | IN `main` | Merge-Historie bis PR #43 belegt |
+| Task PostgreSQL v31.15 | BRANCH BEREIT | Repository-Tests bestanden; echter PostgreSQL-Lauf offen |
+| Planner Parallel Runtime v31.16 | BRANCH BEREIT | 30 fokussierte Planner-/Persistenztests und Ruff bestanden |
 | P0/P1 Vollgate | NICHT NEU AUSGEFUEHRT | fuer diese Dokumentationsbereinigung nicht erforderlich |
 | PostgreSQL/pgvector Apply | BLOCKED | pgvector deaktiviert, DSN fehlt; nichts angewendet |
 | Produktive Embeddings | CONDITIONAL | echte Provider-Konfiguration umgebungsabhaengig |
 | Connectoren/OAuth | BLOCKER | keine belegte produktive Live-Synchronisation |
 | Secret-Verschluesselung | BLOCKER | produktiver Secret Store offen |
-| Vollstaendiger Testlauf | NICHT AUSGEFUEHRT | Dokumentationsaenderung; Link-/Strukturchecks laufen separat |
+| Vollstaendiger Testlauf | NICHT NEU AUSGEFUEHRT | fuer v31.15/v31.16 liefen fokussierte Tests; Gesamt-GA muss neu laufen |
 
 ## Ergebnis
 
-Lokale Entwicklung und die v30.25-Oberflaeche sind dokumentiert. Ein Production PASS ist nicht belegt.
+Der implementierte Funktionsstand ist dokumentiert. Ein Production PASS ist nicht belegt, bis v31.15/v31.16 integriert und die umgebungsabhaengigen GA-Pruefungen erfolgreich ausgefuehrt wurden.
 
 ## Pflichtchecks vor Release
 
@@ -28,6 +29,7 @@ python launcher.py gui-doctor
 python launcher.py p0-gate
 python launcher.py p1-gate
 pytest -q
+python launcher.py ga-readiness-gate
 ```
 
 Produktive pgvector-Freigabe erfordert zusaetzlich eine gepruefte Ziel-DSN, Backup/Restore-Plan und:
