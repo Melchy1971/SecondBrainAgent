@@ -144,9 +144,12 @@ def test_drilldown_routes():
 # risky quick action requires approval, never executed
 def test_quick_action_approval():
     d = Dashboard()
-    res = d.quick_action(action="send_reply", reference="m-1", workspace_id=WS)
+    class Queue:
+        def create(self, **_kwargs): return {"approval_id": "approval-1"}
+    res = d.quick_action(action="send_reply", reference="m-1", workspace_id=WS, approval_queue=Queue())
     assert res["executed"] is False and res["approval_required"] is True
     assert res["route"] == "approval_inbox"
+    assert res["approval_id"] == "approval-1"
     safe = d.quick_action(action="open", reference="t-1", workspace_id=WS)
     assert safe["approval_required"] is False
 
@@ -165,9 +168,19 @@ def test_no_ids_in_labels():
 def test_refresh_and_cache():
     d = Dashboard()
     d.build(config=_cfg(), context=_ctx(), now=NOW)
-    assert d.cached(workspace_id=WS) is not None
+    assert all(card.cached for card in d.cached(workspace_id=WS))
     refreshed = d.refresh(config=_cfg(), context=_ctx(tasks=[{"id": "t", "title": "Neu"}]), now=NOW)
     assert _card(refreshed, "tasks").items
+
+
+def test_critical_cards_cannot_be_hidden_and_snapshot_contract():
+    dashboard = Dashboard(slow_cards=[])
+    config = _cfg(enabled=["tasks"], order=["tasks"])
+    context = _ctx(approvals=[{"id": "a", "title": "Kritisch", "critical": True}], system={"vault": False})
+    snapshot = dashboard.snapshot(config=config, context=context, now=NOW)
+    ids = {card.card_id for card in snapshot.cards}
+    assert {"open_approvals", "system", "tasks"} <= ids
+    assert snapshot.to_dict()["source_status"]["system"] == CardStatus.OK.value
 
 
 # global search + command palette
