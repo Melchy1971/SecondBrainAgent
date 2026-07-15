@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
+from uuid import uuid4
 
 __all__ = ["Priority", "SectionStatus", "BriefingKind", "BriefingItem", "BriefingSection", "Briefing"]
 
@@ -40,25 +41,43 @@ class SectionStatus(StrEnum):
 
 
 class BriefingKind(StrEnum):
+    MORNING = "morning"
+    MIDDAY = "midday"
+    EVENING = "evening"
     DAILY = "daily"
     WEEKLY = "weekly"
+    PROJECT = "project"
+    MEETING_PREPARATION = "meeting_preparation"
 
 
 @dataclass
 class BriefingItem:
     text: str
+    item_id: str = field(default_factory=lambda: f"brief_item_{uuid4().hex[:16]}")
+    title: str = ""
+    summary: str = ""
+    priority: str = Priority.MEDIUM.value
+    source_type: str = ""
     source_reference: str = ""
+    evidence: list[str] = field(default_factory=list)
     source: str = ""
     confidence: float = 1.0
     uncertain: bool = False
     hidden: bool = False
     kind: str = ""              # semantic sub-type, e.g. "event", "task", "approval"
     due: str = ""
+    proposed_action: dict[str, Any] | None = None
+    status: str = "open"
     preparation: list[str] = field(default_factory=list)  # references only
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "text": self.text,
+            "item_id": self.item_id,
+            "title": self.title or self.text,
+            "summary": self.summary or self.text,
+            "priority": self.priority,
+            "source_type": self.source_type or self.source,
             "source_reference": self.source_reference,
             "source": self.source,
             "confidence": round(float(self.confidence), 3),
@@ -67,12 +86,18 @@ class BriefingItem:
             "kind": self.kind,
             "due": self.due,
             "preparation": list(self.preparation),
+            "evidence": list(self.evidence),
+            "proposed_action": self.proposed_action,
+            "status": self.status,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "BriefingItem":
         return cls(
             text=data.get("text", ""),
+            item_id=data.get("item_id", "") or f"brief_item_{uuid4().hex[:16]}",
+            title=data.get("title", ""), summary=data.get("summary", ""),
+            priority=data.get("priority", Priority.MEDIUM.value), source_type=data.get("source_type", ""),
             source_reference=data.get("source_reference", ""),
             source=data.get("source", ""),
             confidence=float(data.get("confidence", 1.0)),
@@ -81,6 +106,8 @@ class BriefingItem:
             kind=data.get("kind", ""),
             due=data.get("due", ""),
             preparation=list(data.get("preparation", [])),
+            evidence=list(data.get("evidence", [])), proposed_action=data.get("proposed_action"),
+            status=data.get("status", "open"),
         )
 
 
@@ -94,6 +121,7 @@ class BriefingSection:
     generated_at: str = ""
     confidence: float = 1.0
     status: str = SectionStatus.OK.value
+    category: str = ""
 
     @property
     def visible_items(self) -> list[BriefingItem]:
@@ -130,13 +158,24 @@ class Briefing:
     kind: str
     workspace_id: str
     generated_at: str
+    briefing_id: str = field(default_factory=lambda: f"brief_{uuid4().hex[:16]}")
+    period_start: str = ""
+    period_end: str = ""
+    source_versions: dict[str, str] = field(default_factory=dict)
+    status: str = "ready"
+    expires_at: str = ""
     sections: list[BriefingSection] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "kind": self.kind,
+            "briefing_type": self.kind,
+            "briefing_id": self.briefing_id,
             "workspace_id": self.workspace_id,
             "generated_at": self.generated_at,
+            "period_start": self.period_start, "period_end": self.period_end,
+            "source_versions": dict(self.source_versions), "status": self.status,
+            "expires_at": self.expires_at,
             "sections": [s.to_dict() for s in self.sections],
         }
 

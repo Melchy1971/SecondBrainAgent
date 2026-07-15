@@ -183,6 +183,28 @@ def test_weekly_briefing():
     assert {"top_goals", "risks", "deadlines", "week_review"} <= ids
 
 
+def test_weekly_project_progress_is_calculated():
+    source = {"projects": {"version": "7", "items": [{
+        "text": "Migration", "source_reference": "project-1", "bucket": "progress",
+        "completed_tasks": 3, "total_tasks": 4,
+    }]}}
+    briefing = BriefingBuilder().build_weekly(workspace_id=WS, sources=source, now=NOW)
+    section = next(item for item in briefing.sections if item.section_id == "project_progress")
+    assert section.items[0].text == "Migration: 75.0%"
+    assert briefing.source_versions["projects"] == "7"
+
+
+def test_domain_contract_and_proposed_action_remain_read_only():
+    source = {"next_actions": {"items": [{"text": "Plan erstellen", "source_reference": "plan-1",
+                                           "evidence": ["doc-1"],
+                                           "proposed_action": {"type": "task_proposal"}}]}}
+    briefing = BriefingBuilder().build_daily(workspace_id=WS, sources=source, now=NOW)
+    item = next(section for section in briefing.sections if section.section_id == "next_actions").items[0]
+    assert briefing.briefing_id and briefing.period_start and briefing.status == "ready"
+    assert item.item_id and item.evidence == ["doc-1"]
+    assert item.proposed_action == {"type": "task_proposal"}
+
+
 # gui tabs + render
 def test_gui_view_and_render():
     _, br = _daily()
