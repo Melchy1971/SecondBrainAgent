@@ -1,0 +1,9 @@
+perplexity_import:
+  enabled: true
+  watch_folder: data/inbox/Perplexity/exports
+  processed_folder: data/inbox/Perplexity/processed
+  target_folder: data/vaults/secondbrain/05_Quellen/Perplexity
+  report_folder: data/vaults/secondbrain/99_System/perplexity_import
+  auto_tags: true
+  update_semantic_search: true
+  update_secondbrain_os: false

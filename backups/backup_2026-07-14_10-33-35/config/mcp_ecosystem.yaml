@@ -1,0 +1,31 @@
+mcp_ecosystem:
+  filesystem:
+    status: prepared
+    priority: high
+  obsidian:
+    status: prepared
+    priority: high
+  github:
+    status: prepared
+    priority: medium
+  gmail:
+    status: prepared
+    priority: medium
+  google_calendar:
+    status: prepared
+    priority: medium
+  google_drive:
+    status: prepared
+    priority: medium
+  browser:
+    status: prepared
+    priority: medium
+  docker:
+    status: prepared
+    priority: medium
+  ssh_vps:
+    status: prepared
+    priority: medium
+  postgresql:
+    status: prepared
+    priority: low

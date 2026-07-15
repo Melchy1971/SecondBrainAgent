@@ -196,6 +196,39 @@ def _security_gate_main(argv: list[str]) -> int:
     return 0 if report["status"] == PASS else 2
 
 
+def _backup_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="Backup and restore release gate")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.backup_gate_v3096 import BLOCKED, run_backup_gate
+    report = run_backup_gate(args.project_root)
+    out(report)
+    return 2 if report["status"] == BLOCKED else 0
+
+
+def _rag_eval_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="Production RAG evaluation")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    args, _ = parser.parse_known_args(argv)
+    runtime = P1RagRuntime(args.project_root)
+    report = production_gate_with_golden(runtime, args.project_root, write_report=True)
+    out(report)
+    return 0 if report.get("ok") else 2
+
+
+def _ga_readiness_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="General availability readiness gate")
+    parser.add_argument("cmd")
+    parser.add_argument("--project-root", default=str(Path.cwd()))
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.ga_readiness import BLOCKED, run_ga_readiness_gate
+    report = run_ga_readiness_gate(args.project_root)
+    out(report)
+    return 2 if report["overall_status"] == BLOCKED else 0
+
+
 def _mobile_main(argv: list[str] | None = None) -> int:
     from secondbrain.mobile_companion import MobileCompanionRuntime
 
@@ -894,6 +927,30 @@ def main(argv: list[str] | None = None) -> int:
         return _review_approval_release_gate_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
+    if cmd == "backup-gate":
+        return _backup_gate_main(raw)
+    if cmd == "system-rc-gate":
+        return _rc_gate_main(["rc-gate", *raw[1:]])
+    if cmd == "rag-eval":
+        return _rag_eval_main(raw)
+    if cmd == "ga-readiness-gate":
+        return _ga_readiness_gate_main(raw)
+    if cmd in {
+        "ops-status",
+        "ops-backup",
+        "ops-backups",
+        "ops-backup-verify",
+        "ops-backup-health",
+        "ops-backup-report",
+        "ops-backup-schedule-configure",
+        "ops-backup-schedule-run",
+        "ops-restore-plan",
+        "ops-restore",
+        "ops-restore-rollback",
+    }:
+        from secondbrain.launcher_runtime_v119 import main as operations_main
+
+        return operations_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
