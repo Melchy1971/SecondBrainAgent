@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from secondbrain.tasks.repository import TaskRepository, TaskRepositoryConflict, create_task_repository
+
 from secondbrain.tasks.models import (
     VALID_TASK_TRANSITIONS,
     DependencyType,
@@ -65,10 +67,13 @@ def _parse(value: Any) -> datetime | None:
 
 
 class TaskProjectService:
-    def __init__(self, project_root: str | Path = ".", *, approval_queue: Any | None = None) -> None:
+    def __init__(self, project_root: str | Path = ".", *, approval_queue: Any | None = None,
+                 repository: TaskRepository | None = None, env: dict[str, str] | None = None,
+                 executor: Any | None = None) -> None:
         self.root = Path(project_root).resolve()
         self.dir = self.root / "runtime" / "tasks"
         self._approval_queue = approval_queue
+        self._repository = repository if repository is not None else create_task_repository(env=env, executor=executor)
 
     # -- persistence ------------------------------------------------------
 
@@ -76,6 +81,8 @@ class TaskProjectService:
         return self.dir / f"{name}.jsonl"
 
     def _read(self, name: str) -> list[dict[str, Any]]:
+        if self._repository is not None:
+            return self._repository.read(name)
         p = self._path(name)
         if not p.exists():
             return []
@@ -89,6 +96,12 @@ class TaskProjectService:
         return rows
 
     def _write(self, name: str, rows: Iterable[dict[str, Any]]) -> None:
+        if self._repository is not None:
+            try:
+                self._repository.write(name, rows)
+            except TaskRepositoryConflict as exc:
+                raise VersionConflict(str(exc)) from exc
+            return
         self.dir.mkdir(parents=True, exist_ok=True)
         p = self._path(name)
         tmp = p.with_name(f"{p.name}.{new_id('tmp')}.tmp")
@@ -98,6 +111,9 @@ class TaskProjectService:
         tmp.replace(p)
 
     def _append(self, name: str, row: dict[str, Any]) -> None:
+        if self._repository is not None:
+            self._repository.append(name, row)
+            return
         self.dir.mkdir(parents=True, exist_ok=True)
         with self._path(name).open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
