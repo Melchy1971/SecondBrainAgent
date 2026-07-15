@@ -1,9 +1,7 @@
 """Job monitor GUI view model and headless HTML renderer.
 
-The monitor is a read-only snapshot: it lists jobs with progress, runtime,
-attempts and status without ever blocking on job execution. Payload contents
-are never shown - only the reference and type - so nothing sensitive leaks into
-the view.
+The monitor lists jobs without blocking on execution. Payload references and
+raw exception text stay out of the primary view.
 """
 
 from __future__ import annotations
@@ -40,8 +38,56 @@ class JobMonitorViewModel:
     def _row(j: Any) -> dict[str, Any]:
         return {"type": j.type, "status": j.status, "priority": j.priority,
                 "progress": j.progress, "attempts": j.attempts, "max_attempts": j.max_attempts,
-                "payload_reference": j.payload_reference, "error": j.error,
+                "error_code": j.error_code, "error_summary": j.error_summary,
+                "checkpoint_available": bool(j.checkpoint),
                 "approval_required": j.approval_required, "approved": j.approved}
+
+
+class RepositoryJobMonitor:
+    """Workspace-bound actions for the PostgreSQL-backed monitor."""
+
+    def __init__(self, repository: Any, *, workspace_id: str) -> None:
+        if not workspace_id:
+            raise ValueError("workspace_required")
+        self.repository = repository
+        self.workspace_id = workspace_id
+
+    def build(self) -> dict[str, Any]:
+        jobs = self.repository.list_jobs(workspace_id=self.workspace_id)
+        rows = [JobMonitorViewModel._row(job) for job in jobs]
+        return {
+            "jobs": rows,
+            "counts": {status.value: sum(job.status == status.value for job in jobs)
+                       for status in JobStatus},
+        }
+
+    def pause(self, job_id: str) -> None:
+        self.repository.pause_job(job_id, workspace_id=self.workspace_id)
+
+    def resume(self, job_id: str) -> None:
+        self.repository.resume_job(job_id, workspace_id=self.workspace_id)
+
+    def retry(self, job_id: str) -> None:
+        self.repository.resume_job(job_id, workspace_id=self.workspace_id)
+
+    def cancel(self, job_id: str) -> None:
+        self.repository.cancel_job(job_id, workspace_id=self.workspace_id)
+
+    def checkpoint(self, job_id: str) -> dict[str, Any]:
+        job = self.repository.get_job(job_id, workspace_id=self.workspace_id)
+        if job is None:
+            raise KeyError("unknown_job")
+        return dict(job.checkpoint)
+
+    def approval_link(self, job_id: str) -> str:
+        job = self.repository.get_job(job_id, workspace_id=self.workspace_id)
+        if job is None or not job.approval_required:
+            raise KeyError("approval_not_available")
+        return "approval://inbox"
+
+    @staticmethod
+    def audit_link() -> str:
+        return "audit://jobs"
 
 
 def render_jobs_html(view: dict[str, Any]) -> str:
