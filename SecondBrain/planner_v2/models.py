@@ -15,7 +15,7 @@ from typing import Any
 
 __all__ = [
     "RiskLevel", "NodeStatus", "PlanStatus", "RetryPolicy", "RollbackPolicy",
-    "Budget", "PlanNode", "PlanGraph",
+    "Budget", "PlanEdge", "PlanNode", "PlanGraph",
 ]
 
 
@@ -92,6 +92,7 @@ class PlanNode:
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
     rollback_policy: RollbackPolicy = field(default_factory=RollbackPolicy)
     alt_tools: list[str] = field(default_factory=list)
+    idempotent: bool = True
     status: str = NodeStatus.PENDING.value
 
     def to_dict(self) -> dict[str, Any]:
@@ -103,7 +104,16 @@ class PlanNode:
             "estimated_cost": self.estimated_cost, "estimated_duration": self.estimated_duration,
             "retry_policy": self.retry_policy.to_dict(), "rollback_policy": self.rollback_policy.to_dict(),
             "alt_tools": list(self.alt_tools), "status": self.status,
+            "idempotent": self.idempotent,
         }
+
+
+@dataclass
+class PlanEdge:
+    source_node_id: str
+    target_node_id: str
+    condition: str = "success"
+    dependency_type: str = "finish_to_start"
 
 
 @dataclass
@@ -112,12 +122,16 @@ class PlanGraph:
     goal: str
     workspace_id: str
     nodes: list[PlanNode] = field(default_factory=list)
+    edges: list[PlanEdge] = field(default_factory=list)
+    intent: str = ""
     status: str = PlanStatus.DRAFT.value
     budget: Budget = field(default_factory=Budget)
     created_at: str = ""
     updated_at: str = ""
     checkpoint: list[str] = field(default_factory=list)   # completed node ids
     audit: list[dict[str, Any]] = field(default_factory=list)
+    constraints: dict[str, Any] = field(default_factory=dict)
+    version: int = 1
 
     @property
     def dependencies(self) -> dict[str, list[str]]:
@@ -132,4 +146,6 @@ class PlanGraph:
             "nodes": [n.to_dict() for n in self.nodes], "status": self.status,
             "budget": self.budget.to_dict(), "created_at": self.created_at, "updated_at": self.updated_at,
             "checkpoint": list(self.checkpoint), "audit": [dict(a) for a in self.audit],
+            "intent": self.intent, "edges": [vars(edge) for edge in self.edges],
+            "constraints": dict(self.constraints), "version": self.version,
         }
