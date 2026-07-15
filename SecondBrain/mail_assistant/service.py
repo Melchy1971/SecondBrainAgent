@@ -14,6 +14,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from typing import Any, Sequence
+from uuid import uuid4
 
 from secondbrain.mail_assistant.models import Category, MailMessage, MailThread, PriorityScore
 
@@ -88,6 +89,43 @@ class MailAssistant:
             "open_questions": open_questions[:5],
             "attachments": self.detect_attachments(msgs),
         }
+
+    def summarize_message(self, message: MailMessage) -> dict[str, Any]:
+        text = re.sub(r"\s+", " ", redact_mail_text(message.body)).strip()
+        return {"subject": redact_mail_text(message.subject), "summary": text[:500],
+                "source_reference": message.source_reference or message.external_id or message.message_id}
+
+    def detect_action_required(self, message: MailMessage) -> bool:
+        return self.classify_message(message) == Category.ACTION_REQUIRED.value
+
+    def extract_deadlines(self, message: MailMessage) -> list[str]:
+        return self.extract_dates(f"{message.subject}\n{message.body}")
+
+    def extract_meeting_requests(self, message: MailMessage) -> list[dict[str, Any]]:
+        if self.classify_message(message) != Category.MEETING.value:
+            return []
+        return [{"status": "proposed", "title": redact_mail_text(message.subject),
+                 "dates": self.extract_deadlines(message),
+                 "source_reference": message.source_reference or message.external_id or message.message_id}]
+
+    def extract_documents(self, message: MailMessage) -> list[dict[str, str]]:
+        return [{"name": name, "source_reference": message.source_reference or message.external_id or message.message_id}
+                for name in message.attachments]
+
+    def detect_sensitive_content(self, text: str) -> bool:
+        return redact_mail_text(text) != (text or "")
+
+    def queue_attachments(self, message: MailMessage, *, import_pipeline: Any,
+                          review_queue: Any | None = None) -> list[dict[str, Any]]:
+        results = []
+        for document in self.extract_documents(message):
+            if self.detect_sensitive_content(message.body) and review_queue is not None:
+                results.append(review_queue.add({**document, "workspace_id": message.workspace_id,
+                                                 "reason": "sensitive_mail_attachment"}))
+                continue
+            results.append(import_pipeline.enqueue({**document, "workspace_id": message.workspace_id,
+                                                    "connector_id": message.connector_id}))
+        return results
 
     def classify_message(self, message: MailMessage) -> str:
         text = f"{message.subject} {message.body}".lower()
@@ -203,12 +241,22 @@ class MailAssistant:
         return sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
     def prepare_change(self, action: str, payload: dict[str, Any], *, workspace_id: str,
+                       connector_id: str = "",
                        ttl_minutes: int = 30, approval_queue: Any | None = None, now: datetime | None = None) -> dict[str, Any]:
         if action not in WRITE_ACTIONS:
             raise ValueError(f"unknown_write_action:{action}")
         moment = now or datetime.now(timezone.utc)
-        bound = {"action": action, "workspace_id": workspace_id,
-                 "payload_hash": self._payload_hash(payload),
+        recipients = payload.get("recipients") or payload.get("to") or []
+        if isinstance(recipients, str):
+            recipients = [recipients]
+        digest = lambda value: sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+        idempotency_key = uuid4().hex
+        bound = {"action": action, "action_type": action, "connector_id": connector_id,
+                 "workspace_id": workspace_id, "thread_id": str(payload.get("thread_id") or ""),
+                 "recipient_hash": digest(recipients), "subject_hash": digest(payload.get("subject") or ""),
+                 "body_hash": digest(payload.get("body") or ""),
+                 "attachment_hashes": [digest(item) for item in payload.get("attachments", [])],
+                 "payload_hash": self._payload_hash(payload), "idempotency_key": idempotency_key,
                  "expires_at": (moment + timedelta(minutes=ttl_minutes)).isoformat(timespec="seconds")}
         approval_id = ""
         if approval_queue is not None:
@@ -217,18 +265,21 @@ class MailAssistant:
                     command=f"mail.{action}", intent=action, text=f"Mail {action}",
                     target=str(payload.get("thread_id") or payload.get("message_id") or ""),
                     category="external_send", risk_level="high", tool_name=f"mail.{action}",
-                    workspace_id=workspace_id, payload=dict(bound))
+                    workspace_id=workspace_id, payload=dict(bound), idempotency_key=idempotency_key,
+                    tool_idempotent=action != "delete_message")
                 approval_id = str(approval.get("approval_id") or "")
             except Exception:  # noqa: BLE001
                 approval_id = ""
         return {"status": "approval_required", "approval_id": approval_id, **bound}
 
-    def commit_change(self, prepared: dict[str, Any], payload: dict[str, Any], *, approved: bool,
-                      now: datetime | None = None) -> dict[str, Any]:
+    def commit_change(self, prepared: dict[str, Any], payload: dict[str, Any], *, approval_queue: Any,
+                      workspace_id: str, now: datetime | None = None) -> dict[str, Any]:
         moment = now or datetime.now(timezone.utc)
         approval_id = str(prepared.get("approval_id") or prepared.get("payload_hash"))
-        if not approved:
-            return {"status": "blocked", "reason": "not_approved"}
+        if not approval_id or approval_queue is None:
+            return {"status": "blocked", "reason": "approval_required"}
+        if workspace_id != prepared.get("workspace_id"):
+            return {"status": "blocked", "reason": "workspace_mismatch"}
         if self._payload_hash(payload) != prepared.get("payload_hash"):
             return {"status": "invalid", "reason": "payload_changed"}
         exp = self._parse(prepared.get("expires_at"))
@@ -236,6 +287,11 @@ class MailAssistant:
             return {"status": "expired", "reason": "approval_expired"}
         if approval_id in self._committed:
             return {"status": "duplicate", "reason": "already_committed"}
+        try:
+            approval_queue.begin_execution(approval_id, executor_id="mail-assistant",
+                                           idempotency_key=str(prepared.get("idempotency_key") or ""))
+        except Exception as exc:
+            return {"status": "blocked", "reason": f"approval_not_executable:{type(exc).__name__}"}
         if self.connector is None:
             return {"status": "no_connector", "reason": "connector_not_configured"}
         method = getattr(self.connector, prepared.get("action", ""), None)
@@ -244,7 +300,7 @@ class MailAssistant:
         try:
             result = method(payload)
         except MailConnectorError as exc:
-            return {"status": "connector_offline", "reason": str(exc)}
+            return {"status": "recovery_required", "reason": str(exc), "proposal": dict(payload)}
         except Exception as exc:  # noqa: BLE001
             return {"status": "error", "reason": f"{type(exc).__name__}: {exc}"}
         self._committed.add(approval_id)
