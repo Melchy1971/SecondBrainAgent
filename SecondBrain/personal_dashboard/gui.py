@@ -44,7 +44,7 @@ def render_dashboard_html(view: dict[str, Any]) -> str:
         for c in cards:
             badge = "" if c["status"] == "ok" else f"<span class='st st-{esc(c['status'])}'>{esc(c['status'])}</span>"
             if c["status"] == "error":
-                body = f"<p class='err'>Quelle nicht verfügbar</p>"
+                body = "<p class='err'>Quelle nicht verfügbar</p>"
             elif c["status"] == "loading":
                 body = "<p class='load'>lädt …</p>"
             elif not c["items"]:
