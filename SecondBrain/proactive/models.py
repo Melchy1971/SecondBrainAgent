@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-__all__ = ["SuggestionCategory", "SuggestionStatus", "Priority", "Suggestion", "FeedbackRecord"]
+__all__ = ["SuggestionCategory", "SuggestionStatus", "Priority", "SuggestionRule", "Suggestion", "FeedbackRecord"]
 
 
 class SuggestionCategory(StrEnum):
@@ -27,6 +27,8 @@ class SuggestionCategory(StrEnum):
     OVERDUE_APPROVAL = "overdue_approval"
     MISSING_BACKUP = "missing_backup"
     RECURRING_PATTERN = "recurring_pattern"
+    STALE_MEMORY = "stale_memory"
+    FAILED_JOB = "failed_job"
 
 
 class SuggestionStatus(StrEnum):
@@ -60,6 +62,10 @@ class Suggestion:
     status: str = SuggestionStatus.NEW.value
     created_at: str = ""
     dedup_key: str = ""
+    source_references: list[str] = field(default_factory=list)
+    snoozed_until: str = ""
+    rule_id: str = ""
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -69,7 +75,22 @@ class Suggestion:
             "priority": self.priority, "proposed_action": dict(self.proposed_action),
             "expires_at": self.expires_at, "status": self.status, "created_at": self.created_at,
             "dedup_key": self.dedup_key,
+            "source_references": list(self.source_references), "snoozed_until": self.snoozed_until,
+            "rule_id": self.rule_id, "version": self.version,
         }
+
+
+@dataclass
+class SuggestionRule:
+    rule_id: str
+    category: str
+    conditions: dict[str, Any] = field(default_factory=dict)
+    enabled: bool = True
+    confidence_threshold: float = 0.5
+    cooldown_days: int = 7
+    priority: str = Priority.MEDIUM.value
+    max_open_suggestions: int = 3
+    workspace_scope: str = "*"
 
 
 @dataclass

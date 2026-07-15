@@ -72,7 +72,7 @@ def test_accept_no_direct_external():
     s = e.generate(workspace_id=WS, context=ctx, now=T0)[0]
     intent = e.accept(s.suggestion_id)
     assert intent["executed"] is False
-    assert intent["created"] in ("task", "plan", "review", "job", "automation")
+    assert intent["created"] in ("task", "plan", "review", "briefing")
     # this one has an external effect -> must be approval-gated, not executed
     assert intent["external_action"] is True
     assert intent["approval_required"] is True
@@ -113,6 +113,24 @@ def test_disable_rule():
     ctx = _ctx(tasks=[{"id": "t-1", "title": "Konzept", "due": "2026-01-02", "started": False}])
     sugs = e.generate(workspace_id=WS, context=ctx, now=T0)
     assert all(s.category != SuggestionCategory.DEADLINE_RISK.value for s in sugs)
+
+
+def test_disabled_rule_is_workspace_scoped():
+    engine = _eng()
+    engine.disable_rule(SuggestionCategory.DEADLINE_RISK.value, workspace_id=WS)
+    context = _ctx(tasks=[{"id": "t-1", "title": "Konzept", "due": "2026-01-02", "started": False}])
+    assert engine.generate(workspace_id=WS, context=context, now=T0) == []
+    assert engine.generate(workspace_id="ws-2", context=context, now=T0)
+
+
+def test_accept_can_create_local_task_but_never_external_action():
+    calls = []
+    engine = ProactiveEngine(task_factory=lambda **values: calls.append(values) or {"task": "created"})
+    suggestion = engine.generate(workspace_id=WS, context=_ctx(
+        tasks=[{"id": "t-1", "title": "Konzept", "due": "2026-01-02", "started": False}]), now=T0)[0]
+    result = engine.accept(suggestion.suggestion_id)
+    assert result["created_result"] == {"task": "created"} and len(calls) == 1
+    assert result["executed"] is False
 
 
 # 10: feedback stored auditably
