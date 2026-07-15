@@ -147,8 +147,23 @@ class PostgresJobRepository:
 
     def fail_job(self, job_id: str, *, workspace_id: str, worker_id: str,
                  error_code: str, error_summary: str) -> Job:
-        return self._finish(job_id, workspace_id, worker_id, JobStatus.FAILED.value,
-                            error_code=error_code, error_summary=error_summary[:200])
+        job = self._required(job_id, workspace_id)
+        self._require_owner(job, worker_id)
+        job.attempts += 1
+        if not job.idempotent:
+            status = JobStatus.RECOVERY_REQUIRED.value
+        elif job.attempts < job.max_attempts:
+            status = JobStatus.RETRYING.value
+        else:
+            status = JobStatus.FAILED.value
+        job = self._finish(job_id, workspace_id, worker_id, status, attempts=job.attempts,
+                           error_code=error_code, error_summary=error_summary[:200])
+        if status == JobStatus.RETRYING.value:
+            job = self._set_status(job_id, workspace_id, JobStatus.QUEUED.value)
+        return job
+
+    def start_job(self, job_id: str, *, workspace_id: str, worker_id: str) -> Job:
+        return self._mutate(job_id, workspace_id, worker_id, status=JobStatus.RUNNING.value)
 
     def pause_job(self, job_id: str, *, workspace_id: str) -> Job:
         return self._set_status(job_id, workspace_id, JobStatus.PAUSED.value)
