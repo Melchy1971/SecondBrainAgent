@@ -12,7 +12,7 @@ from enum import StrEnum
 from typing import Any
 
 __all__ = [
-    "CalendarEvent", "FreeSlot", "Conflict", "ConflictType", "WorkingHours",
+    "CalendarEvent", "CalendarAvailability", "FreeSlot", "Conflict", "ConflictType", "WorkingHours",
     "parse_dt", "to_utc",
 ]
 
@@ -53,16 +53,21 @@ class CalendarEvent:
     title: str
     start: str
     end: str
+    connector_id: str = ""
     description: str = ""
     timezone: str = "UTC"
     location: str = ""
     attendees: list[str] = field(default_factory=list)
     organizer: str = ""
     status: str = "confirmed"
+    visibility: str = "default"
     recurrence: str = ""
     source: str = "connector"
     external_id: str = ""
     updated_at: str = ""
+    source_updated_at: str = ""
+    synced_at: str = ""
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -76,6 +81,24 @@ class CalendarEvent:
 
     def end_dt(self) -> datetime | None:
         return parse_dt(self.end)
+
+    @property
+    def start_at(self) -> str:
+        return self.start
+
+    @property
+    def end_at(self) -> str:
+        return self.end
+
+
+@dataclass
+class CalendarAvailability:
+    date: str
+    available_slots: list[dict[str, Any]] = field(default_factory=list)
+    busy_slots: list[dict[str, Any]] = field(default_factory=list)
+    focus_slots: list[dict[str, Any]] = field(default_factory=list)
+    travel_blocks: list[dict[str, Any]] = field(default_factory=list)
+    conflicts: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass

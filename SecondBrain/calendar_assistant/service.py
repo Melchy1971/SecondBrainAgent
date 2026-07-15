@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
+from uuid import uuid4
 from typing import Any, Sequence
 
 from secondbrain.calendar_assistant.models import (
@@ -71,6 +72,32 @@ class CalendarService:
                 continue
             out.append(ev)
         return sorted(out, key=lambda e: e.start)
+
+    def list_calendars(self, events: Sequence[CalendarEvent], *, workspace_id: str) -> list[str]:
+        return sorted({event.calendar_id for event in events if event.workspace_id == workspace_id})
+
+    def get_today(self, events: Sequence[CalendarEvent], *, workspace_id: str, now: datetime | None = None) -> list[CalendarEvent]:
+        moment = now or datetime.now(timezone.utc)
+        return [event for event in self.list_events(events, workspace_id=workspace_id)
+                if (bounds := _event_bounds(event)) is not None and bounds[0].date() == _utc(moment).date()]
+
+    def get_week(self, events: Sequence[CalendarEvent], *, workspace_id: str, week_start: str) -> list[CalendarEvent]:
+        start = parse_dt(week_start)
+        if start is None or start.tzinfo is None:
+            return []
+        start = _utc(start)
+        return self.list_events(events, workspace_id=workspace_id, period_start=start.isoformat(),
+                                period_end=(start + timedelta(days=7)).isoformat())
+
+    def get_next_event(self, events: Sequence[CalendarEvent], *, workspace_id: str, now: datetime | None = None) -> CalendarEvent | None:
+        moment = _utc(now or datetime.now(timezone.utc))
+        return next((event for event in self.list_events(events, workspace_id=workspace_id)
+                     if (start := event.start_dt()) is not None and start.tzinfo is not None and _utc(start) >= moment), None)
+
+    def get_event_preparation(self, event: CalendarEvent) -> dict[str, Any]:
+        return {"title": event.title, "start_at": event.start, "location": event.location,
+                "attendees": list(event.attendees), "source_reference": event.external_id or event.event_id,
+                "suggestion_only": True}
 
     def get_event(self, events: Sequence[CalendarEvent], event_id: str, *, workspace_id: str) -> CalendarEvent | None:
         for ev in events:
@@ -204,6 +231,7 @@ class CalendarService:
         return sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
     def prepare_change(self, action: str, payload: dict[str, Any], *, workspace_id: str,
+                       connector_id: str = "", actor: str = "user",
                        ttl_minutes: int = 30, approval_queue: Any | None = None, now: datetime | None = None) -> dict[str, Any]:
         if action not in WRITE_ACTIONS:
             raise ValueError(f"unknown_write_action:{action}")
@@ -211,8 +239,16 @@ class CalendarService:
         payload_hash = self._payload_hash(payload)
         expires_at = (moment + timedelta(minutes=ttl_minutes)).isoformat(timespec="seconds")
         event_id = str(payload.get("event_id") or "")
-        bound = {"action": action, "event_id": event_id, "workspace_id": workspace_id,
-                 "payload_hash": payload_hash, "expires_at": expires_at}
+        attendees = payload.get("attendees") or []
+        attendee_hash = sha256(json.dumps(attendees, sort_keys=True).encode("utf-8")).hexdigest()
+        idempotency_key = uuid4().hex
+        bound = {"action": action, "action_type": action, "event_id": event_id,
+                 "external_event_id": str(payload.get("external_id") or event_id),
+                 "connector_id": connector_id, "workspace_id": workspace_id,
+                 "payload_hash": payload_hash, "attendee_hash": attendee_hash,
+                 "start_at": payload.get("start") or payload.get("start_at"),
+                 "end_at": payload.get("end") or payload.get("end_at"),
+                 "expires_at": expires_at, "actor": actor, "idempotency_key": idempotency_key}
         approval_id = ""
         if approval_queue is not None:
             try:
@@ -222,18 +258,21 @@ class CalendarService:
                     target=event_id, category="connector_permission_change", risk_level="high",
                     tool_name=f"calendar.{action}", workspace_id=workspace_id,
                     payload={k: v for k, v in bound.items()},
+                    idempotency_key=idempotency_key,
                 )
                 approval_id = str(approval.get("approval_id") or "")
             except Exception:  # noqa: BLE001
                 approval_id = ""
         return {"status": "approval_required", "approval_id": approval_id, **bound}
 
-    def commit_change(self, prepared: dict[str, Any], payload: dict[str, Any], *, approved: bool,
-                      now: datetime | None = None) -> dict[str, Any]:
+    def commit_change(self, prepared: dict[str, Any], payload: dict[str, Any], *, approval_queue: Any,
+                      workspace_id: str, now: datetime | None = None) -> dict[str, Any]:
         moment = now or datetime.now(timezone.utc)
         approval_id = str(prepared.get("approval_id") or prepared.get("payload_hash"))
-        if not approved:
-            return {"status": "blocked", "reason": "not_approved"}
+        if not approval_id or approval_queue is None:
+            return {"status": "blocked", "reason": "approval_required"}
+        if workspace_id != prepared.get("workspace_id"):
+            return {"status": "blocked", "reason": "workspace_mismatch"}
         if self._payload_hash(payload) != prepared.get("payload_hash"):
             return {"status": "invalid", "reason": "payload_changed"}
         exp = parse_dt(prepared.get("expires_at"))
@@ -241,6 +280,11 @@ class CalendarService:
             return {"status": "expired", "reason": "approval_expired"}
         if approval_id in self._committed:
             return {"status": "duplicate", "reason": "already_committed"}
+        try:
+            approval_queue.begin_execution(approval_id, executor_id="calendar-assistant",
+                                           idempotency_key=str(prepared.get("idempotency_key") or ""))
+        except Exception as exc:  # approval service is the authority; booleans are never accepted
+            return {"status": "blocked", "reason": f"approval_not_executable:{type(exc).__name__}"}
         # Execute against the connector (offline -> controlled error, no data loss).
         if self.connector is None:
             return {"status": "no_connector", "reason": "connector_not_configured"}
@@ -255,6 +299,12 @@ class CalendarService:
             return {"status": "error", "reason": f"{type(exc).__name__}: {exc}"}
         self._committed.add(approval_id)
         return {"status": "committed", "result": result}
+
+    def link_task(self, task_id: str, event: CalendarEvent, *, workspace_id: str) -> dict[str, Any]:
+        if event.workspace_id != workspace_id:
+            return {"status": "blocked", "reason": "workspace_mismatch"}
+        return {"status": "proposed", "task_id": task_id, "event_reference": event.external_id or event.event_id,
+                "workspace_id": workspace_id, "requires_user_decision": True}
 
 
 def _subtract(windows: list[tuple[datetime, datetime]], busy: tuple[datetime, datetime]) -> list[tuple[datetime, datetime]]:
