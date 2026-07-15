@@ -27,7 +27,10 @@ _SECRET_PATTERNS = (
     re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
     re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 )
-_RISKY_ACTIONS = {"send_reply", "send_message", "delete", "archive", "forward", "run_restore"}
+_SAFE_ACTIONS = {
+    "open", "create_task", "open_project", "open_briefing", "open_approval",
+    "open_suggestion", "diagnose", "refresh",
+}
 
 
 def redact_dashboard_text(text: str) -> str:
@@ -265,7 +268,7 @@ class Dashboard:
 
     def quick_action(self, *, action: str, reference: str, workspace_id: str,
                      approval_queue: Any | None = None) -> dict[str, Any]:
-        risky = action in _RISKY_ACTIONS
+        risky = action not in _SAFE_ACTIONS
         approval_id = ""
         if risky and approval_queue is not None:
             approval = approval_queue.create(command=f"dashboard.{action}", intent=action,

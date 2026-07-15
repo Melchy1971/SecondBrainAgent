@@ -165,6 +165,8 @@ def test_quick_action_approval():
     assert res["approval_id"] == "approval-1"
     safe = d.quick_action(action="open", reference="t-1", workspace_id=WS)
     assert safe["approval_required"] is False
+    unknown_write = d.quick_action(action="connector_write", reference="c-1", workspace_id=WS)
+    assert unknown_write["approval_required"] is True
 
 
 # no technical ids in visible labels
