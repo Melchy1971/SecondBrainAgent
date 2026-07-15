@@ -18,6 +18,14 @@ def _mc():
     return MemoryConsolidator()
 
 
+class ApprovalQueue:
+    def __init__(self): self.started = set()
+    def create(self, **_kwargs): return {"approval_id": "approval-1"}
+    def begin_execution(self, approval_id, **_kwargs):
+        if approval_id in self.started: raise RuntimeError("already_executed")
+        self.started.add(approval_id)
+
+
 # 1: duplicates grouped
 def test_duplicates_grouped():
     mc = _mc()
@@ -110,13 +118,23 @@ def test_privacy_mode_blocks():
 def test_consolidation_idempotent():
     mc = _mc()
     mc.add_memory(workspace_id=WS, type=MemoryType.SEMANTIC.value, content="Team nutzt Jira taeglich", now=T0)
-    mc.add_memory(workspace_id=WS, type=MemoryType.SEMANTIC.value, content="Team nutzt Jira jeden Tag", now=T0)
+    mc.add_memory(workspace_id=WS, type=MemoryType.SEMANTIC.value, content="Team nutzt Jira taeglich", now=T0)
     r1 = mc.consolidate(workspace_id=WS, now=T0)
     active1 = mc.export(workspace_id=WS)
     r2 = mc.consolidate(workspace_id=WS, now=T0)
     active2 = mc.export(workspace_id=WS)
     assert r2["merged"] == 0
     assert active1 == active2
+
+
+def test_merge_is_reversible():
+    mc = _mc()
+    mc.add_memory(workspace_id=WS, type=MemoryType.SEMANTIC.value, content="Team nutzt Jira taeglich", now=T0)
+    mc.add_memory(workspace_id=WS, type=MemoryType.SEMANTIC.value, content="Team nutzt Jira taeglich", now=T0)
+    mc.consolidate(workspace_id=WS, now=T0)
+    winner = next(memory for memory in mc.memories(workspace_id=WS) if memory.status == MemoryStatus.ACTIVE.value)
+    assert mc.undo_merge(winner.memory_id) == 1
+    assert len(mc.memories(workspace_id=WS, status=MemoryStatus.ACTIVE.value)) == 2
 
 
 # 8: evidence preserved after consolidation
@@ -136,13 +154,22 @@ def test_evidence_preserved():
 def test_delete_requires_approval():
     mc = _mc()
     m = mc.add_memory(workspace_id=WS, type=MemoryType.TASK.value, content="temp", now=T0)
-    prep = mc.prepare_delete(m.memory_id, workspace_id=WS)
+    queue = ApprovalQueue()
+    prep = mc.prepare_delete(m.memory_id, workspace_id=WS, approval_queue=queue)
     assert prep["status"] == "approval_required"
     assert mc.get(m.memory_id) is not None
-    assert mc.commit_delete(prep, approved=False)["status"] == "blocked"
-    assert mc.commit_delete(prep, approved=True)["status"] == "committed"
-    assert mc.get(m.memory_id) is None
-    assert mc.commit_delete(prep, approved=True)["status"] == "duplicate"
+    assert mc.commit_delete(prep, approval_queue=None, workspace_id=WS)["status"] == "blocked"
+    assert mc.commit_delete(prep, approval_queue=queue, workspace_id=WS)["status"] == "committed"
+    assert mc.get(m.memory_id).status == MemoryStatus.BLOCKED.value
+    assert mc.commit_delete(prep, approval_queue=queue, workspace_id=WS)["status"] == "duplicate"
+
+
+def test_report_contains_counts_but_no_contents_or_secrets():
+    mc = _mc()
+    mc.add_memory(workspace_id=WS, type=MemoryType.SYSTEM.value, content="token=sk-secret123456789", now=T0)
+    report = mc.produce_report(workspace_id=WS, now=T0)
+    assert report["counts"][MemoryStatus.BLOCKED.value] == 1
+    assert "sk-secret" not in str(report) and "content" not in str(report)
 
 
 # 10: export contains full provenance

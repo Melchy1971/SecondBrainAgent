@@ -30,6 +30,11 @@ class MemoryType(StrEnum):
 
 class MemoryStatus(StrEnum):
     ACTIVE = "active"
+    CANDIDATE = "candidate"
+    CONTRADICTORY = "contradictory"
+    OUTDATED = "outdated"
+    AMBIGUOUS = "ambiguous"
+    UNSUPPORTED = "unsupported"
     SUPERSEDED = "superseded"
     EXPIRED = "expired"
     BLOCKED = "blocked"       # no_memory / secret / privacy
@@ -49,6 +54,7 @@ class Decision(StrEnum):
     MERGE = "merge"
     REJECT = "reject"
     DEFER = "defer"
+    REQUEST_USER_CONFIRMATION = "request_user_confirmation"
 
 
 # Decay half-life per type (days). Confirmed preferences age slowly; episodic
@@ -70,11 +76,14 @@ class Memory:
     workspace_id: str
     type: str
     content: str
+    normalized_content: str = ""
     evidence: list[dict[str, Any]] = field(default_factory=list)
     source_ids: list[str] = field(default_factory=list)
     confidence: float = 0.75
     importance: float = 0.5
     created_at: str = ""
+    updated_at: str = ""
+    last_used_at: str = ""
     last_confirmed_at: str = ""
     expires_at: str | None = None
     superseded_by: str = ""
@@ -82,16 +91,19 @@ class Memory:
     sensitive: bool = False
     no_memory: bool = False
     user_confirmed: bool = False
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "memory_id": self.memory_id, "workspace_id": self.workspace_id, "type": self.type,
             "content": self.content, "evidence": [dict(e) for e in self.evidence],
+            "normalized_content": self.normalized_content,
             "source_ids": list(self.source_ids), "confidence": round(float(self.confidence), 3),
             "importance": round(float(self.importance), 3), "created_at": self.created_at,
             "last_confirmed_at": self.last_confirmed_at, "expires_at": self.expires_at,
             "superseded_by": self.superseded_by, "status": self.status, "sensitive": self.sensitive,
             "no_memory": self.no_memory, "user_confirmed": self.user_confirmed,
+            "updated_at": self.updated_at, "last_used_at": self.last_used_at, "version": self.version,
         }
 
     @classmethod

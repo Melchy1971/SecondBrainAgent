@@ -302,6 +302,18 @@ class ApprovalRequest:
     risk_level: str = "write"
     reason: str = "Schreibende Aktion erfordert explizite Bestätigung."
     category: str = "risky_agent_action"
+    plan_id: str = ""
+    step_id: str = ""
+    tool_name: str = ""
+    payload: dict[str, Any] = field(default_factory=dict)
+    workspace_id: str | None = None
+    step_state: str = ""
+    review_id: str = ""
+    version: int = 0
+    updated_at: str = ""
+    previous_status: str = ""
+    idempotency_key: str = ""
+    tool_idempotent: bool = False
     deferred_until: str = ""
     decision_note: str = ""
 

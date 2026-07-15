@@ -71,6 +71,7 @@ class MemoryConsolidator:
         self._memories: dict[str, Memory] = {}
         self._conflicts: list[MemoryConflict] = []
         self._committed: set[str] = set()
+        self._merge_history: list[dict[str, Any]] = []
 
     # -- writes -----------------------------------------------------------
 
@@ -85,9 +86,10 @@ class MemoryConsolidator:
         blocked = bool(no_memory) or bool(_SECRET_RE.search(content))
         mem = Memory(
             memory_id=str(uuid4()), workspace_id=workspace_id, type=type, content=content,
+            normalized_content=" ".join(sorted(_tokens(content))),
             evidence=[dict(e) for e in (evidence or [])], source_ids=list(source_ids or []),
             confidence=float(confidence), importance=float(importance), created_at=_iso(moment),
-            last_confirmed_at=_iso(moment), sensitive=is_sensitive, no_memory=bool(no_memory),
+            last_confirmed_at=_iso(moment), updated_at=_iso(moment), sensitive=is_sensitive, no_memory=bool(no_memory),
             status=MemoryStatus.BLOCKED.value if blocked else MemoryStatus.ACTIVE.value,
         )
         self._memories[mem.memory_id] = mem
@@ -177,6 +179,14 @@ class MemoryConsolidator:
                       if m.memory_id != winner.memory_id and m.memory_id not in contradictory]
             if not others:
                 continue
+            self._merge_history.append({
+                "winner": winner.memory_id,
+                "winner_evidence": list(winner.evidence),
+                "winner_sources": list(winner.source_ids),
+                "winner_confidence": winner.confidence,
+                "winner_importance": winner.importance,
+                "others": [(m.memory_id, m.status, m.superseded_by) for m in others],
+            })
             for other in others:
                 for e in other.evidence:
                     if e not in winner.evidence:
@@ -190,6 +200,21 @@ class MemoryConsolidator:
             winner.confidence = round(min(1.0, max(m.confidence for m in members) + 0.02 * len(others)), 3)
             winner.importance = max(m.importance for m in members)
         return {"merged": merged, "active": len(self._active(workspace_id))}
+
+    def undo_merge(self, winner_id: str) -> int:
+        snapshot = next((item for item in reversed(self._merge_history) if item["winner"] == winner_id), None)
+        if snapshot is None:
+            raise KeyError("merge_not_found")
+        winner = self._memories[winner_id]
+        winner.evidence = snapshot["winner_evidence"]
+        winner.source_ids = snapshot["winner_sources"]
+        winner.confidence = snapshot["winner_confidence"]
+        winner.importance = snapshot["winner_importance"]
+        for memory_id, status, superseded_by in snapshot["others"]:
+            memory = self._memories[memory_id]
+            memory.status, memory.superseded_by = status, superseded_by
+        self._merge_history.remove(snapshot)
+        return len(snapshot["others"])
 
     # -- conflicts --------------------------------------------------------
 
@@ -269,27 +294,52 @@ class MemoryConsolidator:
     def _payload_hash(payload: Mapping[str, Any]) -> str:
         return sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
-    def prepare_delete(self, memory_id: str, *, workspace_id: str) -> dict[str, Any]:
+    def prepare_delete(self, memory_id: str, *, workspace_id: str, approval_queue: Any | None = None) -> dict[str, Any]:
         if memory_id not in self._memories:
             raise KeyError("unknown_memory")
+        if self._memories[memory_id].workspace_id != workspace_id:
+            raise ValueError("workspace_mismatch")
         payload = {"action": "delete_memory", "memory_id": memory_id, "workspace_id": workspace_id}
-        return {"status": "approval_required", "payload_hash": self._payload_hash(payload), **payload}
+        payload_hash = self._payload_hash(payload)
+        approval_id = ""
+        if approval_queue is not None:
+            approval = approval_queue.create(command="memory.delete", intent="delete_memory", text="Memory archivieren",
+                                             target=memory_id, category="delete_request", risk_level="high",
+                                             tool_name="memory.delete", workspace_id=workspace_id,
+                                             payload={**payload, "payload_hash": payload_hash}, tool_idempotent=False)
+            approval_id = str(approval.get("approval_id") or "")
+        return {"status": "approval_required", "approval_id": approval_id, "payload_hash": payload_hash, **payload}
 
-    def commit_delete(self, prepared: Mapping[str, Any], *, approved: bool) -> dict[str, Any]:
-        if not approved:
-            return {"status": "blocked", "reason": "not_approved"}
+    def commit_delete(self, prepared: Mapping[str, Any], *, approval_queue: Any, workspace_id: str) -> dict[str, Any]:
+        approval_id = str(prepared.get("approval_id") or "")
+        if approval_queue is None or not approval_id:
+            return {"status": "blocked", "reason": "approval_required"}
+        if workspace_id != prepared.get("workspace_id"):
+            return {"status": "blocked", "reason": "workspace_mismatch"}
         payload = {k: prepared[k] for k in ("action", "memory_id", "workspace_id")}
         if self._payload_hash(payload) != prepared.get("payload_hash"):
             return {"status": "invalid", "reason": "payload_changed"}
         key = str(prepared.get("payload_hash"))
         if key in self._committed:
             return {"status": "duplicate", "reason": "already_committed"}
+        try:
+            approval_queue.begin_execution(approval_id, executor_id="memory-consolidation")
+        except Exception as exc:
+            return {"status": "blocked", "reason": f"approval_not_executable:{type(exc).__name__}"}
         mid = prepared["memory_id"]
         if mid not in self._memories:
             return {"status": "error", "reason": "unknown_memory"}
-        del self._memories[mid]
+        self._memories[mid].status = MemoryStatus.BLOCKED.value
+        self._memories[mid].updated_at = _iso(_now())
         self._committed.add(key)
         return {"status": "committed", "memory_id": mid}
+
+    def produce_report(self, *, workspace_id: str, now: datetime | None = None) -> dict[str, Any]:
+        memories = self.memories(workspace_id=workspace_id)
+        return {"workspace_id": workspace_id, "generated_at": _iso(now or _now()),
+                "counts": {status.value: sum(m.status == status.value for m in memories) for status in MemoryStatus},
+                "duplicate_groups": len(self.find_duplicates(workspace_id=workspace_id)),
+                "conflicts": len(self.detect_conflicts(workspace_id=workspace_id, now=now))}
 
     def export(self, *, workspace_id: str, include_blocked: bool = False) -> list[dict[str, Any]]:
         """Full-provenance export: content, evidence, sources, supersede chain."""
