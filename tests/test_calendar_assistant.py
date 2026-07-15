@@ -41,6 +41,20 @@ class _OfflineConnector:
         raise CalendarConnectorError("offline")
 
 
+class _ApprovalQueue:
+    def __init__(self):
+        self.started = set()
+
+    def create(self, **_kwargs):
+        return {"approval_id": "appr-1"}
+
+    def begin_execution(self, approval_id, **_kwargs):
+        if approval_id in self.started:
+            raise RuntimeError("already_executed")
+        self.started.add(approval_id)
+        return {"approval_id": approval_id, "status": "executing"}
+
+
 # 1
 def test_events_are_read_and_workspace_isolated():
     svc = CalendarService()
@@ -85,10 +99,11 @@ def test_create_is_blocked_and_creates_approval():
 def test_approved_create_runs_exactly_once():
     conn = _Connector()
     svc = CalendarService(conn)
+    queue = _ApprovalQueue()
     payload = {"event_id": "", "title": "Neu"}
-    prep = svc.prepare_change("create_event", payload, workspace_id="w1")
-    r1 = svc.commit_change(prep, payload, approved=True)
-    r2 = svc.commit_change(prep, payload, approved=True)
+    prep = svc.prepare_change("create_event", payload, workspace_id="w1", approval_queue=queue)
+    r1 = svc.commit_change(prep, payload, approval_queue=queue, workspace_id="w1")
+    r2 = svc.commit_change(prep, payload, approval_queue=queue, workspace_id="w1")
     assert r1["status"] == "committed"
     assert r2["status"] == "duplicate"
     assert len(conn.calls) == 1
@@ -97,8 +112,9 @@ def test_approved_create_runs_exactly_once():
 # 6
 def test_changed_payload_invalidates_approval():
     svc = CalendarService(_Connector())
-    prep = svc.prepare_change("create_event", {"event_id": "", "title": "A"}, workspace_id="w1")
-    result = svc.commit_change(prep, {"event_id": "", "title": "B"}, approved=True)
+    queue = _ApprovalQueue()
+    prep = svc.prepare_change("create_event", {"event_id": "", "title": "A"}, workspace_id="w1", approval_queue=queue)
+    result = svc.commit_change(prep, {"event_id": "", "title": "B"}, approval_queue=queue, workspace_id="w1")
     assert result["status"] == "invalid" and result["reason"] == "payload_changed"
 
 
@@ -120,7 +136,7 @@ def test_no_invite_without_approval():
     prep = svc.prepare_change("invite_attendees", {"event_id": "ev1", "attendees": ["a@b.c"]}, workspace_id="w1")
     assert prep["status"] == "approval_required"
     assert conn.calls == []  # nothing sent yet
-    assert svc.commit_change(prep, {"event_id": "ev1", "attendees": ["a@b.c"]}, approved=False)["status"] == "blocked"
+    assert svc.commit_change(prep, {"event_id": "ev1", "attendees": ["a@b.c"]}, approval_queue=None, workspace_id="w1")["status"] == "blocked"
     assert conn.calls == []
 
 
@@ -139,8 +155,9 @@ def test_gui_shows_source_and_status_no_ids():
 # 10
 def test_offline_connector_is_controlled_error():
     svc = CalendarService(_OfflineConnector())
-    prep = svc.prepare_change("create_event", {"event_id": "", "t": 1}, workspace_id="w1")
-    result = svc.commit_change(prep, {"event_id": "", "t": 1}, approved=True)
+    queue = _ApprovalQueue()
+    prep = svc.prepare_change("create_event", {"event_id": "", "t": 1}, workspace_id="w1", approval_queue=queue)
+    result = svc.commit_change(prep, {"event_id": "", "t": 1}, approval_queue=queue, workspace_id="w1")
     assert result["status"] == "connector_offline"
 
 
@@ -156,7 +173,23 @@ def test_agent_intents_and_expiry():
     assert move["status"] == "approval_required"
     # expired approval is rejected
     svc = CalendarService(_Connector())
-    prep = svc.prepare_change("create_event", {"event_id": "", "t": 1}, workspace_id="w1",
+    queue = _ApprovalQueue()
+    prep = svc.prepare_change("create_event", {"event_id": "", "t": 1}, workspace_id="w1", approval_queue=queue,
                               now=datetime(2026, 1, 1, tzinfo=timezone.utc), ttl_minutes=30)
-    late = svc.commit_change(prep, {"event_id": "", "t": 1}, approved=True, now=datetime(2026, 1, 2, tzinfo=timezone.utc))
+    late = svc.commit_change(prep, {"event_id": "", "t": 1}, approval_queue=queue, workspace_id="w1", now=datetime(2026, 1, 2, tzinfo=timezone.utc))
     assert late["status"] == "expired"
+
+
+def test_boolean_approval_bypass_is_impossible_and_workspace_is_bound():
+    svc = CalendarService(_Connector())
+    queue = _ApprovalQueue()
+    payload = {"event_id": "ev1", "title": "Bound"}
+    prep = svc.prepare_change("update_event", payload, workspace_id="w1", connector_id="google", approval_queue=queue)
+    assert prep["connector_id"] == "google" and prep["idempotency_key"] and prep["attendee_hash"]
+    assert svc.commit_change(prep, payload, approval_queue=queue, workspace_id="w2")["reason"] == "workspace_mismatch"
+
+
+def test_task_link_is_a_user_decision_proposal():
+    svc = CalendarService()
+    result = svc.link_task("task-1", _events()[0], workspace_id="w1")
+    assert result["status"] == "proposed" and result["requires_user_decision"] is True
