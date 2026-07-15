@@ -71,9 +71,11 @@ def _priority_for(confidence: float) -> str:
 
 
 class ProactiveEngine:
-    def __init__(self, *, cooldown_days: int = DEFAULT_COOLDOWN_DAYS) -> None:
+    def __init__(self, *, cooldown_days: int = DEFAULT_COOLDOWN_DAYS,
+                 task_factory: Any | None = None, plan_factory: Any | None = None) -> None:
         self.cooldown_days = cooldown_days
-        self.disabled_rules: set[str] = set()
+        self.disabled_rules: set[tuple[str, str]] = set()
+        self.task_factory, self.plan_factory = task_factory, plan_factory
         self._suggestions: dict[str, Suggestion] = {}
         self._by_key: dict[str, str] = {}          # dedup_key -> suggestion_id
         self._dismissed_until: dict[str, datetime] = {}
@@ -87,7 +89,10 @@ class ProactiveEngine:
         moment = now or _now()
         out: list[Suggestion] = []
         for cat, cand in self._candidates(workspace_id, context, moment):
-            if cat in self.disabled_rules:
+            if (workspace_id, cat) in self.disabled_rules or ("*", cat) in self.disabled_rules:
+                continue
+            if sum(s.workspace_id == workspace_id and s.category == cat and s.status == SuggestionStatus.NEW.value
+                   for s in self._suggestions.values()) >= 3:
                 continue
             key = self._key(workspace_id, cat, cand["subject"])
             # suppression: cooldown after dismiss, or active snooze
@@ -110,6 +115,8 @@ class ProactiveEngine:
                 confidence=confidence, priority=priority,
                 proposed_action=cand.get("proposed_action", {}),
                 expires_at=cand.get("expires_at", ""), created_at=_iso(moment), dedup_key=key,
+                source_references=sorted({str(e.get("source_id")) for e in cand.get("evidence", []) if e.get("source_id")}),
+                rule_id=cat,
             )
             self._suggestions[sug.suggestion_id] = sug
             self._by_key[key] = sug.suggestion_id
@@ -198,6 +205,17 @@ class ProactiveEngine:
                     "evidence": [{"pattern": r.get("name", ""), "n": r.get("occurrences")}],
                     "proposed_action": {"type": "automation", "title": "Automatisierung vorschlagen",
                                         "external": False}}))
+        for memory in context.get("stale_memories", []) or []:
+            cands.append((SuggestionCategory.STALE_MEMORY.value, {
+                "subject": memory.get("id", ""), "confidence": 0.7,
+                "title": "Memory sollte bestätigt werden", "evidence": [{"source_id": memory.get("id", "")}],
+                "proposed_action": {"type": "review", "title": "Memory prüfen", "external": False}}))
+        for job in context.get("failed_jobs", []) or []:
+            if int(job.get("attempts", 0)) >= 2:
+                cands.append((SuggestionCategory.FAILED_JOB.value, {
+                    "subject": job.get("id", ""), "confidence": 0.85,
+                    "title": "Job wiederholt fehlgeschlagen", "evidence": [{"source_id": job.get("id", "")}],
+                    "proposed_action": {"type": "review", "title": "Recovery prüfen", "external": False}}))
         return cands
 
     # -- user actions -----------------------------------------------------
@@ -209,7 +227,16 @@ class ProactiveEngine:
         action = dict(sug.proposed_action)
         # Accepting only creates a task/plan intent. Any external effect stays
         # approval-gated - the engine never performs the external action itself.
-        intent = {"created": action.get("type", "task"), "title": action.get("title", sug.title),
+        action_type = action.get("type", "task")
+        if action_type not in {"task", "plan", "review", "briefing"}:
+            action_type = "review"
+        created = None
+        if action_type == "task" and not action.get("external") and self.task_factory is not None:
+            created = self.task_factory(workspace_id=sug.workspace_id, title=action.get("title", sug.title),
+                                        source_reference=sug.suggestion_id)
+        elif action_type == "plan" and not action.get("external") and self.plan_factory is not None:
+            created = self.plan_factory(workspace_id=sug.workspace_id, goal=action.get("title", sug.title))
+        intent = {"created": action_type, "created_result": created, "title": action.get("title", sug.title),
                   "external_action": bool(action.get("external")),
                   "approval_required": bool(action.get("external")) or bool(action.get("approval_required")),
                   "executed": False}
@@ -233,15 +260,16 @@ class ProactiveEngine:
     def snooze(self, suggestion_id: str, *, until: datetime, now: datetime | None = None) -> None:
         sug = self._suggestions[suggestion_id]
         sug.status = SuggestionStatus.SNOOZED.value
+        sug.snoozed_until = _iso(until)
         self._snoozed_until[sug.dedup_key] = until
         self._by_key.pop(sug.dedup_key, None)
         self._log(sug, "snoozed", f"until={_iso(until)}")
 
-    def disable_rule(self, category: str) -> None:
-        self.disabled_rules.add(category)
+    def disable_rule(self, category: str, *, workspace_id: str = "*") -> None:
+        self.disabled_rules.add((workspace_id, category))
 
-    def enable_rule(self, category: str) -> None:
-        self.disabled_rules.discard(category)
+    def enable_rule(self, category: str, *, workspace_id: str = "*") -> None:
+        self.disabled_rules.discard((workspace_id, category))
 
     # -- read / audit -----------------------------------------------------
 
