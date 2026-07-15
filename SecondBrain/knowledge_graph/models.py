@@ -31,6 +31,8 @@ class EntityType(StrEnum):
     LOCATION = "location"
     SYSTEM = "system"
     PRODUCT = "product"
+    CONTRACT = "contract"
+    PROCESS = "process"
 
 
 class RelationType(StrEnum):
@@ -41,11 +43,14 @@ class RelationType(StrEnum):
     CREATED_BY = "created_by"
     RELATED_TO = "related_to"
     DEPENDS_ON = "depends_on"
+    BLOCKS = "blocks"
     SUPERSEDES = "supersedes"
     CONTRADICTS = "contradicts"
     PARTICIPATED_IN = "participated_in"
     SCHEDULED_FOR = "scheduled_for"
     RESPONSIBLE_FOR = "responsible_for"
+    OWNS = "owns"
+    LOCATED_AT = "located_at"
 
 
 @dataclass
@@ -94,6 +99,8 @@ class Entity:
     created_at: str = ""
     updated_at: str = ""
     superseded_by: str = ""
+    status: str = "active"
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -111,6 +118,7 @@ class Entity:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "superseded_by": self.superseded_by,
+            "status": self.status, "version": self.version,
         }
 
     @classmethod
@@ -124,6 +132,7 @@ class Entity:
             valid_from=data.get("valid_from", ""), valid_to=data.get("valid_to", ""),
             created_at=data.get("created_at", ""), updated_at=data.get("updated_at", ""),
             superseded_by=data.get("superseded_by", ""),
+            status=data.get("status", "active"), version=int(data.get("version", 1)),
         )
 
 
@@ -142,6 +151,7 @@ class Relationship:
     created_at: str = ""
     updated_at: str = ""
     superseded_by: str = ""
+    status: str = "active"
 
     def to_dict(self) -> dict[str, Any]:
         return {
