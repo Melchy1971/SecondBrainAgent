@@ -36,6 +36,15 @@ def _tools(calls=None):
     return log, make
 
 
+class ApprovalAuthority:
+    def __init__(self, allowed): self.allowed = set(allowed); self.claimed = set()
+    def claim(self, *, plan, node):
+        binding = (plan.plan_id, plan.workspace_id, node.node_id)
+        if node.node_id not in self.allowed or binding in self.claimed: return False
+        self.claimed.add(binding)
+        return True
+
+
 # 1: multi-step plan is created
 def test_multistep_plan_created():
     p = _planner()
@@ -127,7 +136,7 @@ def test_resume_from_checkpoint():
     assert r1["executed"] == ["a"] and "s" in r1["paused"]
     assert plan.checkpoint == ["a"]
     # approve and resume -> a is skipped (checkpoint), s and c run
-    r2 = p.resume_plan(plan, tools=tools, approved=["s"])
+    r2 = p.resume_plan(plan, tools=tools, approval_authority=ApprovalAuthority(["s"]))
     assert "a" not in r2["executed"]
     assert set(r2["executed"]) == {"s", "c"}
     assert plan.status == PlanStatus.COMPLETED.value
@@ -153,14 +162,14 @@ def test_recovery_alt_path():
 def test_retry_before_failover():
     p = _planner()
     plan = p.create_plan(goal="G", workspace_id=WS, nodes=[
-        _node("x", tool="send", retry_policy=RetryPolicy(max_attempts=2))])
+        _node("x", tool="fetch", retry_policy=RetryPolicy(max_attempts=2))])
     state = {"n": 0}
     def flaky(inp):
         state["n"] += 1
         if state["n"] < 2:
             raise RuntimeError("transient")
         return {"ok": 1}
-    res = p.execute_plan(plan, tools={"send": flaky})
+    res = p.execute_plan(plan, tools={"fetch": flaky})
     assert res["status"] == PlanStatus.COMPLETED.value
     assert state["n"] == 2
 
@@ -191,6 +200,16 @@ def test_approval_not_bypassed_by_parallel():
     assert "send" not in log           # not executed despite parallel layer
     # s is excluded from concurrent groups
     assert all("s" not in g for g in p.parallel_groups(plan))
+
+
+def test_workspace_crossing_and_unsafe_retry_are_blocked():
+    p = _planner()
+    plan = p.create_plan(goal="G", workspace_id=WS, nodes=[
+        _node("x", input={"workspace_id": "ws-2"}),
+        _node("s", tool="send", retry_policy=RetryPolicy(max_attempts=3), approval_required=True),
+    ])
+    types = {issue["type"] for issue in p.validate_plan(plan)}
+    assert {"workspace_crossing", "unsafe_retry"} <= types
 
 
 # cancel stops controlled

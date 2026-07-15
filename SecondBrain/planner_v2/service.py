@@ -22,6 +22,7 @@ from secondbrain.planner_v2.models import (
 __all__ = ["Planner", "PlanValidationError", "RunResult"]
 
 _RISKY = {RiskLevel.HIGH.value, RiskLevel.CRITICAL.value}
+_NEVER_RETRY = {"send", "delete", "forward", "publish"}
 
 
 def _now() -> str:
@@ -88,6 +89,11 @@ class Planner:
                 issues.append({"type": "missing_data", "node": n.node_id, "detail": "no input, no upstream"})
             if n.approval_required:
                 issues.append({"type": "approval_point", "node": n.node_id, "detail": "requires approval"})
+            node_workspace = n.input.get("workspace_id") if isinstance(n.input, Mapping) else None
+            if node_workspace not in (None, "", plan.workspace_id):
+                issues.append({"type": "workspace_crossing", "node": n.node_id, "detail": str(node_workspace)})
+            if any(token in n.tool.lower() for token in _NEVER_RETRY) and n.retry_policy.max_attempts > 1:
+                issues.append({"type": "unsafe_retry", "node": n.node_id, "detail": n.tool})
         if total_cost > plan.budget.max_cost:
             issues.append({"type": "cost_limit", "detail": f"{total_cost} > {plan.budget.max_cost}"})
         if total_duration > plan.budget.max_duration:
@@ -187,8 +193,7 @@ class Planner:
     # -- execution --------------------------------------------------------
 
     def execute_plan(self, plan: PlanGraph, *, tools: Mapping[str, Callable[[dict[str, Any]], Any]],
-                     approved: Iterable[str] | None = None, cancel: bool = False) -> RunResult:
-        approved_set = set(approved or [])
+                     approval_authority: Any | None = None, cancel: bool = False) -> RunResult:
         if not self.is_valid(plan):
             plan.status = PlanStatus.INVALID.value
             return RunResult(status=PlanStatus.INVALID.value, executed=[], paused=[], failed=[],
@@ -213,11 +218,16 @@ class Planner:
                     self._audit(plan, node_id, "skipped", "upstream incomplete")
                     continue
                 # approval gate - never bypassed, even inside a parallel layer
-                if n.approval_required and node_id not in approved_set:
-                    n.status = NodeStatus.WAITING_FOR_APPROVAL.value
-                    paused.append(node_id)
-                    self._audit(plan, node_id, "waiting_for_approval", "approval required")
-                    continue
+                if n.approval_required:
+                    try:
+                        authorized = bool(approval_authority and approval_authority.claim(plan=plan, node=n))
+                    except Exception:
+                        authorized = False
+                    if not authorized:
+                        n.status = NodeStatus.WAITING_FOR_APPROVAL.value
+                        paused.append(node_id)
+                        self._audit(plan, node_id, "waiting_for_approval", "bound approval required")
+                        continue
                 # budget guard - do not start a node that would exceed cost
                 if cost + n.estimated_cost > plan.budget.max_cost:
                     self._audit(plan, node_id, "budget_exceeded", f"cost limit {plan.budget.max_cost}")
@@ -249,18 +259,18 @@ class Planner:
         self._audit(plan, "-", "paused", "manual pause")
 
     def resume_plan(self, plan: PlanGraph, *, tools: Mapping[str, Callable[[dict[str, Any]], Any]],
-                    approved: Iterable[str] | None = None) -> RunResult:
+                    approval_authority: Any | None = None) -> RunResult:
         self._audit(plan, "-", "resumed", f"from checkpoint {plan.checkpoint}")
-        return self.execute_plan(plan, tools=tools, approved=approved)
+        return self.execute_plan(plan, tools=tools, approval_authority=approval_authority)
 
     def cancel_plan(self, plan: PlanGraph) -> None:
         plan.status = PlanStatus.CANCELLED.value
         self._audit(plan, "-", "cancelled", "manual cancel")
 
     def recover_plan(self, plan: PlanGraph, *, tools: Mapping[str, Callable[[dict[str, Any]], Any]],
-                     approved: Iterable[str] | None = None) -> RunResult:
+                     approval_authority: Any | None = None) -> RunResult:
         self._audit(plan, "-", "recovery", "retry via alternative path")
-        return self.execute_plan(plan, tools=tools, approved=approved)
+        return self.execute_plan(plan, tools=tools, approval_authority=approval_authority)
 
     # -- node runner with recovery ---------------------------------------
 
@@ -268,7 +278,7 @@ class Planner:
                   tools: Mapping[str, Callable[[dict[str, Any]], Any]]) -> dict[str, Any]:
         node.status = NodeStatus.RUNNING.value
         candidates = [node.tool] + list(node.alt_tools)
-        attempts = max(1, node.retry_policy.max_attempts)
+        attempts = 1 if (not node.idempotent or any(token in node.tool.lower() for token in _NEVER_RETRY)) else max(1, node.retry_policy.max_attempts)
         last_error = ""
         for tool_name in candidates:
             fn = tools.get(tool_name)
