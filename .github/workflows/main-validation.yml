@@ -1,0 +1,58 @@
+name: Main Validation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-validation
+  cancel-in-progress: true
+
+jobs:
+  test-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+        python: ["3.12", "3.13"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      PYTHONUTF8: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: packaging/windows/constraints.txt
+      - run: python -m pip install -c packaging/windows/constraints.txt -e ".[dev]"
+      - run: pytest -q -m "not live and not slow" tests
+
+  operational-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -c packaging/windows/constraints.txt -e ".[dev]"
+      - name: RAG and performance smoke
+        shell: pwsh
+        run: |
+          ./scripts/rag_smoke.ps1
+          python -m pytest -q tests/test_perf_load_test.py
+      - name: Doctors and review approval gate
+        run: |
+          python launcher.py config-doctor
+          python launcher.py repo-doctor --execute-runtime-checks
+          python launcher.py review-approval-release-gate

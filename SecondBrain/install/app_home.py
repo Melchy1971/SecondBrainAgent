@@ -19,8 +19,8 @@ from typing import Mapping
 APP_NAME = "Jarvis"
 ENV_HOME = "JARVIS_HOME"
 
-# Writable user-data directories that live under the home.
-DATA_SUBDIRS = ("config", "data", "logs", "runtime", "vault")
+# Writable state is grouped by purpose and never mixed with program files.
+DATA_SUBDIRS = ("config", "database", "vault", "logs", "backups", "cache", "updates", "runtime", "data")
 
 
 def resolve_home(env: Mapping[str, str] | None = None) -> Path:
@@ -32,6 +32,20 @@ def resolve_home(env: Mapping[str, str] | None = None) -> Path:
     if appdata:
         return Path(appdata) / APP_NAME
     return Path(src.get("HOME", str(Path.home()))).expanduser() / ".jarvis"
+
+
+def resolve_portable_home(program_dir: str | Path, env: Mapping[str, str] | None = None) -> Path:
+    """Portable state is colocated explicitly and never leaks into AppData."""
+    src = os.environ if env is None else env
+    explicit = str(src.get(ENV_HOME, "")).strip()
+    return Path(explicit).expanduser() if explicit else Path(program_dir) / "JarvisData"
+
+
+def resolve_local_home(env: Mapping[str, str] | None = None) -> Path:
+    """Machine-local, disposable state (cache, logs, downloads)."""
+    src = os.environ if env is None else env
+    local = str(src.get("LOCALAPPDATA", "")).strip()
+    return (Path(local) / APP_NAME) if local else resolve_home(src) / "local"
 
 
 def ensure_layout(home: str | Path) -> Path:

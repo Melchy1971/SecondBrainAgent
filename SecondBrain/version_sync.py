@@ -22,7 +22,8 @@ def sync_version(project_root: str | Path = ".") -> dict:
 
     masterplan = root / "docs" / "09_MASTERPLAN_STATUS.json"
     if masterplan.exists():
-        old_text = masterplan.read_text(encoding="utf-8")
+        with masterplan.open("r", encoding="utf-8", newline="") as stream:
+            old_text = stream.read()
         data = json.loads(old_text)
         data["version"] = version
         data["current_version"] = f"v{version}"
@@ -30,12 +31,13 @@ def sync_version(project_root: str | Path = ".") -> dict:
         data["version_source"] = "pyproject.toml"
         new_text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
         if new_text != old_text:
-            masterplan.write_text(new_text, encoding="utf-8")
+            masterplan.write_text(new_text, encoding="utf-8", newline="\n")
             updated["masterplan"] = version
 
     readme = root / "README.md"
     if readme.exists():
-        text = readme.read_text(encoding="utf-8")
+        with readme.open("r", encoding="utf-8", newline="") as stream:
+            text = stream.read()
         new = text
         new = re.sub(r"(?m)^(#\s+SecondBrain-Agent\s+v)[0-9][^\s]*", rf"\g<1>{version}", new, count=1)
         new = re.sub(
@@ -51,7 +53,7 @@ def sync_version(project_root: str | Path = ".") -> dict:
             count=1,
         )
         if new != text:
-            readme.write_text(new, encoding="utf-8")
+            readme.write_text(new, encoding="utf-8", newline="\n")
             updated["readme"] = version
 
     return {"version": version, "build": build, "updated": updated}
