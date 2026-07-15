@@ -16,6 +16,8 @@ from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 ROOT = os.path.abspath(os.path.join(SPECPATH, "..", ".."))
 
 hiddenimports = collect_submodules("secondbrain") + [
+    "tkinter",
+    "tkinter.ttk",
     "cryptography",
     "cryptography.hazmat.primitives.ciphers.aead",
     "cryptography.hazmat.primitives.kdf.scrypt",
@@ -26,7 +28,7 @@ for rel in ("web", "prompts", "config", "migrations"):
     src = os.path.join(ROOT, rel)
     if os.path.isdir(src):
         datas.append((src, rel))
-for rel in ("dashboard.html", "pyproject.toml", "README.md"):
+for rel in ("dashboard.html", "jarvis.jpg", "pyproject.toml", "README.md"):
     src = os.path.join(ROOT, rel)
     if os.path.isfile(src):
         datas.append((src, "."))
