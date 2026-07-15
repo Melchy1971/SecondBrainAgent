@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime, timezone
+from hashlib import sha256
 from typing import Any, Iterable, Mapping, Sequence
 
 from secondbrain.briefing.models import (
@@ -59,7 +60,9 @@ DAILY_SECTIONS: tuple[tuple[str, str, str, str | None, str, int], ...] = (
     ("important_mail", "Wichtige E-Mails", "mail", "important", Priority.MEDIUM.value, 7),
     ("follow_ups", "Follow-ups", "mail", "followup", Priority.MEDIUM.value, 8),
     ("open_approvals", "Offene Approvals", "approvals", None, Priority.HIGH.value, 5),
+    ("review_queue", "Review Queue", "review_queue", None, Priority.HIGH.value, 6),
     ("connector_errors", "Connectorfehler", "system", "connector", Priority.HIGH.value, 9),
+    ("failed_jobs", "Fehlgeschlagene Jobs", "system", "failed_job", Priority.HIGH.value, 9),
     ("relevant_documents", "Relevante Dokumente", "documents", None, Priority.LOW.value, 10),
     ("reminders", "Erinnerungen", "reminders", None, Priority.MEDIUM.value, 11),
     ("next_actions", "Empfohlene nächste Aktionen", "next_actions", None, Priority.MEDIUM.value, 12),
@@ -98,7 +101,20 @@ class BriefingBuilder:
         return self._build(BriefingKind.DAILY.value, DAILY_SECTIONS, workspace_id, sources, now)
 
     def build_weekly(self, *, workspace_id: str, sources: Mapping[str, Any], now: datetime | None = None) -> Briefing:
-        return self._build(BriefingKind.WEEKLY.value, WEEKLY_SECTIONS, workspace_id, sources, now)
+        normalized = dict(sources)
+        projects = normalized.get("projects")
+        if isinstance(projects, Mapping):
+            items = []
+            for item in projects.get("items", []):
+                row = dict(item)
+                if row.get("bucket") == "progress" and row.get("total_tasks") is not None:
+                    total = max(0, int(row.get("total_tasks", 0)))
+                    completed = max(0, int(row.get("completed_tasks", 0)))
+                    row["progress"] = round(completed / total * 100.0, 1) if total else 0.0
+                    row["text"] = f"{row.get('text', 'Projekt')}: {row['progress']:.1f}%"
+                items.append(row)
+            normalized["projects"] = {**projects, "items": items}
+        return self._build(BriefingKind.WEEKLY.value, WEEKLY_SECTIONS, workspace_id, normalized, now)
 
     def hide(self, source_reference: str) -> None:
         self._hidden.add(str(source_reference))
@@ -166,7 +182,11 @@ class BriefingBuilder:
             section._order_rank = order_rank  # type: ignore[attr-defined]
             sections.append(section)
         sections.sort(key=lambda s: (-PRIORITY_WEIGHT.get(s.priority, 0), getattr(s, "_order_rank", 99)))
-        return Briefing(kind=kind, workspace_id=workspace_id, generated_at=moment, sections=sections)
+        versions = {str(key): str(value.get("version", "unknown")) for key, value in sources.items()
+                    if isinstance(value, Mapping)}
+        briefing_id = f"brief_{sha256(f'{workspace_id}|{kind}|{moment}'.encode()).hexdigest()[:16]}"
+        return Briefing(kind=kind, workspace_id=workspace_id, generated_at=moment, briefing_id=briefing_id,
+                        period_start=moment, period_end=moment, source_versions=versions, sections=sections)
 
     def _section(self, section_id: str, title: str, source_key: str, bucket: str | None,
                  base_priority: str, workspace_id: str, sources: Mapping[str, Any], moment: str) -> BriefingSection:
@@ -214,6 +234,11 @@ class BriefingBuilder:
             uncertain = bool(entry.get("uncertain")) or not ref
             item = BriefingItem(
                 text=text,
+                item_id=f"brief_item_{sha256(f'{source_key}|{ref}|{text}'.encode()).hexdigest()[:16]}",
+                title=redact_briefing_text(str(entry.get("title", text))),
+                summary=redact_briefing_text(str(entry.get("summary", text))),
+                priority=str(entry.get("priority", Priority.MEDIUM.value)),
+                source_type=str(entry.get("source_type", source_key)),
                 source_reference=ref,
                 source=str(entry.get("source", source_key)),
                 confidence=float(entry.get("confidence", 1.0)),
@@ -222,6 +247,8 @@ class BriefingBuilder:
                 kind=str(entry.get("kind", "")),
                 due=str(entry.get("due", "")),
                 preparation=[str(p) for p in entry.get("preparation", [])],
+                evidence=[redact_briefing_text(str(value)) for value in entry.get("evidence", [ref]) if value],
+                proposed_action=entry.get("proposed_action"), status=str(entry.get("status", "open")),
             )
             item.due_is_critical = bool(entry.get("critical"))  # type: ignore[attr-defined]
             out.append(item)
