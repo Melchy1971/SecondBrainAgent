@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="15">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Health Dashboard v30.99</title>
+<style>
+  body{margin:0;background:#0a0e14;color:#d8ecf5;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px}
+  h1{font-size:20px;letter-spacing:.04em;margin:0}
+  .banner{display:flex;align-items:center;gap:12px;margin:14px 0 22px}
+  .big{width:16px;height:16px;border-radius:50%;box-shadow:0 0 12px}
+  .sub{color:#7a93a6}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .card{background:#111823;border:1px solid #1e2b3a;border-radius:10px;padding:14px;position:relative}
+  .dot{width:11px;height:11px;border-radius:50%;position:absolute;top:14px;right:14px}
+  .cn{color:#8fb0c4;font-size:12px;text-transform:uppercase;letter-spacing:.07em}
+  .cv{font-size:20px;font-weight:600;margin:4px 0}
+  .cd{color:#6d8497;font-size:12px;min-height:16px}
+  .sp{margin-top:8px}
+  .timeline{margin:26px 0 6px;display:flex;gap:3px;align-items:center}
+  .tick{width:10px;height:22px;border-radius:2px;display:inline-block}
+</style></head>
+<body><div class="wrap">
+  <h1>HEALTH DASHBOARD &middot; v30.99</h1>
+  <div class="banner">
+    <div class="big" style="background:#2fe6a0;box-shadow:0 0 12px #2fe6a0"></div>
+    <div><b>Gesamtstatus: OK</b>
+    <span class="sub"> &middot; 2026-07-14T10:19:15+00:00 &middot; 1 Snapshots</span></div>
+  </div>
+  <div class="grid"><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>CPU</div><div class='cv'>0%</div><div class='cd'></div><div class='sp'><span style='color:#5a6b7a'>—</span></div></div><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>RAM</div><div class='cv'>11.1%</div><div class='cd'></div><div class='sp'><span style='color:#5a6b7a'>—</span></div></div><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>Disk</div><div class='cv'>62.4%</div><div class='cd'></div><div class='sp'><span style='color:#5a6b7a'>—</span></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>GPU</div><div class='cv'>unavailable</div><div class='cd'>pynvml/NVIDIA nicht verfuegbar</div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>DB</div><div class='cv'>unavailable</div><div class='cd'>keine DATABASE_URL konfiguriert (SQLite/Dev)</div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>Queue</div><div class='cv'>0 offen</div><div class='cd'></div><div class='sp'><span style='color:#5a6b7a'>—</span></div></div><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>Agenten</div><div class='cv'>6 (default)</div><div class='cd'></div><div class='sp'><span style='color:#5a6b7a'>—</span></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>Connectoren</div><div class='cv'>unavailable</div><div class='cd'>Connector-Runtime/Credentials nicht verfuegbar</div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#2fe6a0'></div><div class='cn'>Memory</div><div class='cv'>Store verfuegbar</div><div class='cd'></div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>Embedding</div><div class='cv'>unavailable</div><div class='cd'>kein Embedding-Provider konfiguriert</div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>Provider</div><div class='cv'>unavailable</div><div class='cd'>kein LLM-Provider konfiguriert</div><div class='sp'></div></div><div class='card'><div class='dot' style='background:#5a6b7a'></div><div class='cn'>Audit</div><div class='cv'>unavailable</div><div class='cd'>kein Audit-Log vorhanden</div><div class='sp'></div></div></div>
+  <div class="sub" style="margin-top:24px;text-transform:uppercase;letter-spacing:.07em;font-size:12px">Timeline (Gesamtstatus, alt &rarr; neu)</div>
+  <div class="timeline"><span class='tick' title='2026-07-14T10:19:15+00:00' style='background:#2fe6a0'></span></div>
+  <div class="sub" style="margin-top:18px;font-size:12px">Auto-Refresh alle 15 s &middot; Ampel: gruen=ok, gelb=warn, rot=critical, grau=unavailable (Dienst im Sandbox nicht erreichbar)</div>
+</div></body></html>

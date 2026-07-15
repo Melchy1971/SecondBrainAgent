@@ -1,0 +1,9 @@
+service:
+  enabled: true
+  mode: scheduler
+  import_interval_minutes: 30
+  intelligence_interval_minutes: 120
+  governance_interval_minutes: 240
+  dashboard_port: 8765
+  api_port: 8787
+  run_on_startup: true

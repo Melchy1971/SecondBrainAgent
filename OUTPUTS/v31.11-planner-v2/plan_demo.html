@@ -1,0 +1,17 @@
+<!doctype html><html lang='de'><head><meta charset='utf-8'>
+<title>Planner V2</title><style>
+body{font-family:system-ui,Segoe UI,sans-serif;margin:24px;color:#111;background:#f6f6f8}
+h1,h2{color:#e20074}
+.layer{background:#fff;border:1px solid #e2e2e2;border-radius:8px;padding:8px 14px;margin:8px 0}
+code{background:#eef;padding:1px 5px;border-radius:4px;margin:0 6px}
+.r{font-size:11px;padding:1px 6px;border-radius:10px;margin-left:6px}
+.r-high,.r-critical{background:#fde2e2;color:#c0142c}
+.r-low,.r-medium{background:#eef7e2;color:#3a6d00}
+ul{padding-left:18px}
+</style></head><body>
+<h1>Planner V2</h1>
+<p><b>Ziel:</b> Tages-Antwort vorbereiten · Status: validated</p>
+<p>Simulation: 4 Schritte · Kosten 3.0 · Dauer 0.0 · Approvals 1 · ausgeführt: False</p>
+<h2>Ausführungsebenen</h2><div class='layer'><h3>Ebene 0 (parallel)</h3><ul><li>Termine laden <code>fetch</code><span class='r r-low'>low</span></li><li>E-Mails laden <code>fetch</code><span class='r r-low'>low</span></li></ul></div><div class='layer'><h3>Ebene 1 (parallel)</h3><ul><li>Zusammenfassen <code>summarize</code><span class='r r-low'>low</span></li></ul></div><div class='layer'><h3>Ebene 2 (parallel)</h3><ul><li>Antwort senden <code>send</code><span class='r r-high'>high</span> 🔒Approval</li></ul></div>
+<h2>Validierung</h2><ul><li>approval_point: requires approval</li></ul>
+</body></html>
