@@ -116,6 +116,16 @@
       "release": "v31.16",
       "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
       "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.17-v31.18",
+      "capability": "Long-Running-Job-Runtime und erweiterte proaktive Assistenz auf separaten Feature-Branches",
+      "status": "feature_branches_pending_merge"
+    },
+    {
+      "release": "v31.19",
+      "capability": "Persoenliches Dashboard mit vollstaendigem Snapshot, PostgreSQL-Personalisierung, parallelen Reads, Timeout und Cancellation",
+      "status": "feature_branch_pending_merge"
     }
   ],
   "remaining_blockers": [
@@ -166,7 +176,7 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.16",
+  "documented_feature_level": "v31.19",
   "documentation_updated_at": "2026-07-15",
   "review_approval_release": {
     "release": "v30.86",

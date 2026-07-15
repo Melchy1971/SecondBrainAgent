@@ -39,3 +39,12 @@ Langsame Quellen laufen parallel mit individuellem Timeout. Lazy Loading, Pagina
 ## Persistenz
 
 Kartenreihenfolge, Sichtbarkeit, Standard-Workspace, Zeitraum, Dichte und bevorzugte Startseite werden workspace-/nutzergebunden gespeichert. Produktionspersistenz verwendet PostgreSQL; ein lokaler In-Memory-Modus ist nur fuer Entwicklung und Tests zulaessig.
+
+## Implementierungsstand
+
+- Snapshot und Kartenvertrag enthalten Reviews, Jobs, `card_type` und `is_cached`.
+- Reviews und aktive beziehungsweise Recovery-Jobs besitzen eigene Karten und Drill-down-Ziele.
+- `PostgresDashboardRepository` speichert versionierte, profil- und workspacegebundene Einstellungen.
+- `DashboardRuntime` liest Quellen parallel, paginiert, misst Ladezeiten und isoliert Timeouts.
+- Requests koennen kooperativ abgebrochen, einzelne Karten inkrementell aktualisiert werden.
+- Quick Actions verwenden eine Safe-Action-Allowlist; unbekannte Aktionen sind standardmaessig approvalpflichtig.
