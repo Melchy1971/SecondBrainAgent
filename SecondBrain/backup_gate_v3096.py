@@ -76,7 +76,7 @@ def run_backup_gate(project_root: str | Path = ".", *, manager: BackupManagerLik
     root = Path(project_root)
     if manager is None:  # lazy import keeps this module free of heavy deps
         from secondbrain.operations_v119 import BackupManager  # type: ignore
-        manager = BackupManager(root)
+        manager = BackupManager(root, root / "runtime")
 
     state: dict[str, Any] = {}
 
@@ -114,7 +114,6 @@ def run_backup_gate(project_root: str | Path = ".", *, manager: BackupManagerLik
 
     def rollback() -> tuple[bool, str]:
         # rollback capability must be declared for restore safety
-        plan = state.get("verify", {})
         supported = True  # BackupManager.restore performs create-before-restore + rollback()
         return supported, "rollback_supported"
 
