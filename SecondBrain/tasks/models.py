@@ -90,9 +90,11 @@ class Project:
     due_date: str | None = None
     progress: float = 0.0
     source: str = "user"
+    source_reference: str = ""
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     archived_at: str | None = None
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -108,6 +110,7 @@ class Task:
     project_id: str | None
     workspace_id: str
     title: str
+    parent_task_id: str | None = None
     description: str = ""
     status: str = Status.INBOX.value
     priority: str = Priority.NORMAL.value
@@ -115,11 +118,15 @@ class Task:
     start_date: str | None = None
     completed_at: str | None = None
     assignee: str = ""
+    estimated_minutes: int | None = None
+    actual_minutes: int | None = None
     source: str = "user"
     source_reference: str = ""
     confidence: float = 1.0
+    created_by: str = "user"
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
+    version: int = 1
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -133,6 +140,7 @@ class Task:
 class TaskDependency:
     predecessor_id: str
     successor_id: str
+    dependency_id: str = field(default_factory=lambda: new_id("dep"))
     dependency_type: str = DependencyType.FINISH_TO_START.value
     lag_minutes: int = 0
 
@@ -151,6 +159,9 @@ class TaskEvent:
     workspace_id: str
     event_type: str
     actor: str = "system"
+    old_value: Any = None
+    new_value: Any = None
+    correlation_id: str = ""
     detail: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=utc_now)
