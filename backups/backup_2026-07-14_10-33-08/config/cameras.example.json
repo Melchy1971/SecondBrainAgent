@@ -1,0 +1,27 @@
+{
+  "gateway_webrtc": "http://127.0.0.1:8889",
+  "gateway_hls": "http://127.0.0.1:8888",
+  "cameras": [
+    {
+      "id": "haustuer",
+      "name": "Haustür",
+      "location": "Eingang",
+      "host": "192.168.1.50",
+      "rtsp_port": 554,
+      "stream_path": "haustuer",
+      "mode": "webrtc",
+      "onvif_port": 8000,
+      "enabled": true
+    },
+    {
+      "id": "hof",
+      "name": "Hof",
+      "location": "Außen",
+      "host": "192.168.1.51",
+      "rtsp_port": 554,
+      "stream_path": "hof",
+      "mode": "hls",
+      "enabled": true
+    }
+  ]
+}

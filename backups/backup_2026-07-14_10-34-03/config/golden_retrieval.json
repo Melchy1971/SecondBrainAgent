@@ -1,0 +1,25 @@
+{
+  "dataset_id": "project_v1",
+  "queries": [
+    {
+      "query": "Jarvis RAG Quellen",
+      "expected_terms": [
+        "jarvis",
+        "rag",
+        "quellen"
+      ],
+      "min_recall_at_k": 0.66,
+      "min_mrr": 0.25,
+      "min_ndcg": 0.35,
+      "k": 10,
+      "note": "Core source retrieval smoke",
+      "min_hit_count": 1,
+      "expected_sources": [],
+      "expected_titles": []
+    }
+  ],
+  "quality_policy": {
+    "mode": "blocking",
+    "min_pass_rate": 1.0
+  }
+}

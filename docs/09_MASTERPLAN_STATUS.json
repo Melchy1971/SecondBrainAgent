@@ -1,6 +1,6 @@
 {
-  "version": "30.86.0",
-  "current_version": "v30.86.0",
+  "version": "30.77.0",
+  "current_version": "v30.77.0",
   "completed_capabilities": [
     {
       "release": "v30.61",
@@ -142,7 +142,7 @@
       "review-approval-release-gate"
     ]
   },
-  "build": 308600,
+  "build": 307700,
   "version_source": "pyproject.toml",
   "review_approval_release": {
     "release": "v30.86",

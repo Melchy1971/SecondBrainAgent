@@ -1,0 +1,9 @@
+quality:
+  min_frontmatter_ratio: 0.75
+  max_inbox_files: 50
+  max_review_items: 100
+  require_title: true
+  require_type: true
+  require_tags: true
+  warn_empty_notes: true
+  warn_large_notes_kb: 250

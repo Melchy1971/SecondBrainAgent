@@ -14,14 +14,17 @@
   package payload free of writable state.
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Name="Jarvis" Manufacturer="SecondBrain" Version="30.77.0"
-           UpgradeCode="B7D6B9E4-9C2E-4A6F-9E1B-JARVISMSI0001" Scope="perMachine">
+  <?ifndef AppVersion ?><?define AppVersion = "0.0.0" ?><?endif?>
+  <Package Name="Jarvis" Manufacturer="SecondBrain" Version="$(var.AppVersion)"
+           UpgradeCode="B7D6B9E4-9C2E-4A6F-9E1B-7A2A15000001" Scope="perUser">
 
     <MajorUpgrade DowngradeErrorMessage="Eine neuere Version von Jarvis ist bereits installiert." />
     <MediaTemplate EmbedCab="yes" />
 
-    <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="Jarvis" />
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Jarvis" />
+      </Directory>
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder">
       <Directory Id="AppProgramMenu" Name="Jarvis" />
