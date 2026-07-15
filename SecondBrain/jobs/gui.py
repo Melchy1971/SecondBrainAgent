@@ -11,7 +11,7 @@ from __future__ import annotations
 import html
 from typing import Any
 
-from secondbrain.jobs.models import JobStatus
+from secondbrain.jobs.models import JobStatus, priority_rank
 from secondbrain.jobs.service import JobManager
 
 __all__ = ["JobMonitorViewModel", "render_jobs_html"]
@@ -23,7 +23,8 @@ class JobMonitorViewModel:
 
     def build(self, *, workspace_id: str | None = None) -> dict[str, Any]:
         jobs = self.manager.store.all(workspace_id=workspace_id)
-        rows = [self._row(j) for j in sorted(jobs, key=lambda j: (-j.priority, j.created_at))]
+        rows = [self._row(j) for j in sorted(
+            jobs, key=lambda j: (-priority_rank(j.priority), j.created_at))]
         counts: dict[str, int] = {}
         for j in jobs:
             counts[j.status] = counts.get(j.status, 0) + 1
