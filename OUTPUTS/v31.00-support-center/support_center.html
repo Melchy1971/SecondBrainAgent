@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Center v31.00</title>
+<style>
+  body{margin:0;background:#0a0e14;color:#d8ecf5;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:26px}
+  h1{font-size:20px;letter-spacing:.04em;margin:0 0 4px}
+  .sub{color:#7a93a6;margin-bottom:18px}
+  .note{background:#111823;border:1px solid #1e2b3a;border-radius:10px;padding:12px 16px;margin-bottom:18px}
+  table{width:100%;border-collapse:collapse;background:#0e141d;border:1px solid #1e2b3a;border-radius:10px;overflow:hidden}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #16202c;vertical-align:top}
+  th{color:#8fb0c4;font-size:12px;text-transform:uppercase;letter-spacing:.06em;background:#0c1621}
+  pre{white-space:pre-wrap;word-break:break-word;color:#9fb8c9;font-size:12px;max-height:320px;overflow:auto;margin:8px 0 0}
+  details summary{cursor:pointer;color:#5ac8fa}
+</style></head>
+<body><div class="wrap">
+  <h1>SUPPORT CENTER &middot; v31.00</h1>
+  <div class="sub">2026-07-14T13:03:40+00:00 &middot; 9 Sektionen</div>
+  <div class="note">ZIP-Export: <b>support_bundle.zip</b> (im selben Ordner). Alle Inhalte sind <b>automatisch von Secrets bereinigt</b> ([REDACTED]).</div>
+  <table>
+    <thead><tr><th>Sektion</th><th>Status</th><th>Details</th></tr></thead>
+    <tbody><tr><td><b>diagnose</b></td><td><span style='color:#2fe6a0'>&#9679;</span> status: ok</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;checks&quot;: {
+    &quot;project_root_exists&quot;: true,
+    &quot;runtime_dir&quot;: true,
+    &quot;config_dir&quot;: true,
+    &quot;launcher&quot;: true,
+    &quot;python&quot;: &quot;3.10.12&quot;,
+    &quot;psutil&quot;: true
+  },
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;missing&quot;: []
+}</pre></details></td></tr><tr><td><b>health_snapshot</b></td><td><span style='color:#2fe6a0'>&#9679;</span> psutil: True</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;psutil&quot;: true,
+  &quot;cpu_percent&quot;: 0.0,
+  &quot;ram_percent&quot;: 10.1,
+  &quot;disk_percent&quot;: 79.2,
+  &quot;ram_total_gb&quot;: 4.11,
+  &quot;disk_free_gb&quot;: 7.16
+}</pre></details></td></tr><tr><td><b>config_snapshot</b></td><td><span style='color:#2fe6a0'>&#9679;</span> count: 53</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;config_files&quot;: [
+    &quot;agent_memory.yaml&quot;,
+    &quot;agents_v98.yaml&quot;,
+    &quot;ai_layer.yaml&quot;,
+    &quot;ai_runtime_v105.yaml&quot;,
+    &quot;calendar.yaml&quot;,
+    &quot;cameras.example.json&quot;,
+    &quot;cameras.json&quot;,
+    &quot;chatgpt_import.yaml&quot;,
+    &quot;claude/claude_desktop_config_secondbrain.json&quot;,
+    &quot;connectors.production.yaml&quot;,
+    &quot;connectors.yaml&quot;,
+    &quot;connectors_v104.json&quot;,
+    &quot;connectors_v95.yaml&quot;,
+    &quot;feature_flags.yaml&quot;,
+    &quot;gemini_import.yaml&quot;,
+    &quot;goals.yaml&quot;,
+    &quot;golden_retrieval.json&quot;,
+    &quot;hud_settings.json&quot;,
+    &quot;importers.yaml&quot;,
+    &quot;knowledge_intelligence_v99.yaml&quot;,
+    &quot;life_os_v10.yaml&quot;,
+    &quot;llm_router.yaml&quot;,
+    &quot;local_ai_cluster.yaml&quot;,
+    &quot;logging.yaml&quot;,
+    &quot;mcp_ecosystem.yaml&quot;,
+    &quot;mcp_hub.yaml&quot;,
+    &quot;mediamtx.yml&quot;,
+    &quot;obsidian_plugin.yaml&quot;,
+    &quot;olden_retrieval.json&quot;,
+    &quot;ontology.yaml&quot;,
+    &quot;perplexity_import.yaml&quot;,
+    &quot;production.yaml&quot;,
+    &quot;production_ready.yaml&quot;,
+    &quot;profiles/linux.yaml&quot;,
+    &quot;profiles/macos.yaml&quot;,
+    &quot;profiles/windows.yaml&quot;,
+    &quot;providers.yaml&quot;,
+    &quot;quality.yaml&quot;,
+    &quot;runtime.yaml&quot;,
+    &quot;runtime_v111.yaml&quot;,
+    &quot;secrets.template.yaml&quot;,
+    &quot;security.yaml&quot;,
+    &quot;security_v107.yaml&quot;,
+    &quot;service.yaml&quot;,
+    &quot;settings.yaml&quot;,
+    &quot;sync.yaml&quot;,
+    &quot;team.yaml&quot;,
+    &quot;v9_modules.yaml&quot;,
+    &quot;vault.yaml&quot;,
+    &quot;vaults.yaml&quot;,
+    &quot;vector_rag.yaml&quot;,
+    &quot;voice_layer_v103.yaml&quot;,
+    &quot;workflows.yaml&quot;
+  ],
+  &quot;count&quot;: 53,
+  &quot;contents&quot;: {
+    &quot;agent_memory.yaml&quot;: &quot;agents:\n  research:\n    memory: true\n    learns_from: [research, knowledge_gaps, sources]\n  project:\n    memory: true\n    learns_from: [projects, tasks, risks, decisions]\n  process:\n    memory: true\n    learns_from: [processes, meetings, emails]\n  executive:\n    memory: true\n    learns_from: [dashboards, kpis, risks]\n  chief_of_staff:\n    memory: true\n    learns_from: [all]\n&quot;,
+    &quot;agents_v98.yaml&quot;: &quot;agents_v98:\n  task_agent:\n    autonomy: review_first\n    can_create_tasks: true\n    can_complete_tasks: false\n  research_agent:\n    autonomy: backlog_only\n    web_research: disabled\n  meeting_agent:\n    autonomy: review_first\n    can_create_protocols: true\n  project_agent:\n    autonomy: review_first\n    can_create_roadmaps: true\n  decision_agent:\n    autonomy: review_first\n    can_flag_missing_decisions: true\n  process_agent:\n    autonomy: review_first\n    can_create_process_backlog: true\n  chief_of_staff:\n    autonomy: summarize_only\n&quot;,
+    &quot;ai_layer.yaml&quot;: &quot;ai_layer:\n  provider: ollama\n  base_url: http://localhost:11434\n  default_model: llama3.1\n  timeout_seconds: 120\n  tasks:\n    classify: llama3.1\n    summarize: llama3.1\n    extract_tasks: llama3.1\n    tag: llama3.1\n    review: qwen\n    code: deepseek-coder\n    reasoning: qwen\n&quot;,
+    &quot;ai_runtime_v105.yaml&quot;: &quot;ai_runtime:\n  default_provider: echo\n  ollama_enabled: false\n  ollama_base_url: http://localhost:11434\n  ollama_model: llama3.1\n&quot;,
+    &quot;calendar.yaml&quot;: &quot;calendar:\n  enabled: prepared\n  providers:\n    google_calendar: prepared\n    outlook_calendar: prepared\n    ics: prepared\n  actions:\n    import: true\n    prepare_meeting: true\n    summarize_day: true\n    create_events: false\n    delete_events: false\n&quot;,
+    &quot;cameras.example.json&quot;: &quot;{\n  \&quot;gateway_webrtc\&quot;: \&quot;http://127.0.0.1:8889\&quot;,\n  \&quot;gateway_hls\&quot;: \&quot;http://127.0.0.1:8888\&quot;,\n  \&quot;cameras\&quot;: [\n    {\n      \&quot;id\&quot;: \&quot;haustuer\&quot;,\n      \&quot;name\&quot;: \&quot;Haustür\&quot;,\n      \&quot;location\&quot;: \&quot;Eingang\&quot;,\n      \&quot;host\&quot;: \&quot;192.168.1.50\&quot;,\n      \&quot;rtsp_port\&quot;: 554,\n      \&quot;stream_path\&quot;: \&quot;haustuer\&quot;,\n      \&quot;mode\&quot;: \&quot;webrtc\&quot;,\n      \&quot;onvif_port\&quot;: 8000,\n      \&quot;enabled\&quot;: true\n    },\n    {\n      \&quot;id\&quot;: \&quot;hof\&quot;,\n      \&quot;name\&quot;: \&quot;Hof\&quot;,\n      \&quot;location\&quot;: \&quot;Außen\&quot;,\n      \&quot;host\&quot;: \&quot;192.168.1.51\&quot;,\n      \&quot;rtsp_port\&quot;: 554,\n      \&quot;stream_path\&quot;: \&quot;hof\&quot;,\n      \&quot;mode\&quot;: \&quot;hls\&quot;,\n      \&quot;enabled\&quot;: true\n    }\n  ]\n}\n&quot;,
+    &quot;cameras.json&quot;: &quot;{\n  \&quot;gateway_webrtc\&quot;: \&quot;http://127.0.0.1:8889\&quot;,\n  \&quot;gateway_hls\&quot;: \&quot;http://127.0.0.1:8888\&quot;,\n  \&quot;cameras\&quot;: [\n    {\n      \&quot;id\&quot;: \&quot;webcam\&quot;,\n      \&quot;name\&quot;: \&quot;USB-Webcam\&quot;,\n      \&quot;location\&quot;: \&quot;Arbeitsplatz\&quot;,\n      \&quot;host\&quot;: \&quot;\&quot;,\n      \&quot;rtsp_port\&quot;: 554,\n      \&quot;stream_path\&quot;: \&quot;webcam\&quot;,\n      \&quot;mode\&quot;: \&quot;local\&quot;,\n      \&quot;snapshot_url\&quot;: \&quot;\&quot;,\n      \&quot;onvif_port\&quot;: 8000,\n      \&quot;enabled\&quot;: true\n    }\n  ]\n}&quot;,
+    &quot;chatgpt_import.yaml&quot;: &quot;chatgpt_import:\n  enabled: true\n  watch_folder: data/inbox/ChatGPT/exports\n  processed_folder: data/inbox/ChatGPT/processed\n  target_folder: data/vaults/secondbrain/05_Quellen/ChatGPT\n  report_folder: data/vaults/secondbrain/99_System/chatgpt_import\n  auto_tags: true\n  update_semantic_search: true\n  update_secondbrain_os: false\n&quot;,
+    &quot;claude/claude_desktop_config_secondbrain.json&quot;: &quot;{\n  \&quot;mcpServers\&quot;: {\n    \&quot;secondbrain\&quot;: {\n      \&quot;command\&quot;: \&quot;python\&quot;,\n      \&quot;args\&quot;: [\n        \&quot;mcp-server/server.py\&quot;\n      ]\n    }\n  }\n}\n&quot;,
+    &quot;connectors.production.yaml&quot;: &quot;connectors:\n  imap:\n    enabled: false\n    host: \&quot;\&quot;\n    port: 993\n    username: \&quot;\&quot;\n    password_secret: \&quot;email.imap_password\&quot;\n    mailbox: INBOX\n    max_messages: 25\n    mark_seen: false\n  browser:\n    enabled: true\n    chrome_bookmarks_path: \&quot;\&quot;\n    edge_bookmarks_path: \&quot;\&quot;\n    firefox_bookmarks_path: \&quot;\&quot;\n  documents:\n    pdf: true\n    docx: true\n    xlsx: true\n    pptx: prepared\n    ocr: prepared\n  ollama:\n    enabled: true\n    base_url: http://localhost:11434\n&quot;,
+    &quot;connectors.yaml&quot;: &quot;imap:\n  enabled: false\n  provider: generic\n  host: \&quot;\&quot;\n  port: 993\n  username: \&quot;\&quot;\n  password_secret: \&quot;email.imap_password\&quot;\n  mailbox: INBOX\n  max_messages: 25\n  mark_seen: false\n\nbrowser:\n  enabled: true\n  chrome_bookmarks_path: \&quot;\&quot;\n  edge_bookmarks_path: \&quot;\&quot;\n  firefox_profile_path: \&quot;\&quot;\n\nollama:\n  enabled: true\n  base_url: http://localhost:11434\n  model: llama3.1\n  timeout_seconds: 60\n\nweb_dashboard:\n  enabled: true\n  host: localhost\n  port: 8765\n&quot;,
+    &quot;connectors_v104.json&quot;: &quot;{\n  \&quot;connector</pre></details></td></tr><tr><td><b>runtime_snapshot</b></td><td><span style='color:#ff5c5c'>&#9679;</span> Fehler: </td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: false,
+  &quot;source&quot;: &quot;native_view_model&quot;,
+  &quot;schema&quot;: &quot;secondbrain.native.view_model.v30_29&quot;,
+  &quot;version&quot;: &quot;30.29&quot;,
+  &quot;mode&quot;: &quot;native_desktop_primary&quot;,
+  &quot;bootstrap&quot;: {
+    &quot;ok&quot;: false,
+    &quot;status&quot;: &quot;blocked&quot;,
+    &quot;schema&quot;: &quot;secondbrain.bootstrap.v1&quot;,
+    &quot;version&quot;: &quot;30.21&quot;,
+    &quot;project_root&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent&quot;,
+    &quot;checks&quot;: [
+      {
+        &quot;name&quot;: &quot;python&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;blocker&quot;,
+        &quot;detail&quot;: &quot;3.10.12&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;project_root&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;blocker&quot;,
+        &quot;detail&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;env_file&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.env&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;runtime_dirs&quot;,
+        &quot;ok&quot;: false,
+        &quot;severity&quot;: &quot;blocker&quot;,
+        &quot;detail&quot;: &quot;Runtime-/Datenordner vorhanden und beschreibbar&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;database_url&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;DATABASE_URL fehlt; lokaler SQLite/RAG-Prototyp bleibt aktiv&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;embeddings&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;lokaler Test-Provider aktiv; Production Gate bleibt blockiert&quot;,
+        &quot;repaired&quot;: false
+      }
+    ],
+    &quot;blockers&quot;: [
+      {
+        &quot;name&quot;: &quot;runtime_dirs&quot;,
+        &quot;ok&quot;: false,
+        &quot;severity&quot;: &quot;blocker&quot;,
+        &quot;detail&quot;: &quot;Runtime-/Datenordner vorhanden und beschreibbar&quot;,
+        &quot;repaired&quot;: false
+      }
+    ],
+    &quot;warnings&quot;: [
+      {
+        &quot;name&quot;: &quot;env_file&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.env&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;database_url&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;DATABASE_URL fehlt; lokaler SQLite/RAG-Prototyp bleibt aktiv&quot;,
+        &quot;repaired&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;embeddings&quot;,
+        &quot;ok&quot;: true,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;detail&quot;: &quot;lokaler Test-Provider aktiv; Production Gate bleibt blockiert&quot;,
+        &quot;repaired&quot;: false
+      }
+    ],
+    &quot;env&quot;: {
+      &quot;SECONDBRAIN_EMBEDDING_DIMENSIONS&quot;: &quot;64&quot;,
+      &quot;SECONDBRAIN_EMBEDDING_MODEL&quot;: &quot;deterministic-local&quot;,
+      &quot;SECONDBRAIN_EMBEDDING_PROVIDER&quot;: &quot;local&quot;,
+      &quot;SECONDBRAIN_GUI_HOST&quot;: &quot;127.0.0.1&quot;,
+      &quot;SECONDBRAIN_GUI_PORT&quot;: &quot;8851&quot;,
+      &quot;SECONDBRAIN_PROFILE&quot;: &quot;default&quot;
+    },
+    &quot;runtime_dirs&quot;: {
+      &quot;ok&quot;: false,
+      &quot;created&quot;: [],
+      &quot;checks&quot;: [
+        {
+          &quot;path&quot;: &quot;runtime&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;runtime/logs&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;runtime/reports&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;runtime/jobs&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;runtime/cache&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;data&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;data/p1_rag&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        },
+        {
+          &quot;path&quot;: &quot;SecondBrain-Inbox&quot;,
+          &quot;ok&quot;: true,
+          &quot;writable&quot;: false
+        }
+      ]
+    }
+  },
+  &quot;production&quot;: {
+    &quot;ok&quot;: true,
+    &quot;path&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/runtime/reports/p1_production_latest.json&quot;,
+    &quot;data&quot;: {
+      &quot;base_production&quot;: {
+        &quot;blockers&quot;: 2,
+        &quot;checks&quot;: [
+          {
+            &quot;detail&quot;: {
+              &quot;blockers&quot;: 0,
+              &quot;schema&quot;: &quot;secondbrain.p1_gate.v4&quot;,
+              &quot;warnings&quot;: 1
+            },
+            &quot;name&quot;: &quot;p1_gate_passes&quot;,
+            &quot;ok&quot;: true,
+            &quot;severity&quot;: &quot;blocker&quot;
+          },
+          {
+            &quot;detail&quot;: {
+              &quot;backend&quot;: &quot;postgresql&quot;,
+              &quot;checks&quot;: [
+                {
+                  &quot;detail&quot;: {
+                    &quot;url&quot;: &quot;postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db&quot;
+                  },
+                  &quot;name&quot;: &quot;database_url_present&quot;,
+                  &quot;ok&quot;: true,
+                  &quot;severity&quot;: &quot;blocker&quot;
+                },
+                {
+                  &quot;detail&quot;: {
+                    &quot;dialect&quot;: &quot;postgresql&quot;
+                  },
+                  &quot;name&quot;: &quot;postgresql_required_for_production&quot;,
+                  &quot;ok&quot;: true,
+                  &quot;severity&quot;: &quot;blocker&quot;
+                },
+                {
+                  &quot;detail&quot;: {
+                    &quot;backend&quot;: &quot;postgresql&quot;,
+                    &quot;reason&quot;: &quot;postgresql connected&quot;
+                  },
+                  &quot;name&quot;: &quot;postgresql_connection&quot;,
+                  &quot;ok&quot;: true,
+                  &quot;severity&quot;: &quot;blocker&quot;
+                },
+                {
+                  &quot;detail&quot;: {
+                    &quot;error&quot;: &quot;(psycopg2.errors.UndefinedTable) relation \&quot;schema_migrations\&quot; does not exist\nLINE 1: SELECT COUNT(*) FROM schema_migrations\n                             ^\n\n[SQL: SELECT COUNT(*) FROM schema_migrations]\n(Background on this error at: https://sqlalche.me/e/20/f405)&quot;
+                  },
+                  &quot;name&quot;: &quot;migration_health_probe&quot;,
+                  &quot;ok&quot;: false,
+                  &quot;severity&quot;: &quot;warning&quot;
+                },
+                {
+                  &quot;detail&quot;: {
+                    &quot;dsn&quot;: &quot;[REDACTED]&quot;,
+                    &quot;error&quot;: null,
+                    &quot;ok&quot;: true,
+                    &quot;postgres_version&quot;: &quot;PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit&quot;,
+                    &quot;status&quot;: &quot;pass&quot;,
+                    &quot;vector_extension_installed&quot;: true,
+</pre></details></td></tr><tr><td><b>crash_report</b></td><td><span style='color:#ff5c5c'>&#9679;</span> Fehler: FileNotFoundError: [Errno 2] No such file or directory: &#x27;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.git-rewrite/t&#x27;</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: &quot;FileNotFoundError: [Errno 2] No such file or directory: &#x27;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.git-rewrite/t&#x27;&quot;
+}</pre></details></td></tr><tr><td><b>logs</b></td><td><span style='color:#2fe6a0'>&#9679;</span> count: 6</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;files&quot;: {
+    &quot;runtime/logs/hud.stderr.log&quot;: &quot;----------------------------------------\nException occurred during processing of request from (&#x27;127.0.0.1&#x27;, 63146)\nTraceback (most recent call last):\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\&quot;, line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\&quot;, line 424, in handle_one_request\n    method()\n    ~~~~~~^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 410, in do_GET\n    self._json(metrics())\n    ~~~~~~~~~~^^^^^^^^^^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 374, in _json\n    self._send(json.dumps(data, ensure_ascii=False).encode(\&quot;utf-8\&quot;),\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               \&quot;application/json; charset=utf-8\&quot;)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 371, in _send\n    self.wfile.write(body)\n    ~~~~~~~~~~~~~~~~^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 845, in write\n    self._sock.sendall(b)\n    ~~~~~~~~~~~~~~~~~~^^^\nConnectionAbortedError: [WinError 10053] Eine bestehende Verbindung wurde softwaregesteuert\n\ndurch den Hostcomputer abgebrochen\n----------------------------------------\n----------------------------------------\nException occurred during processing of request from (&#x27;127.0.0.1&#x27;, 50636)\nTraceback (most recent call last):\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\&quot;, line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\&quot;, line 424, in handle_one_request\n    method()\n    ~~~~~~^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 419, in do_GET\n    self._json(system_status())\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 374, in _json\n    self._send(json.dumps(data, ensure_ascii=False).encode(\&quot;utf-8\&quot;),\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               \&quot;application/json; charset=utf-8\&quot;)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\&quot;, line 371, in _send\n    self.wfile.write(body)\n    ~~~~~~~~~~~~~~~~^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 845, in write\n    self._sock.sendall(b)\n    ~~~~~~~~~~~~~~~~~~^^^\nConnectionAbortedError: [WinError 10053] Eine bestehende Verbindung wurde softwaregesteuert\n\ndurch den Hostcomputer abgebrochen\n----------------------------------------\n----------------------------------------\nException occurred during processing of request from (&#x27;127.0.0.1&#x27;, 59850)\nTraceback (most recent call last):\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\&quot;, line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \&quot;C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\&quot;, line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~</pre></details></td></tr><tr><td><b>system_info</b></td><td><span style='color:#2fe6a0'>&#9679;</span> ok</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;platform&quot;: &quot;Linux-6.8.0-124-generic-x86_64-with-glibc2.35&quot;,
+  &quot;system&quot;: &quot;Linux&quot;,
+  &quot;release&quot;: &quot;6.8.0-124-generic&quot;,
+  &quot;machine&quot;: &quot;x86_64&quot;,
+  &quot;python&quot;: &quot;3.10.12&quot;,
+  &quot;executable&quot;: &quot;/usr/bin/python3&quot;,
+  &quot;cwd&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent&quot;,
+  &quot;cpu_count&quot;: 2,
+  &quot;ram_total_gb&quot;: 4.11,
+  &quot;env&quot;: {
+    &quot;SHELL&quot;: &quot;/bin/sh&quot;,
+    &quot;no_proxy&quot;: &quot;localhost,127.0.0.1,::1,*.local,.local,169.254.0.0/16,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16&quot;,
+    &quot;GIT_SSH_COMMAND&quot;: &quot;ssh -o ProxyCommand=&#x27;socat - PROXY:localhost:%h:%p,proxyport=3128&#x27;&quot;,
+    &quot;grpc_proxy&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;CLAUDE_CODE_HOST_SOCKS_PROXY_PORT&quot;: &quot;33855&quot;,
+    &quot;PWD&quot;: &quot;/sessions/funny-amazing-hopper/mnt/SecondBrainAgent&quot;,
+    &quot;LOGNAME&quot;: &quot;funny-amazing-hopper&quot;,
+    &quot;SYSTEMD_EXEC_PID&quot;: &quot;624&quot;,
+    &quot;TZ&quot;: &quot;Europe/Berlin&quot;,
+    &quot;ftp_proxy&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;HOME&quot;: &quot;/sessions/funny-amazing-hopper&quot;,
+    &quot;CLOUDSDK_PROXY_TYPE&quot;: &quot;https&quot;,
+    &quot;LANG&quot;: &quot;C.UTF-8&quot;,
+    &quot;CLOUDSDK_PROXY_PORT&quot;: &quot;3128&quot;,
+    &quot;DOCKER_HTTP_PROXY&quot;: &quot;http://localhost:3128&quot;,
+    &quot;TMPDIR&quot;: &quot;/sessions/funny-amazing-hopper/tmp&quot;,
+    &quot;https_proxy&quot;: &quot;http://localhost:3128&quot;,
+    &quot;INVOCATION_ID&quot;: &quot;ae76aefe07fa4620b17ace0cb163e953&quot;,
+    &quot;CLAUDE_TMPDIR&quot;: &quot;/sessions/funny-amazing-hopper/tmp&quot;,
+    &quot;PYTHONPATH&quot;: &quot;/sessions/funny-amazing-hopper/shim:/sessions/funny-amazing-hopper/mnt/SecondBrainAgent&quot;,
+    &quot;PYTHONPYCACHEPREFIX&quot;: &quot;/tmp/pyc&quot;,
+    &quot;USER&quot;: &quot;funny-amazing-hopper&quot;,
+    &quot;NO_PROXY&quot;: &quot;localhost,127.0.0.1,::1,*.local,.local,169.254.0.0/16,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16&quot;,
+    &quot;FTP_PROXY&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;CLAUDE_CODE_TMPDIR&quot;: &quot;/sessions/funny-amazing-hopper/tmp&quot;,
+    &quot;RSYNC_PROXY&quot;: &quot;localhost:1080&quot;,
+    &quot;SHLVL&quot;: &quot;2&quot;,
+    &quot;HTTPS_PROXY&quot;: &quot;http://localhost:3128&quot;,
+    &quot;HTTP_PROXY&quot;: &quot;http://localhost:3128&quot;,
+    &quot;http_proxy&quot;: &quot;http://localhost:3128&quot;,
+    &quot;GRPC_PROXY&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;ALL_PROXY&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;JOURNAL_STREAM&quot;: &quot;8:5826&quot;,
+    &quot;all_proxy&quot;: &quot;socks5h://localhost:1080&quot;,
+    &quot;PATH&quot;: &quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;,
+    &quot;SANDBOX_RUNTIME&quot;: &quot;1&quot;,
+    &quot;CLOUDSDK_PROXY_ADDRESS&quot;: &quot;localhost&quot;,
+    &quot;CLAUDE_CODE_HOST_HTTP_PROXY_PORT&quot;: &quot;45251&quot;,
+    &quot;OLDPWD&quot;: &quot;/sessions/funny-amazing-hopper&quot;,
+    &quot;DOCKER_HTTPS_PROXY&quot;: &quot;http://localhost:3128&quot;,
+    &quot;_&quot;: &quot;/usr/bin/python3&quot;
+  }
+}</pre></details></td></tr><tr><td><b>provider_status</b></td><td><span style='color:#2fe6a0'>&#9679;</span> configured: []</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;configured&quot;: [],
+  &quot;available_flags&quot;: {
+    &quot;OpenAI&quot;: false,
+    &quot;Ollama&quot;: false,
+    &quot;Gemini&quot;: false,
+    &quot;Anthropic&quot;: false
+  },
+  &quot;embedding_provider&quot;: &quot;&quot;
+}</pre></details></td></tr><tr><td><b>database_status</b></td><td><span style='color:#2fe6a0'>&#9679;</span> configured: False</td><td><details><summary>anzeigen</summary><pre>{
+  &quot;ok&quot;: true,
+  &quot;configured&quot;: false,
+  &quot;dialect&quot;: &quot;unknown&quot;,
+  &quot;dsn&quot;: &quot;[REDACTED]&quot;
+}</pre></details></td></tr></tbody>
+  </table>
+</div></body></html>

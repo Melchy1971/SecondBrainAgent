@@ -1,0 +1,14 @@
+# SecondBrain OS v10.7 Security & Governance
+max_level: 2
+approval_threshold: 60
+block_threshold: 95
+blocked_actions:
+  - system.shell
+  - files.delete_all
+  - email.send_raw
+redaction:
+  secrets: true
+  pii: true
+runtime:
+  audit_log: SecondBrain/99_System/security/audit_v107.jsonl
+  approvals: SecondBrain/99_System/security/approvals_v107.json

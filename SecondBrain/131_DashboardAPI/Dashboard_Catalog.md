@@ -1,6 +1,6 @@
 # Dashboard API v10.1
 
-Aktualisiert: 2026-07-13 13:40
+Aktualisiert: 2026-07-14 10:34
 
 | Name | Pfad | Status |
 |---|---|---|

@@ -84,3 +84,11 @@ def test_sync_is_idempotent(tmp_path):
     after = (tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").read_text()
     assert second["updated"] == {}
     assert before == after and first["version"] == V.get_version()
+
+
+def test_sync_normalizes_generated_files_to_lf(tmp_path):
+    _make_project(tmp_path)
+    masterplan = tmp_path / "docs" / "09_MASTERPLAN_STATUS.json"
+    masterplan.write_bytes(masterplan.read_bytes().replace(b"\n", b"\r\n"))
+    sync_version(tmp_path)
+    assert b"\r\n" not in masterplan.read_bytes()

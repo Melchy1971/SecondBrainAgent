@@ -28,12 +28,13 @@ def _program_dir() -> Path:
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
 
-    from secondbrain.install.app_home import ENV_HOME, project_root
+    from secondbrain.install.app_home import ENV_HOME, ensure_layout, project_root, resolve_portable_home
     from secondbrain.install.migrate import migrate_local_data
     from secondbrain.install.smoke import run_smoke_test
     from secondbrain.version import get_version
 
-    home = project_root()
+    portable = (_program_dir() / ".portable").exists() or os.environ.get("JARVIS_PORTABLE") == "1"
+    home = ensure_layout(resolve_portable_home(_program_dir())) if portable else project_root()
     os.environ[ENV_HOME] = str(home)
 
     # Migrate from an explicit previous install, else from data shipped next to
