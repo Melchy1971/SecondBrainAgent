@@ -43,6 +43,7 @@ class KnowledgeGraph:
         self._relationships: dict[str, Relationship] = {}
         self._conflicts: list[Conflict] = []
         self._committed: set[str] = set()
+        self._merge_history: list[dict[str, Any]] = []
 
     # -- ingestion --------------------------------------------------------
 
@@ -65,6 +66,9 @@ class KnowledgeGraph:
                          valid_from: str = "") -> Relationship:
         if source_entity not in self._entities or target_entity not in self._entities:
             raise KeyError("unknown_entity")
+        if any(self._entities[entity_id].workspace_id != workspace_id
+               for entity_id in (source_entity, target_entity)):
+            raise ValueError("workspace_mismatch")
         ev = [dict(e) for e in (evidence or [])]
         if not ev and not origin_source_ids:
             raise ValueError("relationship_requires_evidence")
@@ -172,7 +176,8 @@ class KnowledgeGraph:
                 if score >= threshold:
                     proposals.append(MergeProposal(
                         entity_a=ents[i].id, entity_b=ents[j].id, score=score, signals=signals,
-                        auto_mergeable=score >= AUTO_MERGE_THRESHOLD))
+                        auto_mergeable=(score >= AUTO_MERGE_THRESHOLD and
+                                        (ents[i].type != EntityType.PERSON.value or bool(signals.get("email_match"))))))
         proposals.sort(key=lambda p: -p.score)
         return proposals
 
@@ -191,6 +196,12 @@ class KnowledgeGraph:
     def merge(self, keep_id: str, drop_id: str) -> Entity:
         """Manual/explicit merge: fold drop into keep, retain drop as superseded."""
         keep, drop = self._entities[keep_id], self._entities[drop_id]
+        if keep.workspace_id != drop.workspace_id:
+            raise ValueError("workspace_mismatch")
+        snapshot = {"keep_id": keep_id, "drop_id": drop_id, "keep_aliases": list(keep.aliases),
+                    "keep_sources": list(keep.source_ids), "keep_evidence": list(keep.evidence),
+                    "relationships": {rid: (rel.source_id, rel.target_id) for rid, rel in self._relationships.items()}}
+        self._merge_history.append(snapshot)
         keep.aliases = sorted(set(keep.aliases) | set(drop.aliases) | {drop.canonical_name})
         keep.source_ids = sorted(set(keep.source_ids) | set(drop.source_ids))
         keep.evidence = keep.evidence + drop.evidence
@@ -203,6 +214,23 @@ class KnowledgeGraph:
             if rel.target_id == drop_id:
                 rel.target_id = keep_id
         return keep
+
+    def undo_merge(self, keep_id: str, drop_id: str) -> Entity:
+        snapshot = next((item for item in reversed(self._merge_history)
+                         if item["keep_id"] == keep_id and item["drop_id"] == drop_id), None)
+        if snapshot is None:
+            raise KeyError("merge_not_found")
+        keep, drop = self._entities[keep_id], self._entities[drop_id]
+        keep.aliases = snapshot["keep_aliases"]
+        keep.source_ids = snapshot["keep_sources"]
+        keep.evidence = snapshot["keep_evidence"]
+        drop.superseded_by = ""
+        drop.valid_to = ""
+        for rid, endpoints in snapshot["relationships"].items():
+            if rid in self._relationships:
+                self._relationships[rid].source_id, self._relationships[rid].target_id = endpoints
+        self._merge_history.remove(snapshot)
+        return drop
 
     # -- queries (always return sources) ---------------------------------
 
@@ -274,35 +302,55 @@ class KnowledgeGraph:
     def _payload_hash(payload: Mapping[str, Any]) -> str:
         return sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
-    def prepare_delete(self, entity_id: str, *, workspace_id: str) -> dict[str, Any]:
+    def prepare_delete(self, entity_id: str, *, workspace_id: str, approval_queue: Any | None = None) -> dict[str, Any]:
         if entity_id not in self._entities:
             raise KeyError("unknown_entity")
+        if self._entities[entity_id].workspace_id != workspace_id:
+            raise ValueError("workspace_mismatch")
         payload = {"action": "delete_entity", "entity_id": entity_id, "workspace_id": workspace_id}
-        return {"status": "approval_required", "payload_hash": self._payload_hash(payload), **payload}
+        payload_hash = self._payload_hash(payload)
+        approval_id = ""
+        if approval_queue is not None:
+            approval = approval_queue.create(command="graph.delete_entity", intent="delete_entity",
+                                             text="Knowledge graph entity archivieren", target=entity_id,
+                                             category="delete_request", risk_level="high",
+                                             tool_name="graph.delete_entity", workspace_id=workspace_id,
+                                             payload={**payload, "payload_hash": payload_hash}, tool_idempotent=False)
+            approval_id = str(approval.get("approval_id") or "")
+        return {"status": "approval_required", "approval_id": approval_id, "payload_hash": payload_hash, **payload}
 
-    def commit_delete(self, prepared: Mapping[str, Any], *, approved: bool) -> dict[str, Any]:
-        if not approved:
-            return {"status": "blocked", "reason": "not_approved"}
+    def commit_delete(self, prepared: Mapping[str, Any], *, approval_queue: Any, workspace_id: str) -> dict[str, Any]:
+        approval_id = str(prepared.get("approval_id") or "")
+        if approval_queue is None or not approval_id:
+            return {"status": "blocked", "reason": "approval_required"}
+        if workspace_id != prepared.get("workspace_id"):
+            return {"status": "blocked", "reason": "workspace_mismatch"}
         payload = {k: prepared[k] for k in ("action", "entity_id", "workspace_id")}
         if self._payload_hash(payload) != prepared.get("payload_hash"):
             return {"status": "invalid", "reason": "payload_changed"}
         key = str(prepared.get("payload_hash"))
         if key in self._committed:
             return {"status": "duplicate", "reason": "already_committed"}
+        try:
+            approval_queue.begin_execution(approval_id, executor_id="knowledge-graph")
+        except Exception as exc:
+            return {"status": "blocked", "reason": f"approval_not_executable:{type(exc).__name__}"}
         eid = prepared["entity_id"]
         if eid not in self._entities:
             return {"status": "error", "reason": "unknown_entity"}
-        del self._entities[eid]
-        self._relationships = {rid: r for rid, r in self._relationships.items()
-                               if r.source_id != eid and r.target_id != eid}
+        self._entities[eid].status = "archived"
+        self._entities[eid].valid_to = _now()
+        for relationship in self._relationships.values():
+            if relationship.source_id == eid or relationship.target_id == eid:
+                relationship.status = "archived"
         self._committed.add(key)
         return {"status": "committed", "entity_id": eid}
 
     # -- helpers ----------------------------------------------------------
 
     def entities(self, *, workspace_id: str, include_superseded: bool = False) -> list[Entity]:
-        return [e for e in self._entities.values()
-                if e.workspace_id == workspace_id and (include_superseded or not e.superseded_by)]
+        return [e for e in self._entities.values() if e.workspace_id == workspace_id and e.status == "active"
+                and (include_superseded or not e.superseded_by)]
 
     def get(self, entity_id: str) -> Entity | None:
         return self._entities.get(entity_id)

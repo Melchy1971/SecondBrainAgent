@@ -15,6 +15,14 @@ def _g():
     return KnowledgeGraph()
 
 
+class ApprovalQueue:
+    def __init__(self): self.started = set()
+    def create(self, **_kwargs): return {"approval_id": "approval-1"}
+    def begin_execution(self, approval_id, **_kwargs):
+        if approval_id in self.started: raise RuntimeError("already_executed")
+        self.started.add(approval_id)
+
+
 # 1: document produces entity candidates
 def test_document_creates_candidates():
     g = _g()
@@ -72,6 +80,13 @@ def test_strong_auto_merge():
     assert len(g.entities(workspace_id=WS)) == 1
 
 
+def test_person_is_not_auto_merged_by_name_only():
+    g = _g()
+    g.add_entity(workspace_id=WS, canonical_name="Anna Meyer", type=EntityType.PERSON.value)
+    g.add_entity(workspace_id=WS, canonical_name="Anna Meyer", type=EntityType.PERSON.value)
+    assert g.resolve_duplicates(workspace_id=WS, auto_only=True) == []
+
+
 # 5: conflicts traceable, not silently overwritten
 def test_conflict_traceable():
     g = _g()
@@ -127,15 +142,16 @@ def test_ids_only_in_detail():
 def test_delete_requires_approval():
     g = _g()
     e = g.add_entity(workspace_id=WS, canonical_name="Temp", type=EntityType.TOPIC.value)
-    prep = g.prepare_delete(e.id, workspace_id=WS)
+    queue = ApprovalQueue()
+    prep = g.prepare_delete(e.id, workspace_id=WS, approval_queue=queue)
     assert prep["status"] == "approval_required"
     assert g.get(e.id) is not None  # not deleted yet
-    assert g.commit_delete(prep, approved=False)["status"] == "blocked"
+    assert g.commit_delete(prep, approval_queue=None, workspace_id=WS)["status"] == "blocked"
     assert g.get(e.id) is not None
-    r1 = g.commit_delete(prep, approved=True)
+    r1 = g.commit_delete(prep, approval_queue=queue, workspace_id=WS)
     assert r1["status"] == "committed"
-    assert g.get(e.id) is None
-    r2 = g.commit_delete(prep, approved=True)
+    assert g.get(e.id).status == "archived"  # evidence is retained
+    r2 = g.commit_delete(prep, approval_queue=queue, workspace_id=WS)
     assert r2["status"] == "duplicate"  # exactly once
 
 
@@ -143,9 +159,10 @@ def test_delete_requires_approval():
 def test_delete_tamper_rejected():
     g = _g()
     e = g.add_entity(workspace_id=WS, canonical_name="Temp", type=EntityType.TOPIC.value)
-    prep = dict(g.prepare_delete(e.id, workspace_id=WS))
+    queue = ApprovalQueue()
+    prep = dict(g.prepare_delete(e.id, workspace_id=WS, approval_queue=queue))
     prep["entity_id"] = "other"
-    assert g.commit_delete(prep, approved=True)["status"] == "invalid"
+    assert g.commit_delete(prep, approval_queue=queue, workspace_id=WS)["status"] == "invalid"
 
 
 # 10: graph-RAG can use entities as context
@@ -185,6 +202,8 @@ def test_merge_retains_superseded():
     g.merge(a.id, b.id)
     assert g.get(b.id).superseded_by == a.id  # not deleted
     assert "s2" in g.get(a.id).source_ids
+    restored = g.undo_merge(a.id, b.id)
+    assert restored.superseded_by == "" and len(g.entities(workspace_id=WS)) == 2
 
 
 # gui render
