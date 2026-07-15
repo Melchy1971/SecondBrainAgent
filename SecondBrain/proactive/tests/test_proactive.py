@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from secondbrain.proactive.models import Priority, SuggestionCategory, SuggestionStatus
-from secondbrain.proactive.service import ProactiveEngine, redact_suggestion_text
+from secondbrain.proactive.models import Priority, SuggestionCategory, SuggestionRule
+from secondbrain.proactive.service import ProactiveEngine
 from secondbrain.proactive.gui import ProactiveViewModel, render_suggestions_html
 
 WS = "ws-1"
@@ -31,6 +31,31 @@ def test_deadline_risk_detected():
     ctx = _ctx(tasks=[{"id": "t-1", "title": "Konzept", "due": "2026-01-02", "started": False}])
     sugs = e.generate(workspace_id=WS, context=ctx, now=T0)
     assert any(s.category == SuggestionCategory.DEADLINE_RISK.value for s in sugs)
+
+
+def test_overdue_task_and_capacity_risk_detected():
+    engine = _eng()
+    context = _ctx(
+        tasks=[{"id": "late", "title": "Abgabe", "due": "2025-12-31", "completed": False}],
+        daily_load={"date": "2026-01-01", "utilization": 0.95, "threshold": 0.9},
+    )
+    categories = {item.category for item in engine.generate(workspace_id=WS, context=context, now=T0)}
+    assert {SuggestionCategory.OVERDUE_TASK.value, SuggestionCategory.CAPACITY_RISK.value} <= categories
+
+
+def test_rule_threshold_limit_and_feedback_types():
+    engine = _eng()
+    engine.configure_rule(SuggestionRule(
+        rule_id="deadline", category=SuggestionCategory.DEADLINE_RISK.value,
+        confidence_threshold=0.9, maximum_open_items=1, cooldown_minutes=60,
+    ))
+    context = _ctx(tasks=[{"id": "t", "title": "Test", "due": "2026-01-02", "started": False}])
+    assert engine.generate(workspace_id=WS, context=context, now=T0) == []
+    suggestion = engine.generate(workspace_id=WS, context=_ctx(
+        connectors=[{"name": "Jira", "error_count": 5}]), now=T0)[0]
+    engine.record_feedback(suggestion.suggestion_id, "false_positive", "api_key=secret-value")
+    feedback = engine.feedback_log()[-1]
+    assert feedback.action == "false_positive" and "secret-value" not in feedback.detail
 
 
 # 2: evidence visible
