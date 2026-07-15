@@ -1,0 +1,15 @@
+<!doctype html><html lang='de'><head><meta charset='utf-8'>
+<title>Job Monitor</title><style>
+body{font-family:system-ui,Segoe UI,sans-serif;margin:24px;color:#111;background:#f6f6f8}
+h1{color:#e20074}
+table{border-collapse:collapse;width:100%;background:#fff}
+td,th{border:1px solid #ddd;padding:6px 8px;text-align:left}
+.s-running{background:#eef7ff}
+.s-recovery_required,.s-failed{background:#fde2e2}
+.s-completed{color:#3a6d00}
+</style></head><body>
+<h1>Job Monitor</h1>
+<p>queued: 4 · waiting_for_approval: 1</p>
+<table><thead><tr><th>Typ</th><th>Status</th><th>Prio</th><th>Fortschritt</th><th>Versuche</th><th>Approval</th></tr></thead>
+<tbody><tr class='s-queued'><td>reindex</td><td>queued</td><td>8</td><td>40%</td><td>0/3</td><td></td></tr><tr class='s-queued'><td>embedding</td><td>queued</td><td>5</td><td>0%</td><td>0/3</td><td></td></tr><tr class='s-queued'><td>backup</td><td>queued</td><td>3</td><td>0%</td><td>0/3</td><td></td></tr><tr class='s-waiting_for_approval'><td>agent_plan</td><td>waiting_for_approval</td><td>0</td><td>0%</td><td>0/3</td><td>🔒</td></tr><tr class='s-queued'><td>restore</td><td>queued</td><td>0</td><td>0%</td><td>0/3</td><td></td></tr></tbody></table>
+</body></html>

@@ -894,6 +894,22 @@ def main(argv: list[str] | None = None) -> int:
         return _review_approval_release_gate_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
+    if cmd in {
+        "ops-status",
+        "ops-backup",
+        "ops-backups",
+        "ops-backup-verify",
+        "ops-backup-health",
+        "ops-backup-report",
+        "ops-backup-schedule-configure",
+        "ops-backup-schedule-run",
+        "ops-restore-plan",
+        "ops-restore",
+        "ops-restore-rollback",
+    }:
+        from secondbrain.launcher_runtime_v119 import main as operations_main
+
+        return operations_main(raw)
     if cmd == "p3-pgvector-readiness":
         return _p3_pgvector_main(raw)
     if cmd == "p3-rag-store-status":
