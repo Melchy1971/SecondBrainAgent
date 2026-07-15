@@ -1,0 +1,25 @@
+{
+  "connectors": [
+    {
+      "name": "gmail_export_local",
+      "kind": "local_json",
+      "record_type": "email",
+      "path": "connectors/sample_gmail_export.json",
+      "enabled": true
+    },
+    {
+      "name": "calendar_export_local",
+      "kind": "local_json",
+      "record_type": "calendar_event",
+      "path": "connectors/sample_calendar_export.json",
+      "enabled": true
+    },
+    {
+      "name": "drive_export_local",
+      "kind": "local_json",
+      "record_type": "document",
+      "path": "connectors/sample_drive_export.json",
+      "enabled": true
+    }
+  ]
+}

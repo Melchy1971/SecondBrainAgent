@@ -1,6 +1,6 @@
 # Enterprise RAG Status
 
-Aktualisiert: 2026-07-13
+Aktualisiert: 2026-07-14
 
 | Quelle | Status |
 |---|---|

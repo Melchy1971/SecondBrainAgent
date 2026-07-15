@@ -1,42 +1,50 @@
 # Digital Twin v6
 
-Aktualisiert: 2026-07-13
+Aktualisiert: 2026-07-14
 
 ## Prioritätssignale
 
-- prozess: 45
-- projekt: 43
-- entscheidung: 35
-- gesundheit: 19
-- risiko: 11
-- lernen: 4
-- automatisierung: 3
-- lokal: 3
+- entscheidung: 1198
+- risiko: 726
+- projekt: 414
+- prozess: 267
+- automatisierung: 82
+- gesundheit: 58
+- lernen: 10
+- lokal: 5
 
 ## Wissensschwerpunkte
 
-- #Arbeitsmuster: 1
-- #Entscheidungen: 1
-- #Gesundheit: 1
-- #Kommunikation: 1
-- #Lernmuster: 1
-- #Prioritäten: 1
-- #Produktivität: 1
-- #BPMN: 1
-- #KPIs: 1
-- #Prozesslandkarte: 1
-- #RACI: 1
-- #Risiken: 1
-- #Systemlandkarte: 1
-- #Markdown-first: 1
-- #Multi-Agent-Swarm: 1
-- #Review-first: 1
-- #Fokuszeiten: 1
-- #Meeting-Vorbereitung: 1
-- #Nachbereitung: 1
-- #Tagesplanung: 1
-- #Wochenplanung: 1
-- #Keine: 1
+- #Fokuszeiten: 4
+- #Keine: 4
+- #Meeting-Vorbereitung: 4
+- #Nachbereitung: 4
+- #Tagesplanung: 4
+- #Wochenplanung: 4
+- #Keine.: 4
+- #Arbeitsmuster: 3
+- #Entscheidungen: 3
+- #Gesundheit: 3
+- #Kommunikation: 3
+- #Lernmuster: 3
+- #Prioritäten: 3
+- #Produktivität: 3
+- #BPMN: 3
+- #KPIs: 3
+- #Prozesslandkarte: 3
+- #RACI: 3
+- #Risiken: 3
+- #Systemlandkarte: 3
+- #Markdown-first: 3
+- #Multi-Agent-Swarm: 3
+- #Review-first: 3
+- #**Wissen: 1
+- #.csv: 1
+- #.docx: 1
+- #.jpeg: 1
+- #.jpg: 1
+- #.json: 1
+- #.md: 1
 
 ## Kernfragen
 
