@@ -13,7 +13,8 @@ from typing import Any
 
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.voice_de import GermanVoiceController, parse_german_voice_command
-from secondbrain.gui.bootstrap import bootstrap_text, write_bootstrap_report
+from secondbrain.gui.backup_center import BackupCenterViewModel
+from secondbrain.gui.bootstrap import bootstrap_text
 
 VERSION = "30.25"
 TITLE = "Jarvis SecondBrain - Native Desktop"
@@ -45,6 +46,7 @@ NAV_ITEMS = [
     "Jobs",
     "Connectors",
     "Agents",
+    "Backups",
     "Settings",
     "Developer",
 ]
@@ -217,6 +219,7 @@ class JarvisNativeApp(tk.Tk):
         quick.pack(fill="x", padx=14, pady=(8, 14))
         self._hud_button(quick, "STATUS AKTUALISIEREN", self.refresh_status).pack(fill="x", pady=3)
         self._hud_button(quick, "DATEI IMPORTIEREN", self.import_file).pack(fill="x", pady=3)
+        self._hud_button(quick, "BACKUP CENTER", lambda: self.show_view("Backups")).pack(fill="x", pady=3)
         self._hud_button(quick, "REPAIR INDEX", self.repair_index, warn=True).pack(fill="x", pady=3)
 
     def _build_topbar(self, main: tk.Misc) -> None:
@@ -545,6 +548,17 @@ class JarvisNativeApp(tk.Tk):
             self._write("Sucheingabe oben nutzen: Suche <Begriff>")
         elif view == "Imports":
             self._write("Datei per Button importieren oder Textbefehl: Importiere Datei C:\\Pfad\\datei.pdf")
+        elif view == "Backups":
+            model = BackupCenterViewModel(self.project_root)
+            self._json(model.snapshot())
+            self._write(
+                "\nBackup Center / Restore Center:\n"
+                "- Backup: python launcher.py ops-backup --label manuell\n"
+                "- Validieren: python launcher.py ops-backup-verify <backup-id>\n"
+                "- Dry Run: python launcher.py ops-restore-plan <backup-id>\n"
+                "- Restore: python launcher.py ops-restore <backup-id>\n"
+                "- Rollback: python launcher.py ops-restore-rollback"
+            )
         elif view == "Developer":
             self.run_launcher(["command-index"], title="Command Index")
         else:
