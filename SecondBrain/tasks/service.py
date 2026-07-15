@@ -26,7 +26,7 @@ from secondbrain.tasks.models import (
     utc_now,
 )
 
-__all__ = ["TaskProjectService", "TaskServiceError", "StatusTransitionError", "DependencyCycleError", "ApprovalRequired"]
+__all__ = ["TaskProjectService", "TaskServiceError", "StatusTransitionError", "DependencyCycleError", "ApprovalRequired", "VersionConflict"]
 
 _TERMINAL = {Status.COMPLETED.value, Status.CANCELLED.value, Status.ARCHIVED.value}
 
@@ -44,6 +44,10 @@ class DependencyCycleError(TaskServiceError):
 
 
 class ApprovalRequired(TaskServiceError):
+    pass
+
+
+class VersionConflict(TaskServiceError):
     pass
 
 
@@ -120,10 +124,14 @@ class TaskProjectService:
         updated: Project | None = None
         for i, row in enumerate(rows):
             if row.get("project_id") == project_id and row.get("workspace_id") == workspace_id:
+                expected_version = changes.pop("expected_version", None)
+                if expected_version is not None and int(expected_version) != int(row.get("version", 1)):
+                    raise VersionConflict(f"project_version_conflict:{project_id}")
                 for k, v in changes.items():
                     if k in Project.__dataclass_fields__ and k not in {"project_id", "workspace_id", "created_at"}:
                         row[k] = v
                 row["updated_at"] = utc_now()
+                row["version"] = int(row.get("version", 1)) + 1
                 rows[i] = row
                 updated = Project.from_dict(row)
                 break
@@ -131,6 +139,10 @@ class TaskProjectService:
             raise TaskServiceError(f"project_not_found:{project_id}")
         self._write("projects", rows)
         return updated
+
+    def get_project(self, project_id: str, *, workspace_id: str) -> Project | None:
+        return next((p for p in self.list_projects(workspace_id=workspace_id, include_archived=True)
+                     if p.project_id == project_id), None)
 
     def archive_project(self, project_id: str, *, workspace_id: str) -> Project:
         return self.update_project(project_id, workspace_id=workspace_id, status=Status.ARCHIVED.value, archived_at=utc_now())
@@ -166,6 +178,9 @@ class TaskProjectService:
         updated: Task | None = None
         for i, row in enumerate(rows):
             if row.get("task_id") == task_id and row.get("workspace_id") == workspace_id:
+                expected_version = changes.pop("expected_version", None)
+                if expected_version is not None and int(expected_version) != int(row.get("version", 1)):
+                    raise VersionConflict(f"task_version_conflict:{task_id}")
                 new_status = changes.get("status")
                 if new_status is not None and new_status != row.get("status"):
                     self._validate_transition(str(row.get("status")), str(new_status))
@@ -173,6 +188,7 @@ class TaskProjectService:
                     if k in Task.__dataclass_fields__ and k not in {"task_id", "workspace_id", "created_at"}:
                         row[k] = v
                 row["updated_at"] = utc_now()
+                row["version"] = int(row.get("version", 1)) + 1
                 rows[i] = row
                 updated = Task.from_dict(row)
                 break
@@ -323,6 +339,17 @@ class TaskProjectService:
             if (due is not None and due.date() <= today) or t.status == Status.ACTIVE.value:
                 out.append(t)
         return out
+
+    def get_upcoming(self, *, workspace_id: str, now: datetime | None = None) -> list[Task]:
+        moment = now or datetime.now(timezone.utc)
+        return sorted(
+            (t for t in self.list_tasks(workspace_id=workspace_id)
+             if t.status not in _TERMINAL and (due := _parse(t.due_date)) is not None and due >= moment),
+            key=lambda task: _parse(task.due_date) or moment,
+        )
+
+    def get_waiting(self, *, workspace_id: str) -> list[Task]:
+        return self.list_tasks(workspace_id=workspace_id, status=Status.WAITING.value)
 
     def get_blocked(self, *, workspace_id: str) -> list[Task]:
         completed = {t.task_id for t in self.list_tasks(workspace_id=workspace_id) if t.status == Status.COMPLETED.value}
