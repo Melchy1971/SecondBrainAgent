@@ -116,6 +116,16 @@
       "release": "v31.16",
       "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
       "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.17",
+      "capability": "PostgreSQL-first Long-Running-Job-Runtime auf separatem Feature-Branch",
+      "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.18",
+      "capability": "Evidenzbasierte proaktive Assistenz mit Rule Engine, Scoring, sicherem Accept, Feedback und PostgreSQL-Persistenz",
+      "status": "feature_branch_pending_merge"
     }
   ],
   "remaining_blockers": [
@@ -166,7 +176,7 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.16",
+  "documented_feature_level": "v31.18",
   "documentation_updated_at": "2026-07-15",
   "review_approval_release": {
     "release": "v30.86",
