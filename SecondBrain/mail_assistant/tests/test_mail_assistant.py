@@ -43,6 +43,20 @@ class OfflineConnector:
         raise MailConnectorError("offline")
 
 
+class ApprovalQueue:
+    def __init__(self):
+        self.started = set()
+
+    def create(self, **_kwargs):
+        return {"approval_id": "approval-1"}
+
+    def begin_execution(self, approval_id, **_kwargs):
+        if approval_id in self.started:
+            raise RuntimeError("already_executed")
+        self.started.add(approval_id)
+        return {"status": "executing"}
+
+
 def _assistant(connector=None):
     return MailAssistant(connector=connector, vips=["chef@telekom.de"],
                          projects=["secondbrain"], owner="markus@telekom.de")
@@ -104,9 +118,10 @@ def test_approved_send_exactly_once():
     conn = OKConnector()
     a = _assistant(conn)
     payload = {"thread_id": "t1", "body": "Hallo"}
-    prep = a.prepare_change("send_reply", payload, workspace_id=WS)
-    r1 = a.commit_change(prep, payload, approved=True)
-    r2 = a.commit_change(prep, payload, approved=True)
+    queue = ApprovalQueue()
+    prep = a.prepare_change("send_reply", payload, workspace_id=WS, approval_queue=queue)
+    r1 = a.commit_change(prep, payload, approval_queue=queue, workspace_id=WS)
+    r2 = a.commit_change(prep, payload, approval_queue=queue, workspace_id=WS)
     assert r1["status"] == "committed"
     assert r2["status"] == "duplicate"
     assert len(conn.sent) == 1
@@ -118,7 +133,7 @@ def test_not_approved_blocked():
     a = _assistant(conn)
     payload = {"thread_id": "t1", "body": "x"}
     prep = a.prepare_change("send_reply", payload, workspace_id=WS)
-    assert a.commit_change(prep, payload, approved=False)["status"] == "blocked"
+    assert a.commit_change(prep, payload, approval_queue=None, workspace_id=WS)["status"] == "blocked"
     assert conn.sent == []
 
 
@@ -126,8 +141,9 @@ def test_not_approved_blocked():
 def test_tampered_payload_rejected():
     conn = OKConnector()
     a = _assistant(conn)
-    prep = a.prepare_change("send_reply", {"thread_id": "t1", "body": "a"}, workspace_id=WS)
-    assert a.commit_change(prep, {"thread_id": "t1", "body": "b"}, approved=True)["status"] == "invalid"
+    queue = ApprovalQueue()
+    prep = a.prepare_change("send_reply", {"thread_id": "t1", "body": "a"}, workspace_id=WS, approval_queue=queue)
+    assert a.commit_change(prep, {"thread_id": "t1", "body": "b"}, approval_queue=queue, workspace_id=WS)["status"] == "invalid"
     assert conn.sent == []
 
 
@@ -136,10 +152,11 @@ def test_delete_requires_approval():
     conn = OKConnector()
     a = _assistant(conn)
     payload = {"message_id": "m1"}
-    prep = a.prepare_change("delete_message", payload, workspace_id=WS)
+    queue = ApprovalQueue()
+    prep = a.prepare_change("delete_message", payload, workspace_id=WS, approval_queue=queue)
     assert prep["status"] == "approval_required"
     assert conn.sent == []
-    assert a.commit_change(prep, payload, approved=True)["status"] == "committed"
+    assert a.commit_change(prep, payload, approval_queue=queue, workspace_id=WS)["status"] == "committed"
 
 
 # 8: secrets / private keys NOT in summaries or drafts
@@ -163,17 +180,42 @@ def test_attachments_referenced_by_name():
     assert refs == [{"name": "Angebot.pdf", "message_reference": "ext-att"}]
 
 
+def test_attachments_use_import_pipeline_and_sensitive_review():
+    class Sink:
+        def __init__(self): self.items = []
+        def enqueue(self, item): self.items.append(item); return {"status": "queued"}
+        def add(self, item): self.items.append(item); return {"status": "review"}
+
+    pipeline, review = Sink(), Sink()
+    normal = _msg(attachments=["report.pdf"], has_attachments=True, connector_id="gmail")
+    assert _assistant().queue_attachments(normal, import_pipeline=pipeline, review_queue=review)[0]["status"] == "queued"
+    sensitive = _msg(attachments=["secret.pdf"], has_attachments=True, body=SECRET)
+    assert _assistant().queue_attachments(sensitive, import_pipeline=pipeline, review_queue=review)[0]["status"] == "review"
+
+
 # 10: offline connector -> controlled error, no data loss / no exception
 def test_offline_connector_no_data_loss():
     a = _assistant(OfflineConnector())
     payload = {"thread_id": "t1", "body": "Hi"}
-    prep = a.prepare_change("send_reply", payload, workspace_id=WS)
-    res = a.commit_change(prep, payload, approved=True)
-    assert res["status"] == "connector_offline"
+    queue = ApprovalQueue()
+    prep = a.prepare_change("send_reply", payload, workspace_id=WS, approval_queue=queue)
+    res = a.commit_change(prep, payload, approval_queue=queue, workspace_id=WS)
+    assert res["status"] == "recovery_required"
     # not marked committed -> retry possible once connector is back
     ok = MailAssistant(connector=OKConnector())
     # same prepared can be retried against a working assistant instance
     assert "reason" in res
+
+
+def test_recipient_or_workspace_change_invalidates_approval():
+    assistant = _assistant(OKConnector())
+    queue = ApprovalQueue()
+    payload = {"thread_id": "t1", "to": ["a@example.test"], "body": "Hi"}
+    prepared = assistant.prepare_change("send_reply", payload, workspace_id=WS, connector_id="gmail", approval_queue=queue)
+    assert prepared["recipient_hash"] and prepared["body_hash"] and prepared["idempotency_key"]
+    changed = {**payload, "to": ["b@example.test"]}
+    assert assistant.commit_change(prepared, changed, approval_queue=queue, workspace_id=WS)["status"] == "invalid"
+    assert assistant.commit_change(prepared, payload, approval_queue=queue, workspace_id="ws-2")["reason"] == "workspace_mismatch"
 
 
 # workspace isolation
