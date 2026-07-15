@@ -1,4 +1,4 @@
-# Modulstatus v30.25
+# Modulstatus v31.16
 
 Die Einstufung trennt vorhandene Foundation von belegter Produktreife.
 
@@ -9,7 +9,13 @@ Die Einstufung trennt vorhandene Foundation von belegter Produktreife.
 | Web-HUD | `hud`, `gui-web` | optionaler Kompatibilitaetsmodus | kein produktiver Remote-Betrieb |
 | P0 Gates | `p0-*`, `repo-doctor` | stabil lokal | externe Produktionsumgebung separat pruefen |
 | P1 RAG | `p1-rag-*`, `p1-gate` | fortgeschritten | echte Provider- und Qualitaetsabnahme offen |
-| PostgreSQL/pgvector | `p3-*` | Foundation mit Live-Checks | deaktiviert ohne DSN; Migration nicht automatisch produktiv |
+| PostgreSQL/pgvector | `p3-*` | produktiver Pfad mit Live-Checks | Zielinstanz und pgvector muessen live validiert werden |
+| Tasks / Projekte | Task Center / `SecondBrain/tasks` | integriert; PostgreSQL-Nacharbeit auf v31.15-Branch | echter PostgreSQL-Lauf benoetigt `TEST_DATABASE_URL` |
+| Planner v2 | `SecondBrain/planner_v2` | DAG, Recovery und Parallel Runtime | v31.16-Branch noch in `main` integrieren |
+| Update Center | Update GUI / Update Runtime | signiert und rollbackfaehig | reale Signatur-/Rollout-Infrastruktur extern abnehmen |
+| Windows Distribution | Packaging / Installer Smoke | Portable und Installer-Pipeline | Zielsystem-Smoke und Signierung extern abnehmen |
+| GA Readiness | `python launcher.py ga-readiness-gate` | verbindliches aggregiertes Gate | PASS bleibt umgebungsabhaengig |
+| Persoenliche Assistenz | Dashboard, Briefing, Calendar, Mail, Proactive | integrierte v31-Oberflaechen | externe Provider bleiben approval- und credential-abhaengig |
 | Knowledge Graph | `graph-*` | lokale Foundation | kein produktiver Graph-Store |
 | Desktop Backend | `desktop-*` | lokale Foundation | Approval-Inbox und Lifecycle fehlen |
 | Voice | `voice-*`, `VOICE_CONTROL_v20.md` | Textpfad nutzbar | Mikrofon, STT und TTS nicht live abgenommen |

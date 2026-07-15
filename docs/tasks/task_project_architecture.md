@@ -1,21 +1,25 @@
-# Task- und Projektarchitektur v31.05
+# Task- und Projektarchitektur v31.15
 
 ## Bestand und Wiederverwendung
 
-Die zentrale Domain liegt in `SecondBrain/tasks`. Sie ergänzt bestehende Planner-, Workflow- und native Workspace-Flächen, ohne deren Modelle zu duplizieren. Für Freigaben wird `secondbrain.native.approval.NativeApprovalQueue` wiederverwendet. Workspace-Grenzen werden bei jedem Lese- und Schreibzugriff geprüft; Connectoren und Agent-Tools greifen ausschließlich über `TaskProjectService` zu.
+Die zentrale Domain liegt in `SecondBrain/tasks`. Sie ergaenzt Planner-, Workflow- und native Workspace-Flaechen, ohne deren Modelle zu duplizieren. Freigaben verwenden `secondbrain.native.approval.NativeApprovalQueue`. Connectoren und Agent-Tools greifen ausschliesslich ueber `TaskProjectService` zu; jeder Zugriff bleibt an den aktiven Workspace gebunden.
 
 ## Komponenten und Datenmodell
 
-`models.py` definiert Project, Task, TaskDependency und TaskEvent samt Status-, Prioritäts- und Abhängigkeitstypen. `service.py` ist die gemeinsame Geschäftslogik für Nutzer, Agenten, Dokumentextraktion und Connectoren. `agent_tools.py` stellt die kontrollierten Tools bereit. `gui.py` liefert asynchrone, ID-freie Listen- und Detailansichten.
+`models.py` definiert Project, Task, TaskDependency und TaskEvent. `service.py` enthaelt die gemeinsame Geschaeftslogik. `repository.py` trennt Persistenz und Migration von der Domain. `agent_tools.py` stellt kontrollierte Tools bereit, `gui.py` asynchrone Listen- und Detailansichten.
 
-Statusübergänge werden explizit validiert. Abhängigkeiten werden vor dem Speichern auf Zyklen geprüft. Projektfortschritt ergibt sich aus erledigten Aufgaben. Versionen werden optimistisch geprüft, damit konkurrierende Änderungen nicht unbemerkt überschrieben werden. Jede Task-Mutation erzeugt ein Audit-Ereignis.
+Statusuebergaenge und Abhaengigkeitszyklen werden vor dem Speichern validiert. Optimistische Versionen verhindern unbemerkte konkurrierende Ueberschreibungen. Jede Task-Mutation erzeugt ein Audit-Ereignis.
 
-## Persistenz, Migration und Berechtigungen
+## Persistenz und Migration
 
-Die vorhandene JSONL-Ablage unter `runtime/tasks` bleibt der lokale Entwicklungsfallback und schreibt atomar über temporäre Dateien. Produktionsbetrieb muss über das bestehende PostgreSQL-Repository- und Migrationssystem verdrahtet werden; ein stiller JSONL-Fallback in Produktion ist nicht zulässig. Eine Migration muss zunächst als Dry-Run IDs, Dubletten, ungültige Statuswerte und Workspace-Zuordnungen berichten und darf erst nach expliziter Bestätigung schreiben.
+- Entwicklung: atomare JSONL-Ablage unter `runtime/tasks`.
+- Produktion: `PostgresTaskRepository` ueber den vorhandenen SQLAlchemy-/Database-Executor.
+- Produktionsmodus ohne `DATABASE_URL` wird blockiert; ein stiller JSONL-Fallback ist nicht zulaessig.
+- Datensaetze sind durch Collection, Record-ID und Workspace isoliert; JSON-Daten und Version werden transaktional geschrieben.
+- `migrate_jsonl_to_repository` validiert zunaechst alle Quelldaten. Dry-Run und fehlerhafte Reports schreiben nichts; erfolgreiche Migrationen erhalten IDs, Versionen und Events.
 
-Lesen, lokale Erstellung und nicht-destruktive Änderungen sind innerhalb des aktiven Workspace erlaubt. Löschen, externe Connector-Änderungen, Kalendererstellung und Nachrichtenversand benötigen eine Approval. Archivieren ist der Standard statt Löschen. Logs und GUI-Hauptflächen enthalten keine technischen IDs oder vertraulichen Inhalte.
+Ein echter PostgreSQL-Integrationstest benoetigt eine isolierte `TEST_DATABASE_URL`. Die automatisierten Repository-Tests verwenden zusaetzlich den vorhandenen SQL-Testexecutor und ersetzen keine Live-Abnahme.
 
-## GUI-Integration
+## Berechtigungen und GUI
 
-Die Module Aufgaben, Projekte, Heute, Überfällig und Blockiert verwenden denselben Service. Listen, Kanban, Projektübersicht, Quellenbezug und Detailansicht werden daraus abgeleitet. Fehler bleiben auf das jeweilige Modul begrenzt; nach fehlgeschlagenen Schreibvorgängen wird der persistierte Stand neu geladen.
+Lesen, lokale Erstellung und nicht-destruktive Aenderungen sind im aktiven Workspace erlaubt. Loeschen, externe Connector-Aenderungen, Kalendererstellung und Nachrichtenversand benoetigen Approval. Archivieren bleibt der Standard. Die Ansichten Aufgaben, Projekte, Heute, Ueberfaellig und Blockiert verwenden denselben Service und laden nach fehlgeschlagenen Schreibvorgaengen den persistierten Stand neu.

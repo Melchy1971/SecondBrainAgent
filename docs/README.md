@@ -1,6 +1,6 @@
 # SecondBrain-Agent Dokumentation
 
-Stand: v30.25, 2026-06-30
+Stand: v31.16, 2026-07-15
 
 Dieser Ordner enthaelt die aktuelle Betriebs- und Architekturdokumentation. Historische Versionsdetails liegen ausschliesslich unter [`releases/`](releases/).
 
@@ -20,6 +20,8 @@ Dieser Ordner enthaelt die aktuelle Betriebs- und Architekturdokumentation. Hist
 - [`RELEASE_WORKFLOW_v18_9.md`](RELEASE_WORKFLOW_v18_9.md) - verbindlicher Gate- und Release-Ablauf. Der Dateiname bleibt wegen Repo-Doctor-Kompatibilitaet bestehen.
 - [`08_RELEASE_GATE.md`](08_RELEASE_GATE.md) - zuletzt belegter Gate-Status.
 - [`09_MASTERPLAN_STATUS.json`](09_MASTERPLAN_STATUS.json) - maschinenlesbarer Projektstatus.
+- [`tasks/task_project_architecture.md`](tasks/task_project_architecture.md) - Task-/Projektmodell, PostgreSQL-Persistenz und Migration.
+- [`planner_v2_runtime.md`](planner_v2_runtime.md) - Planner-DAG, Parallelitaet, Ressourcen-Locks und Recovery.
 
 ## Spezielle Funktionen
 
@@ -33,5 +35,6 @@ Dieser Ordner enthaelt die aktuelle Betriebs- und Architekturdokumentation. Hist
 - Packaging und Extras: `pyproject.toml`.
 - Release-Historie: [`02_RELEASE_HISTORY.md`](02_RELEASE_HISTORY.md), Git-History und [`releases/`](releases/).
 - Laufzeitstatus: generierte Reports unter `runtime/` und `release/`; diese werden nicht als statische Dokumentation gepflegt.
+- Branch-Status: v31.01-v31.14 sind in `main`; v31.15 und v31.16 sind veroeffentlichte Feature-Branches und bis zur Zusammenfuehrung nicht Teil von `main`.
 
 Versionierte Feature-Snapshots aus v6 bis v18 wurden entfernt. Sie beschrieben ueberwiegend alte Launcher-Oberflaechen oder Foundations und waren keine verlaessliche Betriebsanleitung mehr.

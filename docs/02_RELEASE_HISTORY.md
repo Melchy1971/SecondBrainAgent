@@ -36,3 +36,20 @@ Diese Datei beschreibt nur die Hauptlinie. Einzelne, auditierbare Release-Notize
 - Native Desktop-App als Standardstart eingefuehrt.
 - Deutsche Text-/Sprachkommandos und Bestaetigungsgrenzen integriert.
 - Web-HUD als optionaler Kompatibilitaetsmodus beibehalten.
+
+## v31.01 bis v31.04: Distribution und GA-Gates
+
+- Signierten Auto-Updater mit Hashpruefung, Migration Safety und Rollback aufgebaut.
+- Reproduzierbare Windows-Installer-/Portable-Artefakte und CI/CD-Releaseautomation ergaenzt.
+- GA-Readiness-Gate als verbindliche Aggregation der vorhandenen kritischen Gates eingefuehrt.
+
+## v31.05 bis v31.14: Persoenliche Arbeitsbereiche
+
+- Task-/Projektverwaltung, Kalender-, Mail- und Briefing-Assistenten integriert.
+- Knowledge Graph, Memory Consolidation, Planner v2 und recoverable Long-running Jobs ergaenzt.
+- Proaktive Assistenz und ein gemeinsames persoenliches Dashboard bereitgestellt.
+
+## Nacharbeiten v31.15 und v31.16
+
+- v31.15: produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks/Projekte (`feature/v31.15-task-postgres`, noch nicht in `main`).
+- v31.16: echte parallele Planner-Ausfuehrung mit Approval-Serialisierung, Ressourcen-Locks und konsistenten Recovery-Checkpoints (`feature/v31.16-planner-parallel-runtime`, noch nicht in `main`).

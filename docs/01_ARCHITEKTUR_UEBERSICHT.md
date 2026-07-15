@@ -16,7 +16,7 @@ Native Desktop / Voice / Web-HUD / CLI / Mobile Backend
         +----------------+----------------+
                          |
                          v
-     SQLite / PostgreSQL-pgvector / JSON Runtime State
+ PostgreSQL/pgvector / signierte Artefakte / Dev-JSONL
                          |
                          v
             Audit, Reports und Approval-Grenzen
@@ -46,10 +46,12 @@ Dateien / Inbox / Connectoren / Voice / Mobile
   -> UI, Reports, Benachrichtigungen und Review
 ```
 
-## Persistenz
+## Persistenz und Ausfuehrung
 
-- SQLite und JSON dienen als lokale, deterministische Basis.
-- PostgreSQL/pgvector ist vorbereitet, aber nur bei aktivierter Konfiguration und erfolgreichem Live-Gate produktiv.
+- PostgreSQL/pgvector ist der produktive Datenpfad; SQLite und JSONL sind explizite Entwicklungsmodi.
+- Tasks und Projekte verwenden in Produktion ein transaktionales PostgreSQL-Repository. Die JSONL-Migration validiert vor dem Schreiben IDs, Versionen, Dubletten und Workspace-Zuordnungen.
+- Planner v2 validiert DAGs, Budgets, Scopes, Risiken und Approvals. Unabhaengige sichere Knoten koennen parallel laufen; Approval-/Unsafe-Knoten und gemeinsam gesperrte Ressourcen bleiben serialisiert.
+- Updates und Rollbacks erfordern signierte Manifeste und Pakete sowie Hash-, Kanal- und Kompatibilitaetspruefungen.
 - Laufzeitdaten liegen unter `runtime/` und `data/` und gehoeren nicht in Git.
 - Secrets gehoeren in lokale Umgebungsvariablen oder ignorierte Konfigurationsdateien und nie in Dokumentation, Reports oder Kamera-Metadaten.
 
