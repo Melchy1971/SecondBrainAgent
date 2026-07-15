@@ -1,5 +1,5 @@
 # RAG Index
 
-Aktualisiert: 2026-07-13
+Aktualisiert: 2026-07-14
 
-Chunks: 5
+Chunks: 551

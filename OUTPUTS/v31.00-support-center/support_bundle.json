@@ -1,0 +1,1550 @@
+{
+  "schema": "secondbrain.support.bundle.v1",
+  "generated_at": "2026-07-14T13:03:40+00:00",
+  "project_root": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+  "sections": {
+    "diagnose": {
+      "ok": true,
+      "checks": {
+        "project_root_exists": true,
+        "runtime_dir": true,
+        "config_dir": true,
+        "launcher": true,
+        "python": "3.10.12",
+        "psutil": true
+      },
+      "status": "ok",
+      "missing": []
+    },
+    "health_snapshot": {
+      "ok": true,
+      "psutil": true,
+      "cpu_percent": 0.0,
+      "ram_percent": 10.1,
+      "disk_percent": 79.2,
+      "ram_total_gb": 4.11,
+      "disk_free_gb": 7.16
+    },
+    "config_snapshot": {
+      "ok": true,
+      "config_files": [
+        "agent_memory.yaml",
+        "agents_v98.yaml",
+        "ai_layer.yaml",
+        "ai_runtime_v105.yaml",
+        "calendar.yaml",
+        "cameras.example.json",
+        "cameras.json",
+        "chatgpt_import.yaml",
+        "claude/claude_desktop_config_secondbrain.json",
+        "connectors.production.yaml",
+        "connectors.yaml",
+        "connectors_v104.json",
+        "connectors_v95.yaml",
+        "feature_flags.yaml",
+        "gemini_import.yaml",
+        "goals.yaml",
+        "golden_retrieval.json",
+        "hud_settings.json",
+        "importers.yaml",
+        "knowledge_intelligence_v99.yaml",
+        "life_os_v10.yaml",
+        "llm_router.yaml",
+        "local_ai_cluster.yaml",
+        "logging.yaml",
+        "mcp_ecosystem.yaml",
+        "mcp_hub.yaml",
+        "mediamtx.yml",
+        "obsidian_plugin.yaml",
+        "olden_retrieval.json",
+        "ontology.yaml",
+        "perplexity_import.yaml",
+        "production.yaml",
+        "production_ready.yaml",
+        "profiles/linux.yaml",
+        "profiles/macos.yaml",
+        "profiles/windows.yaml",
+        "providers.yaml",
+        "quality.yaml",
+        "runtime.yaml",
+        "runtime_v111.yaml",
+        "secrets.template.yaml",
+        "security.yaml",
+        "security_v107.yaml",
+        "service.yaml",
+        "settings.yaml",
+        "sync.yaml",
+        "team.yaml",
+        "v9_modules.yaml",
+        "vault.yaml",
+        "vaults.yaml",
+        "vector_rag.yaml",
+        "voice_layer_v103.yaml",
+        "workflows.yaml"
+      ],
+      "count": 53,
+      "contents": {
+        "agent_memory.yaml": "agents:\n  research:\n    memory: true\n    learns_from: [research, knowledge_gaps, sources]\n  project:\n    memory: true\n    learns_from: [projects, tasks, risks, decisions]\n  process:\n    memory: true\n    learns_from: [processes, meetings, emails]\n  executive:\n    memory: true\n    learns_from: [dashboards, kpis, risks]\n  chief_of_staff:\n    memory: true\n    learns_from: [all]\n",
+        "agents_v98.yaml": "agents_v98:\n  task_agent:\n    autonomy: review_first\n    can_create_tasks: true\n    can_complete_tasks: false\n  research_agent:\n    autonomy: backlog_only\n    web_research: disabled\n  meeting_agent:\n    autonomy: review_first\n    can_create_protocols: true\n  project_agent:\n    autonomy: review_first\n    can_create_roadmaps: true\n  decision_agent:\n    autonomy: review_first\n    can_flag_missing_decisions: true\n  process_agent:\n    autonomy: review_first\n    can_create_process_backlog: true\n  chief_of_staff:\n    autonomy: summarize_only\n",
+        "ai_layer.yaml": "ai_layer:\n  provider: ollama\n  base_url: http://localhost:11434\n  default_model: llama3.1\n  timeout_seconds: 120\n  tasks:\n    classify: llama3.1\n    summarize: llama3.1\n    extract_tasks: llama3.1\n    tag: llama3.1\n    review: qwen\n    code: deepseek-coder\n    reasoning: qwen\n",
+        "ai_runtime_v105.yaml": "ai_runtime:\n  default_provider: echo\n  ollama_enabled: false\n  ollama_base_url: http://localhost:11434\n  ollama_model: llama3.1\n",
+        "calendar.yaml": "calendar:\n  enabled: prepared\n  providers:\n    google_calendar: prepared\n    outlook_calendar: prepared\n    ics: prepared\n  actions:\n    import: true\n    prepare_meeting: true\n    summarize_day: true\n    create_events: false\n    delete_events: false\n",
+        "cameras.example.json": "{\n  \"gateway_webrtc\": \"http://127.0.0.1:8889\",\n  \"gateway_hls\": \"http://127.0.0.1:8888\",\n  \"cameras\": [\n    {\n      \"id\": \"haustuer\",\n      \"name\": \"Haustür\",\n      \"location\": \"Eingang\",\n      \"host\": \"192.168.1.50\",\n      \"rtsp_port\": 554,\n      \"stream_path\": \"haustuer\",\n      \"mode\": \"webrtc\",\n      \"onvif_port\": 8000,\n      \"enabled\": true\n    },\n    {\n      \"id\": \"hof\",\n      \"name\": \"Hof\",\n      \"location\": \"Außen\",\n      \"host\": \"192.168.1.51\",\n      \"rtsp_port\": 554,\n      \"stream_path\": \"hof\",\n      \"mode\": \"hls\",\n      \"enabled\": true\n    }\n  ]\n}\n",
+        "cameras.json": "{\n  \"gateway_webrtc\": \"http://127.0.0.1:8889\",\n  \"gateway_hls\": \"http://127.0.0.1:8888\",\n  \"cameras\": [\n    {\n      \"id\": \"webcam\",\n      \"name\": \"USB-Webcam\",\n      \"location\": \"Arbeitsplatz\",\n      \"host\": \"\",\n      \"rtsp_port\": 554,\n      \"stream_path\": \"webcam\",\n      \"mode\": \"local\",\n      \"snapshot_url\": \"\",\n      \"onvif_port\": 8000,\n      \"enabled\": true\n    }\n  ]\n}",
+        "chatgpt_import.yaml": "chatgpt_import:\n  enabled: true\n  watch_folder: data/inbox/ChatGPT/exports\n  processed_folder: data/inbox/ChatGPT/processed\n  target_folder: data/vaults/secondbrain/05_Quellen/ChatGPT\n  report_folder: data/vaults/secondbrain/99_System/chatgpt_import\n  auto_tags: true\n  update_semantic_search: true\n  update_secondbrain_os: false\n",
+        "claude/claude_desktop_config_secondbrain.json": "{\n  \"mcpServers\": {\n    \"secondbrain\": {\n      \"command\": \"python\",\n      \"args\": [\n        \"mcp-server/server.py\"\n      ]\n    }\n  }\n}\n",
+        "connectors.production.yaml": "connectors:\n  imap:\n    enabled: false\n    host: \"\"\n    port: 993\n    username: \"\"\n    password_secret: \"email.imap_password\"\n    mailbox: INBOX\n    max_messages: 25\n    mark_seen: false\n  browser:\n    enabled: true\n    chrome_bookmarks_path: \"\"\n    edge_bookmarks_path: \"\"\n    firefox_bookmarks_path: \"\"\n  documents:\n    pdf: true\n    docx: true\n    xlsx: true\n    pptx: prepared\n    ocr: prepared\n  ollama:\n    enabled: true\n    base_url: http://localhost:11434\n",
+        "connectors.yaml": "imap:\n  enabled: false\n  provider: generic\n  host: \"\"\n  port: 993\n  username: \"\"\n  password_secret: \"email.imap_password\"\n  mailbox: INBOX\n  max_messages: 25\n  mark_seen: false\n\nbrowser:\n  enabled: true\n  chrome_bookmarks_path: \"\"\n  edge_bookmarks_path: \"\"\n  firefox_profile_path: \"\"\n\nollama:\n  enabled: true\n  base_url: http://localhost:11434\n  model: llama3.1\n  timeout_seconds: 60\n\nweb_dashboard:\n  enabled: true\n  host: localhost\n  port: 8765\n",
+        "connectors_v104.json": "{\n  \"connectors\": [\n    {\n      \"name\": \"gmail_export_local\",\n      \"kind\": \"local_json\",\n      \"record_type\": \"email\",\n      \"path\": \"connectors/sample_gmail_export.json\",\n      \"enabled\": true\n    },\n    {\n      \"name\": \"calendar_export_local\",\n      \"kind\": \"local_json\",\n      \"record_type\": \"calendar_event\",\n      \"path\": \"connectors/sample_calendar_export.json\",\n      \"enabled\": true\n    },\n    {\n      \"name\": \"drive_export_local\",\n      \"kind\": \"local_json\",\n      \"record_type\": \"document\",\n      \"path\": \"connectors/sample_drive_export.json\",\n      \"enabled\": true\n    }\n  ]\n}\n",
+        "connectors_v95.yaml": "connectors_v95:\n  calendar:\n    google_calendar: prepared\n    outlook_calendar: prepared\n    ics_import: active\n  email:\n    gmail: prepared\n    outlook: prepared\n    imap: prepared\n    send_mail: disabled\n  meeting:\n    audio_transcription: prepared\n    whisper_local: prepared\n    transcript_import: active\n  web_frontend:\n    enabled: prepared\n    host: localhost\n    port: 8845\n  event_bus:\n    enabled: true\n    file: events/event_bus.jsonl\n",
+        "feature_flags.yaml": "feature_flags:\n  production_ready_v96: true\n  installer_checks: true\n  update_rollback: true\n  backup_before_update: true\n  settings_audit: true\n  release_gate_strict: true\n  gui_settings: prepared\n  user_roles: prepared\n  audit_log: prepared\n  destructive_actions: false\n  email_send: false\n",
+        "gemini_import.yaml": "gemini_import:\n  enabled: true\n  watch_folder: data/inbox/Gemini/exports\n  processed_folder: data/inbox/Gemini/processed\n  target_folder: data/vaults/secondbrain/05_Quellen/Gemini\n  report_folder: data/vaults/secondbrain/99_System/gemini_import\n  auto_tags: true\n  update_semantic_search: true\n  update_secondbrain_os: false\n",
+        "goals.yaml": "goals:\n  enabled: true\n  default_review_cycle: weekly\n  categories:\n    - Beruf\n    - Projekte\n    - Lernen\n    - Gesundheit\n    - Verein\n    - Privat\n  scoring:\n    active_task_weight: 2\n    decision_weight: 3\n    risk_penalty: 2\n    stale_project_penalty: 1\n",
+        "golden_retrieval.json": "{\n  \"dataset_id\": \"project_v1\",\n  \"queries\": [\n    {\n      \"query\": \"Jarvis RAG Quellen\",\n      \"expected_terms\": [\n        \"jarvis\",\n        \"rag\",\n        \"quellen\"\n      ],\n      \"min_recall_at_k\": 0.66,\n      \"min_mrr\": 0.25,\n      \"min_ndcg\": 0.35,\n      \"k\": 10,\n      \"note\": \"Core source retrieval smoke\",\n      \"min_hit_count\": 1,\n      \"expected_sources\": [],\n      \"expected_titles\": []\n    }\n  ],\n  \"quality_policy\": {\n    \"mode\": \"blocking\",\n    \"min_pass_rate\": 1.0\n  }\n}\n",
+        "hud_settings.json": "{\n  \"place\": \"Zaberfeld\",\n  \"lat\": 50.7374,\n  \"lon\": 7.0982,\n  \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\",\n  \"news_max\": 5,\n  \"weather_min\": 15,\n  \"accent\": \"#2fe6ff\",\n  \"version\": \"v1.0\",\n  \"environment\": \"production\",\n  \"log_level\": \"INFO\",\n  \"system_health\": \"EXCELLENT\",\n  \"system_status_text\": \"All Systems Operational\",\n  \"user_name\": \"Jarvis\",\n  \"user_role\": \"Administrator\",\n  \"database\": \"PostgreSQL 16 + pgvector\",\n  \"postgres_status\": \"ONLINE\",\n  \"pgvector_version\": \"1.0.5\",\n  \"embedding_provider\": \"OpenAI\",\n  \"embedding_model\": \"text-embedding-3-small\",\n  \"embedding_dim\": 1536,\n  \"ollama_url\": \"http://localhost:11434\",\n  \"ollama_models\": 7,\n  \"memory_engine\": \"LangGraph + Memory Store\",\n  \"queue_name\": \"Redis Queue\",\n  \"queue_pending\": 3,\n  \"release_blocking\": 0,\n  \"backup_active\": \"Aktiv\",\n  \"sync_active\": \"Aktiv\",\n  \"connectors\": 8,\n  \"agents_active\": 3,\n  \"vectors\": 1248932,\n  \"documents\": 4392,\n  \"memories\": 12845,\n  \"backup_last\": \"15:23\",\n  \"backup_next\": \"Heute, 22:00\",\n  \"vector_index\": \"OK\",\n  \"assistant_engine\": \"ollama\",\n  \"assistant_model\": \"\",\n  \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\",\n  \"assistant_temperature\": 0.2,\n  \"assistant_context_chunks\": 5,\n  \"coding_engine\": \"ollama\",\n  \"coding_model\": \"deepseek-coder\",\n  \"coding_temperature\": 0.1,\n  \"openai_api_key\": \"[REDACTED]\",\n  \"gemini_api_key\": \"AIzaSyBmKQjB5ahSUQxskyoQVqjb4xRrFxdJo6o\",\n  \"anthropic_api_key\": \"\"\n}",
+        "importers.yaml": "importers:\n  email:\n    gmail: true\n    outlook: true\n    ionos: true\n    imap: true\n    actions:\n      import: true\n      analyze: true\n      send: false\n  documents:\n    pdf: true\n    word: true\n    excel: true\n    powerpoint: true\n    images_ocr: true\n    audio: true\n    video: true\n    zip_archives: true\n    cad: true\n    code_repositories: true\n  browser:\n    chrome: true\n    edge: true\n    firefox: true\n    bookmarks: true\n    open_tabs: true\n    save_webpages: true\n    archive_articles: true\n    youtube_history: true\n",
+        "knowledge_intelligence_v99.yaml": "knowledge_intelligence_v99:\n  entity_types:\n    - person\n    - organization\n    - project\n    - system\n    - product\n    - technology\n    - location\n    - date\n    - decision\n    - risk\n  relationship_types:\n    - mentions\n    - belongs_to\n    - blocks\n    - influences\n    - decides\n    - references\n    - creates_task\n  contradiction_detection:\n    enabled: true\n    status_keywords:\n      done:\n        - abgeschlossen\n        - erledigt\n        - fertig\n        - pass\n      open:\n        - offen\n        - todo\n        - geplant\n        - blocked\n        - blockiert\n  quality_thresholds:\n    weak_note_chars: 250\n    min_links: 1\n    min_tags: 1\n",
+        "life_os_v10.yaml": "life_os_v10:\n  domains:\n    - Beruf\n    - Projekte\n    - Gesundheit\n    - Finanzen\n    - Lernen\n    - Reisen\n    - Verein\n    - Privat\n  rhythms:\n    daily:\n      enabled: true\n      questions:\n        - Was ist heute wichtig?\n        - Welche Risiken brauchen Aufmerksamkeit?\n        - Welche Entscheidung ist offen?\n        - Was ist der nächste konkrete Schritt?\n    weekly:\n      enabled: true\n      questions:\n        - Was wurde erreicht?\n        - Was wurde gelernt?\n        - Was blieb blockiert?\n        - Was wird nächste Woche fokussiert?\n  copilot:\n    name: Jarvis\n    autonomy: review_first\n",
+        "llm_router.yaml": "llm_router:\n  default_provider: ollama\n  default_model: llama3.1\n  tasks:\n    extraction:\n      provider: ollama\n      model: gemma\n    coding:\n      provider: ollama\n      model: deepseek-coder\n    analysis:\n      provider: ollama\n      model: qwen\n    summary:\n      provider: ollama\n      model: llama3.1\n",
+        "local_ai_cluster.yaml": "local_ai_cluster:\n  enabled: true\n  provider: ollama\n  models:\n    extraction: gemma\n    coding: deepseek-coder\n    reasoning: qwen\n    summary: llama3.1\n    vision: llava\n    embeddings: nomic-embed-text\n    reranking: bge-reranker\n",
+        "logging.yaml": "logging:\n  import_log: logs/import.log\n  error_log: logs/error.log\n  audit_log: logs/audit.log\n  runtime_log: logs/runtime.log\n  max_log_size_mb: 10\n  redact_secrets: true\n  keep_days: 30\n",
+        "mcp_ecosystem.yaml": "mcp_ecosystem:\n  filesystem:\n    status: prepared\n    priority: high\n  obsidian:\n    status: prepared\n    priority: high\n  github:\n    status: prepared\n    priority: medium\n  gmail:\n    status: prepared\n    priority: medium\n  google_calendar:\n    status: prepared\n    priority: medium\n  google_drive:\n    status: prepared\n    priority: medium\n  browser:\n    status: prepared\n    priority: medium\n  docker:\n    status: prepared\n    priority: medium\n  ssh_vps:\n    status: prepared\n    priority: medium\n  postgresql:\n    status: prepared\n    priority: low\n",
+        "mcp_hub.yaml": "mcp_hub:\n  connectors:\n    claude_desktop: prepared\n    chatgpt: prepared\n    gemini: prepared\n    perplexity: prepared\n    ollama: prepared\n    github: prepared\n    gmail: prepared\n    google_calendar: prepared\n    google_drive: prepared\n    notion: prepared\n    jira: prepared\n    confluence: prepared\n    home_assistant: prepared\n    mygekko: prepared\n    postgresql: prepared\n    docker: prepared\n    unraid: prepared\n",
+        "mediamtx.yml": "# Lokales Media-Gateway fuer das Jarvis Security-Panel (MediaMTX).\n# ----------------------------------------------------------------------------\n# ENTHAELT KAMERA-ZUGANGSDATEN -> NIEMALS committen. Steht in .gitignore.\n# BENUTZER/PASSWORT unten durch die echten Reolink-Logindaten ersetzen.\n#\n# Reolink-RTSP-Pfade:\n#   Hauptstream:  h264Preview_01_main   (hohe Aufloesung, mehr Last)\n#   Substream:    h264Preview_01_sub    (kleiner, fluessiger)\n#\n# Start (im Ordner mit mediamtx.exe):\n#   mediamtx.exe \"config\\mediamtx.yml\"\n# ----------------------------------------------------------------------------\n\nwebrtcAddress: :8889\nhlsAddress: :8888\n\npaths:\n  reolink:\n    source: rtsp://[REDACTED]@192.168.2.108:554/h264Preview_01_main\n    sourceOnDemand: yes\n",
+        "obsidian_plugin.yaml": "obsidian_plugin:\n  enabled: true\n  plugin_id: secondbrain-agent\n  local_dashboard_url: http://localhost:8765\n  local_api_url: http://localhost:8787\n  vault_relative_install_path: .obsidian/plugins/secondbrain-agent\n",
+        "olden_retrieval.json": "{\n  \"dataset_id\": \"project_v1\",\n  \"queries\": [\n    {\n      \"query\": \"Jarvis RAG Quellen\",\n      \"expected_terms\": [\"jarvis\", \"rag\", \"quellen\"],\n      \"min_recall_at_k\": 0.66,\n      \"min_mrr\": 0.25,\n      \"min_ndcg\": 0.35,\n      \"k\": 10,\n      \"note\": \"Core source retrieval smoke\"\n    }\n  ]\n}",
+        "ontology.yaml": "ontology:\n  node_types:\n    - person\n    - customer\n    - project\n    - process\n    - document\n    - meeting\n    - task\n    - risk\n    - decision\n    - system\n    - supplier\n    - source\n    - health_metric\n    - finance_record\n  edge_types:\n    - works_on\n    - blocks\n    - caused_by\n    - decides\n    - creates\n    - belongs_to\n    - depends_on\n    - references\n    - impacts\n    - owns\n",
+        "perplexity_import.yaml": "perplexity_import:\n  enabled: true\n  watch_folder: data/inbox/Perplexity/exports\n  processed_folder: data/inbox/Perplexity/processed\n  target_folder: data/vaults/secondbrain/05_Quellen/Perplexity\n  report_folder: data/vaults/secondbrain/99_System/perplexity_import\n  auto_tags: true\n  update_semantic_search: true\n  update_secondbrain_os: false\n",
+        "production.yaml": "production:\n  min_python_version: \"3.10\"\n  require_vault: true\n  require_inbox: true\n  require_agent_root: true\n  require_backup_before_import: true\n  require_secret_scan: true\n  require_quality_gate: true\n  require_smoke_tests: true\n  require_release_notes: true\n  allow_destructive_actions: false\n  allow_email_send: false\n  allow_external_research: false\n  release_gate_threshold: 85\n  warning_threshold: 70\n",
+        "production_ready.yaml": "production_ready:\n  required_python_min: \"3.11\"\n  required_paths:\n    vault: data/vaults/secondbrain\n    inbox: data/inbox\n    agent: .\n  required_commands:\n    python: true\n    node: optional\n    npm: optional\n    npx: optional\n    ollama: optional\n  required_scripts:\n    - scripts\\menu.py\n    - scripts\\run_v9_cycle.py\n    - scripts\\run_v95_cycle.py\n    - scripts\\check_paths_v9.py\n    - scripts\\release_gate_v9.py\n    - scripts\\run_regression_tests_v9.py\n  forbidden_paths: []\n  safe_mode:\n    destructive_actions_allowed: false\n    email_send_allowed: false\n",
+        "profiles/linux.yaml": "vault_path: data/vaults/secondbrain\ninbox_path: data/inbox\nsystem_path: .\npath_separator: \"/\"\nplatform: linux\n",
+        "profiles/macos.yaml": "vault_path: data/vaults/secondbrain\ninbox_path: data/inbox\nsystem_path: .\npath_separator: \"/\"\nplatform: macos\n",
+        "profiles/windows.yaml": "vault_path: data/vaults/secondbrain\ninbox_path: data/inbox\nsystem_path: .\npath_separator: \"\\\\\"\nplatform: windows\n",
+        "providers.yaml": "providers:\n  ChatGPT:\n    enabled: true\n    mode: export_import\n    inbox_folder: ChatGPT\n  Claude:\n    enabled: true\n    mode: export_import_mcp\n    inbox_folder: Claude\n  Gemini:\n    enabled: true\n    mode: export_import\n    inbox_folder: Gemini\n  Perplexity:\n    enabled: true\n    mode: export_import_sources\n    inbox_folder: Perplexity\n  Ollama:\n    enabled: true\n    mode: local\n    base_url: http://localhost:11434\n    inbox_folder: Ollama\n",
+        "quality.yaml": "quality:\n  min_frontmatter_ratio: 0.75\n  max_inbox_files: 50\n  max_review_items: 100\n  require_title: true\n  require_type: true\n  require_tags: true\n  warn_empty_notes: true\n  warn_large_notes_kb: 250\n",
+        "runtime.yaml": "runtime:\n  profile: safe\n  paths:\n    vault: ../SecondBrain\n    runtime: runtime\n    events: events/runtime\n  services:\n    event_store: true\n    connectors: true\n    ai_runtime: true\n    agent_kernel: true\n    desktop_commands: true\n    security: true\n    autonomous_agent: true\n    advanced_rag: true\n    api_server: false\n    gui: false\n    voice: false\n  ai:\n    default_provider: echo\n",
+        "runtime_v111.yaml": "runtime:\n  version: \"11.1\"\n  profile: safe\n  services:\n    eventbus: true\n    connectors: true\n    rag: true\n    ai: true\n    agent: true\n    monitoring: true\n    desktop_commands: true\n    gui: false\n  persistence:\n    state_dir: runtime/state\n    session_dir: runtime/sessions\n    activity_limit: 500\n",
+        "secrets.template.yaml": "[REDACTED]",
+        "security.yaml": "security:\n  api_key_management: true\n  secrets_file: config/secrets.local.yaml\n  secrets_template: config/secrets.template.yaml\n  audit_log: logs/security_audit.log\n  store_plaintext_keys: false\n  email_send_allowed: false\n  destructive_actions_allowed: false\n",
+        "security_v107.yaml": "# SecondBrain OS v10.7 Security & Governance\nmax_level: 2\napproval_threshold: 60\nblock_threshold: 95\nblocked_actions:\n  - system.shell\n  - files.delete_all\n  - email.send_raw\nredaction:\n  secrets: true\n  pii: true\nruntime:\n  audit_log: SecondBrain/99_System/security/audit_v107.jsonl\n  approvals: SecondBrain/99_System/security/approvals_v107.json\n",
+        "service.yaml": "service:\n  enabled: true\n  mode: scheduler\n  import_interval_minutes: 30\n  intelligence_interval_minutes: 120\n  governance_interval_minutes: 240\n  dashboard_port: 8765\n  api_port: 8787\n  run_on_startup: true\n",
+        "settings.yaml": "app_name: SecondBrain-Agent\nversion: 10.3.0\nplatform_mode: cross_platform\ndefault_language: de\nvault_path: data/vaults/secondbrain\ninbox_path: data/inbox\nsystem_path: .\ndata_model: markdown_only\nv103_enabled: true\nvoice_layer_enabled: prepared\nvoice_command_router_enabled: true\ndictation_import_enabled: true\nspeech_to_text_provider: prepared\ntext_to_speech_provider: prepared\nsafe_mode_default: true\ndestructive_actions_allowed: false\nemail_send_allowed: false\nexternal_research_allowed: false\n",
+        "sync.yaml": "sync:\n  obsidian_sync:\n    enabled: optional\n  git:\n    enabled: optional\n  onedrive:\n    enabled: optional\n  syncthing:\n    enabled: optional\n  conflict_policy: keep_both\n  markdown_first: true\n",
+        "team.yaml": "team:\n  enabled: true\n  users:\n    - id: owner\n      name: Markus\n      role: admin\n  roles:\n    admin:\n      read: true\n      write: true\n      configure: true\n    editor:\n      read: true\n      write: true\n      configure: false\n    viewer:\n      read: true\n      write: false\n      configure: false\n",
+        "v9_modules.yaml": "v9:\n  workflow_engine: active\n  recommendation_engine: active\n  learning_engine: active\n  simulation_engine_v2: active\n  personal_crm: active\n  executive_dashboard_v2: active\n  voice_assistant: prepared\n  api_gateway: active\n  monitoring_telemetry: active\n  plugin_ecosystem: active\n  digital_twin_v6: active\n  control_center: active\n",
+        "vault.yaml": "folders:\n  inbox: 00_Inbox\n  projects: 01_Projekte\n  knowledge: 02_Wissen\n  people: 03_Personen\n  tasks: 04_Tasks\n  sources: 05_Quellen\n  journal: 06_Journal\n  graph: 07_Graph\n  semantic_search: 65_SemanticSearch\n  knowledge_graph_full: 66_KnowledgeGraph\n  project_intelligence: 67_ProjectIntelligence\n  decision_intelligence: 68_DecisionIntelligence\n  meeting_intelligence: 69_MeetingIntelligence\n  calendar_intelligence: 70_CalendarIntelligence\n  data_warehouse: 71_DataWarehouse\n  mcp_ecosystem: 72_MCPEcosystem\n  digital_twin: 73_DigitalTwin\n  self_improvement: 74_SelfImprovingKnowledge\n  secondbrain_os: 75_SecondBrainOS\n  templates: 90_Templates\n  system: 99_System\n",
+        "vaults.yaml": "vaults:\n  secondbrain:\n    path: data/vaults/secondbrain\n    enabled: true\n  wissen:\n    path: data/vaults/wissen\n    enabled: false\n  beruf:\n    path: data/vaults/beruf\n    enabled: false\n  privat:\n    path: data/vaults/privat\n    enabled: false\n  verein:\n    path: data/vaults/verein\n    enabled: false\n",
+        "vector_rag.yaml": "vector_rag:\n  enabled: true\n  provider: ollama\n  future_provider: chroma_or_faiss\n  vault_path: data/vaults/default\n  index_path: data/vector_rag/vector_index.json\n  chunk_size_chars: 1800\n  chunk_overlap_chars: 200\n  top_k: 8\n  ollama:\n    enabled: true\n    base_url: http://localhost:11434\n    model: llama3.1\n    timeout_seconds: 120\n",
+        "voice_layer_v103.yaml": "voice_layer_v103:\n  enabled: true\n  mode: text_command_first\n  hotword: prepared\n  speech_to_text:\n    provider: prepared\n    options:\n      - whisper_local\n      - windows_dictation\n      - browser_dictation\n  text_to_speech:\n    provider: prepared\n    options:\n      - windows_sapi\n      - edge_tts\n  safety:\n    destructive_actions: disabled\n    email_send: disabled\n    command_execution: review_first\n  inbox:\n    dictation_folder: data/inbox/Voice/Dictation\n    audio_folder: data/inbox/Voice/Audio\n",
+        "workflows.yaml": "workflows:\n  import_all:\n    description: Importiert ChatGPT, Gemini und Perplexity Exporte.\n    steps:\n      - import_ai_exports\n      - semantic_index\n      - knowledge_graph\n  daily_briefing:\n    description: Erstellt Tageslage.\n    steps:\n      - project_intelligence\n      - recommendations\n      - executive_dashboard\n  weekly_review:\n    description: Wochenreview.\n    steps:\n      - data_warehouse\n      - learning_engine\n      - digital_twin\n      - control_center\n  project_plan:\n    description: Erstellt Projektordner über /plan.\n    steps:\n      - create_project_folder\n      - project_intelligence\n"
+      }
+    },
+    "runtime_snapshot": {
+      "ok": false,
+      "source": "native_view_model",
+      "schema": "secondbrain.native.view_model.v30_29",
+      "version": "30.29",
+      "mode": "native_desktop_primary",
+      "bootstrap": {
+        "ok": false,
+        "status": "blocked",
+        "schema": "secondbrain.bootstrap.v1",
+        "version": "30.21",
+        "project_root": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+        "checks": [
+          {
+            "name": "python",
+            "ok": true,
+            "severity": "blocker",
+            "detail": "3.10.12",
+            "repaired": false
+          },
+          {
+            "name": "project_root",
+            "ok": true,
+            "severity": "blocker",
+            "detail": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+            "repaired": false
+          },
+          {
+            "name": "env_file",
+            "ok": true,
+            "severity": "warning",
+            "detail": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.env",
+            "repaired": false
+          },
+          {
+            "name": "runtime_dirs",
+            "ok": false,
+            "severity": "blocker",
+            "detail": "Runtime-/Datenordner vorhanden und beschreibbar",
+            "repaired": false
+          },
+          {
+            "name": "database_url",
+            "ok": true,
+            "severity": "warning",
+            "detail": "DATABASE_URL fehlt; lokaler SQLite/RAG-Prototyp bleibt aktiv",
+            "repaired": false
+          },
+          {
+            "name": "embeddings",
+            "ok": true,
+            "severity": "warning",
+            "detail": "lokaler Test-Provider aktiv; Production Gate bleibt blockiert",
+            "repaired": false
+          }
+        ],
+        "blockers": [
+          {
+            "name": "runtime_dirs",
+            "ok": false,
+            "severity": "blocker",
+            "detail": "Runtime-/Datenordner vorhanden und beschreibbar",
+            "repaired": false
+          }
+        ],
+        "warnings": [
+          {
+            "name": "env_file",
+            "ok": true,
+            "severity": "warning",
+            "detail": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.env",
+            "repaired": false
+          },
+          {
+            "name": "database_url",
+            "ok": true,
+            "severity": "warning",
+            "detail": "DATABASE_URL fehlt; lokaler SQLite/RAG-Prototyp bleibt aktiv",
+            "repaired": false
+          },
+          {
+            "name": "embeddings",
+            "ok": true,
+            "severity": "warning",
+            "detail": "lokaler Test-Provider aktiv; Production Gate bleibt blockiert",
+            "repaired": false
+          }
+        ],
+        "env": {
+          "SECONDBRAIN_EMBEDDING_DIMENSIONS": "64",
+          "SECONDBRAIN_EMBEDDING_MODEL": "deterministic-local",
+          "SECONDBRAIN_EMBEDDING_PROVIDER": "local",
+          "SECONDBRAIN_GUI_HOST": "127.0.0.1",
+          "SECONDBRAIN_GUI_PORT": "8851",
+          "SECONDBRAIN_PROFILE": "default"
+        },
+        "runtime_dirs": {
+          "ok": false,
+          "created": [],
+          "checks": [
+            {
+              "path": "runtime",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "runtime/logs",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "runtime/reports",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "runtime/jobs",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "runtime/cache",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "data",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "data/p1_rag",
+              "ok": true,
+              "writable": false
+            },
+            {
+              "path": "SecondBrain-Inbox",
+              "ok": true,
+              "writable": false
+            }
+          ]
+        }
+      },
+      "production": {
+        "ok": true,
+        "path": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/runtime/reports/p1_production_latest.json",
+        "data": {
+          "base_production": {
+            "blockers": 2,
+            "checks": [
+              {
+                "detail": {
+                  "blockers": 0,
+                  "schema": "secondbrain.p1_gate.v4",
+                  "warnings": 1
+                },
+                "name": "p1_gate_passes",
+                "ok": true,
+                "severity": "blocker"
+              },
+              {
+                "detail": {
+                  "backend": "postgresql",
+                  "checks": [
+                    {
+                      "detail": {
+                        "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+                      },
+                      "name": "database_url_present",
+                      "ok": true,
+                      "severity": "blocker"
+                    },
+                    {
+                      "detail": {
+                        "dialect": "postgresql"
+                      },
+                      "name": "postgresql_required_for_production",
+                      "ok": true,
+                      "severity": "blocker"
+                    },
+                    {
+                      "detail": {
+                        "backend": "postgresql",
+                        "reason": "postgresql connected"
+                      },
+                      "name": "postgresql_connection",
+                      "ok": true,
+                      "severity": "blocker"
+                    },
+                    {
+                      "detail": {
+                        "error": "(psycopg2.errors.UndefinedTable) relation \"schema_migrations\" does not exist\nLINE 1: SELECT COUNT(*) FROM schema_migrations\n                             ^\n\n[SQL: SELECT COUNT(*) FROM schema_migrations]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+                      },
+                      "name": "migration_health_probe",
+                      "ok": false,
+                      "severity": "warning"
+                    },
+                    {
+                      "detail": {
+                        "dsn": "[REDACTED]",
+                        "error": null,
+                        "ok": true,
+                        "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                        "status": "pass",
+                        "vector_extension_installed": true,
+                        "vector_extension_version": "0.8.4"
+                      },
+                      "name": "pgvector_live_check",
+                      "ok": true,
+                      "severity": "blocker"
+                    },
+                    {
+                      "detail": {
+                        "distance": 0.0
+                      },
+                      "name": "pgvector_similarity_smoke",
+                      "ok": true,
+                      "severity": "blocker"
+                    }
+                  ],
+                  "ok": true,
+                  "pgvector": {
+                    "dsn": "[REDACTED]",
+                    "error": null,
+                    "ok": true,
+                    "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                    "status": "pass",
+                    "vector_extension_installed": true,
+                    "vector_extension_version": "0.8.4"
+                  },
+                  "production_ready": true,
+                  "reason": "postgresql_pgvector_validated",
+                  "schema": "secondbrain.storage.db_production_status.v1",
+                  "status": "ready",
+                  "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+                },
+                "name": "database_pgvector_production_ready",
+                "ok": true,
+                "severity": "blocker"
+              },
+              {
+                "detail": {
+                  "dimensions": 64,
+                  "fallback": null,
+                  "fallback_allowed": false,
+                  "fallback_used": false,
+                  "index_provider": "local-deterministic:default:64",
+                  "mode": "local_test_double",
+                  "network": false,
+                  "ok": true,
+                  "production_ready": false,
+                  "provider": "local-deterministic",
+                  "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+                  "semantic": false
+                },
+                "name": "embedding_provider_production_ready",
+                "ok": false,
+                "severity": "blocker"
+              },
+              {
+                "detail": {
+                  "blockers": 5,
+                  "checks": [
+                    {
+                      "actual": 0.0,
+                      "name": "hit_rate",
+                      "ok": false,
+                      "threshold": 0.75
+                    },
+                    {
+                      "actual": 0.0,
+                      "name": "recall_at_k",
+                      "ok": false,
+                      "threshold": 0.75
+                    },
+                    {
+                      "actual": 0.0,
+                      "name": "mrr",
+                      "ok": false,
+                      "threshold": 0.5
+                    },
+                    {
+                      "actual": 0.0,
+                      "name": "ndcg",
+                      "ok": false,
+                      "threshold": 0.55
+                    },
+                    {
+                      "actual": 0.0,
+                      "name": "confidence",
+                      "ok": false,
+                      "threshold": 0.15
+                    }
+                  ],
+                  "ok": false,
+                  "status": "blocked"
+                },
+                "name": "retrieval_thresholds_pass",
+                "ok": false,
+                "severity": "blocker"
+              },
+              {
+                "detail": {
+                  "policy": "no_evidence_must_be_explicit"
+                },
+                "name": "answer_policy_enforced",
+                "ok": true,
+                "severity": "blocker"
+              },
+              {
+                "detail": {
+                  "documents": 2693
+                },
+                "name": "source_lineage_available",
+                "ok": true,
+                "severity": "blocker"
+              }
+            ],
+            "database": {
+              "backend": "postgresql",
+              "checks": [
+                {
+                  "detail": {
+                    "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+                  },
+                  "name": "database_url_present",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "dialect": "postgresql"
+                  },
+                  "name": "postgresql_required_for_production",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "backend": "postgresql",
+                    "reason": "postgresql connected"
+                  },
+                  "name": "postgresql_connection",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "error": "(psycopg2.errors.UndefinedTable) relation \"schema_migrations\" does not exist\nLINE 1: SELECT COUNT(*) FROM schema_migrations\n                             ^\n\n[SQL: SELECT COUNT(*) FROM schema_migrations]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+                  },
+                  "name": "migration_health_probe",
+                  "ok": false,
+                  "severity": "warning"
+                },
+                {
+                  "detail": {
+                    "dsn": "[REDACTED]",
+                    "error": null,
+                    "ok": true,
+                    "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                    "status": "pass",
+                    "vector_extension_installed": true,
+                    "vector_extension_version": "0.8.4"
+                  },
+                  "name": "pgvector_live_check",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "distance": 0.0
+                  },
+                  "name": "pgvector_similarity_smoke",
+                  "ok": true,
+                  "severity": "blocker"
+                }
+              ],
+              "ok": true,
+              "pgvector": {
+                "dsn": "[REDACTED]",
+                "error": null,
+                "ok": true,
+                "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                "status": "pass",
+                "vector_extension_installed": true,
+                "vector_extension_version": "0.8.4"
+              },
+              "production_ready": true,
+              "reason": "postgresql_pgvector_validated",
+              "schema": "secondbrain.storage.db_production_status.v1",
+              "status": "ready",
+              "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+            },
+            "gate": {
+              "blockers": 0,
+              "checks": [
+                {
+                  "detail": {
+                    "backend": "pgvector",
+                    "store_status": "ready"
+                  },
+                  "name": "rag_store_available",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "backend": "pgvector",
+                    "path": "H:\\SecondBrainAgent\\runtime\\p1_rag\\rag.sqlite3"
+                  },
+                  "name": "rag_database_exists",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "backend": "pgvector",
+                    "columns": [
+                      "id",
+                      "document_id",
+                      "ordinal",
+                      "text",
+                      "char_start",
+                      "char_end",
+                      "token_json",
+                      "token_count",
+                      "created_at"
+                    ]
+                  },
+                  "name": "rag_schema_ready",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "chunks": 0
+                  },
+                  "name": "rag_has_indexed_content",
+                  "ok": false,
+                  "severity": "warning"
+                },
+                {
+                  "detail": {
+                    "documents": 2693
+                  },
+                  "name": "rag_source_inventory_available",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "ranking_model": "deterministic_tfidf_logtf_length_norm_v1"
+                  },
+                  "name": "rag_explainability_available",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "blockers": 0,
+                    "warnings": 0
+                  },
+                  "name": "rag_index_validation",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "blockers": 0,
+                    "warnings": 1
+                  },
+                  "name": "rag_quality_policy",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "dimensions": 64,
+                    "fallback": null,
+                    "fallback_allowed": false,
+                    "fallback_used": false,
+                    "index_provider": "local-deterministic:default:64",
+                    "mode": "local_test_double",
+                    "network": false,
+                    "ok": true,
+                    "production_ready": false,
+                    "provider": "local-deterministic",
+                    "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+                    "semantic": false
+                  },
+                  "name": "embedding_provider_ready",
+                  "ok": true,
+                  "severity": "blocker"
+                },
+                {
+                  "detail": {
+                    "schema": "secondbrain.p1_retrieval.benchmark.v1"
+                  },
+                  "name": "retrieval_benchmark_available",
+                  "ok": true,
+                  "severity": "warning"
+                }
+              ],
+              "generated_at": "2026-07-08T10:34:37.296462+00:00",
+              "ok": true,
+              "quality": {
+                "blockers": 0,
+                "checks": [
+                  {
+                    "detail": {
+                      "blockers": 0,
+                      "warnings": 0
+                    },
+                    "name": "index_valid",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "chunks": 0,
+                      "documents": 2693
+                    },
+                    "name": "content_available",
+                    "ok": false,
+                    "severity": "warning"
+                  },
+                  {
+                    "detail": {
+                      "hit_count": 0
+                    },
+                    "name": "search_executes",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "model": "hybrid_keyword_vector_rrf_v1"
+                    },
+                    "name": "hybrid_search_executes",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "citations": 0,
+                      "confidence": 0.0
+                    },
+                    "name": "answer_has_citations_when_evidence_exists",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "policy": "answer_must_not_fabricate_without_hits"
+                    },
+                    "name": "no_evidence_is_explicit",
+                    "ok": true,
+                    "severity": "blocker"
+                  }
+                ],
+                "generated_at": "2026-07-08T10:34:34.312517+00:00",
+                "ok": true,
+                "query": "Jarvis RAG Quellen",
+                "rag_status": {
+                  "avg_tokens_per_chunk": "[REDACTED]",
+                  "capabilities": [
+                    "ingest_text",
+                    "ingest_file",
+                    "search",
+                    "vector_search",
+                    "hybrid_search",
+                    "answer",
+                    "sources",
+                    "explain",
+                    "validate_index",
+                    "quality_report",
+                    "retrieval_metrics",
+                    "retrieval_benchmark",
+                    "production_gate",
+                    "gate"
+                  ],
+                  "chunk_schema_columns": [
+                    "id",
+                    "document_id",
+                    "ordinal",
+                    "text",
+                    "char_start",
+                    "char_end",
+                    "token_json",
+                    "token_count",
+                    "created_at"
+                  ],
+                  "chunks": 0,
+                  "db_path": "H:\\SecondBrainAgent\\runtime\\p1_rag\\rag.sqlite3",
+                  "documents": 2693,
+                  "embedding_provider": {
+                    "dimensions": 64,
+                    "fallback": null,
+                    "fallback_allowed": false,
+                    "fallback_used": false,
+                    "index_provider": "local-deterministic:default:64",
+                    "mode": "local_test_double",
+                    "network": false,
+                    "ok": true,
+                    "production_ready": false,
+                    "provider": "local-deterministic",
+                    "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+                    "semantic": false
+                  },
+                  "ok": true,
+                  "profile": "default",
+                  "schema": "secondbrain.p1_rag.v2",
+                  "status": "pass",
+                  "store": {
+                    "backend": "pgvector",
+                    "capabilities": [
+                      "schema_preview",
+                      "live_readiness",
+                      "live_sources",
+                      "live_upsert_document",
+                      "live_upsert_chunks",
+                      "live_upsert_vectors",
+                      "live_vector_search"
+                    ],
+                    "chunks": 0,
+                    "config": {
+                      "dsn": "[REDACTED]",
+                      "enabled": true,
+                      "provider": "local",
+                      "schema_name": "secondbrain",
+                      "table_prefix": "p1",
+                      "vector_dimensions": 1536
+                    },
+                    "documents": 2693,
+                    "dsn": "[REDACTED]",
+                    "live": {
+                      "backend": "pgvector",
+                      "chunks": 0,
+                      "documents": 2693,
+                      "dsn": "[REDACTED]",
+                      "ok": true,
+                      "operation": "status",
+                      "providers": [],
+                      "schema": "secondbrain.p3_rag_store.v3",
+                      "status": "pass",
+                      "vectors": 0
+                    },
+                    "ok": true,
+                    "providers": [],
+                    "schema": "secondbrain.p3_rag_store.v3",
+                    "sql_preview": "-- SecondBrain pgvector foundation schema\ncreate extension if not exists vector;\ncreate schema if not exists secondbrain;\n\ncreate table if not exists secondbrain.p1_documents (\n    id text primary key,\n    source text not null,\n    title text not null,\n    content_hash text not null,\n    created_at timestamptz not null,\n    metadata_json jsonb not null default '{}'::jsonb\n);\n\ncreate table if not exists secondbrain.p1_chunks (\n    id text primary key,\n    document_id text not null references secondbrain.p1_documents(id) on delete cascade,\n    ordinal integer not null,\n    text text not null,\n    char_start integer not null default 0,\n    char_end integer not null default 0,\n    token_json jsonb not null default '[]'::jsonb,\n    token_count integer not null default 0,\n    created_at timestamptz not null\n);\n\ncreate table if not exists secondbrain.p1_chunk_embeddings (\n    chunk_id text primary key references secondbrain.p1_chunks(id) on delete cascade,\n    provider text not null,\n    dimensions integer not null,\n    embedding vector(1536) not null,\n    created_at timestamptz not null\n);\n\ncreate index if not exists idx_p1_documents_source on secondbrain.p1_documents(source);\ncreate index if not exists idx_p1_chunks_document on secondbrain.p1_chunks(document_id);\ncreate index if not exists idx_p1_embeddings_provider on secondbrain.p1_chunk_embeddings(provider);\ncreate index if not exists idx_p1_embeddings_vector on secondbrain.p1_chunk_embeddings using ivfflat (embedding vector_cosine_ops);\n",
+                    "status": "ready",
+                    "vectors": 0
+                  },
+                  "tokens": "[REDACTED]"
+                },
+                "schema": "secondbrain.p1_rag.quality.v1",
+                "status": "pass",
+                "warnings": 1
+              },
+              "rag_status": {
+                "avg_tokens_per_chunk": "[REDACTED]",
+                "capabilities": [
+                  "ingest_text",
+                  "ingest_file",
+                  "search",
+                  "vector_search",
+                  "hybrid_search",
+                  "answer",
+                  "sources",
+                  "explain",
+                  "validate_index",
+                  "quality_report",
+                  "retrieval_metrics",
+                  "retrieval_benchmark",
+                  "production_gate",
+                  "gate"
+                ],
+                "chunk_schema_columns": [
+                  "id",
+                  "document_id",
+                  "ordinal",
+                  "text",
+                  "char_start",
+                  "char_end",
+                  "token_json",
+                  "token_count",
+                  "created_at"
+                ],
+                "chunks": 0,
+                "db_path": "H:\\SecondBrainAgent\\runtime\\p1_rag\\rag.sqlite3",
+                "documents": 2693,
+                "embedding_provider": {
+                  "dimensions": 64,
+                  "fallback": null,
+                  "fallback_allowed": false,
+                  "fallback_used": false,
+                  "index_provider": "local-deterministic:default:64",
+                  "mode": "local_test_double",
+                  "network": false,
+                  "ok": true,
+                  "production_ready": false,
+                  "provider": "local-deterministic",
+                  "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+                  "semantic": false
+                },
+                "ok": true,
+                "profile": "default",
+                "schema": "secondbrain.p1_rag.v2",
+                "status": "pass",
+                "store": {
+                  "backend": "pgvector",
+                  "capabilities": [
+                    "schema_preview",
+                    "live_readiness",
+                    "live_sources",
+                    "live_upsert_document",
+                    "live_upsert_chunks",
+                    "live_upsert_vectors",
+                    "live_vector_search"
+                  ],
+                  "chunks": 0,
+                  "config": {
+                    "dsn": "[REDACTED]",
+                    "enabled": true,
+                    "provider": "local",
+                    "schema_name": "secondbrain",
+                    "table_prefix": "p1",
+                    "vector_dimensions": 1536
+                  },
+                  "documents": 2693,
+                  "dsn": "[REDACTED]",
+                  "live": {
+                    "backend": "pgvector",
+                    "chunks": 0,
+                    "documents": 2693,
+                    "dsn": "[REDACTED]",
+                    "ok": true,
+                    "operation": "status",
+                    "providers": [],
+                    "schema": "secondbrain.p3_rag_store.v3",
+                    "status": "pass",
+                    "vectors": 0
+                  },
+                  "ok": true,
+                  "providers": [],
+                  "schema": "secondbrain.p3_rag_store.v3",
+                  "sql_preview": "-- SecondBrain pgvector foundation schema\ncreate extension if not exists vector;\ncreate schema if not exists secondbrain;\n\ncreate table if not exists secondbrain.p1_documents (\n    id text primary key,\n    source text not null,\n    title text not null,\n    content_hash text not null,\n    created_at timestamptz not null,\n    metadata_json jsonb not null default '{}'::jsonb\n);\n\ncreate table if not exists secondbrain.p1_chunks (\n    id text primary key,\n    document_id text not null references secondbrain.p1_documents(id) on delete cascade,\n    ordinal integer not null,\n    text text not null,\n    char_start integer not null default 0,\n    char_end integer not null default 0,\n    token_json jsonb not null default '[]'::jsonb,\n    token_count integer not null default 0,\n    created_at timestamptz not null\n);\n\ncreate table if not exists secondbrain.p1_chunk_embeddings (\n    chunk_id text primary key references secondbrain.p1_chunks(id) on delete cascade,\n    provider text not null,\n    dimensions integer not null,\n    embedding vector(1536) not null,\n    created_at timestamptz not null\n);\n\ncreate index if not exists idx_p1_documents_source on secondbrain.p1_documents(source);\ncreate index if not exists idx_p1_chunks_document on secondbrain.p1_chunks(document_id);\ncreate index if not exists idx_p1_embeddings_provider on secondbrain.p1_chunk_embeddings(provider);\ncreate index if not exists idx_p1_embeddings_vector on secondbrain.p1_chunk_embeddings using ivfflat (embedding vector_cosine_ops);\n",
+                  "status": "ready",
+                  "vectors": 0
+                },
+                "tokens": "[REDACTED]"
+              },
+              "retrieval_metrics": {
+                "avg_confidence": 0.0,
+                "avg_mrr": 0.0,
+                "avg_ndcg": 0.0,
+                "avg_recall_at_k": 0.0,
+                "generated_at": "2026-07-08T10:34:54.138035+00:00",
+                "hit_rate": 0.0,
+                "ok": true,
+                "probes": 3,
+                "results": [
+                  {
+                    "confidence": 0.0,
+                    "covered_terms": [],
+                    "expected_terms": [
+                      "jarvis",
+                      "rag",
+                      "quellen"
+                    ],
+                    "hit_count": 0,
+                    "mrr": 0.0,
+                    "ndcg": 0.0,
+                    "query": "Jarvis RAG Quellen",
+                    "recall_at_k": 0.0,
+                    "relevant_hits": 0
+                  },
+                  {
+                    "confidence": 0.0,
+                    "covered_terms": [],
+                    "expected_terms": [
+                      "memory",
+                      "evidenz"
+                    ],
+                    "hit_count": 0,
+                    "mrr": 0.0,
+                    "ndcg": 0.0,
+                    "query": "Memory Evidenz",
+                    "recall_at_k": 0.0,
+                    "relevant_hits": 0
+                  },
+                  {
+                    "confidence": 0.0,
+                    "covered_terms": [],
+                    "expected_terms": [
+                      "lokale",
+                      "quellen"
+                    ],
+                    "hit_count": 0,
+                    "mrr": 0.0,
+                    "ndcg": 0.0,
+                    "query": "lokale Quellen",
+                    "recall_at_k": 0.0,
+                    "relevant_hits": 0
+                  }
+                ],
+                "schema": "secondbrain.p1_retrieval.metrics.v1",
+                "status": "pass"
+              },
+              "schema": "secondbrain.p1_gate.v4",
+              "status": "pass",
+              "validation": {
+                "blockers": 0,
+                "chunks": 0,
+                "documents": 2693,
+                "embeddings": 0,
+                "findings": [],
+                "generated_at": "2026-07-08T10:34:33.109693+00:00",
+                "ok": true,
+                "schema": "secondbrain.p1_rag.validation.v1",
+                "status": "pass",
+                "warnings": 0
+              },
+              "warnings": 1
+            },
+            "generated_at": "2026-07-08T10:34:58.016780+00:00",
+            "metrics": {
+              "avg_confidence": 0.0,
+              "avg_mrr": 0.0,
+              "avg_ndcg": 0.0,
+              "avg_recall_at_k": 0.0,
+              "generated_at": "2026-07-08T10:34:55.269158+00:00",
+              "hit_rate": 0.0,
+              "ok": true,
+              "probes": 3,
+              "results": [
+                {
+                  "confidence": 0.0,
+                  "covered_terms": [],
+                  "expected_terms": [
+                    "jarvis",
+                    "rag",
+                    "quellen"
+                  ],
+                  "hit_count": 0,
+                  "mrr": 0.0,
+                  "ndcg": 0.0,
+                  "query": "Jarvis RAG Quellen",
+                  "recall_at_k": 0.0,
+                  "relevant_hits": 0
+                },
+                {
+                  "confidence": 0.0,
+                  "covered_terms": [],
+                  "expected_terms": [
+                    "memory",
+                    "evidenz"
+                  ],
+                  "hit_count": 0,
+                  "mrr": 0.0,
+                  "ndcg": 0.0,
+                  "query": "Memory Evidenz",
+                  "recall_at_k": 0.0,
+                  "relevant_hits": 0
+                },
+                {
+                  "confidence": 0.0,
+                  "covered_terms": [],
+                  "expected_terms": [
+                    "lokale",
+                    "quellen"
+                  ],
+                  "hit_count": 0,
+                  "mrr": 0.0,
+                  "ndcg": 0.0,
+                  "query": "lokale Quellen",
+                  "recall_at_k": 0.0,
+                  "relevant_hits": 0
+                }
+              ],
+              "schema": "secondbrain.p1_retrieval.metrics.v1",
+              "status": "pass"
+            },
+            "ok": false,
+            "schema": "secondbrain.p1_production.v1",
+            "status": "blocked"
+          },
+          "blockers": 4,
+          "checks": [
+            {
+              "detail": {
+                "blockers": 0,
+                "schema": "secondbrain.p1_gate.v4",
+                "warnings": 1
+              },
+              "name": "p1_gate_passes",
+              "ok": true,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "backend": "postgresql",
+                "checks": [
+                  {
+                    "detail": {
+                      "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+                    },
+                    "name": "database_url_present",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "dialect": "postgresql"
+                    },
+                    "name": "postgresql_required_for_production",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "backend": "postgresql",
+                      "reason": "postgresql connected"
+                    },
+                    "name": "postgresql_connection",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "error": "(psycopg2.errors.UndefinedTable) relation \"schema_migrations\" does not exist\nLINE 1: SELECT COUNT(*) FROM schema_migrations\n                             ^\n\n[SQL: SELECT COUNT(*) FROM schema_migrations]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+                    },
+                    "name": "migration_health_probe",
+                    "ok": false,
+                    "severity": "warning"
+                  },
+                  {
+                    "detail": {
+                      "dsn": "[REDACTED]",
+                      "error": null,
+                      "ok": true,
+                      "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                      "status": "pass",
+                      "vector_extension_installed": true,
+                      "vector_extension_version": "0.8.4"
+                    },
+                    "name": "pgvector_live_check",
+                    "ok": true,
+                    "severity": "blocker"
+                  },
+                  {
+                    "detail": {
+                      "distance": 0.0
+                    },
+                    "name": "pgvector_similarity_smoke",
+                    "ok": true,
+                    "severity": "blocker"
+                  }
+                ],
+                "ok": true,
+                "pgvector": {
+                  "dsn": "[REDACTED]",
+                  "error": null,
+                  "ok": true,
+                  "postgres_version": "PostgreSQL 18.4 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14), 64-bit",
+                  "status": "pass",
+                  "vector_extension_installed": true,
+                  "vector_extension_version": "0.8.4"
+                },
+                "production_ready": true,
+                "reason": "postgresql_pgvector_validated",
+                "schema": "secondbrain.storage.db_production_status.v1",
+                "status": "ready",
+                "url": "postgresql://[REDACTED]@85.215.131.200:5432/jarvis_db"
+              },
+              "name": "database_pgvector_production_ready",
+              "ok": true,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "dimensions": 64,
+                "fallback": null,
+                "fallback_allowed": false,
+                "fallback_used": false,
+                "index_provider": "local-deterministic:default:64",
+                "mode": "local_test_double",
+                "network": false,
+                "ok": true,
+                "production_ready": false,
+                "provider": "local-deterministic",
+                "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+                "semantic": false
+              },
+              "name": "embedding_provider_production_ready",
+              "ok": false,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "blockers": 5,
+                "checks": [
+                  {
+                    "actual": 0.0,
+                    "name": "hit_rate",
+                    "ok": false,
+                    "threshold": 0.75
+                  },
+                  {
+                    "actual": 0.0,
+                    "name": "recall_at_k",
+                    "ok": false,
+                    "threshold": 0.75
+                  },
+                  {
+                    "actual": 0.0,
+                    "name": "mrr",
+                    "ok": false,
+                    "threshold": 0.5
+                  },
+                  {
+                    "actual": 0.0,
+                    "name": "ndcg",
+                    "ok": false,
+                    "threshold": 0.55
+                  },
+                  {
+                    "actual": 0.0,
+                    "name": "confidence",
+                    "ok": false,
+                    "threshold": 0.15
+                  }
+                ],
+                "ok": false,
+                "status": "blocked"
+              },
+              "name": "retrieval_thresholds_pass",
+              "ok": false,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "policy": "no_evidence_must_be_explicit"
+              },
+              "name": "answer_policy_enforced",
+              "ok": true,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "documents": 2693
+              },
+              "name": "source_lineage_available",
+              "ok": true,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "avg_mrr": 0.0,
+                "avg_ndcg": 0.0,
+                "avg_recall_at_k": 0.0,
+                "blockers": 1,
+                "dataset_id": "project_v1",
+                "min_pass_rate": 1.0,
+                "pass_rate": 0.0,
+                "quality_ok": false,
+                "query_count": 1,
+                "schema": "secondbrain.p1_golden_retrieval.v2",
+                "source": "config",
+                "technical_ok": true,
+                "warnings": 1
+              },
+              "name": "golden_retrieval_eval_passes",
+              "ok": false,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "blockers": [
+                  "embedding_provider_not_allowed_for_production",
+                  "embedding_provider_not_production_ready",
+                  "local_deterministic_embeddings_not_allowed_for_production"
+                ],
+                "fallback_allowed": false,
+                "fallback_used": false,
+                "production_ready": false,
+                "provider": "local-deterministic",
+                "remediation": "configure a semantic embedding provider with a passing health probe; use local fallback only for tests/dev",
+                "schema": "secondbrain.p1_provider_health.v2",
+                "warnings": []
+              },
+              "name": "embedding_provider_production_ready",
+              "ok": false,
+              "severity": "blocker"
+            },
+            {
+              "detail": {
+                "blockers": [],
+                "current_provider": "local-deterministic:default:64",
+                "dimension_mismatch_vectors": 0,
+                "missing_vectors": 0,
+                "providers": [],
+                "remediation": null,
+                "schema": "secondbrain.p1_vector_provider_guard.v1",
+                "stale_vectors": 0,
+                "vectors": 0
+              },
+              "name": "vector_provider_audit_passes",
+              "ok": true,
+              "severity": "blocker"
+            }
+          ],
+          "generated_at": "2026-07-08T10:34:58.016780+00:00",
+          "golden_retrieval": {
+            "avg_mrr": 0.0,
+            "avg_ndcg": 0.0,
+            "avg_recall_at_k": 0.0,
+            "blockers": 1,
+            "dataset": {
+              "dataset_id": "project_v1",
+              "ok": true,
+              "path": "H:\\SecondBrainAgent\\config\\golden_retrieval.json",
+              "quality_policy": {
+                "min_pass_rate": 1.0,
+                "mode": "blocking"
+              },
+              "queries": [
+                {
+                  "expected_sources": [],
+                  "expected_terms": [
+                    "jarvis",
+                    "rag",
+                    "quellen"
+                  ],
+                  "expected_titles": [],
+                  "k": 10,
+                  "min_hit_count": 1,
+                  "min_mrr": 0.25,
+                  "min_ndcg": 0.35,
+                  "min_recall_at_k": 0.66,
+                  "note": "Core source retrieval smoke",
+                  "query": "Jarvis RAG Quellen"
+                }
+              ],
+              "schema": "secondbrain.p1_golden_retrieval.v2",
+              "source": "config"
+            },
+            "min_pass_rate": 1.0,
+            "ok": false,
+            "pass_rate": 0.0,
+            "quality_ok": false,
+            "query_count": 1,
+            "report": {
+              "bytes": 2202,
+              "path": "H:\\SecondBrainAgent\\runtime\\reports\\p1_golden_retrieval_latest.json"
+            },
+            "results": [
+              {
+                "confidence": 0.0,
+                "expected_terms": [
+                  "jarvis",
+                  "rag",
+                  "quellen"
+                ],
+                "failure_reasons": [
+                  "min_hit_count_not_met",
+                  "retrieval_thresholds_not_met"
+                ],
+                "hit_count": 0,
+                "lineage": {
+                  "expected_sources": [],
+                  "expected_titles": [],
+                  "lineage_ok": true,
+                  "source_coverage": 1.0,
+                  "source_match_count": 0,
+                  "title_coverage": 1.0,
+                  "title_match_count": 0
+                },
+                "metrics": {
+                  "covered_terms": [],
+                  "expected_terms": [
+                    "jarvis",
+                    "rag",
+                    "quellen"
+                  ],
+                  "mrr": 0.0,
+                  "ndcg": 0.0,
+                  "recall_at_k": 0.0,
+                  "relevant_hits": 0
+                },
+                "note": "Core source retrieval smoke",
+                "ok": false,
+                "quality_ok": false,
+                "query": "Jarvis RAG Quellen",
+                "technical_ok": true,
+                "thresholds": {
+                  "k": 10,
+                  "min_hit_count": 1,
+                  "min_mrr": 0.25,
+                  "min_ndcg": 0.35,
+                  "min_recall_at_k": 0.66
+                }
+              }
+            ],
+            "runtime_errors": 0,
+            "schema": "secondbrain.p1_golden_retrieval.v2",
+            "status": "blocked",
+            "technical_ok": true,
+            "warnings": 1
+          },
+          "ok": false,
+          "provider_health": {
+            "blockers": [
+              "embedding_provider_not_allowed_for_production",
+              "embedding_provider_not_production_ready",
+              "local_deterministic_embeddings_not_allowed_for_production"
+            ],
+            "config_health": {
+              "blockers": [
+                "embedding_provider_not_allowed_for_production"
+              ],
+              "config": {
+                "allow_fallback": false,
+                "dimensions": 64,
+                "dimensions_source": "provider_default",
+                "model": "llama3.1",
+                "ollama_base_url": "http://localhost:11434",
+                "openai_api_key_env": "[REDACTED]",
+                "provider": "local",
+                "source": "env",
+                "timeout_seconds": 10.0
+              },
+              "ok": false,
+              "production": true,
+              "remediation": "set SECONDBRAIN_EMBEDDING_PROVIDER to ollama/openai, disable fallback for production, and configure provider credentials/endpoints",
+              "report": {
+                "bytes": 682,
+                "path": "H:\\SecondBrainAgent\\runtime\\reports\\p1_embedding_config_latest.json"
+              },
+              "schema": "secondbrain.p1_embedding_config.v1",
+              "status": "blocked",
+              "warnings": []
+            },
+            "index_provider": "local-deterministic:default:64",
+            "ok": false,
+            "production": true,
+            "provider": "local-deterministic",
+            "provider_status": {
+              "dimensions": 64,
+              "fallback": null,
+              "fallback_allowed": false,
+              "fallback_used": false,
+              "index_provider": "local-deterministic:default:64",
+              "mode": "local_test_double",
+              "network": false,
+              "ok": true,
+              "production_ready": false,
+              "provider": "local-deterministic",
+              "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+              "semantic": false
+            },
+            "remediation": "configure a semantic embedding provider with a passing health probe; use local fallback only for tests/dev",
+            "report": {
+              "bytes": 1912,
+              "path": "H:\\SecondBrainAgent\\runtime\\reports\\p1_provider_health_latest.json"
+            },
+            "schema": "secondbrain.p1_provider_health.v2",
+            "status": "blocked",
+            "warnings": []
+          },
+          "schema": "secondbrain.p1_production.golden.v2",
+          "status": "blocked",
+          "vector_provider_guard": {
+            "blockers": [],
+            "chunks": 0,
+            "current_provider": "local-deterministic:default:64",
+            "dimension_mismatch_vectors": 0,
+            "malformed_token_rows": "[REDACTED]",
+            "missing_vectors": 0,
+            "ok": true,
+            "orphan_vectors": 0,
+            "provider_status": {
+              "dimensions": 64,
+              "fallback": null,
+              "fallback_allowed": false,
+              "fallback_used": false,
+              "index_provider": "local-deterministic:default:64",
+              "mode": "local_test_double",
+              "network": false,
+              "ok": true,
+              "production_ready": false,
+              "provider": "local-deterministic",
+              "reason": "deterministic local embeddings are for offline development and tests, not production semantic retrieval",
+              "semantic": false
+            },
+            "providers": [],
+            "remediation": null,
+            "report": {
+              "bytes": 903,
+              "path": "H:\\SecondBrainAgent\\runtime\\reports\\p1_vector_provider_guard_latest.json"
+            },
+            "schema": "secondbrain.p1_vector_provider_guard.v1",
+            "stale_vectors": 0,
+            "status": "pass",
+            "store_backend": "pgvector",
+            "vectors": 0
+          }
+        }
+      },
+      "inbox_summary": {
+        "total": 0,
+        "pending": 0,
+        "deferred": 0,
+        "completed": 0,
+        "critical": 0,
+        "categories": {}
+      }
+    },
+    "crash_report": {
+      "ok": false,
+      "error": "FileNotFoundError: [Errno 2] No such file or directory: '/sessions/funny-amazing-hopper/mnt/SecondBrainAgent/.git-rewrite/t'"
+    },
+    "logs": {
+      "ok": true,
+      "files": {
+        "runtime/logs/hud.stderr.log": "----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 63146)\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 424, in handle_one_request\n    method()\n    ~~~~~~^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 410, in do_GET\n    self._json(metrics())\n    ~~~~~~~~~~^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 374, in _json\n    self._send(json.dumps(data, ensure_ascii=False).encode(\"utf-8\"),\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               \"application/json; charset=utf-8\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 371, in _send\n    self.wfile.write(body)\n    ~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 845, in write\n    self._sock.sendall(b)\n    ~~~~~~~~~~~~~~~~~~^^^\nConnectionAbortedError: [WinError 10053] Eine bestehende Verbindung wurde softwaregesteuert\n\ndurch den Hostcomputer abgebrochen\n----------------------------------------\n----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 50636)\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 424, in handle_one_request\n    method()\n    ~~~~~~^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 419, in do_GET\n    self._json(system_status())\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 374, in _json\n    self._send(json.dumps(data, ensure_ascii=False).encode(\"utf-8\"),\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               \"application/json; charset=utf-8\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 371, in _send\n    self.wfile.write(body)\n    ~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 845, in write\n    self._sock.sendall(b)\n    ~~~~~~~~~~~~~~~~~~^^^\nConnectionAbortedError: [WinError 10053] Eine bestehende Verbindung wurde softwaregesteuert\n\ndurch den Hostcomputer abgebrochen\n----------------------------------------\n----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 59850)\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 318, in _handle_request_noblock\n    self.process_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 349, in process_request\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\http\\server.py\", line 424, in handle_one_request\n    method()\n    ~~~~~~^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 410, in do_GET\n    self._json(metrics())\n    ~~~~~~~~~~^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 374, in _json\n    self._send(json.dumps(data, ensure_ascii=False).encode(\"utf-8\"),\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               \"application/json; charset=utf-8\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"H:\\SecondBrainAgent\\SecondBrain-Agent\\secondbrain\\jarvis_hud_server.py\", line 371, in _send\n    self.wfile.write(body)\n    ~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\socketserver.py\", line 845, in write\n    self._sock.sendall(b)\n    ~~~~~~~~~~~~~~~~~~^^^\nConnectionAbortedError: [WinError 10053] Eine bestehende Verbindung wurde softwaregesteuert\n\ndurch den Hostcomputer abgebrochen\n----------------------------------------\n",
+        "runtime/logs/hud.stdout.log": "",
+        "runtime/native_gui_stderr.log": "",
+        "runtime/native_gui_stdout.log": "",
+        "logs/import.log": "[2026-07-13 13:39:20] Importlauf gestartet\n[2026-07-13 13:39:20] Importlauf gestartet\n[2026-07-13 13:39:20] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-13_13-39-20\n[2026-07-13 13:39:20] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-13_13-39-20\n[2026-07-13 13:39:21] Importlauf beendet. Neue Dateien: 0\n[2026-07-13 13:39:21] Importlauf beendet. Neue Dateien: 0\n[2026-07-14 10:33:08] Importlauf gestartet\n[2026-07-14 10:33:08] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-14_10-33-08\n[2026-07-14 10:33:09] Importlauf beendet. Neue Dateien: 0\n[2026-07-14 10:33:16] Importlauf gestartet\n[2026-07-14 10:33:17] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-14_10-33-16\n[2026-07-14 10:33:17] Importlauf beendet. Neue Dateien: 0\n[2026-07-14 10:33:35] Importlauf gestartet\n[2026-07-14 10:33:35] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-14_10-33-35\n[2026-07-14 10:33:36] Importlauf beendet. Neue Dateien: 0\n[2026-07-14 10:34:03] Importlauf gestartet\n[2026-07-14 10:34:03] Backup erstellt: H:\\SecondBrainAgent\\backups\\backup_2026-07-14_10-34-03\n[2026-07-14 10:34:04] Importlauf beendet. Neue Dateien: 0\n",
+        "logs/jarvis_gui.log": "{\"time\": \"2026-06-24 09:38:25\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-24 09:38:38\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Bonn\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\"}}\n{\"time\": \"2026-06-24 09:38:55\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\"}}\n{\"time\": \"2026-06-25 08:36:18\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-25 15:33:05\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-06-25 15:33:17\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-25 15:33:29\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-06-25 16:32:40\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\"}}\n{\"time\": \"2026-06-26 08:05:18\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\"}}\n{\"time\": \"2026-06-26 08:24:17\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\"}}\n{\"time\": \"2026-06-26 08:28:18\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-26 08:28:18\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-06-26 09:30:39\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-26 13:33:34\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-26 14:33:36\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:36:40\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:37:06\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:37:15\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:37:42\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:37:52\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:39:24\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-28 19:46:54\", \"type\": \"hud.coding_error\", \"payload\": {\"error\": \"<urlopen error [WinError 10061] Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte>\", \"engine\": \"ollama\", \"model\": \"deepseek-coder\"}}\n{\"time\": \"2026-06-28 19:47:20\", \"type\": \"hud.coding_error\", \"payload\": {\"error\": \"<urlopen error [WinError 10061] Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte>\", \"engine\": \"ollama\", \"model\": \"deepseek-coder\"}}\n{\"time\": \"2026-06-28 19:52:03\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 07:56:25\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-06-29 07:58:26\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-29 07:59:26\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-29 07:59:51\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-29 08:01:51\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 08:02:03\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 08:03:27\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 08:05:39\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_chatgpt_export.py\", \"ok\": false}}\n{\"time\": \"2026-06-29 08:05:39\", \"type\": \"hud.imports_zip\", \"payload\": {\"source\": \"chatgpt\", \"bytes\": 275759104, \"ok\": false}}\n{\"time\": \"2026-06-29 08:55:28\", \"type\": \"hud.assistant_llm_error\", \"payload\": {\"engine\": \"ollama\", \"error\": \"kein Ollama-Modell verfuegbar\"}}\n{\"time\": \"2026-06-29 08:55:28\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"zeige mir den masterplan\", \"sources\": 5, \"engine\": \"ollama\", \"llm_ok\": false}}\n{\"time\": \"2026-06-29 09:01:48\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 09:04:35\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-29 10:30:52\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:27:47\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:27:52\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:27:59\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:28:26\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:39:37\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-29 13:49:36\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 08:45:27\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:46:56\", \"type\": \"script.run\", \"payload\": {\"script\": \"ai_healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:47:16\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:47:38\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 08:47:49\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:47:57\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_gate.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 08:48:33\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_ready_gate_v96.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:48:59\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:49:00\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_conflict_report.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:49:04\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_governance.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:49:05\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_intelligence_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 08:49:28\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:49:30\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_gate.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 08:50:11\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:50:28\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 08:50:46\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_secondbrain_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:50:46\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_sync_health.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:50:47\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 08:56:00\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v101_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 09:02:06\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 09:02:36\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 09:15:55\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 09:26:36\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 09:28:49\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 09:47:05\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 09:48:04\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 10:02:34\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 11:34:32\", \"type\": \"script.run\", \"payload\": {\"script\": \"ai_healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:34:53\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:35:09\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 11:35:09\", \"type\": \"script.run\", \"payload\": {\"script\": \"healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:35:18\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:35:29\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_gate.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 11:35:59\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_ready_gate_v96.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:06\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:22\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:23\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_conflict_report.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:24\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_governance.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:25\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_intelligence_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 11:40:49\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:40:51\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_gate.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 11:40:56\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:41:13\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 11:41:31\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_secondbrain_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:41:31\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_sync_health.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:41:32\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:44:23\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v101_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-06-30 11:50:05\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-06-30 12:07:01\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 12:12:52\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\", \"version\": \"v30.21\", \"environment\": \"production\", \"log_level\": \"INFO\", \"system_health\": \"EXCELLENT\", \"system_status_text\": \"All Systems Operational\", \"user_name\": \"Jarvis\", \"user_role\": \"Administrator\", \"database\": \"PostgreSQL 16 + pgvector\", \"postgres_status\": \"ONLINE\", \"pgvector_version\": \"1.0.5\", \"embedding_provider\": \"OpenAI\", \"embedding_model\": \"text-embedding-3-small\", \"embedding_dim\": 1536, \"ollama_url\": \"http://localhost:11434\", \"ollama_models\": 7, \"memory_engine\": \"LangGraph + Memory Store\", \"queue_name\": \"Redis Queue\", \"queue_pending\": 3, \"release_blocking\": 0, \"backup_active\": \"Aktiv\", \"sync_active\": \"Aktiv\", \"connectors\": 8, \"agents_active\": 3, \"vectors\": 1248932, \"documents\": 4392, \"memories\": 12845, \"backup_last\": \"15:23\", \"backup_next\": \"Heute, 22:00\", \"vector_index\": \"OK\", \"assistant_engine\": \"ollama\", \"assistant_model\": \"\", \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\", \"assistant_temperature\": 0.2, \"assistant_context_chunks\": 5, \"coding_engine\": \"ollama\", \"coding_model\": \"deepseek-coder\", \"coding_temperature\": 0.1, \"openai_api_key\": \"[redacted]\", \"gemini_api_key\": \"\", \"anthropic_api_key\": \"\"}}\n{\"time\": \"2026-06-30 12:13:30\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\", \"version\": \"v30.21\", \"environment\": \"production\", \"log_level\": \"INFO\", \"system_health\": \"EXCELLENT\", \"system_status_text\": \"All Systems Operational\", \"user_name\": \"Jarvis\", \"user_role\": \"Administrator\", \"database\": \"PostgreSQL 16 + pgvector\", \"postgres_status\": \"ONLINE\", \"pgvector_version\": \"1.0.5\", \"embedding_provider\": \"OpenAI\", \"embedding_model\": \"text-embedding-3-small\", \"embedding_dim\": 1536, \"ollama_url\": \"http://localhost:11434\", \"ollama_models\": 7, \"memory_engine\": \"LangGraph + Memory Store\", \"queue_name\": \"Redis Queue\", \"queue_pending\": 3, \"release_blocking\": 0, \"backup_active\": \"Aktiv\", \"sync_active\": \"Aktiv\", \"connectors\": 8, \"agents_active\": 3, \"vectors\": 1248932, \"documents\": 4392, \"memories\": 12845, \"backup_last\": \"15:23\", \"backup_next\": \"Heute, 22:00\", \"vector_index\": \"OK\", \"assistant_engine\": \"ollama\", \"assistant_model\": \"\", \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\", \"assistant_temperature\": 0.2, \"assistant_context_chunks\": 5, \"coding_engine\": \"ollama\", \"coding_model\": \"deepseek-coder\", \"coding_temperature\": 0.1, \"openai_api_key\": \"[redacted]\", \"gemini_api_key\": \"[redacted]\", \"anthropic_api_key\": \"\"}}\n{\"time\": \"2026-06-30 12:13:42\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\", \"version\": \"v30.21\", \"environment\": \"production\", \"log_level\": \"INFO\", \"system_health\": \"EXCELLENT\", \"system_status_text\": \"All Systems Operational\", \"user_name\": \"Jarvis\", \"user_role\": \"Administrator\", \"database\": \"PostgreSQL 16 + pgvector\", \"postgres_status\": \"ONLINE\", \"pgvector_version\": \"1.0.5\", \"embedding_provider\": \"OpenAI\", \"embedding_model\": \"text-embedding-3-small\", \"embedding_dim\": 1536, \"ollama_url\": \"http://localhost:11434\", \"ollama_models\": 7, \"memory_engine\": \"LangGraph + Memory Store\", \"queue_name\": \"Redis Queue\", \"queue_pending\": 3, \"release_blocking\": 0, \"backup_active\": \"Aktiv\", \"sync_active\": \"Aktiv\", \"connectors\": 8, \"agents_active\": 3, \"vectors\": 1248932, \"documents\": 4392, \"memories\": 12845, \"backup_last\": \"15:23\", \"backup_next\": \"Heute, 22:00\", \"vector_index\": \"OK\", \"assistant_engine\": \"ollama\", \"assistant_model\": \"\", \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\", \"assistant_temperature\": 0.2, \"assistant_context_chunks\": 5, \"coding_engine\": \"ollama\", \"coding_model\": \"deepseek-coder\", \"coding_temperature\": 0.1, \"openai_api_key\": \"[redacted]\", \"gemini_api_key\": \"[redacted]\", \"anthropic_api_key\": \"\"}}\n{\"time\": \"2026-06-30 12:14:11\", \"type\": \"hud.assistant_llm_error\", \"payload\": {\"engine\": \"ollama\", \"error\": \"kein Ollama-Modell verfuegbar\"}}\n{\"time\": \"2026-06-30 12:14:11\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"welches mainborad empfiehlst du\", \"sources\": 1, \"engine\": \"ollama\", \"llm_ok\": false}}\n{\"time\": \"2026-06-30 12:16:34\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 12:18:41\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 12:19:03\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\", \"version\": \"v30.21\", \"environment\": \"production\", \"log_level\": \"INFO\", \"system_health\": \"EXCELLENT\", \"system_status_text\": \"All Systems Operational\", \"user_name\": \"Jarvis\", \"user_role\": \"Administrator\", \"database\": \"PostgreSQL 16 + pgvector\", \"postgres_status\": \"ONLINE\", \"pgvector_version\": \"1.0.5\", \"embedding_provider\": \"OpenAI\", \"embedding_model\": \"text-embedding-3-small\", \"embedding_dim\": 1536, \"ollama_url\": \"http://localhost:11434\", \"ollama_models\": 7, \"memory_engine\": \"LangGraph + Memory Store\", \"queue_name\": \"Redis Queue\", \"queue_pending\": 3, \"release_blocking\": 0, \"backup_active\": \"Aktiv\", \"sync_active\": \"Aktiv\", \"connectors\": 8, \"agents_active\": 3, \"vectors\": 1248932, \"documents\": 4392, \"memories\": 12845, \"backup_last\": \"15:23\", \"backup_next\": \"Heute, 22:00\", \"vector_index\": \"OK\", \"assistant_engine\": \"ollama\", \"assistant_model\": \"\", \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\", \"assistant_temperature\": 0.2, \"assistant_context_chunks\": 5, \"coding_engine\": \"ollama\", \"coding_model\": \"deepseek-coder\", \"coding_temperature\": 0.1, \"openai_api_key\": \"[redacted]\", \"gemini_api_key\": \"[redacted]\", \"anthropic_api_key\": \"\"}}\n{\"time\": \"2026-06-30 12:26:29\", \"type\": \"hud.assistant_llm_error\", \"payload\": {\"engine\": \"ollama\", \"error\": \"timed out\"}}\n{\"time\": \"2026-06-30 12:26:29\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"Antworte exakt mit OK.\", \"sources\": 0, \"engine\": \"ollama\", \"llm_ok\": false}}\n{\"time\": \"2026-06-30 12:28:59\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 12:29:34\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"Antworte exakt mit OK.\", \"sources\": 0, \"engine\": \"ollama\", \"llm_ok\": true}}\n{\"time\": \"2026-06-30 12:36:27\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"PDF Analyse Tool\", \"sources\": 5, \"engine\": \"ollama\", \"llm_ok\": true}}\n{\"time\": \"2026-06-30 13:57:54\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 14:06:18\", \"type\": \"hud.assistant_llm_error\", \"payload\": {\"engine\": \"ollama\", \"error\": \"<urlopen error [WinError 10061] Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte>\"}}\n{\"time\": \"2026-06-30 14:06:18\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"mainboard\", \"sources\": 0, \"engine\": \"ollama\", \"llm_ok\": false}}\n{\"time\": \"2026-06-30 16:53:55\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-06-30 16:56:33\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 08:47:31\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 08:58:45\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 11:00:20\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 11:04:37\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 11:09:53\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 14:26:40\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-01 14:26:42\", \"type\": \"hud.stop\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-02 09:21:57\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-02 14:12:14\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-02 14:25:44\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-02 14:26:24\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-07-02 14:35:29\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-02 14:49:08\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": false}}\n{\"time\": \"2026-07-02 15:05:53\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": true}}\n{\"time\": \"2026-07-02 15:22:35\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-02 15:25:42\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 08:30:57\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-03 08:33:28\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 08:39:34\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-03 09:34:25\", \"type\": \"script.run\", \"payload\": {\"script\": \"ai_healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:34:33\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:34:50\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:34:55\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-03 09:35:23\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-03 09:36:14\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:36:16\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_conflict_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:36:19\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_intelligence_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-07-03 09:36:22\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_governance.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:36:44\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:36:56\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-03 09:37:30\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:37:31\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_sync_health.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:37:33\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 09:38:21\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_secondbrain_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-03 10:21:29\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-03 12:58:24\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-03 13:50:46\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-03 14:14:35\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-05 20:26:30\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-06 10:59:40\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-06 11:06:18\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-06 11:06:49\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_chatgpt_export.py\", \"ok\": false}}\n{\"time\": \"2026-07-06 11:06:49\", \"type\": \"hud.imports_zip\", \"payload\": {\"source\": \"chatgpt\", \"bytes\": 2081564127, \"ok\": false}}\n{\"time\": \"2026-07-06 11:14:31\", \"type\": \"hud.assistant\", \"payload\": {\"query\": \"was findest du alles zum thema tischtennis\", \"sources\": 0, \"engine\": \"ollama\", \"llm_ok\": true}}\n{\"time\": \"2026-07-06 11:14:54\", \"type\": \"hud.assistant_note\", \"payload\": {\"file\": \"00_Inbox\\\\20260706_111454_was-findest-du-alles-zum-thema-tischtennis.md\"}}\n{\"time\": \"2026-07-06 12:00:51\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-06 12:03:14\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-07-06 13:37:10\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-06 15:08:05\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 08:46:29\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 10:41:25\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 11:22:43\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 11:23:14\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 16:27:33\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-07 16:27:57\", \"type\": \"script.run\", \"payload\": {\"script\": \"healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:07\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:08\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:14\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:15\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_conflict_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:16\", \"type\": \"script.run\", \"payload\": {\"script\": \"ai_healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:16\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_intelligence_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:28:21\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_governance.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:26\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:28:30\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:28:33\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:41\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:28:51\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:52\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_sync_health.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:28:53\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:29:08\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:29:12\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_secondbrain_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:29:15\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:29:46\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-07 16:30:41\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_ready_gate_v96.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:35:08\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v101_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-07 16:35:20\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-07-08 08:32:27\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-08 09:45:01\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-08 10:26:11\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-08 15:02:20\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-09 10:51:14\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-10 09:26:02\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-10 10:55:17\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-12 20:03:12\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 09:34:17\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:28:24\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:28:25\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:28:35\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:38:38\", \"type\": \"script.run\", \"payload\": {\"script\": \"healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:39:10\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:39:15\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:39:16\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:39:17\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:39:29\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:40:01\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n{\"time\": \"2026-07-13 13:40:01\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v101_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:40:27\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-07-13 13:41:12\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-13 13:41:12\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-13 13:44:03\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:44:51\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:46:16\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:47:13\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:48:47\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:49:18\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 13:50:26\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 15:18:13\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-13 15:20:35\", \"type\": \"hud.settings_saved\", \"payload\": {\"place\": \"Zaberfeld\", \"lat\": 50.7374, \"lon\": 7.0982, \"news_rss\": \"https://www.tagesschau.de/index~rss2.xml\", \"news_max\": 5, \"weather_min\": 15, \"accent\": \"#2fe6ff\", \"version\": \"v1.0\", \"environment\": \"production\", \"log_level\": \"INFO\", \"system_health\": \"EXCELLENT\", \"system_status_text\": \"All Systems Operational\", \"user_name\": \"Jarvis\", \"user_role\": \"Administrator\", \"database\": \"PostgreSQL 16 + pgvector\", \"postgres_status\": \"ONLINE\", \"pgvector_version\": \"1.0.5\", \"embedding_provider\": \"OpenAI\", \"embedding_model\": \"text-embedding-3-small\", \"embedding_dim\": 1536, \"ollama_url\": \"http://localhost:11434\", \"ollama_models\": 7, \"memory_engine\": \"LangGraph + Memory Store\", \"queue_name\": \"Redis Queue\", \"queue_pending\": 3, \"release_blocking\": 0, \"backup_active\": \"Aktiv\", \"sync_active\": \"Aktiv\", \"connectors\": 8, \"agents_active\": 3, \"vectors\": 1248932, \"documents\": 4392, \"memories\": 12845, \"backup_last\": \"15:23\", \"backup_next\": \"Heute, 22:00\", \"vector_index\": \"OK\", \"assistant_engine\": \"ollama\", \"assistant_model\": \"\", \"assistant_models\": \"llama3.1, qwen, deepseek-coder, gemma\", \"assistant_temperature\": 0.2, \"assistant_context_chunks\": 5, \"coding_engine\": \"ollama\", \"coding_model\": \"deepseek-coder\", \"coding_temperature\": 0.1, \"openai_api_key\": \"[redacted]\", \"gemini_api_key\": \"[redacted]\", \"anthropic_api_key\": \"\"}}\n{\"time\": \"2026-07-14 09:57:19\", \"type\": \"hud.start\", \"payload\": {\"host\": \"127.0.0.1\", \"port\": 8851}}\n{\"time\": \"2026-07-14 10:33:00\", \"type\": \"script.run\", \"payload\": {\"script\": \"healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:03\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_ready_gate_v96.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:33:03\", \"type\": \"script.run\", \"payload\": {\"script\": \"ai_healthcheck.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:03\", \"type\": \"script.run\", \"payload\": {\"script\": \"build_vector_rag.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:04\", \"type\": \"script.run\", \"payload\": {\"script\": \"reindex.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:04\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_conflict_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:05\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_governance.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:06\", \"type\": \"script.run\", \"payload\": {\"script\": \"production_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:33:06\", \"type\": \"script.run\", \"payload\": {\"script\": \"import_ai_exports.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:09\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_gate.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:33:10\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_quality_report.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:12\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_intelligence_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:25\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:26\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_sync_health.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:27\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_tests.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:33:54\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_secondbrain_os_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:34:27\", \"type\": \"script.run\", \"payload\": {\"script\": \"release_gate_v9.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:34:27\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_pytest_q.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:34:46\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v101_cycle.py\", \"ok\": true}}\n{\"time\": \"2026-07-14 10:35:04\", \"type\": \"script.run\", \"payload\": {\"script\": \"check_paths_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:35:04\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_regression_tests_v9.py\", \"ok\": false}}\n{\"time\": \"2026-07-14 10:35:11\", \"type\": \"script.run\", \"payload\": {\"script\": \"run_v10_cycle.py\", \"ok\": false}}\n"
+      },
+      "count": 6
+    },
+    "system_info": {
+      "ok": true,
+      "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+      "system": "Linux",
+      "release": "6.8.0-124-generic",
+      "machine": "x86_64",
+      "python": "3.10.12",
+      "executable": "/usr/bin/python3",
+      "cwd": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+      "cpu_count": 2,
+      "ram_total_gb": 4.11,
+      "env": {
+        "SHELL": "/bin/sh",
+        "no_proxy": "localhost,127.0.0.1,::1,*.local,.local,169.254.0.0/16,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16",
+        "GIT_SSH_COMMAND": "ssh -o ProxyCommand='socat - PROXY:localhost:%h:%p,proxyport=3128'",
+        "grpc_proxy": "socks5h://localhost:1080",
+        "CLAUDE_CODE_HOST_SOCKS_PROXY_PORT": "33855",
+        "PWD": "/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+        "LOGNAME": "funny-amazing-hopper",
+        "SYSTEMD_EXEC_PID": "624",
+        "TZ": "Europe/Berlin",
+        "ftp_proxy": "socks5h://localhost:1080",
+        "HOME": "/sessions/funny-amazing-hopper",
+        "CLOUDSDK_PROXY_TYPE": "https",
+        "LANG": "C.UTF-8",
+        "CLOUDSDK_PROXY_PORT": "3128",
+        "DOCKER_HTTP_PROXY": "http://localhost:3128",
+        "TMPDIR": "/sessions/funny-amazing-hopper/tmp",
+        "https_proxy": "http://localhost:3128",
+        "INVOCATION_ID": "ae76aefe07fa4620b17ace0cb163e953",
+        "CLAUDE_TMPDIR": "/sessions/funny-amazing-hopper/tmp",
+        "PYTHONPATH": "/sessions/funny-amazing-hopper/shim:/sessions/funny-amazing-hopper/mnt/SecondBrainAgent",
+        "PYTHONPYCACHEPREFIX": "/tmp/pyc",
+        "USER": "funny-amazing-hopper",
+        "NO_PROXY": "localhost,127.0.0.1,::1,*.local,.local,169.254.0.0/16,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16",
+        "FTP_PROXY": "socks5h://localhost:1080",
+        "CLAUDE_CODE_TMPDIR": "/sessions/funny-amazing-hopper/tmp",
+        "RSYNC_PROXY": "localhost:1080",
+        "SHLVL": "2",
+        "HTTPS_PROXY": "http://localhost:3128",
+        "HTTP_PROXY": "http://localhost:3128",
+        "http_proxy": "http://localhost:3128",
+        "GRPC_PROXY": "socks5h://localhost:1080",
+        "ALL_PROXY": "socks5h://localhost:1080",
+        "JOURNAL_STREAM": "8:5826",
+        "all_proxy": "socks5h://localhost:1080",
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "SANDBOX_RUNTIME": "1",
+        "CLOUDSDK_PROXY_ADDRESS": "localhost",
+        "CLAUDE_CODE_HOST_HTTP_PROXY_PORT": "45251",
+        "OLDPWD": "/sessions/funny-amazing-hopper",
+        "DOCKER_HTTPS_PROXY": "http://localhost:3128",
+        "_": "/usr/bin/python3"
+      }
+    },
+    "provider_status": {
+      "ok": true,
+      "configured": [],
+      "available_flags": {
+        "OpenAI": false,
+        "Ollama": false,
+        "Gemini": false,
+        "Anthropic": false
+      },
+      "embedding_provider": ""
+    },
+    "database_status": {
+      "ok": true,
+      "configured": false,
+      "dialect": "unknown",
+      "dsn": "[REDACTED]"
+    }
+  }
+}
