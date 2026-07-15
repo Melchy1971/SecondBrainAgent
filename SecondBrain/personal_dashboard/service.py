@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from secondbrain.personal_dashboard.models import (
     CardArea, CardItem, CardStatus, DashboardCard, DashboardConfig, DashboardSnapshot, DEFAULT_CARD_ORDER,
@@ -61,9 +61,11 @@ class Dashboard:
         "calendar": ("Kalender", CardArea.HEUTE.value, "_card_calendar", False),
         "important_mail": ("Wichtige E-Mails", CardArea.KOMMUNIKATION.value, "_card_mail", False),
         "projects": ("Projekte", CardArea.ARBEIT.value, "_card_projects", False),
+        "reviews": ("Reviews", CardArea.ENTSCHEIDUNGEN.value, "_card_reviews", False),
         "suggestions": ("Vorschläge", CardArea.ENTSCHEIDUNGEN.value, "_card_suggestions", False),
         "documents": ("Dokumente", CardArea.WISSEN.value, "_card_documents", True),
         "knowledge": ("Wissen", CardArea.WISSEN.value, "_card_knowledge", False),
+        "jobs": ("Jobs", CardArea.SYSTEM.value, "_card_jobs", False),
         "system": ("Systemstatus", CardArea.SYSTEM.value, "_card_system", False),
         "recent_activity": ("Letzte Aktivitäten", CardArea.HEUTE.value, "_card_recent", False),
     }
@@ -204,6 +206,12 @@ class Dashboard:
         return [self._item(s.get("title", ""), reference=s.get("id", ""), detail=str(s.get("priority", "")))
                 for s in sugs]
 
+    def _card_reviews(self, config, context, moment):
+        reviews = self._ws(self._source(context, "reviews"), config.workspace_id)
+        return [self._item(r.get("title", "Review"), reference=r.get("id", ""),
+                           badge="offen" if r.get("status", "open") == "open" else "")
+                for r in reviews]
+
     def _card_documents(self, config, context, moment):
         docs = self._ws(self._source(context, "documents"), config.workspace_id)
         return [self._item(d.get("name", ""), reference=d.get("id", "")) for d in docs]
@@ -220,6 +228,14 @@ class Dashboard:
             items.append(self._item(name, detail="ok" if ok else "Fehler",
                                      badge="" if ok else "Fehler"))
         return items
+
+    def _card_jobs(self, config, context, moment):
+        jobs = self._ws(self._source(context, "jobs"), config.workspace_id)
+        visible = [job for job in jobs if job.get("status") not in {"completed", "cancelled"}]
+        return [self._item(job.get("type", "Job"), reference=job.get("id", ""),
+                           detail=str(job.get("status", "")),
+                           badge="Recovery" if job.get("status") == "recovery_required" else "")
+                for job in visible]
 
     def _card_recent(self, config, context, moment):
         recent = self._ws(self._source(context, "recent"), config.workspace_id)
@@ -271,7 +287,8 @@ class Dashboard:
         view_map = {
             "tasks": "task_detail", "next_up": "task_detail", "calendar": "calendar_detail",
             "important_mail": "mail_thread", "projects": "project_detail",
-            "open_approvals": "approval_detail", "suggestions": "suggestion_detail",
+            "open_approvals": "approval_detail", "reviews": "review_detail",
+            "suggestions": "suggestion_detail", "jobs": "job_detail",
             "documents": "document_view", "knowledge": "graph_explorer",
             "system": "system_status", "recent_activity": "activity_detail",
         }
