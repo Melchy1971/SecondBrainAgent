@@ -12,7 +12,9 @@ Statusübergänge werden explizit validiert. Abhängigkeiten werden vor dem Spei
 
 ## Persistenz, Migration und Berechtigungen
 
-Die vorhandene JSONL-Ablage unter `runtime/tasks` bleibt der lokale Entwicklungsfallback und schreibt atomar über temporäre Dateien. Produktionsbetrieb muss über das bestehende PostgreSQL-Repository- und Migrationssystem verdrahtet werden; ein stiller JSONL-Fallback in Produktion ist nicht zulässig. Eine Migration muss zunächst als Dry-Run IDs, Dubletten, ungültige Statuswerte und Workspace-Zuordnungen berichten und darf erst nach expliziter Bestätigung schreiben.
+Die JSONL-Ablage unter `runtime/tasks` bleibt ausschließlich lokaler Entwicklungsfallback und schreibt atomar über temporäre Dateien. `PostgresTaskRepository` verwendet in Produktion die bestehende Datenbank-/Executor-Runtime, parametrisierte SQL-Abfragen, Workspace-Schlüssel, Row Locks und optimistische Versionen. `create_task_repository` blockiert JSONL sowie eine fehlende PostgreSQL-URL im Produktionsprofil; ein stiller Fallback ist ausgeschlossen.
+
+`migrate_jsonl_to_repository` validiert zunächst alle Collections als Dry-Run, meldet ungültige Zeilen und doppelte IDs ohne Inhalte auszugeben und schreibt erst, wenn die vollständige Prüfung `ready` ergibt. IDs, Workspace-Zuordnungen, Versionen und Audit-Ereignisse bleiben erhalten. Dadurch kann ein Fehler in einer späteren Collection keinen Teilimport verursachen.
 
 Lesen, lokale Erstellung und nicht-destruktive Änderungen sind innerhalb des aktiven Workspace erlaubt. Löschen, externe Connector-Änderungen, Kalendererstellung und Nachrichtenversand benötigen eine Approval. Archivieren ist der Standard statt Löschen. Logs und GUI-Hauptflächen enthalten keine technischen IDs oder vertraulichen Inhalte.
 
