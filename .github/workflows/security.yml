@@ -1,0 +1,36 @@
+name: Security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 2 * * 2"
+
+permissions:
+  contents: read
+
+jobs:
+  supply-chain:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -c packaging/windows/constraints.txt pip-audit
+      - name: Secret scan
+        run: python scripts/ci_gate.py secrets
+      - name: Dependency vulnerability scan
+        run: pip-audit --strict -r requirements-runtime.txt -r requirements-security.txt
+      - name: Security tests
+        run: |
+          python -m pip install -c packaging/windows/constraints.txt -e ".[dev]"
+          python scripts/run_hardening_tests.py
