@@ -13,12 +13,16 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import threading
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Iterable, Mapping
 
 from secondbrain.jobs.models import Job, JobStatus, JobType, Lease, NON_IDEMPOTENT_TYPES
 
 __all__ = ["JobStore", "JobManager"]
+
+_STORE_LOCKS: dict[str, threading.RLock] = {}
+_STORE_LOCKS_GUARD = threading.Lock()
 
 
 def _now() -> datetime:
@@ -46,8 +50,10 @@ class JobStore:
     crash (temp file + os.replace)."""
 
     def __init__(self, path: str) -> None:
-        self.path = path
+        self.path = os.path.abspath(path)
         self._jobs: dict[str, Job] = {}
+        with _STORE_LOCKS_GUARD:
+            self.lock = _STORE_LOCKS.setdefault(self.path, threading.RLock())
         self._load()
 
     def _load(self) -> None:
@@ -78,9 +84,11 @@ class JobStore:
                 os.remove(tmp)
 
     def put(self, job: Job) -> None:
-        job.updated_at = _iso(_now())
-        self._jobs[job.job_id] = job
-        self._flush()
+        with self.lock:
+            job.updated_at = _iso(_now())
+            job.version += 1
+            self._jobs[job.job_id] = job
+            self._flush()
 
     def get(self, job_id: str) -> Job | None:
         return self._jobs.get(job_id)
@@ -115,10 +123,12 @@ class JobManager:
         self.store.put(job)
         return job
 
-    def approve(self, job_id: str) -> Job:
+    def approve(self, job_id: str, *, approval_authority: Any) -> Job:
         job = self.store.get(job_id)
         if job is None:
             raise KeyError("unknown_job")
+        if approval_authority is None or not approval_authority.claim(job=job):
+            raise PermissionError("bound_approval_required")
         job.approved = True
         if job.status == JobStatus.WAITING_FOR_APPROVAL.value:
             job.status = JobStatus.QUEUED.value
@@ -128,20 +138,29 @@ class JobManager:
     # -- dispatch ---------------------------------------------------------
 
     def claim(self, *, worker_id: str, workspace_id: str | None = None, now: datetime | None = None) -> Job | None:
+        from uuid import uuid4
         moment = now or _now()
-        candidates = [j for j in self.store.all(workspace_id=workspace_id)
-                      if j.status == JobStatus.QUEUED.value
-                      and (not j.approval_required or j.approved)]
-        if not candidates:
-            return None
-        candidates.sort(key=lambda j: (-j.priority, j.created_at))
-        job = candidates[0]
-        job.status = JobStatus.RUNNING.value
-        job.lease = Lease(worker_id=worker_id,
-                          until=_iso(moment + timedelta(seconds=self.lease_seconds)),
-                          heartbeat_at=_iso(moment))
-        self.store.put(job)
-        return job
+        with self.store.lock:
+            self.store._jobs.clear()
+            self.store._load()
+            candidates = [j for j in self.store.all(workspace_id=workspace_id)
+                          if j.status == JobStatus.QUEUED.value
+                          and (not j.approval_required or j.approved)]
+            if not candidates:
+                return None
+            candidates.sort(key=lambda j: (-j.priority, j.created_at))
+            job = candidates[0]
+            if not job.payload_reference.strip():
+                job.status, job.error_code, job.error_summary = JobStatus.FAILED.value, "invalid_payload_reference", "payload reference missing"
+                self.store.put(job)
+                return None
+            job.status = JobStatus.RUNNING.value
+            job.started_at = job.started_at or _iso(moment)
+            job.lease = Lease(lease_id=uuid4().hex, job_id=job.job_id, worker_id=worker_id,
+                              acquired_at=_iso(moment), until=_iso(moment + timedelta(seconds=self.lease_seconds)),
+                              heartbeat_at=_iso(moment))
+            self.store.put(job)
+            return job
 
     def heartbeat(self, job_id: str, worker_id: str, *, now: datetime | None = None) -> None:
         job = self._owned(job_id, worker_id)
@@ -165,6 +184,7 @@ class JobManager:
             raise KeyError("unknown_job")
         if job.status == JobStatus.COMPLETED.value:
             return {"status": "duplicate"}  # exactly-once
+        self._owned(job_id, worker_id)
         if job.idempotency_key and job.idempotency_key in self._completed_keys and job.status != JobStatus.RUNNING.value:
             return {"status": "duplicate"}
         job.status = JobStatus.COMPLETED.value
@@ -182,6 +202,8 @@ class JobManager:
             raise KeyError("unknown_job")
         job.attempts += 1
         job.error = error
+        job.error_code = "job_execution_failed"
+        job.error_summary = str(error)[:200]
         job.lease = Lease()
         if not job.idempotent:
             job.status = JobStatus.RECOVERY_REQUIRED.value  # never auto-retry
@@ -240,6 +262,23 @@ class JobManager:
             self.store.put(job)
             recovered.append(job.job_id)
         return recovered
+
+    def graceful_shutdown(self, worker_id: str) -> list[str]:
+        paused = []
+        for job in self.store.all():
+            if job.status == JobStatus.RUNNING.value and job.lease.worker_id == worker_id:
+                job.status = JobStatus.QUEUED.value if job.idempotent else JobStatus.RECOVERY_REQUIRED.value
+                job.lease = Lease()
+                self.store.put(job)
+                paused.append(job.job_id)
+        return paused
+
+    def metrics(self, *, workspace_id: str | None = None) -> dict[str, Any]:
+        jobs = self.store.all(workspace_id=workspace_id)
+        return {"queue_length": sum(job.status == JobStatus.QUEUED.value for job in jobs),
+                "retries": sum(job.attempts for job in jobs),
+                "failures": sum(job.status == JobStatus.FAILED.value for job in jobs),
+                "recovery_jobs": sum(job.status == JobStatus.RECOVERY_REQUIRED.value for job in jobs)}
 
     # -- helpers ----------------------------------------------------------
 

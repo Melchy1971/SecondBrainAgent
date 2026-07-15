@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -17,6 +18,14 @@ T0 = datetime(2026, 1, 1, tzinfo=timezone.utc)
 def _mgr(tmp_path, lease=60.0):
     store = JobStore(str(tmp_path / "jobs.jsonl"))
     return JobManager(store, lease_seconds=lease)
+
+
+class ApprovalAuthority:
+    def __init__(self, allowed): self.allowed = set(allowed); self.claimed = set()
+    def claim(self, *, job):
+        if job.job_id not in self.allowed or job.job_id in self.claimed: return False
+        self.claimed.add(job.job_id)
+        return True
 
 
 # 1: job survives restart
@@ -107,7 +116,7 @@ def test_approval_preserved(tmp_path):
     j = m2.store.get(job.job_id)
     assert j.status == JobStatus.WAITING_FOR_APPROVAL.value and not j.approved
     assert m2.claim(worker_id="w1", now=T0) is None  # not dispatched without approval
-    m2.approve(job.job_id)
+    m2.approve(job.job_id, approval_authority=ApprovalAuthority([job.job_id]))
     assert m2.claim(worker_id="w1", now=T0).job_id == job.job_id
 
 
@@ -183,6 +192,26 @@ def test_lease_ownership(tmp_path):
     m.claim(worker_id="w1", now=T0)
     with pytest.raises(PermissionError):
         m.heartbeat(job.job_id, "w2", now=T0)
+    with pytest.raises(PermissionError):
+        m.complete(job.job_id, "w2", now=T0)
+
+
+def test_graceful_shutdown_and_metrics(tmp_path):
+    manager = _mgr(tmp_path)
+    job = manager.enqueue(type=JobType.DIAGNOSTICS.value, workspace_id=WS, payload_reference="ref")
+    manager.claim(worker_id="worker", now=T0)
+    assert manager.graceful_shutdown("worker") == [job.job_id]
+    assert manager.metrics(workspace_id=WS)["queue_length"] == 1
+
+
+def test_parallel_stores_claim_job_only_once(tmp_path):
+    path = str(tmp_path / "jobs.jsonl")
+    first = JobManager(JobStore(path))
+    first.enqueue(type=JobType.IMPORT.value, workspace_id=WS, payload_reference="ref")
+    second = JobManager(JobStore(path))
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        claimed = list(pool.map(lambda manager: manager.claim(worker_id=str(id(manager)), now=T0), [first, second]))
+    assert sum(job is not None for job in claimed) == 1
 
 
 if __name__ == "__main__":

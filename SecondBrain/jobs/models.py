@@ -26,6 +26,7 @@ class JobType(StrEnum):
     AGENT_PLAN = "agent_plan"
     BACKUP = "backup"
     RESTORE = "restore"
+    DIAGNOSTICS = "diagnostics"
 
 
 class JobStatus(StrEnum):
@@ -47,16 +48,23 @@ NON_IDEMPOTENT_TYPES: frozenset[str] = frozenset({JobType.AGENT_PLAN.value, JobT
 
 @dataclass
 class Lease:
+    lease_id: str = ""
+    job_id: str = ""
     worker_id: str = ""
+    acquired_at: str = ""
     until: str = ""          # ISO expiry; empty == no active lease
     heartbeat_at: str = ""
 
     def to_dict(self) -> dict[str, Any]:
-        return {"worker_id": self.worker_id, "until": self.until, "heartbeat_at": self.heartbeat_at}
+        return {"lease_id": self.lease_id, "job_id": self.job_id, "owner": self.worker_id,
+                "worker_id": self.worker_id, "acquired_at": self.acquired_at,
+                "until": self.until, "expires_at": self.until, "heartbeat_at": self.heartbeat_at}
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Lease":
-        return cls(worker_id=data.get("worker_id", ""), until=data.get("until", ""),
+        return cls(lease_id=data.get("lease_id", ""), job_id=data.get("job_id", ""),
+                   worker_id=data.get("owner", data.get("worker_id", "")), acquired_at=data.get("acquired_at", ""),
+                   until=data.get("expires_at", data.get("until", "")),
                    heartbeat_at=data.get("heartbeat_at", ""))
 
 
@@ -80,6 +88,10 @@ class Job:
     created_at: str = ""
     updated_at: str = ""
     completed_at: str = ""
+    started_at: str = ""
+    error_code: str = ""
+    error_summary: str = ""
+    version: int = 1
     error: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -92,6 +104,8 @@ class Job:
             "approval_required": self.approval_required, "approved": self.approved,
             "lease": self.lease.to_dict(), "created_at": self.created_at, "updated_at": self.updated_at,
             "completed_at": self.completed_at, "error": self.error,
+            "started_at": self.started_at, "error_code": self.error_code,
+            "error_summary": self.error_summary, "version": self.version,
         }
 
     @classmethod
@@ -107,4 +121,6 @@ class Job:
             lease=Lease.from_dict(data.get("lease", {})), created_at=data.get("created_at", ""),
             updated_at=data.get("updated_at", ""), completed_at=data.get("completed_at", ""),
             error=data.get("error", ""),
+            started_at=data.get("started_at", ""), error_code=data.get("error_code", ""),
+            error_summary=data.get("error_summary", ""), version=int(data.get("version", 1)),
         )
