@@ -53,10 +53,5 @@ Diese Datei beschreibt nur die Hauptlinie. Einzelne, auditierbare Release-Notize
 
 - v31.15: produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks/Projekte (`feature/v31.15-task-postgres`, noch nicht in `main`).
 - v31.16: echte parallele Planner-Ausfuehrung mit Approval-Serialisierung, Ressourcen-Locks und konsistenten Recovery-Checkpoints (`feature/v31.16-planner-parallel-runtime`, noch nicht in `main`).
-
-## v31.17: Persistente Long-Running-Job-Runtime
-
-- Vorhandenes `SecondBrain/jobs`-Subsystem als einzige zentrale Runtime konsolidiert.
-- PostgreSQL-Repository mit atomaren Claims, Leases, Checkpoints, Recovery, Idempotency und Workspace Isolation ergaenzt.
-- Worker-/Handler-Registry, Job Monitor und content-freie Betriebsmetriken bereitgestellt.
-- Import und Planner v2 als erste zwei Jobtypen migriert; weitere Typen bleiben bewusst schrittweise offen.
+- v31.17: PostgreSQL-first Long-Running-Job-Runtime (`feature/v31.17-long-running-jobs`, separater Branch, noch nicht in `main`).
+- v31.18: Rule Engine, Scoring, Feedback und PostgreSQL-Persistenz fuer proaktive Suggestions (`feature/v31.18-proactive-assistant`, aktueller Branch).
