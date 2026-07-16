@@ -1,8 +1,8 @@
 """Personal Jarvis end-to-end release gate.
 
-The gate deliberately performs defensive, side-effect-free checks.  It verifies that the
+The gate deliberately performs defensive, side-effect-free checks. It verifies that the
 personal-assistant subsystems can be imported, expose their expected public contracts,
-and that the existing governance gate remains available.  Runtime integrations may add
+and that the existing governance gate remains available. Runtime integrations may add
 stronger probes through ``extra_probes`` without changing the stable report schema.
 """
 from __future__ import annotations
@@ -46,15 +46,15 @@ class ModuleContract:
 
 
 DEFAULT_CONTRACTS: tuple[ModuleContract, ...] = (
-    ModuleContract("tasks_available", "tasks", "secondbrain.tasks.service", ("TaskService", "ProjectService"), "Task and project services are available"),
-    ModuleContract("planner_available", "planner", "secondbrain.planner_v2.service", ("PlannerV2", "PlannerService", "PlanService"), "Planner V2 is available"),
-    ModuleContract("jobs_available", "jobs", "secondbrain.jobs.service", ("JobService", "JobRuntime"), "Persistent job runtime is available"),
-    ModuleContract("briefing_available", "briefing", "secondbrain.briefing.service", ("BriefingService", "DailyBriefingService"), "Daily briefing service is available"),
-    ModuleContract("memory_available", "memory", "secondbrain.memory_consolidation.service", ("MemoryConsolidationService", "ConsolidationService"), "Memory consolidation is available"),
+    ModuleContract("tasks_available", "tasks", "secondbrain.tasks.service", ("TaskProjectService",), "Task and project services are available"),
+    ModuleContract("planner_available", "planner", "secondbrain.planner_v2.service", ("Planner",), "Planner V2 is available"),
+    ModuleContract("jobs_available", "jobs", "secondbrain.jobs.service", ("JobManager", "JobStore"), "Persistent job runtime is available"),
+    ModuleContract("briefing_available", "briefing", "secondbrain.briefing.service", ("BriefingBuilder",), "Daily briefing service is available"),
+    ModuleContract("memory_available", "memory", "secondbrain.memory_consolidation.service", ("MemoryConsolidator",), "Memory consolidation is available"),
     ModuleContract("calendar_available", "calendar", "secondbrain.calendar_assistant.service", ("CalendarService",), "Calendar assistant is available"),
     ModuleContract("mail_available", "mail", "secondbrain.mail_assistant.service", ("MailAssistant",), "Mail assistant is available"),
-    ModuleContract("proactive_available", "proactive", "secondbrain.proactive.service", ("ProactiveAssistant", "SuggestionService", "ProactiveService"), "Proactive assistance is available"),
-    ModuleContract("dashboard_available", "dashboard", "secondbrain.personal_dashboard.service", ("PersonalDashboardService", "DashboardService"), "Personal dashboard is available"),
+    ModuleContract("proactive_available", "proactive", "secondbrain.proactive.service", ("ProactiveEngine",), "Proactive assistance is available"),
+    ModuleContract("dashboard_available", "dashboard", "secondbrain.personal_dashboard.service", ("Dashboard",), "Personal dashboard is available"),
     ModuleContract("governance_available", "governance", "secondbrain.agent.review_approval_release_gate", ("run_review_approval_release_gate",), "Review and approval governance gate is available"),
     ModuleContract("knowledge_graph_available", "knowledge", "secondbrain.knowledge_graph.service", ("KnowledgeGraphService", "GraphService"), "Knowledge graph is available", hard_blocker=False),
 )
@@ -69,16 +69,44 @@ def _module_check(contract: ModuleContract) -> GateCheck:
         module = importlib.import_module(contract.module)
     except Exception as exc:  # noqa: BLE001 - gate must report instead of crash
         status = BLOCKED if contract.hard_blocker else CONDITIONAL_PASS
-        return GateCheck(contract.check_id, contract.group, contract.title, status, f"import_error:{type(exc).__name__}", contract.hard_blocker)
+        return GateCheck(
+            contract.check_id,
+            contract.group,
+            contract.title,
+            status,
+            f"import_error:{type(exc).__name__}",
+            contract.hard_blocker,
+        )
 
     exposed = [name for name in contract.any_attributes if hasattr(module, name)]
     if exposed:
-        return GateCheck(contract.check_id, contract.group, contract.title, PASS, f"public_contract={exposed[0]}", contract.hard_blocker)
+        return GateCheck(
+            contract.check_id,
+            contract.group,
+            contract.title,
+            PASS,
+            f"public_contract={exposed[0]}",
+            contract.hard_blocker,
+        )
     status = BLOCKED if contract.hard_blocker else CONDITIONAL_PASS
-    return GateCheck(contract.check_id, contract.group, contract.title, status, f"missing_any_of={','.join(contract.any_attributes)}", contract.hard_blocker)
+    return GateCheck(
+        contract.check_id,
+        contract.group,
+        contract.title,
+        status,
+        f"missing_any_of={','.join(contract.any_attributes)}",
+        contract.hard_blocker,
+    )
 
 
-def _safe_probe(check_id: str, group: str, title: str, probe: Callable[[], Any], *, hard_blocker: bool) -> GateCheck:
+def _safe_probe(
+    check_id: str,
+    group: str,
+    title: str,
+    probe: Callable[[], Any],
+    *,
+    hard_blocker: bool,
+) -> GateCheck:
     try:
         result = probe()
         if isinstance(result, Mapping):
