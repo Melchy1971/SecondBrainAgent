@@ -17,7 +17,7 @@ Die Einstufung trennt vorhandene Foundation von belegter Produktreife.
 | Windows Distribution | Packaging / Installer Smoke | Portable und Installer-Pipeline | Zielsystem-Smoke und Signierung extern abnehmen |
 | GA Readiness | `python launcher.py ga-readiness-gate` | verbindliches aggregiertes Gate | PASS bleibt umgebungsabhaengig |
 | Persoenliche Assistenz | Dashboard, Briefing, Calendar, Mail, Proactive | integrierte v31-Oberflaechen | externe Provider bleiben approval- und credential-abhaengig |
-| Proaktive Assistenz v31.18 | `SecondBrain/proactive` | Rules, Scoring, Feedback und PostgreSQL-Persistenz | Branch noch integrieren; reale Kontextquellen end-to-end abnehmen |
+| Persoenliches Dashboard v31.19 | `SecondBrain/personal_dashboard` | vollstaendiger Snapshot, PostgreSQL Preferences, Parallel Runtime | Branch integrieren und Zielsystem-Ladezeiten abnehmen |
 | Knowledge Graph | `graph-*` | lokale Foundation | kein produktiver Graph-Store |
 | Desktop Backend | `desktop-*` | lokale Foundation | Approval-Inbox und Lifecycle fehlen |
 | Voice | `voice-*`, `VOICE_CONTROL_v20.md` | Textpfad nutzbar | Mikrofon, STT und TTS nicht live abgenommen |

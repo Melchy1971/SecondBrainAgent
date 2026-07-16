@@ -61,15 +61,24 @@ class DashboardCard:
     cached: bool = False
 
     @property
+    def card_type(self) -> str:
+        return self.card_id
+
+    @property
+    def is_cached(self) -> bool:
+        return self.cached
+
+    @property
     def visible_items(self) -> list[CardItem]:
         return list(self.items)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"card_id": self.card_id, "title": self.title, "area": self.area,
+        return {"card_id": self.card_id, "card_type": self.card_type,
+                "title": self.title, "area": self.area,
                 "status": self.status, "items": [i.to_dict() for i in self.items],
                 "error": self.error, "error_state": self.error_state, "priority": self.priority,
                 "summary": self.summary, "source": self.source, "updated_at": self.updated_at,
-                "deep_link": self.deep_link, "cached": self.cached}
+                "deep_link": self.deep_link, "cached": self.cached, "is_cached": self.is_cached}
 
 
 @dataclass
@@ -100,12 +109,14 @@ class DashboardSnapshot:
                 "today": by_id.get("next_up", {}), "tasks": by_id.get("tasks", {}),
                 "calendar": by_id.get("calendar", {}), "mail": by_id.get("important_mail", {}),
                 "projects": by_id.get("projects", {}), "approvals": by_id.get("open_approvals", {}),
+                "reviews": by_id.get("reviews", {}),
                 "suggestions": by_id.get("suggestions", {}), "documents": by_id.get("documents", {}),
-                "knowledge": by_id.get("knowledge", {}), "system_health": by_id.get("system", {}),
+                "knowledge": by_id.get("knowledge", {}), "jobs": by_id.get("jobs", {}),
+                "system_health": by_id.get("system", {}),
                 "source_status": dict(self.source_status)}
 
 
 DEFAULT_CARD_ORDER: tuple[str, ...] = (
     "next_up", "open_approvals", "tasks", "calendar", "important_mail",
-    "projects", "suggestions", "documents", "knowledge", "system", "recent_activity",
+    "projects", "reviews", "suggestions", "documents", "knowledge", "jobs", "system", "recent_activity",
 )

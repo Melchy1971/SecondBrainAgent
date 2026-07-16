@@ -53,5 +53,6 @@ Diese Datei beschreibt nur die Hauptlinie. Einzelne, auditierbare Release-Notize
 
 - v31.15: produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks/Projekte (`feature/v31.15-task-postgres`, noch nicht in `main`).
 - v31.16: echte parallele Planner-Ausfuehrung mit Approval-Serialisierung, Ressourcen-Locks und konsistenten Recovery-Checkpoints (`feature/v31.16-planner-parallel-runtime`, noch nicht in `main`).
-- v31.17: PostgreSQL-first Long-Running-Job-Runtime (`feature/v31.17-long-running-jobs`, separater Branch, noch nicht in `main`).
-- v31.18: Rule Engine, Scoring, Feedback und PostgreSQL-Persistenz fuer proaktive Suggestions (`feature/v31.18-proactive-assistant`, aktueller Branch).
+- v31.17: PostgreSQL-first Long-Running-Job-Runtime (`feature/v31.17-long-running-jobs`, separater Branch).
+- v31.18: Rule Engine, Scoring, Feedback und PostgreSQL-Persistenz fuer proaktive Suggestions (`feature/v31.18-proactive-assistant`, separater Branch).
+- v31.19: vollstaendiger Dashboard-Snapshot, persistierte Personalisierung und parallele Source Runtime (`feature/v31.19-personal-dashboard`, aktueller Branch).

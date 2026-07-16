@@ -23,7 +23,8 @@ def _cfg(**over):
 
 def _ctx(**over):
     ctx = {"tasks": [], "events": [], "mail": [], "projects": [], "approvals": [],
-           "suggestions": [], "documents": [], "knowledge_conflicts": [], "recent": [], "system": {}}
+           "reviews": [], "suggestions": [], "documents": [], "knowledge_conflicts": [],
+           "jobs": [], "recent": [], "system": {}}
     ctx.update(over)
     return ctx
 
@@ -38,6 +39,18 @@ def test_starts_empty():
     cards = d.build(config=_cfg(), context=_ctx(), now=NOW)
     assert cards  # all configured cards present
     assert all(c.status in (CardStatus.EMPTY.value, CardStatus.OK.value, CardStatus.LOADING.value) for c in cards)
+
+
+def test_snapshot_contract_includes_reviews_jobs_and_card_aliases():
+    dashboard = Dashboard(slow_cards=[])
+    snapshot = dashboard.snapshot(config=_cfg(), context=_ctx(
+        reviews=[{"id": "r", "title": "Import pruefen"}],
+        jobs=[{"id": "j", "type": "import", "status": "recovery_required"}],
+    ), now=NOW)
+    data = snapshot.to_dict()
+    assert data["reviews"]["items"] and data["jobs"]["items"]
+    job_card = _card(snapshot.cards, "jobs")
+    assert job_card.card_type == "jobs" and job_card.is_cached is False
 
 
 # 2: broken connector does not block other cards
@@ -152,6 +165,8 @@ def test_quick_action_approval():
     assert res["approval_id"] == "approval-1"
     safe = d.quick_action(action="open", reference="t-1", workspace_id=WS)
     assert safe["approval_required"] is False
+    unknown_write = d.quick_action(action="connector_write", reference="c-1", workspace_id=WS)
+    assert unknown_write["approval_required"] is True
 
 
 # no technical ids in visible labels
