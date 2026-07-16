@@ -219,6 +219,17 @@ class _FileLock:
             pass
 
 
+def _replace_with_retry(source: Path, target: Path, *, attempts: int = 5) -> None:
+    for attempt in range(attempts):
+        try:
+            os.replace(source, target)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.02)
+
+
 AUDIT_SCHEMA = "secondbrain.native.action_audit.v30_28"
 APPROVAL_SCHEMA = "secondbrain.native.approval_queue.v30_28"
 REVIEW_SCHEMA = "secondbrain.native.review_queue.v1"
@@ -1014,7 +1025,7 @@ class NativeApprovalQueue:
                     handle.write(json.dumps(row, ensure_ascii=False) + "\n")
                 handle.flush()
                 os.fsync(handle.fileno())
-            os.replace(temporary, self.path)
+            _replace_with_retry(temporary, self.path)
             self._append_recovery_audit("backup_restored", len(backup_rows))
         except OSError:
             return False
@@ -1035,7 +1046,7 @@ class NativeApprovalQueue:
                     fh.write(json.dumps(row, ensure_ascii=False) + "\n")
                 fh.flush()
                 os.fsync(fh.fileno())
-            os.replace(temporary, self.path)
+            _replace_with_retry(temporary, self.path)
             self._fsync_directory(self.path.parent)
             try:
                 self._write_backup_from(self.path)
@@ -1052,7 +1063,7 @@ class NativeApprovalQueue:
                 shutil.copyfileobj(source_handle, destination)
                 destination.flush()
                 os.fsync(destination.fileno())
-            os.replace(temporary, backup)
+            _replace_with_retry(temporary, backup)
         finally:
             temporary.unlink(missing_ok=True)
 
