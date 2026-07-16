@@ -598,10 +598,16 @@ class ToolRegistry:
                 True,
                 output=output,
                 duration_ms=_elapsed_ms(started),
-                metadata={"risk_level": tool.risk_level.value, **policy.audit_fields()},
+                metadata={
+                    "risk_level": tool.risk_level.value,
+                    "attempts": attempts,
+                    **policy.audit_fields(),
+                },
             )
         except Exception as exc:
             metadata = {"risk_level": tool.risk_level.value if tool else "unknown"}
+            if "attempts" in locals():
+                metadata["attempts"] = attempts
             if policy is not None:
                 metadata.update(policy.audit_fields())
             result = ToolResult(name, False, error=str(exc), duration_ms=_elapsed_ms(started), metadata=metadata)
@@ -799,11 +805,7 @@ def _elapsed_ms(started: float) -> int:
 
 
 def _normalize_category(category: str | None) -> str:
-    normalized = str(category or "system").strip().lower()
-    normalized = _CATEGORY_ALIASES.get(normalized, normalized)
-    if normalized not in DEFAULT_TOOL_CATEGORIES:
-        return "system"
-    return normalized
+    return str(category or "general").strip().lower() or "general"
 
 
 def _invoke_with_timeout(handler: Callable[..., Any], payload: Mapping[str, Any], timeout_seconds: float, **kwargs: Any) -> Any:

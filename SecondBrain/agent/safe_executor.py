@@ -7,7 +7,7 @@ from .approval_bridge import AgentApprovalBridge
 from .approval_policy import MandatoryApprovalDecision
 from .plan_store import AgentPlanStore
 from .task_planner import TaskPlan, TaskStepState
-from .tool_registry import ToolRegistry, ToolRegistryError, ToolRiskLevel
+from .tool_registry import ToolRegistry, ToolRegistryError
 
 
 @dataclass(frozen=True)
@@ -49,6 +49,7 @@ class SafeExecutor:
         errors: list[str] = []
         approval_ids: list[str] = []
         waiting_step_ids: list[str] = []
+        completed_this_run: list[Any] = []
         status = ""
         for step in plan.steps:
             if step.state in {TaskStepState.COMPLETED, TaskStepState.SKIPPED}:
@@ -84,6 +85,7 @@ class SafeExecutor:
                 step.result = {"type": "chat", "text": step.payload.get("text", "")}
                 step.state = TaskStepState.COMPLETED
                 results.append(step.result)
+                completed_this_run.append(step)
                 continue
             try:
                 definition = self.registry.get(step.tool_name)
@@ -120,6 +122,7 @@ class SafeExecutor:
                 )
                 step.state = TaskStepState.COMPLETED
                 results.append(step.result)
+                completed_this_run.append(step)
                 if is_approved_step:
                     approval = self._approval_for_step(plan.plan_id, step.step_id)
                     if approval is None or str(approval.get("approval_id") or "") != _execution_approval_id:
@@ -131,6 +134,14 @@ class SafeExecutor:
                 status = "failed"
                 break
 
+        if status == "failed":
+            for completed in reversed(completed_this_run):
+                if completed.tool_name:
+                    self.registry.rollback(
+                        completed.tool_name,
+                        completed.payload,
+                        completed.result,
+                    )
         if not status:
             status = "completed" if all(
                 step.state in {TaskStepState.COMPLETED, TaskStepState.SKIPPED} for step in plan.steps
