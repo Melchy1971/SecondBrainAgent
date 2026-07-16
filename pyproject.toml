@@ -81,10 +81,9 @@ secondbrain = "launcher:main"
 
 [tool.setuptools]
 py-modules = ["launcher"]
-
-[tool.setuptools.packages.find]
-include = ["secondbrain", "secondbrain.*"]
-exclude = ["tests", "tests.*"]
+packages = ["secondbrain"]
+package-dir = { secondbrain = "SecondBrain" }
+include-package-data = true
 
 [tool.setuptools.package-data]
 "secondbrain.storage" = ["migrations/*.sql"]
