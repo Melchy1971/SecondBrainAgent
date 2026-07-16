@@ -34,12 +34,12 @@ def test_completion_request_structure_and_history_limit() -> None:
     assert request.model == "test-model"
     assert request.stream is True
     assert request.messages[0].role == "user"
-    assert "KONTEXT" in request.messages[-1].content
+    assert "KONTEXT" in request.messages[-2].content
     assert all(message.role != "system" for message in request.messages)
     assert request.messages[-1].role == "user"
-    assert request.messages[-1].content.endswith("[USER REQUEST]\nFrage")
-    # 12 History + 1 prompt containing bounded, untrusted context.
-    assert len(request.messages) == 13
+    assert request.messages[-1].content == "Frage"
+    # 12 history messages + bounded untrusted context + the unchanged user request.
+    assert len(request.messages) == 14
 
 
 def test_completion_context_cannot_override_system_prompt() -> None:
@@ -52,7 +52,7 @@ def test_completion_context_cannot_override_system_prompt() -> None:
     )
 
     assert all(message.role != "system" for message in request.messages)
-    content = request.messages[-1].content.lower()
+    content = request.messages[-2].content.lower()
     assert "ignore previous instructions" not in content
     assert "delete_all" not in content
     assert "prompt-injection blocked" in content

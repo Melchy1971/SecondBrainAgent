@@ -43,11 +43,11 @@ def test_final_prompt_builder_orders_all_prompt_layers() -> None:
     system = request.messages[0].content
     positions = [system.index(f"[{name}]") for name in ("SYSTEM", "GOAL", "PROVIDER")]
     assert positions == sorted(positions)
-    user = request.messages[-1].content
-    assert "Workspace Engineering" in user
-    assert "Remember Atlas" in user
-    assert "Document evidence" in user
-    assert user.endswith("Answer the question")
+    context = request.messages[-2].content
+    assert "Workspace Engineering" in context
+    assert "Remember Atlas" in context
+    assert "Document evidence" in context
+    assert request.messages[-1].content == "Answer the question"
     assert "Document evidence" not in system
     assert request.metadata["layer_names"] == [
         "system", "workspace", "memory", "goal", "document", "provider", "user"
@@ -61,10 +61,10 @@ def test_provider_without_system_prompt_receives_layers_in_user_message() -> Non
         [SystemPrompt("System rule"), ProviderPrompt("Provider rule"), UserPrompt("Question")],
         [], "model-b", supports_system_prompt=False,
     )
-    assert [message.role for message in request.messages] == ["user"]
+    assert [message.role for message in request.messages] == ["user", "user"]
     assert "System rule" in request.messages[0].content
     assert "Provider rule" in request.messages[0].content
-    assert request.messages[0].content.endswith("Question")
+    assert request.messages[-1].content == "Question"
 
 
 def test_provider_fallback_absorbs_prior_system_messages_and_zero_history() -> None:
@@ -78,7 +78,7 @@ def test_provider_fallback_absorbs_prior_system_messages_and_zero_history() -> N
         [UserPrompt("Question")], [{"role": "assistant", "content": "Old"}], "m", history_limit=0,
     )
     assert all(message.role != "system" for message in fallback.messages)
-    assert "Prior rule" in fallback.messages[-1].content
+    assert "Prior rule" in fallback.messages[-2].content
     assert [message.content for message in without_history.messages] == ["Question"]
 
 
