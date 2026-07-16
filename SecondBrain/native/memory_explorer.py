@@ -72,7 +72,6 @@ class MemoryExplorerService:
         self.project_root = Path(project_root).resolve()
         self.runtime_root = self.project_root / "runtime"
         self.runtime_dir = self.runtime_root / "native"
-        self.runtime_dir.mkdir(parents=True, exist_ok=True)
         self.legacy_runtime_dir = self.runtime_root
         self.meta_path = self.runtime_dir / "memory_meta.json"
         self.memory_path = self.runtime_dir / "memory_entries.jsonl"
@@ -355,10 +354,10 @@ class MemoryExplorerService:
             rows.append(self._from_raw(raw, default_kind="episodic", default_source="voice_notes"))
 
         for raw in _read_jsonl(self.chat_history_path):
-            rows.append(self._from_raw(raw, default_kind="episodic", default_source="chat_history"))
+            rows.append(self._from_raw(raw, default_kind="conversation", default_source="chat_history"))
 
         for raw in _read_jsonl(self.legacy_chat_history_path):
-            rows.append(self._from_raw(raw, default_kind="episodic", default_source="chat_history"))
+            rows.append(self._from_raw(raw, default_kind="conversation", default_source="chat_history"))
 
         for conversation in self._iter_chat_conversations():
             memory = conversation.get("memory")
