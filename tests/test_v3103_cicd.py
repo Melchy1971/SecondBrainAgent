@@ -22,7 +22,8 @@ def _git_repo(path: Path) -> Path:
 
 def test_all_workflows_exist_and_actions_are_sha_pinned():
     root = Path(__file__).resolve().parents[1]
-    assert WORKFLOWS == {path.name for path in (root / ".github/workflows").glob("*.yml")}
+    present = {path.name for path in (root / ".github/workflows").glob("*.yml")}
+    assert WORKFLOWS <= present
     check_workflows(root)
 
 

@@ -52,6 +52,19 @@ def test_dependency_inventory_writes_report(tmp_path: Path) -> None:
     assert (tmp_path / "release" / "dependency_inventory_latest.json").exists()
 
 
+def test_dependency_inventory_ignores_worktrees_and_backups(tmp_path: Path) -> None:
+    (tmp_path / "app.py").write_text("import json\n", encoding="utf-8")
+    for directory in (".worktrees", "backups", "SecondBrain-Agent"):
+        nested = tmp_path / directory
+        nested.mkdir()
+        (nested / "ignored.py").write_text("import unavailable_private_module\n", encoding="utf-8")
+
+    report = build_dependency_inventory(tmp_path)
+
+    assert report.scanned_files == 1
+    assert "unavailable_private_module" not in report.external
+
+
 def test_render_requirements_applies_aliases() -> None:
     assert render_requirements(["yaml", "PIL"]) == ["Pillow", "PyYAML"]
 

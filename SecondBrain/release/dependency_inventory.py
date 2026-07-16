@@ -11,10 +11,13 @@ from typing import Any, Iterable
 
 IGNORE_DIR_NAMES: set[str] = {
     ".git",
+    ".worktrees",
     ".mypy_cache",
     ".pytest_cache",
     ".ruff_cache",
     "__pycache__",
+    "SecondBrain-Agent",
+    "backups",
     "build",
     "dist",
     "htmlcov",
