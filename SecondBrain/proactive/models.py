@@ -17,6 +17,7 @@ __all__ = ["SuggestionCategory", "SuggestionStatus", "Priority", "SuggestionRule
 
 class SuggestionCategory(StrEnum):
     DEADLINE_RISK = "deadline_risk"
+    OVERDUE_TASK = "overdue_task"
     MISSING_PREPARATION = "missing_preparation"
     BLOCKED_PROJECT = "blocked_project"
     UNANSWERED_MESSAGE = "unanswered_message"
@@ -29,6 +30,7 @@ class SuggestionCategory(StrEnum):
     RECURRING_PATTERN = "recurring_pattern"
     STALE_MEMORY = "stale_memory"
     FAILED_JOB = "failed_job"
+    CAPACITY_RISK = "capacity_risk"
 
 
 class SuggestionStatus(StrEnum):
@@ -87,10 +89,20 @@ class SuggestionRule:
     conditions: dict[str, Any] = field(default_factory=dict)
     enabled: bool = True
     confidence_threshold: float = 0.5
-    cooldown_days: int = 7
+    cooldown_minutes: int = 7 * 24 * 60
     priority: str = Priority.MEDIUM.value
-    max_open_suggestions: int = 3
+    maximum_open_items: int = 3
     workspace_scope: str = "*"
+    created_at: str = ""
+    updated_at: str = ""
+
+    @property
+    def cooldown_days(self) -> float:
+        return self.cooldown_minutes / (24 * 60)
+
+    @property
+    def max_open_suggestions(self) -> int:
+        return self.maximum_open_items
 
 
 @dataclass

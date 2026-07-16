@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from secondbrain.jobs.models import Job, JobStatus, JobType
+from secondbrain.jobs.models import Job, JobLease, JobPriority, JobStatus, JobType, priority_rank
 from secondbrain.jobs.service import JobStore, JobManager
 from secondbrain.jobs.gui import JobMonitorViewModel, render_jobs_html
 
@@ -20,10 +20,22 @@ def _mgr(tmp_path, lease=60.0):
     return JobManager(store, lease_seconds=lease)
 
 
+def test_canonical_model_aliases_and_priorities():
+    job = Job(job_id="j", type=JobType.IMPORT.value, workspace_id="ws",
+              priority=JobPriority.CRITICAL.value)
+    assert job.job_type == JobType.IMPORT.value
+    assert isinstance(job.lease, JobLease)
+    assert priority_rank(job.priority) > priority_rank(JobPriority.HIGH.value)
+
+
 class ApprovalAuthority:
-    def __init__(self, allowed): self.allowed = set(allowed); self.claimed = set()
+    def __init__(self, allowed):
+        self.allowed = set(allowed)
+        self.claimed = set()
+
     def claim(self, *, job):
-        if job.job_id not in self.allowed or job.job_id in self.claimed: return False
+        if job.job_id not in self.allowed or job.job_id in self.claimed:
+            return False
         self.claimed.add(job.job_id)
         return True
 

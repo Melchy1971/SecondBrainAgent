@@ -13,7 +13,8 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-__all__ = ["JobType", "JobStatus", "Lease", "Job", "NON_IDEMPOTENT_TYPES"]
+__all__ = ["JobType", "JobStatus", "JobPriority", "Lease", "JobLease", "Job",
+           "NON_IDEMPOTENT_TYPES", "priority_rank"]
 
 
 class JobType(StrEnum):
@@ -31,6 +32,7 @@ class JobType(StrEnum):
 
 class JobStatus(StrEnum):
     QUEUED = "queued"
+    CLAIMED = "claimed"
     RUNNING = "running"
     PAUSED = "paused"
     WAITING_FOR_APPROVAL = "waiting_for_approval"
@@ -39,6 +41,23 @@ class JobStatus(StrEnum):
     FAILED = "failed"
     CANCELLED = "cancelled"
     RECOVERY_REQUIRED = "recovery_required"
+
+
+class JobPriority(StrEnum):
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+_PRIORITY_RANK = {JobPriority.LOW.value: 0, JobPriority.NORMAL.value: 10,
+                  JobPriority.HIGH.value: 20, JobPriority.CRITICAL.value: 30}
+
+
+def priority_rank(value: str | int) -> int:
+    if isinstance(value, int):
+        return value
+    return _PRIORITY_RANK.get(str(value).lower(), _PRIORITY_RANK[JobPriority.NORMAL.value])
 
 
 # Types whose steps may cause irreversible external effects (send/delete inside
@@ -68,13 +87,16 @@ class Lease:
                    heartbeat_at=data.get("heartbeat_at", ""))
 
 
+JobLease = Lease
+
+
 @dataclass
 class Job:
     job_id: str
     type: str
     workspace_id: str
     status: str = JobStatus.QUEUED.value
-    priority: int = 0                       # higher runs first
+    priority: str | int = JobPriority.NORMAL.value
     payload_reference: str = ""             # pointer only - never the payload
     progress: float = 0.0
     checkpoint: dict[str, Any] = field(default_factory=dict)
@@ -93,6 +115,10 @@ class Job:
     error_summary: str = ""
     version: int = 1
     error: str = ""
+
+    @property
+    def job_type(self) -> str:
+        return self.type
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -113,7 +139,8 @@ class Job:
         return cls(
             job_id=data["job_id"], type=data.get("type", JobType.IMPORT.value),
             workspace_id=data.get("workspace_id", ""), status=data.get("status", JobStatus.QUEUED.value),
-            priority=int(data.get("priority", 0)), payload_reference=data.get("payload_reference", ""),
+            priority=data.get("priority", JobPriority.NORMAL.value),
+            payload_reference=data.get("payload_reference", ""),
             progress=float(data.get("progress", 0.0)), checkpoint=dict(data.get("checkpoint", {})),
             attempts=int(data.get("attempts", 0)), max_attempts=int(data.get("max_attempts", 3)),
             idempotency_key=data.get("idempotency_key", ""), idempotent=bool(data.get("idempotent", True)),

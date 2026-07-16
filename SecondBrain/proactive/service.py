@@ -14,11 +14,11 @@ from __future__ import annotations
 import re
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 from uuid import uuid4
 
 from secondbrain.proactive.models import (
-    FeedbackRecord, Priority, Suggestion, SuggestionCategory, SuggestionStatus,
+    FeedbackRecord, Priority, Suggestion, SuggestionCategory, SuggestionRule, SuggestionStatus,
 )
 
 __all__ = ["ProactiveEngine", "redact_suggestion_text", "DEFAULT_COOLDOWN_DAYS"]
@@ -72,16 +72,28 @@ def _priority_for(confidence: float) -> str:
 
 class ProactiveEngine:
     def __init__(self, *, cooldown_days: int = DEFAULT_COOLDOWN_DAYS,
-                 task_factory: Any | None = None, plan_factory: Any | None = None) -> None:
+                 task_factory: Any | None = None, plan_factory: Any | None = None,
+                 reminder_factory: Any | None = None, repository: Any | None = None) -> None:
         self.cooldown_days = cooldown_days
         self.disabled_rules: set[tuple[str, str]] = set()
         self.task_factory, self.plan_factory = task_factory, plan_factory
+        self.reminder_factory = reminder_factory
+        self.repository = repository
+        self.rules = {category.value: SuggestionRule(
+            rule_id=category.value, category=category.value,
+            cooldown_minutes=cooldown_days * 24 * 60,
+        ) for category in SuggestionCategory}
         self._suggestions: dict[str, Suggestion] = {}
         self._by_key: dict[str, str] = {}          # dedup_key -> suggestion_id
         self._dismissed_until: dict[str, datetime] = {}
         self._snoozed_until: dict[str, datetime] = {}
         self._dismiss_count: dict[str, int] = {}   # category -> count (priority damping)
         self._feedback: list[FeedbackRecord] = []
+        if repository is not None:
+            for workspace_id, rule in repository.list_rules():
+                self.rules[rule.category] = rule
+                if not rule.enabled:
+                    self.disabled_rules.add((workspace_id, rule.category))
 
     # -- generation -------------------------------------------------------
 
@@ -89,10 +101,13 @@ class ProactiveEngine:
         moment = now or _now()
         out: list[Suggestion] = []
         for cat, cand in self._candidates(workspace_id, context, moment):
+            rule = self.rules[cat]
+            if not rule.enabled or rule.workspace_scope not in {"*", workspace_id}:
+                continue
             if (workspace_id, cat) in self.disabled_rules or ("*", cat) in self.disabled_rules:
                 continue
             if sum(s.workspace_id == workspace_id and s.category == cat and s.status == SuggestionStatus.NEW.value
-                   for s in self._suggestions.values()) >= 3:
+                   for s in self._suggestions.values()) >= rule.maximum_open_items:
                 continue
             key = self._key(workspace_id, cat, cand["subject"])
             # suppression: cooldown after dismiss, or active snooze
@@ -103,7 +118,11 @@ class ProactiveEngine:
             if key in self._by_key:  # dedup - already present
                 continue
             confidence = float(cand["confidence"])
-            priority = _priority_for(confidence)
+            if confidence < rule.confidence_threshold:
+                continue
+            priority = _priority_for(max(confidence, self._score(cat, cand, context)))
+            if confidence < 0.5 and priority == Priority.CRITICAL.value:
+                priority = Priority.HIGH.value
             # dismiss history dampens priority (never raise, only lower)
             if self._dismiss_count.get(cat, 0) >= 2 and priority == Priority.CRITICAL.value:
                 priority = Priority.HIGH.value
@@ -120,6 +139,8 @@ class ProactiveEngine:
             )
             self._suggestions[sug.suggestion_id] = sug
             self._by_key[key] = sug.suggestion_id
+            if self.repository is not None:
+                self.repository.save_suggestion(sug)
             out.append(sug)
         out.sort(key=lambda s: (-_PRIO_WEIGHT[s.priority], -s.confidence))
         return out
@@ -129,7 +150,19 @@ class ProactiveEngine:
         soon = moment + timedelta(days=3)
         for t in context.get("tasks", []) or []:
             due = _parse(t.get("due"))
-            if due is not None and due <= soon and not t.get("started"):
+            if due is not None and due < moment and not t.get("completed"):
+                subject = t.get("id", t.get("title", ""))
+                category = (SuggestionCategory.DEADLINE_RISK.value
+                            if self._key(workspace_id, SuggestionCategory.DEADLINE_RISK.value, subject)
+                            in self._dismissed_until else SuggestionCategory.OVERDUE_TASK.value)
+                cands.append((category, {
+                    "subject": subject, "confidence": 0.95,
+                    "urgency": 1.0, "impact": 0.85,
+                    "title": f"Aufgabe ueberfaellig: {t.get('title','')}",
+                    "evidence": [{"source_id": t.get("id", ""), "due": t.get("due")}],
+                    "proposed_action": {"type": "task", "title": f"Bearbeiten: {t.get('title','')}",
+                                        "external": False}}))
+            elif due is not None and due <= soon and not t.get("started"):
                 cands.append((SuggestionCategory.DEADLINE_RISK.value, {
                     "subject": t.get("id", t.get("title", "")), "confidence": 0.85,
                     "title": f"Frist bald: {t.get('title','')}",
@@ -216,6 +249,23 @@ class ProactiveEngine:
                     "subject": job.get("id", ""), "confidence": 0.85,
                     "title": "Job wiederholt fehlgeschlagen", "evidence": [{"source_id": job.get("id", "")}],
                     "proposed_action": {"type": "review", "title": "Recovery prüfen", "external": False}}))
+        for conflict in context.get("calendar_conflicts", []) or []:
+            cands.append((SuggestionCategory.CALENDAR_CONFLICT.value, {
+                "subject": conflict.get("id", ""),
+                "confidence": float(conflict.get("confidence", 0.9)),
+                "urgency": 0.9, "impact": 0.8, "title": "Kalenderkonflikt erkannt",
+                "evidence": [{"source_id": conflict.get("id", ""),
+                              "kind": conflict.get("kind", "overlap")}],
+                "proposed_action": {"type": "review", "title": "Konflikt pruefen",
+                                    "external": False}}))
+        load = context.get("daily_load", {}) or {}
+        if float(load.get("utilization", 0.0)) > float(load.get("threshold", 0.9)):
+            cands.append((SuggestionCategory.CAPACITY_RISK.value, {
+                "subject": str(load.get("date", moment.date())), "confidence": 0.85,
+                "urgency": 0.8, "impact": 0.75, "title": "Tagesauslastung zu hoch",
+                "evidence": [{"utilization": load.get("utilization")}],
+                "proposed_action": {"type": "plan", "title": "Tag neu priorisieren",
+                                    "external": False}}))
         return cands
 
     # -- user actions -----------------------------------------------------
@@ -223,12 +273,13 @@ class ProactiveEngine:
     def accept(self, suggestion_id: str, *, now: datetime | None = None) -> dict[str, Any]:
         sug = self._suggestions[suggestion_id]
         sug.status = SuggestionStatus.ACCEPTED.value
+        self._persist_suggestion(sug)
         self._log(sug, "accepted")
         action = dict(sug.proposed_action)
         # Accepting only creates a task/plan intent. Any external effect stays
         # approval-gated - the engine never performs the external action itself.
         action_type = action.get("type", "task")
-        if action_type not in {"task", "plan", "review", "briefing"}:
+        if action_type not in {"task", "plan", "review", "briefing", "reminder"}:
             action_type = "review"
         created = None
         if action_type == "task" and not action.get("external") and self.task_factory is not None:
@@ -236,6 +287,9 @@ class ProactiveEngine:
                                         source_reference=sug.suggestion_id)
         elif action_type == "plan" and not action.get("external") and self.plan_factory is not None:
             created = self.plan_factory(workspace_id=sug.workspace_id, goal=action.get("title", sug.title))
+        elif action_type == "reminder" and not action.get("external") and self.reminder_factory is not None:
+            created = self.reminder_factory(workspace_id=sug.workspace_id,
+                                            title=action.get("title", sug.title))
         intent = {"created": action_type, "created_result": created, "title": action.get("title", sug.title),
                   "external_action": bool(action.get("external")),
                   "approval_required": bool(action.get("external")) or bool(action.get("approval_required")),
@@ -245,6 +299,7 @@ class ProactiveEngine:
     def acknowledge(self, suggestion_id: str) -> None:
         sug = self._suggestions[suggestion_id]
         sug.status = SuggestionStatus.ACKNOWLEDGED.value
+        self._persist_suggestion(sug)
         self._log(sug, "acknowledged")
 
     def dismiss(self, suggestion_id: str, *, now: datetime | None = None, cooldown_days: int | None = None) -> None:
@@ -255,6 +310,7 @@ class ProactiveEngine:
         self._dismissed_until[sug.dedup_key] = moment + timedelta(days=cd)
         self._dismiss_count[sug.category] = self._dismiss_count.get(sug.category, 0) + 1
         self._by_key.pop(sug.dedup_key, None)  # allow future regen after cooldown
+        self._persist_suggestion(sug)
         self._log(sug, "dismissed", f"cooldown_until={_iso(self._dismissed_until[sug.dedup_key])}")
 
     def snooze(self, suggestion_id: str, *, until: datetime, now: datetime | None = None) -> None:
@@ -263,10 +319,32 @@ class ProactiveEngine:
         sug.snoozed_until = _iso(until)
         self._snoozed_until[sug.dedup_key] = until
         self._by_key.pop(sug.dedup_key, None)
+        self._persist_suggestion(sug)
         self._log(sug, "snoozed", f"until={_iso(until)}")
 
     def disable_rule(self, category: str, *, workspace_id: str = "*") -> None:
         self.disabled_rules.add((workspace_id, category))
+        if self.repository is not None:
+            base = self.rules[category]
+            self.repository.save_rule(SuggestionRule(**{**base.__dict__, "enabled": False}),
+                                      workspace_id=workspace_id)
+
+    def configure_rule(self, rule: SuggestionRule) -> None:
+        if rule.category not in self.rules:
+            raise ValueError("unknown_suggestion_category")
+        self.rules[rule.category] = rule
+        if self.repository is not None:
+            self.repository.save_rule(rule, workspace_id=rule.workspace_scope)
+
+    def record_feedback(self, suggestion_id: str, action: str, detail: str = "") -> None:
+        allowed = {"accepted", "dismissed", "snoozed", "ignored",
+                   "modified_before_accept", "false_positive"}
+        if action not in allowed:
+            raise ValueError("invalid_feedback_action")
+        suggestion = self._suggestions[suggestion_id]
+        if action in {"false_positive", "dismissed"}:
+            self._dismiss_count[suggestion.category] = self._dismiss_count.get(suggestion.category, 0) + 1
+        self._log(suggestion, action, redact_suggestion_text(detail))
 
     def enable_rule(self, category: str, *, workspace_id: str = "*") -> None:
         self.disabled_rules.discard((workspace_id, category))
@@ -297,9 +375,30 @@ class ProactiveEngine:
         return {k: (redact_suggestion_text(v) if isinstance(v, str) else v) for k, v in evidence.items()}
 
     def _log(self, sug: Suggestion, action: str, detail: str = "") -> None:
-        self._feedback.append(FeedbackRecord(at=_iso(_now()), suggestion_id=sug.suggestion_id,
-                                             dedup_key=sug.dedup_key, category=sug.category,
-                                             action=action, detail=detail))
+        record = FeedbackRecord(at=_iso(_now()), suggestion_id=sug.suggestion_id,
+                                dedup_key=sug.dedup_key, category=sug.category,
+                                action=action, detail=detail)
+        self._feedback.append(record)
+        if self.repository is not None:
+            self.repository.append_feedback(record, workspace_id=sug.workspace_id)
+
+    def _persist_suggestion(self, suggestion: Suggestion) -> None:
+        if self.repository is not None:
+            self.repository.save_suggestion(suggestion)
+
+    def _score(self, category: str, candidate: Mapping[str, Any], context: Mapping[str, Any]) -> float:
+        confidence = float(candidate.get("confidence", 0.5))
+        urgency = float(candidate.get("urgency", confidence))
+        impact = float(candidate.get("impact", confidence))
+        evidence_quality = min(1.0, 0.4 + 0.2 * len(candidate.get("evidence", [])))
+        preferences = context.get("suggestion_preferences", {}) or {}
+        user_preference = float(preferences.get(category, 0.5))
+        workload = float((context.get("daily_load", {}) or {}).get("utilization", 0.5))
+        repetition = min(1.0, float(candidate.get("occurrences", 1)) / 3.0)
+        feedback = max(0.0, 1.0 - 0.15 * self._dismiss_count.get(category, 0))
+        return min(1.0, 0.2 * urgency + 0.2 * impact + 0.2 * confidence +
+                   0.15 * evidence_quality + 0.1 * user_preference + 0.05 * workload +
+                   0.05 * repetition + 0.05 * feedback)
 
 
 _PRIO_WEIGHT = {Priority.CRITICAL.value: 3, Priority.HIGH.value: 2, Priority.MEDIUM.value: 1, Priority.LOW.value: 0}

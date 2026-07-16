@@ -138,6 +138,7 @@
     "windows_full_pytest_environment_failures_pending",
     "task_postgresql_branch_merge_pending",
     "planner_parallel_runtime_branch_merge_pending"
+    ,"remaining_job_type_migrations_pending"
   ],
   "degraded_modes": [
     "sqlite_rag_prototype_without_database_url",

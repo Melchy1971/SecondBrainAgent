@@ -32,7 +32,7 @@ class ProactiveViewModel:
                 "why": self._why(s),
                 "evidence": s.evidence,
                 "proposed_action": s.proposed_action,
-                "actions": ["accept", "dismiss", "snooze", "disable_rule"],
+                "actions": ["accept", "dismiss", "snooze", "disable_rule", "open_source", "show_plan"],
             })
         return {"suggestions": cards,
                 "disabled_rules": sorted(self.engine.disabled_rules),
