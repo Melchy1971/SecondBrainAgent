@@ -15,9 +15,9 @@ import os
 import tempfile
 import threading
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Iterable, Mapping
+from typing import Any, Mapping
 
-from secondbrain.jobs.models import Job, JobStatus, JobType, Lease, NON_IDEMPOTENT_TYPES
+from secondbrain.jobs.models import Job, JobStatus, Lease, NON_IDEMPOTENT_TYPES, priority_rank
 
 __all__ = ["JobStore", "JobManager"]
 
@@ -148,7 +148,7 @@ class JobManager:
                           and (not j.approval_required or j.approved)]
             if not candidates:
                 return None
-            candidates.sort(key=lambda j: (-j.priority, j.created_at))
+            candidates.sort(key=lambda j: (-priority_rank(j.priority), j.created_at))
             job = candidates[0]
             if not job.payload_reference.strip():
                 job.status, job.error_code, job.error_summary = JobStatus.FAILED.value, "invalid_payload_reference", "payload reference missing"
@@ -286,7 +286,7 @@ class JobManager:
         jobs = [j for j in self.store.all(workspace_id=workspace_id)
                 if j.status in (JobStatus.QUEUED.value, JobStatus.RUNNING.value,
                                 JobStatus.RETRYING.value, JobStatus.WAITING_FOR_APPROVAL.value)]
-        jobs.sort(key=lambda j: (-j.priority, j.created_at))
+        jobs.sort(key=lambda j: (-priority_rank(j.priority), j.created_at))
         return jobs
 
     @staticmethod

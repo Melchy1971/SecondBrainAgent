@@ -10,10 +10,10 @@ Existing repository/Database/TransactionManager APIs are untouched.
 from __future__ import annotations
 
 import sqlite3
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
-from urllib.parse import urlparse
 
 
 class SqlExecutor:
@@ -51,13 +51,15 @@ class SqliteExecutor(SqlExecutor):
         self.path = path or ":memory:"
         # isolation_level=None -> autocommit; we manage transactions explicitly so that
         # DDL inside a transaction is rolled back atomically (Python default auto-commits DDL).
-        self._conn = sqlite3.connect(self.path, isolation_level=None)
+        self._conn = sqlite3.connect(self.path, isolation_level=None, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
+        self._lock = threading.RLock()
 
     def execute(self, sql: str, params=None) -> list[tuple]:
-        cur = self._conn.execute(sql, params or [])
-        rows = cur.fetchall() if cur.description else []
-        return [tuple(r) for r in rows]
+        with self._lock:
+            cur = self._conn.execute(sql, params or [])
+            rows = cur.fetchall() if cur.description else []
+            return [tuple(r) for r in rows]
 
     def executescript(self, script: str) -> None:
         for statement in [s.strip() for s in script.split(";") if s.strip()]:
@@ -65,13 +67,14 @@ class SqliteExecutor(SqlExecutor):
 
     @contextmanager
     def transaction(self):
-        self._conn.execute("BEGIN")
-        try:
-            yield self
-            self._conn.execute("COMMIT")
-        except Exception:
-            self._conn.execute("ROLLBACK")
-            raise
+        with self._lock:
+            self._conn.execute("BEGIN")
+            try:
+                yield self
+                self._conn.execute("COMMIT")
+            except Exception:
+                self._conn.execute("ROLLBACK")
+                raise
 
     def close(self) -> None:
         self._conn.close()
