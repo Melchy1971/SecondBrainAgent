@@ -316,6 +316,7 @@ class ApprovalRequest:
     tool_idempotent: bool = False
     deferred_until: str = ""
     decision_note: str = ""
+    decision_audit: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
