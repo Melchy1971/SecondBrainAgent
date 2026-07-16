@@ -1,0 +1,79 @@
+name: SecondBrain CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: secondbrain-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-smoke:
+    name: Release smoke (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install development package
+        run: pip install -e ".[dev]"
+
+      - name: Verify package imports
+        run: |
+          python -c "import secondbrain; import secondbrain.knowledge_graph.service; print(secondbrain.__file__)"
+          python -c "from secondbrain.release.personal_jarvis_gate import run_personal_jarvis_gate; print(callable(run_personal_jarvis_gate))"
+
+      - name: Verify generated version metadata
+        run: |
+          python launcher.py version-sync
+          git diff --exit-code README.md docs/09_MASTERPLAN_STATUS.json
+
+      - name: Repository doctor
+        run: python launcher.py repo-doctor --execute-runtime-checks
+
+      - name: Dependency inventory
+        run: python launcher.py dependency-inventory
+
+      - name: Release and connector tests
+        run: pytest -q -m "release or connector"
+
+      - name: Integration tests without live providers
+        run: pytest -q -m "integration and not live" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice
+
+      - name: Knowledge graph certification
+        run: |
+          pytest -q tests/test_knowledge_graph_persistence.py
+          pytest -q SecondBrain/knowledge_graph/tests/test_knowledge_graph.py
+          python scripts/personal_jarvis_gate.py --project-root .
+
+      - name: Release candidate gate
+        run: python launcher.py rc-gate --write-report
+
+      - name: Upload diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-reports-py${{ matrix.python-version }}
+          if-no-files-found: ignore
+          path: |
+            release/*.json
+            runtime/reports/*.json
+            test-results/**/*.xml
