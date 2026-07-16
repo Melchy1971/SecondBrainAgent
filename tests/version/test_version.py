@@ -114,3 +114,20 @@ def test_sync_normalizes_generated_files_to_lf(tmp_path):
     masterplan.write_bytes(masterplan.read_bytes().replace(b"\n", b"\r\n"))
     sync_version(tmp_path)
     assert b"\r\n" not in masterplan.read_bytes()
+
+
+def test_sync_adds_missing_build_without_reformatting_unknown_fields(tmp_path):
+    _make_project(tmp_path)
+    masterplan = tmp_path / "docs" / "09_MASTERPLAN_STATUS.json"
+    masterplan.write_text(
+        '{\n\t"version": "1.0.0",\n\t"current_version": "v1.0.0",\n'
+        '\t"unknown": {"keep": true},\n\t"version_source": "legacy"\n}\n',
+        encoding="utf-8",
+    )
+
+    sync_version(tmp_path)
+
+    after = masterplan.read_text(encoding="utf-8")
+    assert '\t"unknown": {"keep": true}' in after
+    assert f'\t"build": {V.get_build_number()}' in after
+    assert json.loads(after)["unknown"] == {"keep": True}

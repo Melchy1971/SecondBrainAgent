@@ -22,6 +22,26 @@ def _replace_json_scalar(text: str, key: str, value: str | int) -> tuple[str, bo
     return updated, bool(count)
 
 
+def _insert_json_scalars(text: str, values: dict[str, str | int]) -> str:
+    """Append missing top-level scalars while retaining the existing indentation."""
+    closing = text.rfind("}")
+    if closing < 0:
+        raise ValueError("masterplan JSON object is missing its closing brace")
+    prefix = text[:closing].rstrip()
+    suffix = text[closing:]
+    indent_match = re.search(r'(?m)^([ \t]+)"', text)
+    indent = indent_match.group(1) if indent_match else "  "
+    if prefix and prefix[-1] != "{":
+        if not prefix.endswith(","):
+            prefix += ","
+        prefix += "\n"
+    entries = [
+        f"{indent}{json.dumps(key)}: {json.dumps(value, ensure_ascii=False)}"
+        for key, value in values.items()
+    ]
+    return prefix + ",\n".join(entries) + "\n" + suffix
+
+
 def _sync_masterplan_text(text: str, *, version: str, build: int) -> str:
     """Update generated top-level anchors while preserving unrelated formatting."""
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -38,9 +58,10 @@ def _sync_masterplan_text(text: str, *, version: str, build: int) -> str:
             missing[key] = value
 
     if missing:
-        data = json.loads(updated)
-        data.update(missing)
-        updated = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+        json.loads(updated)
+        updated = _insert_json_scalars(updated, missing)
+        if not updated.endswith("\n"):
+            updated += "\n"
     elif updated and not updated.endswith("\n"):
         updated += "\n"
     return updated
