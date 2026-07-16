@@ -5,6 +5,7 @@ import re
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -394,7 +395,12 @@ class MemoryExplorerService:
         try:
             created_at = float(created)
         except (TypeError, ValueError):
-            created_at = time.time()
+            try:
+                created_at = datetime.fromisoformat(
+                    str(created).replace("Z", "+00:00")
+                ).timestamp()
+            except ValueError:
+                created_at = time.time()
         expires_raw = raw.get("expires_at")
         expires_at: float | None = None
         if expires_raw is not None:
