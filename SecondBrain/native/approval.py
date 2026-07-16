@@ -148,6 +148,12 @@ class _FileLock:
                 if time.monotonic() >= deadline:
                     raise ApprovalConcurrencyError(f"approval_lock_timeout:{self.path.name}")
                 time.sleep(0.02)
+            except PermissionError as exc:
+                if time.monotonic() >= deadline:
+                    raise ApprovalConcurrencyError(
+                        f"approval_lock_permission_timeout:{self.path.name}"
+                    ) from exc
+                time.sleep(0.02)
 
     def _reclaim_if_stale(self) -> bool:
         try:

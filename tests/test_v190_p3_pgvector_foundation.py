@@ -88,7 +88,8 @@ def test_pgvector_config_loads_from_env(tmp_path, monkeypatch):
     assert config.vector_dimensions == 3072
 
 
-def test_pgvector_config_loads_from_yaml(tmp_path):
+def test_pgvector_config_loads_from_yaml(tmp_path, monkeypatch):
+    monkeypatch.delenv("SECONDBRAIN_EMBEDDING_PROVIDER", raising=False)
     config_dir = tmp_path / "config"
     config_dir.mkdir()
     (config_dir / "pgvector.yaml").write_text(
