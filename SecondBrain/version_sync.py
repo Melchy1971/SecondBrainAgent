@@ -2,7 +2,7 @@
 
 Reads the canonical version (pyproject via secondbrain.version) and rewrites the
 derived anchors: docs/09_MASTERPLAN_STATUS.json and the README title line. Does not
-touch historical version references in prose.
+touch historical version references in prose or reformat unrelated JSON content.
 """
 
 from __future__ import annotations
@@ -12,6 +12,38 @@ import re
 from pathlib import Path
 
 from secondbrain.version import get_version, get_build_number
+
+
+def _replace_json_scalar(text: str, key: str, value: str | int) -> tuple[str, bool]:
+    """Replace the first JSON scalar for *key* without reformatting the file."""
+    encoded = json.dumps(value, ensure_ascii=False)
+    pattern = re.compile(rf'("{re.escape(key)}"\s*:\s*)("(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?)')
+    updated, count = pattern.subn(rf"\g<1>{encoded}", text, count=1)
+    return updated, bool(count)
+
+
+def _sync_masterplan_text(text: str, *, version: str, build: int) -> str:
+    """Update generated top-level anchors while preserving unrelated formatting."""
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    updated = normalized
+    missing: dict[str, str | int] = {}
+    for key, value in (
+        ("version", version),
+        ("current_version", f"v{version}"),
+        ("build", build),
+        ("version_source", "pyproject.toml"),
+    ):
+        updated, found = _replace_json_scalar(updated, key, value)
+        if not found:
+            missing[key] = value
+
+    if missing:
+        data = json.loads(updated)
+        data.update(missing)
+        updated = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    elif updated and not updated.endswith("\n"):
+        updated += "\n"
+    return updated
 
 
 def sync_version(project_root: str | Path = ".") -> dict:
@@ -24,12 +56,7 @@ def sync_version(project_root: str | Path = ".") -> dict:
     if masterplan.exists():
         with masterplan.open("r", encoding="utf-8", newline="") as stream:
             old_text = stream.read()
-        data = json.loads(old_text)
-        data["version"] = version
-        data["current_version"] = f"v{version}"
-        data["build"] = build
-        data["version_source"] = "pyproject.toml"
-        new_text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+        new_text = _sync_masterplan_text(old_text, version=version, build=build)
         if new_text != old_text:
             masterplan.write_text(new_text, encoding="utf-8", newline="\n")
             updated["masterplan"] = version
@@ -38,7 +65,7 @@ def sync_version(project_root: str | Path = ".") -> dict:
     if readme.exists():
         with readme.open("r", encoding="utf-8", newline="") as stream:
             text = stream.read()
-        new = text
+        new = text.replace("\r\n", "\n").replace("\r", "\n")
         new = re.sub(r"(?m)^(#\s+SecondBrain-Agent\s+v)[0-9][^\s]*", rf"\g<1>{version}", new, count=1)
         new = re.sub(
             r"\([0-9]+\.[0-9]+(?:\.[0-9]+)?\s*->\s*Build\s*[0-9]+\)",

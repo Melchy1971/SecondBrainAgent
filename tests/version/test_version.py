@@ -20,7 +20,6 @@ def test_get_version_matches_pyproject():
 
 
 def test_pyproject_is_leading_source_even_with_stale_metadata():
-    # metadata may return None/stale; get_version must still reflect pyproject
     assert V.get_version() == V._read_pyproject_version()
 
 
@@ -67,12 +66,12 @@ def test_sync_updates_masterplan_and_readme(tmp_path):
     data = json.loads((tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").read_text())
     assert data["version"] == v and data["current_version"] == f"v{v}"
     assert data["version_source"] == "pyproject.toml"
-    assert data["focus"] == "keep me"          # other keys preserved
+    assert data["focus"] == "keep me"
     readme = (tmp_path / "README.md").read_text()
     assert readme.splitlines()[0] == f"# SecondBrain-Agent v{v}"
     assert f"({v} -> Build {V.get_build_number(v)})" in readme
     assert f"Aktueller dokumentierter Stand: v{v}" in readme
-    assert "since v30.25 stuff" in readme       # historical refs untouched
+    assert "since v30.25 stuff" in readme
     assert result["updated"]["masterplan"] == v
 
 
@@ -84,6 +83,29 @@ def test_sync_is_idempotent(tmp_path):
     after = (tmp_path / "docs" / "09_MASTERPLAN_STATUS.json").read_text()
     assert second["updated"] == {}
     assert before == after and first["version"] == V.get_version()
+
+
+def test_sync_preserves_unrelated_masterplan_formatting(tmp_path):
+    _make_project(tmp_path)
+    masterplan = tmp_path / "docs" / "09_MASTERPLAN_STATUS.json"
+    text = (
+        '{\n'
+        '  "version": "1.0.0",\n'
+        '  "current_version": "v1.0.0",\n'
+        '  "custom": [\n'
+        '    "alpha"\n'
+        '    ,"beta"\n'
+        '  ],\n'
+        '  "build": 10000,\n'
+        '  "version_source": "legacy"\n'
+        '}\n'
+    )
+    masterplan.write_text(text, encoding="utf-8")
+    sync_version(tmp_path)
+    after = masterplan.read_text(encoding="utf-8")
+    assert '    ,"beta"' in after
+    assert '"custom": [' in after
+    assert json.loads(after)["version"] == V.get_version()
 
 
 def test_sync_normalizes_generated_files_to_lf(tmp_path):
