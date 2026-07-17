@@ -53,7 +53,8 @@ def test_extra_probe_is_defensive(tmp_path: Path) -> None:
         extra_probes={"journey": ("journeys", "Journey probe", broken_probe, True)},
     )
     assert report["overall_status"] == BLOCKED
-    assert report["checks"][0]["detail"] == "probe_error:RuntimeError"
+    journey = next(check for check in report["checks"] if check["check_id"] == "journey")
+    assert journey["detail"] == "probe_error:RuntimeError"
 
 
 def test_report_does_not_expose_probe_payload(tmp_path: Path) -> None:

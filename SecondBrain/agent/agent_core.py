@@ -10,7 +10,6 @@ from .intent_router import IntentRouter
 from .plan_store import AgentPlanStore
 from .safe_executor import ExecutionResult, SafeExecutor
 from .task_planner import TaskPlan, TaskPlanner
-from .tool_discovery import ToolDiscovery
 from .tool_registry import ToolRegistry
 
 
@@ -90,6 +89,7 @@ class AgentCore:
             plan = self.planner.create_single_tool_plan(intent=route.intent, tool_name=route.tool_name, payload=dict(route.parameters))
         else:
             plan = self.planner.create_chat_plan(text=request.text)
+        self._decorate_plan_with_tools(plan)
         result = self.executor.execute(
             plan,
             confirmed=request.confirmed,

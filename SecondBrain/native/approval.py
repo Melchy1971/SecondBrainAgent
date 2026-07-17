@@ -148,6 +148,12 @@ class _FileLock:
                 if time.monotonic() >= deadline:
                     raise ApprovalConcurrencyError(f"approval_lock_timeout:{self.path.name}")
                 time.sleep(0.02)
+            except PermissionError as exc:
+                if time.monotonic() >= deadline:
+                    raise ApprovalConcurrencyError(
+                        f"approval_lock_permission_timeout:{self.path.name}"
+                    ) from exc
+                time.sleep(0.02)
 
     def _reclaim_if_stale(self) -> bool:
         try:
@@ -211,6 +217,17 @@ class _FileLock:
             self.path.unlink()
         except OSError:
             pass
+
+
+def _replace_with_retry(source: Path, target: Path, *, attempts: int = 5) -> None:
+    for attempt in range(attempts):
+        try:
+            os.replace(source, target)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.02)
 
 
 AUDIT_SCHEMA = "secondbrain.native.action_audit.v30_28"
@@ -316,6 +333,7 @@ class ApprovalRequest:
     tool_idempotent: bool = False
     deferred_until: str = ""
     decision_note: str = ""
+    decision_audit: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -544,6 +562,7 @@ class NativeApprovalQueue:
             updated_at=created_at,
             **extra,
         ).to_dict()
+        record.setdefault("decision_audit", [])
         with _FileLock(self.path):
             rows = self._read_all()
             rows.append(record)
@@ -666,6 +685,21 @@ class NativeApprovalQueue:
                 return None
             self._write_all(rows)
             return dict(updated)
+
+    def approve(self, approval_id: str, *, actor: str = "user",
+                note: str = "") -> dict[str, Any] | None:
+        return self.transition(approval_id, "approved", actor=actor, note=note)
+
+    def reject(self, approval_id: str, *, actor: str = "user",
+               note: str = "") -> dict[str, Any] | None:
+        return self.transition(approval_id, "rejected", actor=actor, note=note)
+
+    def defer(self, approval_id: str, *, actor: str = "user", until: str = "",
+              note: str = "") -> dict[str, Any] | None:
+        return self.transition(
+            approval_id, "deferred", actor=actor, note=note,
+            deferred_until=until,
+        )
 
     def begin_execution(
         self,
@@ -991,7 +1025,7 @@ class NativeApprovalQueue:
                     handle.write(json.dumps(row, ensure_ascii=False) + "\n")
                 handle.flush()
                 os.fsync(handle.fileno())
-            os.replace(temporary, self.path)
+            _replace_with_retry(temporary, self.path)
             self._append_recovery_audit("backup_restored", len(backup_rows))
         except OSError:
             return False
@@ -1012,7 +1046,7 @@ class NativeApprovalQueue:
                     fh.write(json.dumps(row, ensure_ascii=False) + "\n")
                 fh.flush()
                 os.fsync(fh.fileno())
-            os.replace(temporary, self.path)
+            _replace_with_retry(temporary, self.path)
             self._fsync_directory(self.path.parent)
             try:
                 self._write_backup_from(self.path)
@@ -1029,7 +1063,7 @@ class NativeApprovalQueue:
                 shutil.copyfileobj(source_handle, destination)
                 destination.flush()
                 os.fsync(destination.fileno())
-            os.replace(temporary, backup)
+            _replace_with_retry(temporary, backup)
         finally:
             temporary.unlink(missing_ok=True)
 
@@ -1295,6 +1329,59 @@ class ReviewQueue:
             rows = [row for row in rows if row.get("category") == cat]
         return rows
 
+    def get(self, review_id: str) -> dict[str, Any] | None:
+        return next(
+            (row for row in self._read_all() if row.get("review_id") == review_id),
+            None,
+        )
+
+    def transition(
+        self,
+        review_id: str,
+        new_status: str,
+        *,
+        actor: str,
+        note: str = "",
+        deferred_until: str = "",
+    ) -> dict[str, Any] | None:
+        actor = actor.strip()
+        if not actor:
+            raise ValueError("review_actor_required")
+        new_status = new_status.strip().lower()
+        rows = self._read_all()
+        for row in rows:
+            if row.get("review_id") != review_id:
+                continue
+            old_status = str(row.get("status") or "pending").strip().lower()
+            if new_status not in _VALID_REVIEW_TRANSITIONS.get(old_status, frozenset()):
+                raise ValueError(f"invalid_review_transition:{old_status}->{new_status}")
+            timestamp = _utc_now()
+            history = row.get("decision_audit")
+            if not isinstance(history, list):
+                history = []
+            safe_note = _sanitize_text(note)
+            row.update({
+                "status": new_status,
+                "decision_note": safe_note,
+                "decided_by": actor,
+                "decided_at": timestamp,
+                "updated_at": timestamp,
+                "decision_audit": [*history, {
+                    "review_id": review_id,
+                    "approval_id": str(row.get("approval_id") or ""),
+                    "old_status": old_status,
+                    "new_status": new_status,
+                    "actor": actor,
+                    "note": safe_note,
+                    "timestamp": timestamp,
+                }],
+            })
+            if new_status == "deferred":
+                row["deferred_until"] = deferred_until
+            self._write_all(rows)
+            return dict(row)
+        return None
+
     def mark(self, review_id: str, status: str, *, note: str = "") -> dict[str, Any] | None:
         rows = self._read_all()
         updated: dict[str, Any] | None = None
@@ -1317,7 +1404,7 @@ class ReviewQueue:
             try:
                 value = json.loads(line)
                 if isinstance(value, dict):
-                    rows.append(value)
+                    rows.append(self._with_decision_defaults(value))
             except json.JSONDecodeError:
                 rows.append({"schema": REVIEW_SCHEMA, "status": "invalid_json", "raw": line})
         return rows
@@ -1327,6 +1414,22 @@ class ReviewQueue:
         with self.path.open("w", encoding="utf-8") as fh:
             for row in rows:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    @staticmethod
+    def _with_decision_defaults(row: dict[str, Any]) -> dict[str, Any]:
+        if "review_id" not in row:
+            return row
+        normalized = dict(row)
+        normalized.setdefault("status", "pending")
+        normalized.setdefault("approval_id", "")
+        normalized.setdefault("metadata", {})
+        normalized.setdefault("version", 0)
+        normalized.setdefault("decision_note", "")
+        normalized.setdefault("decided_by", "")
+        normalized.setdefault("decided_at", "")
+        normalized.setdefault("deferred_until", "")
+        normalized.setdefault("decision_audit", [])
+        return normalized
 
 
 def native_audit_status(project_root: str | Path, *, limit: int = 20) -> dict[str, Any]:

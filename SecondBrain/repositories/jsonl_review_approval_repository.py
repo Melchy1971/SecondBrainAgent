@@ -75,6 +75,7 @@ class JsonlReviewApprovalRepository:
             approval_id=str(fields.get("approval_id") or ""),
             metadata=metadata if isinstance(metadata, dict) else {},
         ).to_dict()
+        record.setdefault("decision_audit", [])
         with _FileLock(self.reviews.path):
             rows = self._read_review_rows(repair=False)
             rows.append(record)

@@ -80,11 +80,11 @@ all = [
 secondbrain = "launcher:main"
 
 [tool.setuptools]
-py-modules = ["launcher"]
+py-modules = ["launcher", "secondbrain"]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["SecondBrain", "SecondBrain.*", "secondbrain"]
+include = ["SecondBrain", "SecondBrain.*"]
 exclude = ["tests", "tests.*"]
 
 [tool.setuptools.package-data]

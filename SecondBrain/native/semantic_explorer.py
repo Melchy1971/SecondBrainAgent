@@ -248,7 +248,20 @@ class SemanticExplorerService:
         explorer = MemoryExplorer(self.project_root, ensure_dirs=False)
         rows = explorer.entries(include_archived=True, limit=100_000)["memories"]
         source_rows = explorer.sources()
-        data_sources.extend({"kind": "memory", "path": row["path"], "exists": row["exists"], "records": row["entries"], "read_only": True} for row in source_rows)
+        if isinstance(source_rows, dict):
+            data_sources.append({
+                "kind": "memory",
+                "path": str(explorer.memory_path),
+                "exists": explorer.memory_path.exists(),
+                "records": sum(int(count) for count in source_rows.values()),
+                "sources": dict(source_rows),
+                "read_only": True,
+            })
+        else:
+            data_sources.extend({
+                "kind": "memory", "path": row["path"], "exists": row["exists"],
+                "records": row["entries"], "read_only": True,
+            } for row in source_rows)
         evidence_count = 0
         for row in rows:
             memory_id = f"memory:{row['memory_id']}"
@@ -278,14 +291,20 @@ class SemanticExplorerService:
         query = query.strip().lower()
         wanted_types, wanted_relations = set(node_types), set(relationship_types)
         wanted_sources, wanted_tags = set(sources), {str(tag).lower() for tag in tags}
+
         def matches(row: dict[str, Any]) -> bool:
             text = f"{row['label']} {row['type']} {' '.join(row['sources'])} {json.dumps(row['metadata'], ensure_ascii=False)}".lower()
-            if query and query not in text: return False
-            if wanted_types and row["type"] not in wanted_types: return False
-            if wanted_sources and not wanted_sources.intersection(row["sources"]): return False
+            if query and query not in text:
+                return False
+            if wanted_types and row["type"] not in wanted_types:
+                return False
+            if wanted_sources and not wanted_sources.intersection(row["sources"]):
+                return False
             row_tags = {str(tag).lower() for tag in row["metadata"].get("tags", [])}
-            if wanted_tags and not wanted_tags.issubset(row_tags): return False
+            if wanted_tags and not wanted_tags.issubset(row_tags):
+                return False
             return True
+
         selected = {node_id for node_id in selected if matches(all_nodes[node_id])}
         candidate_edges = [row for row in all_edges if not wanted_relations or row["type"] in wanted_relations]
         context = set(selected)
@@ -309,8 +328,10 @@ class SemanticExplorerService:
         for _ in range(max(1, min(int(depth), 5))):
             next_frontier = set()
             for edge in edges:
-                if edge["source"] in frontier: next_frontier.add(edge["target"])
-                if edge["target"] in frontier: next_frontier.add(edge["source"])
+                if edge["source"] in frontier:
+                    next_frontier.add(edge["target"])
+                if edge["target"] in frontier:
+                    next_frontier.add(edge["source"])
             frontier = next_frontier - selected
             selected.update(next_frontier)
         return {"ok": True, "root": node_id, "nodes": [nodes[item] for item in selected],
@@ -349,7 +370,6 @@ class SemanticExplorerService:
         """Return one document plus its related nodes/edges for GUI preview."""
         query = str(document_ref).strip().lower()
         graph = self.graph(include_evidence=True)
-        nodes = {row["id"]: row for row in graph["nodes"]}
         candidates = [row for row in graph["nodes"] if row["type"] == "document" and (query in row["id"].lower() or query in row["label"].lower())]
         if not candidates:
             return {"ok": False, "status": "document_not_found", "document_ref": document_ref, "nodes": [], "edges": []}

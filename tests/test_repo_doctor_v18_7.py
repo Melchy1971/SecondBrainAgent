@@ -57,10 +57,10 @@ def _write_minimal_project(root: Path) -> None:
         "pip install -e \".[dev]\"\n"
         "python launcher.py version-sync\n"
         "git diff --exit-code README.md docs/09_MASTERPLAN_STATUS.json\n"
-        "python launcher.py repo-doctor --execute-runtime-checks\n"
-        "python launcher.py dependency-inventory\n"
-        "pytest -q -m \"release or connector\" \\\n"
-        "pytest -q -m \"integration and not live\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice\n"
+        "python launcher.py repo-doctor --execute-runtime-checks --write-report\n"
+        "python launcher.py dependency-inventory --write-report\n"
+        "pytest -q -m \"(release or connector) and not live and not gui\" \\\n"
+        "pytest -q -m \"integration and not live and not gui\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice\n"
         "python launcher.py rc-gate --write-report\n",
         encoding="utf-8",
     )

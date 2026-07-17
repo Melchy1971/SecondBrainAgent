@@ -1,10 +1,28 @@
 from dataclasses import dataclass
+from pathlib import Path
+import subprocess
 
 import pytest
 
 from secondbrain.connectors.incremental_sync import IncrementalSyncEngine
 from secondbrain.rag.hybrid_score import HybridScoreCalculator, HybridScoreWeights
 from secondbrain.rag.vector_search_service import VectorSearchService
+
+
+def test_package_layout_has_no_case_insensitive_path_collision():
+    root = Path(__file__).resolve().parents[1]
+    tracked = set(
+        subprocess.run(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    )
+
+    assert {"SecondBrain/__init__.py", "secondbrain.py"} <= tracked
+    assert "secondbrain/__init__.py" not in tracked
 
 
 def test_incremental_sync_detects_added_removed_updated_and_unchanged():

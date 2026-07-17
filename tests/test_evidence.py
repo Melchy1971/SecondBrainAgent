@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
+from secondbrain.agent.memory import MemoryError
 from secondbrain.agent.reasoning import EvidenceCollector, Evidence
 from secondbrain.agent.reasoning.models import SUPPORT
 
@@ -27,10 +30,10 @@ def test_collect_from_memory_reuses_injection():
 
 
 def test_memory_secret_is_not_collected():
-    store = make_store([
-        make_record("Harmlos", source="a"),
-        make_record("key sk-abcdefghijklmnop1234", source="leak"),
-    ])
+    store = make_store([make_record("Harmlos", source="a")])
+    with pytest.raises(MemoryError, match="memory_write_blocked:secret"):
+        store.add(make_record("key sk-abcdefghijklmnop1234", source="leak"))
+
     c = EvidenceCollector(memory_store=store)
     texts = [e.text for e in c.collect_from_memory("key")]
     assert all("sk-" not in t for t in texts)

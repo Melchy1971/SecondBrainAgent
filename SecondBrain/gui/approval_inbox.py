@@ -502,5 +502,39 @@ class ApprovalInboxFrame(ttk.Frame):
 class ApprovalInbox:
     """Compatibility adapter for the former minimal render API."""
 
-    def render(self, approvals: list[dict[str, Any]]) -> dict[str, Any]:
-        return {"pending": len(approvals), "items": approvals}
+    def __init__(self, project_root=None, *, safety=None) -> None:
+        if safety is None:
+            from secondbrain.agent.safety import SafetyService
+
+            safety = SafetyService(project_root)
+        self.safety = safety
+
+    def render(self, approvals: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        items = list(approvals) if approvals is not None else self.safety.list()
+        return {
+            "pending": sum(item.get("status") == "pending" for item in items),
+            "deferred": sum(item.get("status") == "deferred" for item in items),
+            "items": items,
+            "actions": ["approve", "reject", "defer"],
+        }
+
+    def approve(self, approval_id: str, *, decided_by: str = "user") -> dict[str, Any]:
+        return self.safety.approve(approval_id, decided_by=decided_by).to_dict()
+
+    def reject(self, approval_id: str, *, decided_by: str = "user") -> dict[str, Any]:
+        return self.safety.reject(approval_id, decided_by=decided_by).to_dict()
+
+    def defer(
+        self,
+        approval_id: str,
+        *,
+        decided_by: str = "user",
+        until: str = "",
+        note: str = "",
+    ) -> dict[str, Any]:
+        return self.safety.defer(
+            approval_id,
+            decided_by=decided_by,
+            until=until,
+            note=note,
+        ).to_dict()

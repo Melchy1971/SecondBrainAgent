@@ -126,6 +126,11 @@
       "release": "v31.19",
       "capability": "Persoenliches Dashboard mit vollstaendigem Snapshot, PostgreSQL-Personalisierung, parallelen Reads, Timeout und Cancellation",
       "status": "feature_branch_pending_merge"
+    },
+    {
+      "release": "v31.26",
+      "capability": "Stabile CI- und Pull-Request-Validation fuer Python 3.12/3.13 mit portablem Paketlayout, hermetischer Testselektion und redigierten Diagnoseartefakten",
+      "status": "completed"
     }
   ],
   "remaining_blockers": [
@@ -135,7 +140,6 @@
     "installer_exe_msi_pipeline",
     "secret_vault_encryption_rollout",
     "review_approval_postgresql_production_health_pending",
-    "windows_full_pytest_environment_failures_pending",
     "task_postgresql_branch_merge_pending",
     "planner_parallel_runtime_branch_merge_pending"
     ,"remaining_job_type_migrations_pending"
@@ -151,7 +155,7 @@
     "background_agents_need_external_run_due_trigger",
     "agent_control_gui_aggregator_without_caching",
     "review_approval_release_requires_live_postgresql",
-    "full_suite_has_provider_memory_and_order_dependent_failures"
+    "live_provider_and_database_evidence_remains_environment_dependent"
   ],
   "next_sprint": {
     "focus": "Production readiness hardening",
@@ -177,8 +181,29 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.19",
-  "documentation_updated_at": "2026-07-15",
+  "documented_feature_level": "v31.26",
+  "documentation_updated_at": "2026-07-16",
+  "ci_validation": {
+    "release": "v31.26",
+    "python_versions": [
+      "3.12",
+      "3.13"
+    ],
+    "platforms": [
+      "ubuntu",
+      "windows"
+    ],
+    "live_tests": "opt_in",
+    "package_import": "portable",
+    "workflow_contract": "validated",
+    "reports": [
+      "repo_doctor_latest.json",
+      "dependency_inventory_latest.json",
+      "personal_jarvis_gate.json",
+      "rc_gate.json",
+      "pytest_junit_xml"
+    ]
+  },
   "review_approval_release": {
     "release": "v30.86",
     "gate": "ENVIRONMENT_DEPENDENT",

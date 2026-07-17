@@ -15,6 +15,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from contextlib import contextmanager
 from datetime import timedelta
@@ -268,7 +269,12 @@ class BackupManager:
             os.replace(temporary_target, target)
 
         outer_sha = _sha256(target)
-        verification = self.verify(str(target), expected_sha256=outer_sha)
+        verification: dict[str, Any] = {}
+        for attempt in range(3):
+            verification = self.verify(str(target), expected_sha256=outer_sha)
+            if verification.get('ok') or attempt == 2:
+                break
+            time.sleep(0.02)
         if not verification.get('ok'):
             target.unlink(missing_ok=True)
             raise BackupValidationError('backup_post_write_validation_failed')

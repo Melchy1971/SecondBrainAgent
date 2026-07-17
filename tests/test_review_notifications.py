@@ -270,6 +270,7 @@ def test_recovery_required_is_critical_and_overdue(tmp_path):
 
 
 def test_crashed_approval_emits_recovery_notification(tmp_path):
+    now = datetime.now(timezone.utc)
     queue = NativeApprovalQueue(tmp_path)
     approval = queue.create(
         command="data.read",
@@ -280,9 +281,9 @@ def test_crashed_approval_emits_recovery_notification(tmp_path):
     )
     queue.transition(approval["approval_id"], "approved", actor="reviewer")
     queue.begin_execution(approval["approval_id"], executor_id="crashed", lease_seconds=1)
-    queue.recover_stale_leases(now=NOW + timedelta(days=1))
+    queue.recover_stale_leases(now=now + timedelta(days=1))
 
-    [notification] = UnifiedReviewInbox(tmp_path).evaluate_notifications(now=NOW + timedelta(days=1))
+    [notification] = UnifiedReviewInbox(tmp_path).evaluate_notifications(now=now + timedelta(days=1))
 
     assert notification.type is NotificationType.RECOVERY_REQUIRED
     assert notification.priority is NotificationPriority.CRITICAL

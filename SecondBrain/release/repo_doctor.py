@@ -53,10 +53,10 @@ EXPECTED_CI_LINES: tuple[str, ...] = (
     "pip install -e \".[dev]\"",
     "python launcher.py version-sync",
     "git diff --exit-code README.md docs/09_MASTERPLAN_STATUS.json",
-    "python launcher.py repo-doctor --execute-runtime-checks",
-    "python launcher.py dependency-inventory",
-    "pytest -q -m \"release or connector\"",
-    "pytest -q -m \"integration and not live\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice",
+    "python launcher.py repo-doctor --execute-runtime-checks --write-report",
+    "python launcher.py dependency-inventory --write-report",
+    "pytest -q -m \"(release or connector) and not live and not gui\"",
+    "pytest -q -m \"integration and not live and not gui\" tests/integration tests/connectors_runtime tests/storage tests/vision tests/voice",
     "python launcher.py rc-gate --write-report",
 )
 
