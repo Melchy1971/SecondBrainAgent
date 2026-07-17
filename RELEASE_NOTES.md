@@ -1,3 +1,13 @@
+# Release Notes v31.32 - Connector E2E Certification
+
+## v31.32
+
+- Sicheres Opt-in-Gate fuer Gmail, Google Calendar, Outlook Mail und Microsoft Calendar auf separaten Testkonten.
+- Zwei inkrementelle Read-Syncs pruefen Ressourcenvertrag und Cursor-Persistenz.
+- Mail- und Kalender-Writes werden ohne explizite Approval nur lokal vorgemerkt; kein Auto-Approve und keine automatische Wiederholung.
+- Tokens, Nachrichten, Termine und Empfaengerinhalte bleiben aus dem Report ausgeschlossen.
+- Aktueller Status: `CONDITIONAL_PASS`, da keine E2E-Testkonten konfiguriert waren und reale Write-/Cleanup-Evidenz fehlt.
+
 # Release Notes v30.77 - UI Path Override and Import Consolidation
 
 ## v30.77

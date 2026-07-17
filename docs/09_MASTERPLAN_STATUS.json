@@ -131,6 +131,11 @@
       "release": "v31.26",
       "capability": "Stabile CI- und Pull-Request-Validation fuer Python 3.12/3.13 mit portablem Paketlayout, hermetischer Testselektion und redigierten Diagnoseartefakten",
       "status": "completed"
+    },
+    {
+      "release": "v31.32",
+      "capability": "Testkonto-gebundenes Connector-E2E-Gate fuer Gmail, Outlook und Kalender mit Read-Sync, Cursor-Persistenz und Approval-Pflicht",
+      "status": "implemented_conditional_pass_without_test_accounts_or_write_evidence"
     }
   ],
   "remaining_blockers": [
@@ -181,8 +186,8 @@
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.26",
-  "documentation_updated_at": "2026-07-16",
+  "documented_feature_level": "v31.32",
+  "documentation_updated_at": "2026-07-17",
   "ci_validation": {
     "release": "v31.26",
     "python_versions": [
