@@ -1,9 +1,47 @@
 from __future__ import annotations
 
+import json
+import subprocess
 from pathlib import Path
 
 from secondbrain.module_registry import ModuleRegistry
-from secondbrain.release.repo_doctor import run_repo_doctor
+from secondbrain.release.repo_doctor import REQUIRED_PATHS, _run_command, run_repo_doctor
+
+
+def test_failed_health_command_reports_affected_modules(monkeypatch, tmp_path: Path) -> None:
+    payload = {
+        "status": "degraded",
+        "runtime_health": {
+            "modules": [
+                {
+                    "key": "desktop",
+                    "status": "error",
+                    "critical": True,
+                    "error": "display unavailable",
+                },
+                {"key": "core", "status": "ok", "critical": True, "result": {"healthy": True}},
+            ]
+        },
+    }
+
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args[0], 1, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    check = _run_command(tmp_path, ("health",), 10)
+
+    assert check.details["health_status"] == "degraded"
+    assert check.details["failed_modules"] == [
+        {
+            "section": "runtime_health",
+            "key": "desktop",
+            "status": "error",
+            "critical": True,
+            "error": "display unavailable",
+            "result": None,
+        }
+    ]
 
 
 PYPROJECT = """[build-system]
@@ -27,19 +65,19 @@ all = ["pytest>=8.0.0", "PyMuPDF>=1.24.0", "pypdf>=5.0.0", "requests>=2.31.0", "
 secondbrain = "launcher:main"
 
 [tool.setuptools.packages.find]
-include = ["secondbrain", "secondbrain.*"]
+include = ["SecondBrain", "SecondBrain.*"]
 """
 
 def _write_minimal_project(root: Path) -> None:
-    (root / "secondbrain").mkdir(parents=True)
-    (root / "secondbrain" / "release").mkdir(parents=True)
+    (root / "SecondBrain").mkdir(parents=True)
+    (root / "SecondBrain" / "release").mkdir(parents=True)
     (root / "docs").mkdir(parents=True)
     (root / "docs" / "releases").mkdir(parents=True)
-    (root / "secondbrain" / "module_registry.py").write_text("", encoding="utf-8")
-    (root / "secondbrain" / "launcher_runtime_v126.py").write_text("", encoding="utf-8")
-    (root / "secondbrain" / "p0_runtime.py").write_text("", encoding="utf-8")
-    (root / "secondbrain" / "p1_rag_runtime.py").write_text("", encoding="utf-8")
-    (root / "secondbrain" / "release" / "dependency_inventory.py").write_text("", encoding="utf-8")
+    (root / "SecondBrain" / "module_registry.py").write_text("", encoding="utf-8")
+    (root / "SecondBrain" / "launcher_runtime_v126.py").write_text("", encoding="utf-8")
+    (root / "SecondBrain" / "p0_runtime.py").write_text("", encoding="utf-8")
+    (root / "SecondBrain" / "p1_rag_runtime.py").write_text("", encoding="utf-8")
+    (root / "SecondBrain" / "release" / "dependency_inventory.py").write_text("", encoding="utf-8")
     (root / "docs" / "RELEASE_WORKFLOW_v18_9.md").write_text("# Release Workflow\n", encoding="utf-8")
     (root / "docs" / "releases" / "v18_11_P0_REPRODUCIBILITY.md").write_text("# P0 Reproducibility\n", encoding="utf-8")
     (root / "launcher.py").write_text("print('ok')\n", encoding="utf-8")
@@ -64,6 +102,13 @@ def _write_minimal_project(root: Path) -> None:
         "python launcher.py rc-gate --write-report\n",
         encoding="utf-8",
     )
+
+
+def test_required_runtime_paths_match_packaged_module_case() -> None:
+    runtime_paths = [path for path in REQUIRED_PATHS if path.lower().startswith("secondbrain/")]
+
+    assert runtime_paths
+    assert all(path.startswith("SecondBrain/") for path in runtime_paths)
 
 
 def test_repo_doctor_accepts_minimal_valid_project(tmp_path: Path) -> None:
@@ -123,7 +168,7 @@ def test_repo_doctor_blocks_local_config_paths(tmp_path: Path) -> None:
 
 def test_repo_doctor_reports_pycache_outside_virtualenv_as_diagnostic(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
-    cache = tmp_path / "secondbrain" / "__pycache__"
+    cache = tmp_path / "SecondBrain" / "__pycache__"
     cache.mkdir()
     (cache / "module.cpython-313.pyc").write_bytes(b"cache")
 
