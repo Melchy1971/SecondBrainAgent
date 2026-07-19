@@ -94,7 +94,7 @@ def check_version_sync(ctx: GateContext) -> CheckResult:
 
 
 def check_repo_doctor(ctx: GateContext) -> CheckResult:
-    required = ["pyproject.toml", "launcher.py", "secondbrain"]
+    required = ["pyproject.toml", "launcher.py", "SecondBrain"]
     missing = [r for r in required if not (ctx.project_root / r).exists()]
     if missing:
         return CheckResult("repo_doctor", CheckStatus.FAIL, "core repo files missing",
@@ -206,27 +206,27 @@ def _structural(ctx: GateContext, name: str, path: str, label: str) -> CheckResu
 
 
 def check_native_desktop(ctx: GateContext) -> CheckResult:
-    return _structural(ctx, "native_desktop", "secondbrain/native", "native desktop package")
+    return _structural(ctx, "native_desktop", "SecondBrain/native", "native desktop package")
 
 
 def check_agent_safety(ctx: GateContext) -> CheckResult:
-    return _structural(ctx, "agent_safety", "secondbrain/agent/safety", "agent safety package")
+    return _structural(ctx, "agent_safety", "SecondBrain/agent/safety", "agent safety package")
 
 
 def check_workflow_engine(ctx: GateContext) -> CheckResult:
-    return _structural(ctx, "workflow_engine", "secondbrain/agent/workflow", "workflow engine package")
+    return _structural(ctx, "workflow_engine", "SecondBrain/agent/workflow", "workflow engine package")
 
 
 def check_memory_injection(ctx: GateContext) -> CheckResult:
-    return _structural(ctx, "memory_injection", "secondbrain/agent/memory_injection", "memory injection package")
+    return _structural(ctx, "memory_injection", "SecondBrain/agent/memory_injection", "memory injection package")
 
 
 def check_scheduler(ctx: GateContext) -> CheckResult:
-    for path in ("secondbrain/agent/background_agents", "secondbrain/scheduler.py"):
+    for path in ("SecondBrain/agent/background_agents", "SecondBrain/scheduler.py"):
         if (ctx.project_root / path).exists():
             return _structural(ctx, "scheduler", path, "scheduler / background-agent runtime")
     return CheckResult("scheduler", CheckStatus.WARN, "no scheduler module found",
-                       file="secondbrain/agent/background_agents/", cause="scheduler module not located",
+                       file="SecondBrain/agent/background_agents/", cause="scheduler module not located",
                        remediation="confirm the scheduler/background-agent runtime is shipped")
 
 
@@ -242,12 +242,12 @@ def check_plugin_runtime(ctx: GateContext) -> CheckResult:
 def check_installer_build(ctx: GateContext) -> CheckResult:
     needed = ["packaging/windows/jarvis.spec", "packaging/windows/installer.iss",
               "packaging/windows/build.ps1", "packaging/windows/jarvis_bootstrap.py",
-              "secondbrain/install/__init__.py"]
+              "SecondBrain/install/__init__.py"]
     missing = [n for n in needed if not (ctx.project_root / n).exists()]
     if missing:
         return CheckResult("installer_build", CheckStatus.FAIL, "installer assets missing",
                            file=", ".join(missing), cause="incomplete Windows packaging",
-                           remediation="restore the packaging/windows assets and secondbrain.install package")
+                           remediation="restore the packaging/windows assets and SecondBrain.install package")
     return CheckResult("installer_build", CheckStatus.WARN, "installer assets present (not built here)",
                        file="packaging/windows/", cause="PyInstaller/Inno build requires Windows + Python 3.11",
                        remediation="run packaging/windows/build.ps1 on Windows and attach the artifacts")

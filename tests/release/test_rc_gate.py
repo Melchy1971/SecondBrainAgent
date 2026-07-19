@@ -7,9 +7,11 @@ import json
 from secondbrain.release.rc_gate import (
     CheckResult,
     CheckStatus,
+    GateContext,
     Verdict,
     check_connector_runtime,
     check_embedding_provider,
+    check_repo_doctor,
     check_secret_vault,
     decide_verdict,
     run_rc_gate,
@@ -72,6 +74,16 @@ def test_embedding_check_flags_dev_only_as_critical(tmp_path):
     assert result.status is CheckStatus.FAIL
     assert result.critical is True
     assert result.remediation and "semantic" in result.remediation
+
+
+def test_repo_doctor_uses_packaged_module_case(tmp_path):
+    (tmp_path / "SecondBrain").mkdir()
+    (tmp_path / "launcher.py").write_text("", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("", encoding="utf-8")
+
+    result = check_repo_doctor(GateContext(project_root=tmp_path, target_version="test"))
+
+    assert result.status is CheckStatus.WARN
 
 
 # --- artifacts -----------------------------------------------------------------
