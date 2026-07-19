@@ -90,13 +90,66 @@ def check_workflows(root: Path = ROOT) -> None:
         raise GateError("; ".join(issues))
 
 
+def changed_python_files(base: str, root: Path = ROOT) -> list[str]:
+    result = subprocess.run(
+        ["git", "-c", f"safe.directory={root.resolve()}", "diff", "--name-only", "-z", f"{base}...HEAD"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    allowed_roots = ("SecondBrain/", "scripts/", "tests/")
+    paths = result.stdout.decode("utf-8", errors="strict").split("\0")
+    return sorted(
+        path
+        for path in paths
+        if path.endswith(".py")
+        and path.startswith(allowed_roots)
+        and (root / path).is_file()
+    )
+
+
+def check_changed_python(base: str, root: Path = ROOT) -> None:
+    paths = changed_python_files(base, root)
+    if paths:
+        subprocess.run([sys.executable, "-m", "ruff", "check", *paths], cwd=root, check=True)
+
+
+def check_changed_installer_types(base: str, root: Path = ROOT) -> None:
+    installer_roots = ("SecondBrain/install/", "SecondBrain/installer_update/")
+    paths = [path for path in changed_python_files(base, root) if path.startswith(installer_roots)]
+    if paths:
+        subprocess.run(
+            [sys.executable, "-m", "mypy", "--ignore-missing-imports", *paths],
+            cwd=root,
+            check=True,
+        )
+
+
+def check_changed_tests(base: str, root: Path = ROOT) -> None:
+    paths = [path for path in changed_python_files(base, root) if path.startswith("tests/")]
+    if paths:
+        subprocess.run([sys.executable, "-m", "pytest", "-q", *paths], cwd=root, check=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("gate", choices=("version", "tag", "secrets", "workflows"))
+    parser.add_argument(
+        "gate",
+        choices=("version", "tag", "secrets", "workflows", "lint-diff", "type-diff", "test-diff"),
+    )
     parser.add_argument("--tag", default="")
+    parser.add_argument("--base", default="")
     args = parser.parse_args(argv)
     try:
-        {"version": check_version_drift, "tag": lambda: check_tag(args.tag), "secrets": check_secrets, "workflows": check_workflows}[args.gate]()
+        {
+            "version": check_version_drift,
+            "tag": lambda: check_tag(args.tag),
+            "secrets": check_secrets,
+            "workflows": check_workflows,
+            "lint-diff": lambda: check_changed_python(args.base),
+            "type-diff": lambda: check_changed_installer_types(args.base),
+            "test-diff": lambda: check_changed_tests(args.base),
+        }[args.gate]()
     except (GateError, subprocess.CalledProcessError) as exc:
         print(f"CI gate failed: {exc}", file=sys.stderr)
         return 1
