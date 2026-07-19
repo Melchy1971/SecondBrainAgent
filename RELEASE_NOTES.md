@@ -8,6 +8,16 @@
 - Tokens, Nachrichten, Termine und Empfaengerinhalte bleiben aus dem Report ausgeschlossen.
 - Aktueller Status: `CONDITIONAL_PASS`, da keine E2E-Testkonten konfiguriert waren und reale Write-/Cleanup-Evidenz fehlt.
 
+# Release Notes v31.30 - Approval PostgreSQL Live Gate
+
+## v31.30
+
+- Opt-in-Live-Gate fuer das bestehende PostgreSQL-Review-/Approval-Repository.
+- Isolierte Tests fuer Lifecycle, Neustartpersistenz, Workspace-Isolation, Payload-Bindung, parallele Claims, Audit und Replay-Schutz.
+- Ausschliessliche Verwendung von `TEST_DATABASE_URL`; kein JSONL- oder SQLite-Fallback und keine produktiven Connector-Aktionen.
+- Redigierter Report unter `runtime/reports/approval_postgres_live_gate.json` mit garantiertem Testschema-Cleanup.
+- Aktueller Live-Status: `BLOCKED`, da keine `TEST_DATABASE_URL` konfiguriert ist.
+
 # Release Notes v30.77 - UI Path Override and Import Consolidation
 
 ## v30.77

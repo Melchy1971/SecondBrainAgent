@@ -133,6 +133,11 @@
       "status": "completed"
     },
     {
+      "release": "v31.30",
+      "capability": "Isoliertes PostgreSQL-Live-Gate fuer Approval-Lifecycle, Bindung, Workspace-Isolation, parallele Execution-Leases, Audit und Replay-Schutz",
+      "status": "implemented_live_evidence_blocked_without_test_database_url"
+    },
+    {
       "release": "v31.32",
       "capability": "Testkonto-gebundenes Connector-E2E-Gate fuer Gmail, Outlook und Kalender mit Read-Sync, Cursor-Persistenz und Approval-Pflicht",
       "status": "implemented_conditional_pass_without_test_accounts_or_write_evidence"
