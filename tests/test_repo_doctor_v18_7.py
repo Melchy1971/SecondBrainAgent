@@ -1,9 +1,47 @@
 from __future__ import annotations
 
+import json
+import subprocess
 from pathlib import Path
 
 from secondbrain.module_registry import ModuleRegistry
-from secondbrain.release.repo_doctor import run_repo_doctor
+from secondbrain.release.repo_doctor import _run_command, run_repo_doctor
+
+
+def test_failed_health_command_reports_affected_modules(monkeypatch, tmp_path: Path) -> None:
+    payload = {
+        "status": "degraded",
+        "runtime_health": {
+            "modules": [
+                {
+                    "key": "desktop",
+                    "status": "error",
+                    "critical": True,
+                    "error": "display unavailable",
+                },
+                {"key": "core", "status": "ok", "critical": True, "result": {"healthy": True}},
+            ]
+        },
+    }
+
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args[0], 1, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    check = _run_command(tmp_path, ("health",), 10)
+
+    assert check.details["health_status"] == "degraded"
+    assert check.details["failed_modules"] == [
+        {
+            "section": "runtime_health",
+            "key": "desktop",
+            "status": "error",
+            "critical": True,
+            "error": "display unavailable",
+            "result": None,
+        }
+    ]
 
 
 PYPROJECT = """[build-system]
