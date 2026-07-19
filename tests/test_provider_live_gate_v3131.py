@@ -14,6 +14,18 @@ def test_required_unconfigured_provider_blocks(tmp_path):
     assert report["status"] == BLOCKED and report["failed_providers"] == ["openai"]
 
 
+def test_required_provider_names_are_case_insensitive(tmp_path):
+    report = run_provider_live_gate(tmp_path, env={"REQUIRED_LIVE_PROVIDERS": " OpenAI "})
+    assert report["status"] == BLOCKED
+    assert report["required_providers"] == ["openai"]
+
+
+def test_unknown_required_provider_blocks(tmp_path):
+    report = run_provider_live_gate(tmp_path, env={"REQUIRED_LIVE_PROVIDERS": "typo"})
+    assert report["status"] == BLOCKED
+    assert report["failed_providers"] == ["typo"]
+
+
 def test_configured_providers_use_probe_without_secrets(tmp_path):
     def probe(config, _env):
         return {"name": config["name"], "readiness": "ready", "model": config["model"], "capabilities": {"chat": True},
@@ -30,6 +42,22 @@ def test_cost_limit_blocks_expensive_probe(tmp_path):
     report = run_provider_live_gate(tmp_path, env={"OPENAI_API_KEY": "x", "OPENAI_LIVE_MODEL": "m",
         "PROVIDER_LIVE_MAX_COST": "0.01"}, probe=probe)
     assert report["status"] == BLOCKED and report["providers"][0]["error_code"] == "cost_limit_exceeded"
+
+
+def test_invalid_probe_result_blocks(tmp_path):
+    def probe(config, _env):
+        return {"name": config["name"], "readiness": "unexpected"}
+
+    report = run_provider_live_gate(tmp_path, env={"OLLAMA_LIVE_MODEL": "local-test"}, probe=probe)
+    assert report["status"] == BLOCKED
+    assert report["providers"][1]["error_code"] == "invalid_probe_result"
+
+
+def test_invalid_numeric_setting_is_redacted_and_blocks(tmp_path):
+    report = run_provider_live_gate(tmp_path, env={"PROVIDER_LIVE_TIMEOUT_SECONDS": "secret-invalid"})
+    assert report["status"] == BLOCKED
+    assert report["configuration_error"] == "invalid_numeric_setting"
+    assert "secret-invalid" not in json.dumps(report)
 
 
 def test_strict_privacy_blocks_cloud_without_calling_probe(tmp_path):

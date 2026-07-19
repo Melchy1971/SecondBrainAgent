@@ -11,6 +11,8 @@ from typing import Any, Callable, Mapping
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/provider_live_gate.json")
+SUPPORTED_PROVIDERS = {"openai", "ollama"}
+VALID_READINESS = {"ready", "degraded", "blocked", "unavailable", "not_configured"}
 
 
 class TimeoutTransport:
@@ -25,6 +27,15 @@ class TimeoutTransport:
 def _safe_error(exc: BaseException) -> dict[str, Any]:
     return {"error_code": getattr(exc, "status_code", None) or type(exc).__name__,
             "retryable": bool(getattr(exc, "retryable", False)), "message": "provider request failed"}
+
+
+def _validated_probe_result(expected_name: str, result: Mapping[str, Any]) -> dict[str, Any]:
+    validated = dict(result)
+    if validated.get("name") != expected_name or validated.get("readiness") not in VALID_READINESS:
+        return {"name": expected_name, "readiness": "blocked", "model": "", "capabilities": {},
+                "timeout_seconds": None, "latency_ms": None, "usage": {}, "estimated_cost": 0.0,
+                "error_code": "invalid_probe_result", "retryable": False, "source": "unknown"}
+    return validated
 
 
 def _configs(env: Mapping[str, str]) -> list[dict[str, Any]]:
@@ -84,10 +95,17 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
                            probe: Callable[[Mapping[str, Any], Mapping[str, str]], dict[str, Any]] = probe_provider,
                            write_report: bool = True) -> dict[str, Any]:
     source = os.environ if env is None else env
-    required = {x.strip() for x in str(source.get("REQUIRED_LIVE_PROVIDERS") or "").split(",") if x.strip()}
-    max_cost = max(0.0, float(source.get("PROVIDER_LIVE_MAX_COST") or 0.05))
+    required = {x.strip().lower() for x in str(source.get("REQUIRED_LIVE_PROVIDERS") or "").split(",") if x.strip()}
+    unknown_required = sorted(required - SUPPORTED_PROVIDERS)
+    configuration_error = None
+    try:
+        configs = _configs(source)
+        max_cost = max(0.0, float(source.get("PROVIDER_LIVE_MAX_COST") or 0.05))
+    except (ValueError, OverflowError):
+        configs, max_cost = [], 0.0
+        configuration_error = "invalid_numeric_setting"
     providers: list[dict[str, Any]] = []
-    for config in _configs(source):
+    for config in configs:
         if not config["configured"]:
             providers.append({"name": config["name"], "readiness": "blocked" if config["name"] in required else "not_configured",
                 "model": config["model"], "capabilities": {}, "timeout_seconds": config["timeout"], "latency_ms": None,
@@ -99,7 +117,7 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
                 "estimated_cost": 0.0, "error_code": "privacy_mode_strict", "retryable": False, "source": "cloud"})
             continue
         try:
-            result = probe(config, source)
+            result = _validated_probe_result(config["name"], probe(config, source))
             if float(result.get("estimated_cost") or 0) > max_cost:
                 result.update(readiness="blocked", error_code="cost_limit_exceeded")
             providers.append(result)
@@ -108,12 +126,17 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
                 "capabilities": {}, "timeout_seconds": config["timeout"], "latency_ms": None, "usage": {},
                 "estimated_cost": 0.0, "source": config["source"], **_safe_error(exc)})
     critical = [p["name"] for p in providers if p["readiness"] in {"blocked", "unavailable"}]
+    critical.extend(unknown_required)
+    if configuration_error:
+        critical.append("configuration")
     degraded = [p["name"] for p in providers if p["readiness"] in {"degraded", "not_configured"}]
     status = BLOCKED if critical else (CONDITIONAL_PASS if degraded else PASS)
     report = {"schema": "secondbrain.provider_live_gate.v1", "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": status, "ok": status != BLOCKED, "providers": providers, "required_providers": sorted(required),
         "failed_providers": critical, "privacy": {"cloud_requires_explicit_configuration": True, "test_content": "synthetic_public_only"},
         "fallback": {"automatic": False, "policy": "explicit_provider_per_probe"}, "limits": {"max_cost": max_cost}}
+    if configuration_error:
+        report["configuration_error"] = configuration_error
     if write_report:
         target = Path(project_root).resolve() / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)
