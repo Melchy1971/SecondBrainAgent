@@ -125,9 +125,18 @@ def check_changed_installer_types(base: str, root: Path = ROOT) -> None:
         )
 
 
+def check_changed_tests(base: str, root: Path = ROOT) -> None:
+    paths = [path for path in changed_python_files(base, root) if path.startswith("tests/")]
+    if paths:
+        subprocess.run([sys.executable, "-m", "pytest", "-q", *paths], cwd=root, check=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("gate", choices=("version", "tag", "secrets", "workflows", "lint-diff", "type-diff"))
+    parser.add_argument(
+        "gate",
+        choices=("version", "tag", "secrets", "workflows", "lint-diff", "type-diff", "test-diff"),
+    )
     parser.add_argument("--tag", default="")
     parser.add_argument("--base", default="")
     args = parser.parse_args(argv)
@@ -139,6 +148,7 @@ def main(argv: list[str] | None = None) -> int:
             "workflows": check_workflows,
             "lint-diff": lambda: check_changed_python(args.base),
             "type-diff": lambda: check_changed_installer_types(args.base),
+            "test-diff": lambda: check_changed_tests(args.base),
         }[args.gate]()
     except (GateError, subprocess.CalledProcessError) as exc:
         print(f"CI gate failed: {exc}", file=sys.stderr)
