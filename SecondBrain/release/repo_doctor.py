@@ -17,11 +17,11 @@ REQUIRED_PATHS: tuple[str, ...] = (
     "requirements-dev.txt",
     "requirements-runtime.txt",
     "README.md",
-    "secondbrain/module_registry.py",
-    "secondbrain/launcher_runtime_v126.py",
-    "secondbrain/p0_runtime.py",
-    "secondbrain/p1_rag_runtime.py",
-    "secondbrain/release/dependency_inventory.py",
+    "SecondBrain/module_registry.py",
+    "SecondBrain/launcher_runtime_v126.py",
+    "SecondBrain/p0_runtime.py",
+    "SecondBrain/p1_rag_runtime.py",
+    "SecondBrain/release/dependency_inventory.py",
     "docs/RELEASE_WORKFLOW_v18_9.md",
 )
 
