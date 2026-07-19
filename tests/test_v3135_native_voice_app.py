@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from secondbrain.desktop_native.action_registry import ActionDefinition, ActionRegistry, build_core_registry
+from secondbrain.desktop_native.action_registry import ActionDefinition, build_core_registry
 from secondbrain.desktop_native.native_voice_app_gate import run_native_voice_app_gate
 from secondbrain.desktop_native.qt_shell import VIEWS, capabilities
 from secondbrain.desktop_native.voice_runtime import VoiceSession, VoiceState

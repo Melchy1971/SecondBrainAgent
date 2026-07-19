@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 from secondbrain.module_registry import ModuleRegistry
-from secondbrain.release.repo_doctor import _run_command, run_repo_doctor
+from secondbrain.release.repo_doctor import REQUIRED_PATHS, _run_command, run_repo_doctor
 
 
 def test_failed_health_command_reports_affected_modules(monkeypatch, tmp_path: Path) -> None:
