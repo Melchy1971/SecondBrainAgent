@@ -168,7 +168,7 @@ def test_repo_doctor_blocks_local_config_paths(tmp_path: Path) -> None:
 
 def test_repo_doctor_reports_pycache_outside_virtualenv_as_diagnostic(tmp_path: Path) -> None:
     _write_minimal_project(tmp_path)
-    cache = tmp_path / "secondbrain" / "__pycache__"
+    cache = tmp_path / "SecondBrain" / "__pycache__"
     cache.mkdir()
     (cache / "module.cpython-313.pyc").write_bytes(b"cache")
 
