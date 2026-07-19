@@ -9,12 +9,18 @@ from typing import Any, Callable, Mapping
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/connector_e2e_gate.json")
+SUPPORTED_CONNECTORS = {"google", "microsoft"}
+VALID_CONNECTOR_STATUSES = {"approval_required", "blocked", "not_configured", "passed"}
+
+
+def _enabled(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes"}
 
 
 def _configured(env: Mapping[str, str]) -> list[dict[str, Any]]:
     return [
-        {"name": "google", "configured": all(env.get(k) for k in ("GOOGLE_E2E_TEST_ACCOUNT", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_E2E_TOKEN_STORE"))},
-        {"name": "microsoft", "configured": all(env.get(k) for k in ("M365_E2E_TEST_ACCOUNT", "M365_CLIENT_ID", "M365_E2E_TOKEN_STORE"))},
+        {"name": "google", "configured": _enabled(env.get("GOOGLE_E2E_TEST_ACCOUNT")) and all(env.get(k) for k in ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_E2E_TOKEN_STORE"))},
+        {"name": "microsoft", "configured": _enabled(env.get("M365_E2E_TEST_ACCOUNT")) and all(env.get(k) for k in ("M365_CLIENT_ID", "M365_E2E_TOKEN_STORE"))},
     ]
 
 
@@ -38,6 +44,20 @@ def _approval_staged(runtime: Any, provider: str) -> dict[str, bool]:
     except ApprovalRequired:
         staged["calendar"] = True
     return staged
+
+
+def _evidence_complete(reads_ok: bool, incremental_ok: bool, cursor_present: bool,
+                       staged: Mapping[str, bool]) -> bool:
+    return reads_ok and incremental_ok and cursor_present and all(staged.values())
+
+
+def _validated_probe_result(expected_name: str, result: Mapping[str, Any]) -> dict[str, Any]:
+    validated = dict(result)
+    if validated.get("name") != expected_name or validated.get("status") not in VALID_CONNECTOR_STATUSES:
+        return {"name": expected_name, "status": "blocked", "account": "dedicated_test_account",
+                "external_writes": 0, "error": {"type": "InvalidProbeResult",
+                                                 "message": "connector probe returned invalid evidence"}}
+    return validated
 
 
 def probe_connector(config: Mapping[str, Any], env: Mapping[str, str], root: Path) -> dict[str, Any]:
@@ -70,9 +90,10 @@ def probe_connector(config: Mapping[str, Any], env: Mapping[str, str], root: Pat
     first_results, second_results = first.get("results", {}), second.get("results", {})
     reads_ok = all(first_results.get(resource, {}).get("status") == "success" for resource in resources)
     incremental_ok = all(second_results.get(resource, {}).get("status") == "success" for resource in resources)
-    return {"name": name, "status": "approval_required" if reads_ok and incremental_ok and all(staged.values()) else "blocked",
+    cursor_present = any(after.get("cursors", {}).values())
+    return {"name": name, "status": "approval_required" if _evidence_complete(reads_ok, incremental_ok, cursor_present, staged) else "blocked",
         "account": "dedicated_test_account", "resources": resources, "read_sync": reads_ok, "incremental_sync": incremental_ok,
-        "cursor_present": any(after.get("cursors", {}).values()), "token_refresh": "exercised_by_authenticator_if_expired",
+        "cursor_present": cursor_present, "token_refresh": "exercised_by_authenticator_if_expired",
         "write_approval": staged, "external_writes": 0, "cleanup": "not_required_no_external_writes",
         "cursor_changed": before.get("cursors") != after.get("cursors")}
 
@@ -82,7 +103,8 @@ def run_connector_e2e_gate(project_root: str | Path = ".", *, env: Mapping[str, 
                            write_report: bool = True) -> dict[str, Any]:
     source = os.environ if env is None else env
     root = Path(project_root).resolve()
-    required = {x.strip() for x in str(source.get("REQUIRED_E2E_CONNECTORS") or "").split(",") if x.strip()}
+    required = {x.strip().lower() for x in str(source.get("REQUIRED_E2E_CONNECTORS") or "").split(",") if x.strip()}
+    unknown_required = sorted(required - SUPPORTED_CONNECTORS)
     connectors: list[dict[str, Any]] = []
     for config in _configured(source):
         if not config["configured"]:
@@ -90,11 +112,12 @@ def run_connector_e2e_gate(project_root: str | Path = ".", *, env: Mapping[str, 
                                "account": "not_configured", "external_writes": 0})
             continue
         try:
-            connectors.append(probe(config, source, root))
+            connectors.append(_validated_probe_result(config["name"], probe(config, source, root)))
         except Exception as exc:
             connectors.append({"name": config["name"], "status": "blocked", "account": "dedicated_test_account",
                                "external_writes": 0, "error": _safe_error(exc)})
     failed = [c["name"] for c in connectors if c["status"] == "blocked"]
+    failed.extend(unknown_required)
     pending = [c["name"] for c in connectors if c["status"] in {"not_configured", "approval_required"}]
     status = BLOCKED if failed else (CONDITIONAL_PASS if pending else PASS)
     report = {"schema": "secondbrain.connector_e2e_gate.v1", "generated_at": datetime.now(timezone.utc).isoformat(),

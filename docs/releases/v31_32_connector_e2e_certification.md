@@ -47,5 +47,10 @@ Mit `REQUIRED_E2E_CONNECTORS=google,microsoft` können Pflichtconnectoren
 festgelegt werden. Fehlende Pflichtkonfiguration, Sync-Fehler oder ein
 Approval-Bypass führen zu `BLOCKED`.
 
+Die Testkonto-Markierungen müssen explizit mit `1`, `true` oder `yes` aktiviert
+werden. Unbekannte Namen in `REQUIRED_E2E_CONNECTORS` sowie ungültige
+Probe-Ergebnisse blockieren das Gate ebenfalls, damit Konfigurationsfehler nicht
+zu einer versehentlichen Freigabe führen.
+
 Der redigierte Report liegt unter `runtime/reports/connector_e2e_gate.json` und
 enthält keine Tokens, Nachrichten, Termine oder Empfängerinhalte.
