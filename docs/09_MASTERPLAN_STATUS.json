@@ -133,9 +133,9 @@
       "status": "completed"
     },
     {
-      "release": "v31.30",
-      "capability": "Isoliertes PostgreSQL-Live-Gate fuer Approval-Lifecycle, Bindung, Workspace-Isolation, parallele Execution-Leases, Audit und Replay-Schutz",
-      "status": "implemented_live_evidence_blocked_without_test_database_url"
+      "release": "v31.31",
+      "capability": "Opt-in Provider-Live-Gate fuer OpenAI und Ollama mit Chat, strukturiertem JSON, Embeddings, Privacy-, Timeout- und Kostenkontrollen",
+      "status": "implemented_conditional_pass_without_configured_live_provider"
     },
     {
       "release": "v31.32",

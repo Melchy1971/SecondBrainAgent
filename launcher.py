@@ -190,18 +190,16 @@ def _connector_e2e_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
-def _approval_postgres_live_gate_main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(prog="secondbrain", description="PostgreSQL approval live certification")
+def _provider_live_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="secondbrain", description="Opt-in AI provider live gate")
     parser.add_argument("cmd")
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
     parser.add_argument("--no-write-report", action="store_true")
     args, _ = parser.parse_known_args(argv)
-    from secondbrain.release.approval_postgres_live_gate import BLOCKED, run_approval_postgres_live_gate
-
-    report = run_approval_postgres_live_gate(
-        args.project_root_option or args.project_root, write_report=not args.no_write_report,
-    )
+    from secondbrain.release.provider_live_gate import BLOCKED, run_provider_live_gate
+    report = run_provider_live_gate(args.project_root_option or args.project_root,
+                                    write_report=not args.no_write_report)
     out(report)
     return 2 if report["status"] == BLOCKED else 0
 
@@ -957,8 +955,8 @@ def main(argv: list[str] | None = None) -> int:
         return _review_approval_release_gate_main(raw)
     if cmd == "connector-e2e-gate":
         return _connector_e2e_gate_main(raw)
-    if cmd == "approval-postgres-live-gate":
-        return _approval_postgres_live_gate_main(raw)
+    if cmd == "provider-live-gate":
+        return _provider_live_gate_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
     if cmd == "backup-gate":
