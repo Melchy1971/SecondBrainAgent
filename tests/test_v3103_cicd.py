@@ -124,6 +124,7 @@ def test_pr_does_not_package_and_main_has_supported_matrix():
     assert "ci_gate.py lint-diff" in pull_request
     assert "ci_gate.py type-diff" in pull_request
     assert "ci_gate.py test-diff" in pull_request
+    assert "pip-audit --strict -r requirements-runtime.txt -r requirements-security.txt" in pull_request
     assert "ruff check SecondBrain scripts tests" not in pull_request
     assert "mypy --ignore-missing-imports SecondBrain/install" not in pull_request
     assert 'pytest -q -m "not integration and not live and not slow" tests' not in pull_request

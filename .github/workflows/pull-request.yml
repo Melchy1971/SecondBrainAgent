@@ -46,6 +46,6 @@ jobs:
       - name: Secret and dependency scan
         run: |
           python scripts/ci_gate.py secrets
-          pip-audit --strict
+          pip-audit --strict -r requirements-runtime.txt -r requirements-security.txt
       - name: Security gate
         run: python scripts/run_hardening_tests.py
