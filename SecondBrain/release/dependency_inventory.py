@@ -117,7 +117,7 @@ def _site_package_paths() -> set[str]:
 
 def _iter_python_files(root: Path) -> Iterable[Path]:
     for path in sorted(root.rglob("*.py")):
-        if any(part in IGNORE_DIR_NAMES for part in path.parts):
+        if any(part in IGNORE_DIR_NAMES for part in path.relative_to(root).parts):
             continue
         yield path
 
