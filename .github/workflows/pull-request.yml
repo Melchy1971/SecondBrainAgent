@@ -38,7 +38,7 @@ jobs:
       - name: Lint and type check
         run: |
           python scripts/ci_gate.py lint-diff --base "${{ github.event.pull_request.base.sha }}"
-          mypy --ignore-missing-imports SecondBrain/install SecondBrain/installer_update
+          python scripts/ci_gate.py type-diff --base "${{ github.event.pull_request.base.sha }}"
       - name: Unit and relevant integration tests
         run: |
           pytest -q -m "not integration and not live and not slow" tests

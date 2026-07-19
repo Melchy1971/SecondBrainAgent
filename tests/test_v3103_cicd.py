@@ -5,7 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from scripts.ci_gate import GateError, changed_python_files, check_secrets, check_tag, check_workflows
+from scripts.ci_gate import (
+    GateError,
+    changed_python_files,
+    check_changed_installer_types,
+    check_secrets,
+    check_tag,
+    check_workflows,
+)
 
 
 WORKFLOWS = {
@@ -71,6 +78,16 @@ def test_changed_python_files_excludes_untouched_baseline_debt(tmp_path: Path):
     assert changed_python_files(base, root) == ["scripts/changed.py"]
 
 
+def test_installer_type_check_ignores_unchanged_baseline(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("scripts.ci_gate.changed_python_files", lambda base, root: ["scripts/changed.py"])
+    calls = []
+    monkeypatch.setattr("scripts.ci_gate.subprocess.run", lambda *args, **kwargs: calls.append(args))
+
+    check_changed_installer_types("base", tmp_path)
+
+    assert calls == []
+
+
 def test_release_requires_signed_tag_gate_environment_and_payloads():
     root = Path(__file__).resolve().parents[1]
     release = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
@@ -90,6 +107,8 @@ def test_pr_does_not_package_and_main_has_supported_matrix():
     assert "build.ps1" not in pull_request and "PyInstaller" not in pull_request
     assert "fetch-depth: 0" in pull_request
     assert "ci_gate.py lint-diff" in pull_request
+    assert "ci_gate.py type-diff" in pull_request
     assert "ruff check SecondBrain scripts tests" not in pull_request
+    assert "mypy --ignore-missing-imports SecondBrain/install" not in pull_request
     assert "ubuntu-24.04" in main and "windows-2025" in main
     assert '["3.12", "3.13"]' in main
