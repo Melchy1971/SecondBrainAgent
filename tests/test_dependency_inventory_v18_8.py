@@ -65,6 +65,17 @@ def test_dependency_inventory_ignores_worktrees_and_backups(tmp_path: Path) -> N
     assert "unavailable_private_module" not in report.external
 
 
+def test_dependency_inventory_scans_project_inside_ignored_parent(tmp_path: Path) -> None:
+    project = tmp_path / ".worktrees" / "feature"
+    project.mkdir(parents=True)
+    (project / "app.py").write_text("import openai\n", encoding="utf-8")
+
+    report = build_dependency_inventory(project)
+
+    assert report.scanned_files == 1
+    assert report.optional_provider == ["openai"]
+
+
 def test_render_requirements_applies_aliases() -> None:
     assert render_requirements(["yaml", "PIL"]) == ["Pillow", "PyYAML"]
 
