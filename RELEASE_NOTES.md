@@ -8,6 +8,16 @@
 - Tokens, Nachrichten, Termine und Empfaengerinhalte bleiben aus dem Report ausgeschlossen.
 - Aktueller Status: `CONDITIONAL_PASS`, da keine E2E-Testkonten konfiguriert waren und reale Write-/Cleanup-Evidenz fehlt.
 
+# Release Notes v31.31 - Provider Live Gate
+
+## v31.31
+
+- Opt-in-Live-Gate fuer OpenAI und Ollama mit Chat-, JSON- und Embedding-Smokes.
+- Einheitlicher Report fuer Readiness, Modell, Capabilities, Timeout, Latenz, Usage, Kosten und redigierte Fehler.
+- Optionale nicht konfigurierte Provider liefern `CONDITIONAL_PASS`; Pflichtprovider sind konfigurierbar.
+- Strict Privacy blockiert Cloud-Aufrufe vor dem Netzwerkzugriff; kein stiller Providerwechsel und kein automatischer Modelldownload.
+- Aktueller Status: `CONDITIONAL_PASS`, da kein Provider fuer den Live-Lauf konfiguriert war.
+
 # Release Notes v30.77 - UI Path Override and Import Consolidation
 
 ## v30.77
