@@ -21,6 +21,12 @@ from secondbrain.desktop_native.job_surface import JobSurface
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
 from secondbrain.desktop_native.navigation import VIEWS, display_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
+from secondbrain.desktop_native.runtime_info import (
+    calendar_month,
+    release_blocker_count,
+    runtime_log_level,
+    topbar_status_labels,
+)
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.storage_alerts import read_vector_validation, storage_alert_labels
 from secondbrain.desktop_native.system_metrics import (
@@ -115,6 +121,7 @@ class JarvisNativeApp(tk.Tk):
         self.clock_time = tk.StringVar(value="")
         self.clock_day = tk.StringVar(value="")
         self.clock_date = tk.StringVar(value="")
+        self.clock_month = tk.StringVar(value="")
         self.weather_place = tk.StringVar(value="Weather")
         self.weather_temperature = tk.StringVar(value="Loading")
         self.weather_detail = tk.StringVar(value="")
@@ -124,6 +131,7 @@ class JarvisNativeApp(tk.Tk):
         self.system_metrics_sampler = SystemMetricsSampler()
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
+        self.pill_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
         self.geometry(str(restored.get("geometry") or "1500x900"))
         self.minsize(1180, 720)
@@ -336,9 +344,14 @@ class JarvisNativeApp(tk.Tk):
 
         self._pill(top, "SYSTEM HEALTH", self.status_var, accent=HUD["good"])
         self._pill(top, "VOICE", self.voice_state_var, accent=HUD["cyan"])
-        self._pill(top, "RELEASE GATE", tk.StringVar(value="BLOCKING 0"), accent=HUD["good"])
-        self._pill(top, "EMBEDDING", tk.StringVar(value="-"))
-        self._pill(top, "POSTGRESQL", tk.StringVar(value="-"))
+        for key, value, accent in [
+            ("RELEASE GATE", "Unknown", HUD["good"]),
+            ("EMBEDDING", "Unknown", None),
+            ("POSTGRESQL", "Unknown", None),
+        ]:
+            var = tk.StringVar(value=value)
+            self.pill_vars[key] = var
+            self._pill(top, key, var, accent=accent)
 
         user = tk.Frame(top, bg=HUD["bg2"])
         user.pack(side="right", padx=16)
@@ -380,7 +393,10 @@ class JarvisNativeApp(tk.Tk):
         clock = self._panel(parent, row=0, column=0, sticky="ew", pady=(0, 16))
         self._section_title(clock, "Chronometer", "HUD Online")
         self._label(clock, textvariable=self.clock_day, fg=HUD["cyan"], font=("Segoe UI", 11, "bold"), anchor="center", fill="x")
-        self._label(clock, "Juni 26", fg=HUD["cyan_soft"], font=("Segoe UI", 10), anchor="center", fill="x")
+        self._label(
+            clock, textvariable=self.clock_month, fg=HUD["cyan_soft"],
+            font=("Segoe UI", 10), anchor="center", fill="x",
+        )
         self._label(clock, textvariable=self.clock_time, fg=HUD["text"], font=("Segoe UI Light", 34), anchor="center", fill="x")
         self._label(clock, textvariable=self.clock_date, fg=HUD["cyan_dim"], font=("Segoe UI", 9), anchor="center", fill="x", pady=(0, 12))
 
@@ -637,6 +653,7 @@ class JarvisNativeApp(tk.Tk):
         self.clock_day.set(days[now.weekday()])
         self.clock_time.set(now.strftime("%H:%M:%S"))
         self.clock_date.set(now.strftime("%d.%m.%Y"))
+        self.clock_month.set(calendar_month(now))
         self.after(1000, self._tick_clock)
 
     def _speak_status_only(self, text: str) -> None:
@@ -713,7 +730,16 @@ class JarvisNativeApp(tk.Tk):
         self.info_vars.get("Embedding", tk.StringVar()).set(health.get("embedding", "Unknown"))
         self.info_vars.get("Ollama", tk.StringVar()).set(health.get("ollama", "Unknown"))
         self.info_vars.get("Memory Engine", tk.StringVar()).set(_fmt_status(payload.get("bootstrap", {}).get("ok")))
-        self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{len(payload.get('blockers', []))} Blocker")
+        self.info_vars.get("Log Level", tk.StringVar()).set(runtime_log_level())
+        blockers = release_blocker_count(payload)
+        topbar = topbar_status_labels(health, blocker_count=blockers)
+        for key, value in {
+            "RELEASE GATE": topbar["release_gate"],
+            "EMBEDDING": topbar["embedding"],
+            "POSTGRESQL": topbar["postgresql"],
+        }.items():
+            self.pill_vars.get(key, tk.StringVar()).set(value)
+        self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{blockers} Blocker")
         pending = self.approval_surface.snapshot()["pending_count"]
         self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
         jobs = self.job_surface.snapshot()
