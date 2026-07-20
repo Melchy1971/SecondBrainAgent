@@ -19,6 +19,7 @@ def runtime_diagnostics(
     tray_running: bool,
     approvals: Mapping[str, Any],
     jobs: Mapping[str, Any],
+    approval_config: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     stt = voice.get("stt_policy") or {}
     microphone = (voice.get("microphone") or {}).get("inventory") or {}
@@ -54,7 +55,12 @@ def runtime_diagnostics(
             "raw_keys_recorded": bool(hotkey.get("raw_keys_recorded")),
         },
         "tray": {"running": bool(tray_running)},
-        "approvals": {"pending_count": int(approvals.get("pending_count", 0))},
+        "approvals": {
+            "pending_count": int(approvals.get("pending_count", 0)),
+            "notifications_enabled": bool((approval_config or {}).get("notifications_enabled", True)),
+            "overdue_minutes": int((approval_config or {}).get("overdue_minutes", 15)),
+            "refresh_seconds": int((approval_config or {}).get("refresh_seconds", 2)),
+        },
         "jobs": {
             "running_count": int(jobs.get("running_count", 0)),
             "blocked_count": int(jobs.get("blocked_count", 0)),

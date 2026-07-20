@@ -19,6 +19,7 @@ def _snapshot(**voice_overrides):
         tray_running=True,
         approvals={"pending_count": 2},
         jobs={"running_count": 1, "blocked_count": 3},
+        approval_config={"notifications_enabled": False, "overdue_minutes": 30, "refresh_seconds": 5},
     )
 
 
@@ -26,7 +27,30 @@ def test_ready_runtime_exposes_only_operational_summary():
     snapshot = _snapshot()
     assert snapshot["status"] == "ready"
     assert snapshot["components"]["jobs"] == {"running_count": 1, "blocked_count": 3}
-    assert snapshot["components"]["approvals"] == {"pending_count": 2}
+    assert snapshot["components"]["approvals"] == {
+        "pending_count": 2,
+        "notifications_enabled": False,
+        "overdue_minutes": 30,
+        "refresh_seconds": 5,
+    }
+
+
+def test_approval_diagnostics_use_safe_defaults_without_config():
+    snapshot = runtime_diagnostics(
+        voice={},
+        voice_state="IDLE",
+        wake={},
+        hotkey={},
+        tray_running=False,
+        approvals={},
+        jobs={},
+    )
+    assert snapshot["components"]["approvals"] == {
+        "pending_count": 0,
+        "notifications_enabled": True,
+        "overdue_minutes": 15,
+        "refresh_seconds": 2,
+    }
 
 
 def test_missing_microphone_or_stt_reports_degraded_without_blocking():

@@ -752,6 +752,11 @@ class JarvisNativeApp(tk.Tk):
             tray_running=self.tray.running,
             approvals=safe_status(self.approval_surface.snapshot),
             jobs=safe_status(self.job_surface.snapshot),
+            approval_config={
+                "notifications_enabled": self.approval_notifications_enabled,
+                "overdue_minutes": int(self.approval_overdue_after.total_seconds() // 60),
+                "refresh_seconds": self.approval_refresh_interval_ms // 1000,
+            },
         )
 
     def refresh_status(self) -> None:
