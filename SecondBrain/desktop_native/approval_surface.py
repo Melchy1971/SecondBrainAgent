@@ -31,18 +31,37 @@ def overdue_approval_notification(previous: int | None, current: int) -> str | N
     return f"{added} {noun} jetzt überfällig."
 
 
+def elevated_approval_notification(previous: int | None, current: int) -> str | None:
+    current = max(0, int(current))
+    if previous is None:
+        return None
+    added = current - max(0, int(previous))
+    if added <= 0:
+        return None
+    noun = "Freigabe hat" if added == 1 else "Freigaben haben"
+    return f"{added} neue {noun} erhöhtes Risiko."
+
+
 def approval_attention_notification(
     previous_pending: int | None,
     current_pending: int,
+    previous_elevated: int | None,
+    current_elevated: int,
     previous_overdue: int | None,
     current_overdue: int,
 ) -> tuple[str, str] | None:
     pending = approval_notification(previous_pending, current_pending)
+    elevated = elevated_approval_notification(previous_elevated, current_elevated)
     overdue = overdue_approval_notification(previous_overdue, current_overdue)
-    messages = [message for message in (pending, overdue) if message is not None]
+    messages = [message for message in (pending, elevated, overdue) if message is not None]
     if not messages:
         return None
-    title = "Jarvis: überfällige Freigaben" if overdue and not pending else "Jarvis Freigaben"
+    if elevated:
+        title = "Jarvis: erhöhte Freigaben"
+    elif overdue and not pending:
+        title = "Jarvis: überfällige Freigaben"
+    else:
+        title = "Jarvis Freigaben"
     return title, " ".join(messages)
 
 
