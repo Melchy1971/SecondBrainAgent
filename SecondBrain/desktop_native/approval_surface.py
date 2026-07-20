@@ -20,6 +20,17 @@ def approval_notification(previous: int | None, current: int) -> str | None:
     return f"{added} neue {noun} auf Entscheidung."
 
 
+def overdue_approval_notification(previous: int | None, current: int) -> str | None:
+    current = max(0, int(current))
+    if previous is None:
+        return None
+    added = current - max(0, int(previous))
+    if added <= 0:
+        return None
+    noun = "Freigabe ist" if added == 1 else "Freigaben sind"
+    return f"{added} {noun} jetzt überfällig."
+
+
 def _created_at(value: Any) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
