@@ -1,7 +1,9 @@
 from types import SimpleNamespace
 
 from secondbrain.desktop_native.system_metrics import (
+    SystemMetricsSampler,
     format_bytes,
+    format_kbps,
     format_percent,
     format_uptime,
     read_system_metrics,
@@ -60,3 +62,40 @@ def test_metric_formatters_are_explicit() -> None:
     assert format_bytes(None) == "Unavailable"
     assert format_uptime(90061) == "1d 1h 1min"
     assert format_uptime(None) == "Unavailable"
+    assert format_kbps(12.34) == "12.3 KB/s"
+    assert format_kbps(None) == "Unavailable"
+
+
+def test_network_sampler_calculates_rates_between_snapshots(tmp_path) -> None:
+    source = MetricsSource()
+    counters = iter(
+        [
+            SimpleNamespace(bytes_sent=1024, bytes_recv=2048),
+            SimpleNamespace(bytes_sent=3072, bytes_recv=6144),
+        ]
+    )
+    source.net_io_counters = lambda: next(counters)
+    ticks = iter([10.0, 12.0])
+    sampler = SystemMetricsSampler(source=source, clock=lambda: next(ticks))
+
+    first = sampler.read(tmp_path)
+    second = sampler.read(tmp_path)
+
+    assert first["net_up_kbps"] == 0.0
+    assert first["net_down_kbps"] == 0.0
+    assert second["net_up_kbps"] == 1.0
+    assert second["net_down_kbps"] == 2.0
+
+
+def test_network_sampler_handles_counter_reset_and_failure(tmp_path) -> None:
+    source = MetricsSource()
+    source.net_io_counters = lambda: SimpleNamespace(bytes_sent=1, bytes_recv=1)
+    ticks = iter([10.0, 11.0])
+    sampler = SystemMetricsSampler(source=source, clock=lambda: next(ticks))
+    sampler.read(tmp_path)
+    result = sampler.read(tmp_path)
+    assert result["net_up_kbps"] == 0.0
+    assert result["net_down_kbps"] == 0.0
+
+    source.net_io_counters = lambda: (_ for _ in ()).throw(OSError("unavailable"))
+    assert sampler.read(tmp_path)["network_available"] is False
