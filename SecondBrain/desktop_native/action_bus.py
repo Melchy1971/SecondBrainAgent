@@ -8,7 +8,7 @@ from secondbrain.native.chat import ChatEngine
 from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.p1_vector_provider_guard import repair_vector_index
 
-from .action_registry import ActionRegistry, build_core_registry
+from .action_registry import ActionDefinition, ActionRegistry, build_core_registry
 from .voice_de import parse_german_voice_command
 from .voice_runtime import VoiceSession
 
@@ -25,13 +25,11 @@ class NativeActionBus:
         self.approvals = NativeApprovalQueue(self.project_root)
 
     def submit(self, utterance: str, parameters: Mapping[str, Any] | None = None) -> dict[str, Any]:
-        exact = self.registry.resolve_alias(utterance)
-        if exact is not None:
-            result = self.voice.dispatch(exact.id, parameters)
+        if self.voice.dialog and self.voice.dialog.missing_parameters:
+            result = self.voice.provide_slots(parameters) if parameters else self.voice.continue_dialog(utterance)
         else:
-            command = parse_german_voice_command(utterance)
-            mapped = self._map_legacy_command(command.intent, command.args)
-            result = self.voice.dispatch(*mapped) if mapped else self.voice.understand(utterance, parameters)
+            exact = self.registry.resolve_alias(utterance)
+            result = self._submit_new(utterance, parameters, exact)
         if result.get("status") == "approval_required" and self.voice.dialog:
             dialog = self.voice.dialog
             approval = self.approvals.create(
@@ -48,6 +46,20 @@ class NativeActionBus:
                 tool_idempotent=False,
             )
             result = {**result, "approval_id": approval["approval_id"]}
+        return result
+
+    def _submit_new(
+        self,
+        utterance: str,
+        parameters: Mapping[str, Any] | None,
+        exact: ActionDefinition | None,
+    ) -> dict[str, Any]:
+        if exact is not None:
+            result = self.voice.dispatch(exact.id, parameters)
+        else:
+            command = parse_german_voice_command(utterance)
+            mapped = self._map_legacy_command(command.intent, command.args)
+            result = self.voice.dispatch(*mapped) if mapped else self.voice.understand(utterance, parameters)
         return result
 
     @staticmethod
