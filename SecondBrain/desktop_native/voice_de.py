@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .stt import LocalSttPolicy
+from .tts import LocalTtsRuntime
 
 
 @dataclass(frozen=True)
@@ -77,13 +78,14 @@ class GermanVoiceController:
     typed German commands and exposes clear readiness diagnostics.
     """
 
-    def __init__(self, project_root: str | Path | None = None, *, speaker: Callable[[str], None] | None = None, stt_policy: LocalSttPolicy | None = None):
+    def __init__(self, project_root: str | Path | None = None, *, speaker: Callable[[str], None] | None = None, stt_policy: LocalSttPolicy | None = None, tts_runtime: LocalTtsRuntime | None = None):
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.speaker = speaker
         self.language = os.environ.get("SECONDBRAIN_VOICE_LANGUAGE", "de-DE")
         self._listening = False
         self._thread: threading.Thread | None = None
         self.stt_policy = stt_policy or LocalSttPolicy()
+        self.tts_runtime = tts_runtime or LocalTtsRuntime()
 
     def status(self) -> dict[str, Any]:
         modules: dict[str, bool] = {}
@@ -118,24 +120,13 @@ class GermanVoiceController:
     def parse(self, text: str) -> dict[str, Any]:
         return parse_german_voice_command(text).to_dict()
 
-    def speak(self, text: str) -> dict[str, Any]:
+    def speak(self, text: str, *, sensitive: bool = False, allow_sensitive: bool = False) -> dict[str, Any]:
         if self.speaker:
+            if sensitive and not allow_sensitive:
+                return {"ok": False, "status": "sensitive_blocked", "engine": "none"}
             self.speaker(text)
             return {"ok": True, "engine": "callback"}
-        try:
-            import pyttsx3
-            engine = pyttsx3.init()
-            # Keep engine selection deterministic. German voice is used when installed.
-            for voice in engine.getProperty("voices") or []:
-                blob = " ".join(str(getattr(voice, attr, "")) for attr in ("id", "name", "languages")).lower()
-                if "german" in blob or "de_" in blob or "de-de" in blob:
-                    engine.setProperty("voice", voice.id)
-                    break
-            engine.say(text)
-            engine.runAndWait()
-            return {"ok": True, "engine": "pyttsx3"}
-        except Exception as exc:
-            return {"ok": False, "engine": "none", "error": str(exc)}
+        return self.tts_runtime.speak(text, sensitive=sensitive, allow_sensitive=allow_sensitive)
 
     def listen_once(self, timeout: int = 5, phrase_time_limit: int = 8) -> dict[str, Any]:
         try:

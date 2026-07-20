@@ -13,6 +13,7 @@ from typing import Any
 
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.action_bus import NativeActionBus
+from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
@@ -65,8 +66,11 @@ class JarvisNativeApp(tk.Tk):
     def __init__(self, project_root: str | Path | None = None):
         super().__init__()
         self.project_root = Path(project_root or Path.cwd()).resolve()
-        self.voice = GermanVoiceController(self.project_root, speaker=self._speak_status_only)
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
+        self.voice = GermanVoiceController(
+            self.project_root,
+            tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
+        )
         self.queue: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
