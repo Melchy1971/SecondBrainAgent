@@ -105,7 +105,7 @@ class DesktopAppRuntime:
     def tasks(self):
         return self.store.load("tasks", [])
 
-    def complete_task(self, reference):
+    def _resolve_task(self, reference):
         value = str(reference or "").strip()
         if not value:
             raise ValueError("task reference must not be empty")
@@ -120,11 +120,31 @@ class DesktopAppRuntime:
             raise LookupError("task not found")
         if len(matches) > 1:
             raise ValueError("task reference is ambiguous")
-        task = matches[0]
+        return tasks, matches[0]
+
+    def complete_task(self, reference):
+        tasks, task = self._resolve_task(reference)
         if task.get("column") == "done":
             return task
         task["column"] = "done"
         task["completed_at"] = datetime.now(timezone.utc).isoformat()
+        self.store.save("tasks", tasks)
+        return task
+
+    def rename_task(self, reference, title):
+        raw_title = str(title or "")
+        if any(not character.isprintable() and not character.isspace() for character in raw_title):
+            raise ValueError("task title must not contain control characters")
+        new_title = " ".join(raw_title.split())
+        if not new_title:
+            raise ValueError("task title must not be empty")
+        if len(new_title) > 200:
+            raise ValueError("task title must not exceed 200 characters")
+        tasks, task = self._resolve_task(reference)
+        if task.get("title") == new_title:
+            return task
+        task["title"] = new_title
+        task["updated_at"] = datetime.now(timezone.utc).isoformat()
         self.store.save("tasks", tasks)
         return task
 

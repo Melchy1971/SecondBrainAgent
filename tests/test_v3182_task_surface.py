@@ -56,6 +56,7 @@ def test_task_view_text_is_human_readable(tmp_path):
     assert "[ ] Review · high" in rendered
     assert task["id"] in rendered
     assert "Aufgabe abschließen" in rendered
+    assert "Aufgabe umbenennen" in rendered
 
 
 def test_native_shell_routes_tasks_to_surface_and_refreshes_after_writes():

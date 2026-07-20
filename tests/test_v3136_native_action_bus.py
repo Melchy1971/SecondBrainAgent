@@ -131,5 +131,27 @@ def test_task_completion_rejects_ambiguous_title_without_write(tmp_path: Path):
     assert [task["column"] for task in runtime.tasks()] == ["backlog", "backlog"]
 
 
+def test_task_rename_collects_reference_and_title_before_confirmation(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    runtime.add_task("Alter Titel")
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    first = bus.submit("aufgabe umbenennen")
+    assert first == {
+        "status": "slots_required",
+        "missing": ["task", "new_title"],
+        "action_id": "tasks.rename",
+    }
+    assert bus.submit("Alter Titel")["missing"] == ["new_title"]
+    pending = bus.submit("Neuer Titel")
+    assert pending["status"] == "confirmation_required"
+
+    result = bus.confirm()
+
+    assert result["status"] == "executed"
+    assert result["result"]["title"] == "Neuer Titel"
+    assert runtime.tasks()[0]["title"] == "Neuer Titel"
+
+
 def test_desktop_shell_is_wired_to_action_bus():
     assert "self.action_bus = NativeActionBus" in Path(desktop_app.__file__).read_text(encoding="utf-8")

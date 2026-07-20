@@ -11,7 +11,12 @@ _SLOT_PROMPTS = {
     "path": "Welche Datei soll verwendet werden?",
     "query": "Wonach soll ich suchen?",
     "task": "Welche Aufgabe soll abgeschlossen werden?",
+    "new_title": "Wie soll die Aufgabe künftig heißen?",
     "text": "Was möchtest du wissen?",
+}
+
+_ACTION_SLOT_PROMPTS = {
+    ("tasks.rename", "task"): "Welche Aufgabe soll umbenannt werden?",
 }
 
 
@@ -21,7 +26,8 @@ def dialog_prompt(result: Mapping[str, Any]) -> str | None:
     if status == "slots_required":
         missing = result.get("missing") or []
         slot = str(missing[0]) if missing else ""
-        return _SLOT_PROMPTS.get(slot, "Welche Angabe fehlt noch?")
+        action_id = str(result.get("action_id") or "")
+        return _ACTION_SLOT_PROMPTS.get((action_id, slot), _SLOT_PROMPTS.get(slot, "Welche Angabe fehlt noch?"))
     if status == "confirmation_required":
         return "Soll ich diese Aktion ausführen? Sage Ja zum Bestätigen oder Abbrechen."
     if status == "approval_required":
