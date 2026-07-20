@@ -5,13 +5,7 @@ from importlib.util import find_spec
 from typing import Any
 
 from secondbrain.version import get_version
-
-
-VIEWS = (
-    "Dashboard", "Assistant", "Tasks", "Projects", "Documents", "Search", "Memory",
-    "Knowledge Graph", "Calendar", "Mail", "Briefings", "Jobs", "Connectors", "Agents",
-    "Approvals", "Backups", "Settings", "Diagnostics",
-)
+from .navigation import VIEWS
 
 
 @dataclass(frozen=True, slots=True)
