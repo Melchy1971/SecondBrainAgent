@@ -25,7 +25,9 @@ from secondbrain.desktop_native.system_metrics import format_bytes, format_perce
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
+from secondbrain.desktop_native.vault_surface import vault_status_labels
 from secondbrain.desktop_native.voice_de import GermanVoiceController
+from secondbrain.desktop.gui.data_providers import LiveDataService
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 from secondbrain.native.job_queue_center.service import JobQueueService
@@ -70,6 +72,7 @@ class JarvisNativeApp(tk.Tk):
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
         self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.job_surface = JobSurface(JobQueueService(self.project_root))
+        self.live_data = LiveDataService(self.project_root)
         self.voice = GermanVoiceController(
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
@@ -384,9 +387,9 @@ class JarvisNativeApp(tk.Tk):
             ("Swap", "Unavailable"),
             ("Netz down", "Unavailable"),
             ("Netz up", "Unavailable"),
-            ("Vault MD", "392"),
-            ("Vault", "OK"),
-            ("Inbox", "OK"),
+            ("Vault MD", "Unavailable"),
+            ("Vault", "Unknown"),
+            ("Inbox", "Unavailable"),
         ]:
             var = tk.StringVar(value=value)
             self.metric_vars[f"system_{key}"] = var
@@ -692,6 +695,10 @@ class JarvisNativeApp(tk.Tk):
         self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
         running = self.job_surface.snapshot()["running_count"]
         self.info_vars.get("Queue", tk.StringVar()).set(f"Running: {running}")
+        vault = vault_status_labels(safe_status(self.live_data.dashboard))
+        self.metric_vars.get("system_Vault MD", tk.StringVar()).set(vault["markdown"])
+        self.metric_vars.get("system_Vault", tk.StringVar()).set(vault["vault"])
+        self.metric_vars.get("system_Inbox", tk.StringVar()).set(vault["inbox"])
         self._refresh_system_metrics(schedule=False)
         self.output.delete("1.0", "end")
         self._write(bootstrap_text(self.project_root, repair=True))
