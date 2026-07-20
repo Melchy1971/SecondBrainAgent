@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import queue
 import subprocess
 import sys
@@ -16,6 +17,7 @@ from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
 from secondbrain.desktop_native.tray import SystemTrayController
+from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
@@ -75,6 +77,13 @@ class JarvisNativeApp(tk.Tk):
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
         )
+        wake_enabled = os.environ.get("SECONDBRAIN_WAKE_WORD_ENABLED", "").casefold() in {"1", "true", "yes", "on"}
+        self.wake_runtime = WakeWordRuntime(
+            self.action_bus.voice,
+            self._wake_phrase_source,
+            config=WakeWordConfig(enabled=wake_enabled),
+            on_activation=lambda _phrase: self.after(0, self.listen_once),
+        )
         self.queue: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
@@ -95,12 +104,14 @@ class JarvisNativeApp(tk.Tk):
         self._build_layout()
         self.tray = SystemTrayController(
             on_open=lambda: self.after(0, self._restore_window),
+            on_toggle_listening=lambda: self.after(0, self._toggle_wake_listening),
             on_toggle_mute=lambda: self.after(0, self._toggle_mute),
             on_push_to_talk=lambda: self.after(0, self.listen_once),
             on_exit=lambda: self.after(0, self._exit_app),
             status_text=lambda: f"Status: {self.status_var.get()} · Voice: {self.action_bus.voice.state}",
         )
         self.tray.start()
+        self.wake_runtime.start()
         self.after(100, self.refresh_status)
         self.after(200, self._drain_queue)
         self._tick_clock()
@@ -122,8 +133,18 @@ class JarvisNativeApp(tk.Tk):
         self.action_bus.voice.mute(muted)
         self.voice_var.set("Mikrofon stumm" if muted else "Deutsch - bereit")
 
+    def _toggle_wake_listening(self) -> None:
+        enabled = not bool(self.wake_runtime.status()["enabled"])
+        self.wake_runtime.enable(enabled)
+        self.voice_var.set("Wake Word aktiv" if enabled else "Wake Word aus")
+
+    def _wake_phrase_source(self) -> str:
+        result = self.voice.listen_once(timeout=1, phrase_time_limit=2)
+        return str(result.get("text") or "")
+
     def _exit_app(self) -> None:
         self.window_state.save(geometry=self.geometry(), view=self.current_view.get())
+        self.wake_runtime.stop()
         self.tray.stop()
         self.destroy()
 

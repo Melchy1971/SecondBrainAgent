@@ -26,24 +26,34 @@ class WakeWordRuntime:
         *,
         config: WakeWordConfig | None = None,
         clock: Callable[[], float] = time.monotonic,
+        on_activation: Callable[[str], None] | None = None,
     ) -> None:
         self.session = session
         self.phrase_source = phrase_source
         self.config = config or WakeWordConfig()
         self.clock = clock
+        self.on_activation = on_activation or (lambda _phrase: None)
+        self._enabled = self.config.enabled
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._last_activation = float("-inf")
         self.activations = 0
 
     def start(self) -> bool:
-        if not self.config.enabled or self.running:
+        if not self._enabled or self.running:
             return False
         self._stop.clear()
         self.session.listen_for_wake_word()
         self._thread = threading.Thread(target=self._run, name="jarvis-wake-word", daemon=True)
         self._thread.start()
         return True
+
+    def enable(self, enabled: bool) -> bool:
+        self._enabled = bool(enabled)
+        if self._enabled:
+            return self.start()
+        self.stop()
+        return False
 
     def stop(self, timeout: float = 2.0) -> None:
         self._stop.set()
@@ -69,11 +79,12 @@ class WakeWordRuntime:
             return False
         self._last_activation = now
         self.activations += 1
+        self.on_activation(normalized)
         return True
 
     def status(self) -> dict[str, object]:
         return {
-            "enabled": self.config.enabled,
+            "enabled": self._enabled,
             "running": self.running,
             "phrases": list(self.config.phrases),
             "cooldown_seconds": self.config.cooldown_seconds,
