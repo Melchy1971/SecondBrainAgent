@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from secondbrain.desktop_app import DesktopAppRuntime
 from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native import app as desktop_app
 
@@ -53,6 +54,49 @@ def test_legacy_voice_parser_routes_search_through_registry(tmp_path: Path, monk
     result = bus.submit("Suche Rechnung Telekom")
     assert result["action_id"] == "search.query"
     assert result["result"]["query"] == "rechnung telekom"
+
+
+def test_task_creation_collects_title_and_requires_bound_confirmation(tmp_path: Path):
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    first = bus.submit("neue aufgabe")
+    assert first == {"status": "slots_required", "missing": ["title"], "action_id": "tasks.create"}
+    pending = bus.submit("Quartalsbericht abschliessen")
+    assert pending["status"] == "confirmation_required"
+    assert pending["action_id"] == "tasks.create"
+
+    result = bus.confirm()
+
+    assert result["status"] == "executed"
+    assert result["result"]["title"] == "Quartalsbericht abschliessen"
+    assert result["result"]["priority"] == "medium"
+
+
+def test_task_list_reads_the_same_workspace_store(tmp_path: Path):
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+    pending = bus.submit("erstelle aufgabe", {"title": "Review", "priority": "high"})
+    assert pending["status"] == "confirmation_required"
+    bus.confirm()
+
+    result = bus.submit("liste aufgaben")
+
+    assert result["status"] == "executed"
+    assert result["result"]["count"] == 1
+    assert result["result"]["items"][0]["title"] == "Review"
+    assert result["result"]["items"][0]["priority"] == "high"
+
+
+def test_task_actions_are_workspace_bound_and_reject_invalid_priority(tmp_path: Path):
+    without_workspace = NativeActionBus(tmp_path)
+    assert without_workspace.submit("liste aufgaben")["error"] == "workspace_required"
+
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+    pending = bus.submit("neue aufgabe", {"title": "Review", "priority": "urgent"})
+    assert pending["status"] == "confirmation_required"
+    result = bus.confirm()
+    assert result["status"] == "error"
+    assert "task priority" in result["error"]
+    assert DesktopAppRuntime(tmp_path).tasks() == []
 
 
 def test_desktop_shell_is_wired_to_action_bus():

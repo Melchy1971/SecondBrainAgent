@@ -103,6 +103,22 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
         capability_source="document_import_service",
     ))
     registry.register(ActionDefinition(
+        id="tasks.list", title="Aufgaben auflisten",
+        aliases=("liste aufgaben", "welche aufgaben habe ich"),
+        requires_workspace=True, handler=bound("tasks.list"),
+        capability_source="desktop_task_service",
+    ))
+    registry.register(ActionDefinition(
+        id="tasks.create", title="Aufgabe erstellen",
+        aliases=("erstelle aufgabe", "neue aufgabe", "aufgabe erstellen"),
+        risk=ActionRisk.WRITE, requires_confirmation=True, requires_workspace=True,
+        parameters={
+            "title": {"type": "string", "minLength": 1},
+            "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+        },
+        handler=bound("tasks.create"), capability_source="desktop_task_service",
+    ))
+    registry.register(ActionDefinition(
         id="calendar.create", title="Termin erstellen", aliases=("erstelle termin", "neuer termin"),
         risk=ActionRisk.EXTERNAL_WRITE, requires_approval=True, requires_workspace=True,
         parameters={"title": {"type": "string", "minLength": 1}, "when": {"type": "string", "minLength": 1}}, handler=bound("calendar.create"),
