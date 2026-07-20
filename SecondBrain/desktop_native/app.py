@@ -14,7 +14,7 @@ from typing import Any
 
 from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.alert_surface import live_alert_labels, queue_activity
-from secondbrain.desktop_native.approval_surface import ApprovalSurface
+from secondbrain.desktop_native.approval_surface import ApprovalSurface, approval_activity
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.job_surface import JobSurface
@@ -154,6 +154,7 @@ class JarvisNativeApp(tk.Tk):
         self.after(100, self.refresh_status)
         self.after(5000, self._refresh_system_metrics)
         self.after(1000, self._refresh_queue_status)
+        self.after(1100, self._refresh_approval_status)
         self.after(200, self._drain_queue)
         self.after(300, self._request_weather)
         self.after(100, self._sync_voice_state)
@@ -741,8 +742,8 @@ class JarvisNativeApp(tk.Tk):
         }.items():
             self.pill_vars.get(key, tk.StringVar()).set(value)
         self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{blockers} Blocker")
-        pending = self.approval_surface.snapshot()["pending_count"]
-        self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
+        approval_snapshot = self.approval_surface.snapshot()
+        self._refresh_approval_status(snapshot=approval_snapshot, schedule=False)
         jobs = self.job_surface.snapshot()
         alerts = live_alert_labels(health=health, jobs=jobs)
         for key, value in {
@@ -768,6 +769,15 @@ class JarvisNativeApp(tk.Tk):
         self._write(bootstrap_text(self.project_root, repair=True))
         self._write("\nNative Status:")
         self._json(payload)
+
+    def _refresh_approval_status(
+        self, *, snapshot: dict[str, Any] | None = None, schedule: bool = True
+    ) -> None:
+        current = snapshot if snapshot is not None else safe_status(self.approval_surface.snapshot)
+        activity = approval_activity(dict(current))
+        self.alert_vars.get("Approvals", tk.StringVar()).set(activity["label"])
+        if schedule:
+            self.after(2000, self._refresh_approval_status)
 
     def _refresh_queue_status(self, *, jobs: dict[str, Any] | None = None, schedule: bool = True) -> None:
         snapshot = jobs if jobs is not None else safe_status(self.job_surface.snapshot)
