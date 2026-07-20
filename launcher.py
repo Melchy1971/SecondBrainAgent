@@ -966,6 +966,21 @@ def main(argv: list[str] | None = None) -> int:
         report = run_native_voice_app_gate(_first_project_root(raw))
         out(report)
         return 0 if report["status"] != "BLOCKED" else 4
+    if cmd in {"native-startup-status", "native-startup-enable", "native-startup-disable"}:
+        from secondbrain.desktop_native.windows_startup import WindowsStartupManager
+        manager = WindowsStartupManager(_first_project_root(raw))
+        try:
+            if cmd == "native-startup-enable":
+                payload = manager.enable()
+            elif cmd == "native-startup-disable":
+                payload = manager.disable()
+            else:
+                payload = manager.status()
+        except (RuntimeError, OSError) as exc:
+            out({"status": "BLOCKED", "error": str(exc), **manager.status()})
+            return 4
+        out({"status": "PASS", **payload})
+        return 0
     if cmd == "system-rc-gate":
         return _rc_gate_main(["rc-gate", *raw[1:]])
     if cmd == "rag-eval":
