@@ -669,8 +669,10 @@ class JarvisNativeApp(tk.Tk):
         self.status_var.set("READY" if ok else "BLOCKED")
         self.info_vars.get("Version", tk.StringVar()).set(f"v{payload.get('version', VERSION)}")
         self.info_vars.get("Environment", tk.StringVar()).set(payload.get("mode", "native_desktop"))
-        self.info_vars.get("Database", tk.StringVar()).set("local")
-        self.info_vars.get("Embedding", tk.StringVar()).set("-")
+        health = payload.get("health", {})
+        self.info_vars.get("Database", tk.StringVar()).set(health.get("database", "Unknown"))
+        self.info_vars.get("Embedding", tk.StringVar()).set(health.get("embedding", "Unknown"))
+        self.info_vars.get("Ollama", tk.StringVar()).set(health.get("ollama", "Unknown"))
         self.info_vars.get("Memory Engine", tk.StringVar()).set(_fmt_status(payload.get("bootstrap", {}).get("ok")))
         self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{len(payload.get('blockers', []))} Blocker")
         pending = self.approval_surface.snapshot()["pending_count"]

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from secondbrain.desktop_native.health_surface import desktop_health_surface
 from secondbrain.gui.bootstrap import bootstrap_status, write_bootstrap_report
 from secondbrain.version import get_version
 
@@ -58,6 +59,7 @@ def native_desktop_status(project_root: str | Path | None = None, *, repair: boo
         "platform": platform.platform(),
         "executable": sys.executable,
         "bootstrap": bootstrap,
+        "health": desktop_health_surface(bootstrap),
         "voice": {
             "language": "de-DE",
             "wake_words": ["jarvis", "second brain", "assistent"],
