@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 import json
-import os
 import platform
+import re
 import sys
 from pathlib import Path
 from typing import Any
 
 from secondbrain.gui.bootstrap import bootstrap_status, write_bootstrap_report
+from secondbrain.version import get_version
 
 SCHEMA = "secondbrain.native_desktop.status.v1"
-VERSION = "30.25"
+VERSION = get_version()
+
+
+def _report_name(version: str) -> str:
+    safe_version = re.sub(r"[^A-Za-z0-9]+", "_", version).strip("_") or "unknown"
+    return f"native_desktop_v{safe_version}.json"
 
 
 def _optional_module(name: str) -> dict[str, Any]:
@@ -68,7 +74,7 @@ def write_native_status_report(project_root: str | Path | None = None) -> dict[s
     root = _project_root(project_root)
     write_bootstrap_report(root, repair=True)
     payload = native_desktop_status(root, repair=True)
-    path = root / "runtime" / "reports" / "native_desktop_v30_25.json"
+    path = root / "runtime" / "reports" / _report_name(VERSION)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     payload["report_path"] = str(path)
