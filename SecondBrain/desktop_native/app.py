@@ -27,6 +27,7 @@ from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
 from secondbrain.desktop_native.vault_surface import vault_status_labels
+from secondbrain.desktop_native.weather import fetch_weather, weather_config, weather_labels
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.desktop.gui.data_providers import LiveDataService
 from secondbrain.gui.backup_center import BackupCenterViewModel
@@ -106,6 +107,9 @@ class JarvisNativeApp(tk.Tk):
         self.clock_time = tk.StringVar(value="")
         self.clock_day = tk.StringVar(value="")
         self.clock_date = tk.StringVar(value="")
+        self.weather_place = tk.StringVar(value="Weather")
+        self.weather_temperature = tk.StringVar(value="Loading")
+        self.weather_detail = tk.StringVar(value="")
         self.metric_vars: dict[str, tk.StringVar] = {}
         self.metric_rings: dict[str, tk.Canvas] = {}
         self.system_metrics: dict[str, Any] = {"available": False}
@@ -133,6 +137,7 @@ class JarvisNativeApp(tk.Tk):
         self.after(100, self.refresh_status)
         self.after(5000, self._refresh_system_metrics)
         self.after(200, self._drain_queue)
+        self.after(300, self._request_weather)
         self.after(100, self._sync_voice_state)
         self._tick_clock()
 
@@ -217,7 +222,7 @@ class JarvisNativeApp(tk.Tk):
         label.pack(**pack)
         return label
 
-    def _section_title(self, parent: tk.Misc, title: str, meta: str = "") -> None:
+    def _section_title(self, parent: tk.Misc, title: str, meta: str | tk.StringVar = "") -> None:
         bar = tk.Frame(parent, bg=parent.cget("bg"))
         bar.pack(fill="x", padx=14, pady=(12, 7))
         self._label(
@@ -228,9 +233,12 @@ class JarvisNativeApp(tk.Tk):
             side="left",
         )
         if meta:
+            meta_text = meta.upper() if isinstance(meta, str) else ""
+            meta_variable = meta if isinstance(meta, tk.StringVar) else None
             self._label(
                 bar,
-                meta.upper(),
+                meta_text,
+                textvariable=meta_variable,
                 fg=HUD["cyan_dim"],
                 font=("Segoe UI", 8, "bold"),
                 side="right",
@@ -459,9 +467,15 @@ class JarvisNativeApp(tk.Tk):
             self._info_row(info, key, var)
 
         weather = self._panel(parent, row=1, column=0, sticky="ew", pady=(0, 16))
-        self._section_title(weather, "Wetter", "Zaberfeld")
-        self._label(weather, "34 deg", fg=HUD["text"], font=("Segoe UI Light", 30), side="left", padx=14, pady=(0, 12))
-        self._label(weather, "Heiter\nFeuchte 39%\nWind 11 km/h", fg=HUD["cyan_dim"], font=("Segoe UI", 9), side="left", padx=(0, 14))
+        self._section_title(weather, "Wetter", self.weather_place)
+        self._label(
+            weather, textvariable=self.weather_temperature, fg=HUD["text"],
+            font=("Segoe UI Light", 30), side="left", padx=14, pady=(0, 12),
+        )
+        self._label(
+            weather, textvariable=self.weather_detail, fg=HUD["cyan_dim"],
+            font=("Segoe UI", 9), side="left", padx=(0, 14),
+        )
 
         alerts = self._panel(parent, row=2, column=0, sticky="ew")
         self._section_title(alerts, "Alerts", "System")
@@ -792,10 +806,24 @@ class JarvisNativeApp(tk.Tk):
                     self._write(payload["stdout"])
                 if payload["stderr"]:
                     self._write("STDERR:\n" + payload["stderr"])
+            elif kind == "weather":
+                labels = weather_labels(payload)
+                self.weather_place.set(labels["place"])
+                self.weather_temperature.set(labels["temperature"])
+                self.weather_detail.set(labels["detail"])
             else:
                 self.status_var.set("FEHLER")
                 self._write(str(payload))
         self.after(200, self._drain_queue)
+
+    def _request_weather(self) -> None:
+        config = weather_config()
+
+        def worker() -> None:
+            self.queue.put(("weather", fetch_weather(config)))
+
+        threading.Thread(target=worker, daemon=True).start()
+        self.after(15 * 60 * 1000, self._request_weather)
 
     def handle_typed_command(self) -> None:
         text = self.command_entry.get().strip()
