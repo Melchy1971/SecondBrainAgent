@@ -138,6 +138,7 @@ class JarvisNativeApp(tk.Tk):
         self.approval_alert_label: tk.Label | None = None
         self.approval_tray_status = "Unavailable"
         self.approval_pending_count: int | None = None
+        self.approval_elevated_count: int | None = None
         self.approval_overdue_count: int | None = None
         self.pill_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
@@ -803,10 +804,13 @@ class JarvisNativeApp(tk.Tk):
             notification = approval_attention_notification(
                 self.approval_pending_count,
                 activity["pending"],
+                self.approval_elevated_count,
+                activity["elevated"],
                 self.approval_overdue_count,
                 activity["overdue"],
             )
             self.approval_pending_count = activity["pending"]
+            self.approval_elevated_count = activity["elevated"]
             self.approval_overdue_count = activity["overdue"]
             if notification is not None:
                 title, message = notification

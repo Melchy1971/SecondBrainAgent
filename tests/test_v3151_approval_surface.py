@@ -5,6 +5,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_activity,
     approval_attention_notification,
     approval_notification,
+    elevated_approval_notification,
     overdue_approval_notification,
 )
 from secondbrain.native.approval import NativeApprovalQueue
@@ -133,13 +134,22 @@ def test_overdue_notification_only_reports_newly_overdue_items():
 
 
 def test_attention_notification_coalesces_pending_and_overdue_changes():
-    assert approval_attention_notification(None, 2, None, 1) is None
-    assert approval_attention_notification(1, 2, 0, 1) == (
+    assert approval_attention_notification(None, 2, None, 1, None, 1) is None
+    assert approval_attention_notification(1, 2, 1, 1, 0, 1) == (
         "Jarvis Freigaben",
         "1 neue Freigabe wartet auf Entscheidung. 1 Freigabe ist jetzt überfällig.",
     )
-    assert approval_attention_notification(2, 2, 0, 1) == (
+    assert approval_attention_notification(2, 2, 1, 1, 0, 1) == (
         "Jarvis: überfällige Freigaben",
         "1 Freigabe ist jetzt überfällig.",
     )
-    assert approval_attention_notification(2, 2, 1, 1) is None
+    assert approval_attention_notification(2, 2, 1, 1, 1, 1) is None
+
+
+def test_attention_notification_prioritizes_new_elevated_risk():
+    assert elevated_approval_notification(None, 1) is None
+    assert elevated_approval_notification(1, 2) == "1 neue Freigabe hat erhöhtes Risiko."
+    assert approval_attention_notification(1, 2, 0, 1, 0, 0) == (
+        "Jarvis: erhöhte Freigaben",
+        "1 neue Freigabe wartet auf Entscheidung. 1 neue Freigabe hat erhöhtes Risiko.",
+    )
