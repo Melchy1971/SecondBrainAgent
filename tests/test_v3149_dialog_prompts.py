@@ -6,6 +6,12 @@ def test_slot_prompts_follow_missing_slot_order():
     assert dialog_prompt({"status": "slots_required", "missing": ["when"]}) == "Wann soll der Termin stattfinden?"
 
 
+def test_task_completion_prompt_requests_a_reference():
+    assert dialog_prompt({"status": "slots_required", "missing": ["task"]}) == (
+        "Welche Aufgabe soll abgeschlossen werden?"
+    )
+
+
 def test_confirmation_prompt_supports_spoken_yes_and_cancel():
     prompt = dialog_prompt({"status": "confirmation_required", "action_id": "documents.import"})
     assert "Sage Ja" in prompt
