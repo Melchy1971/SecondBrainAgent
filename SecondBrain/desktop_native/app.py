@@ -23,7 +23,13 @@ from secondbrain.desktop_native.navigation import VIEWS, display_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.storage_alerts import read_vector_validation, storage_alert_labels
-from secondbrain.desktop_native.system_metrics import format_bytes, format_percent, format_uptime, read_system_metrics
+from secondbrain.desktop_native.system_metrics import (
+    SystemMetricsSampler,
+    format_bytes,
+    format_kbps,
+    format_percent,
+    format_uptime,
+)
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
@@ -115,6 +121,7 @@ class JarvisNativeApp(tk.Tk):
         self.metric_vars: dict[str, tk.StringVar] = {}
         self.metric_rings: dict[str, tk.Canvas] = {}
         self.system_metrics: dict[str, Any] = {"available": False}
+        self.system_metrics_sampler = SystemMetricsSampler()
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
@@ -738,7 +745,7 @@ class JarvisNativeApp(tk.Tk):
         self._json(payload)
 
     def _refresh_system_metrics(self, *, schedule: bool = True) -> None:
-        metrics = read_system_metrics(self.project_root)
+        metrics = self.system_metrics_sampler.read(self.project_root)
         self.system_metrics = metrics
         values = metrics if metrics.get("available") else {}
         labels = {
@@ -750,6 +757,12 @@ class JarvisNativeApp(tk.Tk):
             "system_CPU": format_percent(values.get("cpu_percent")),
             "system_RAM": format_percent(values.get("ram_percent")),
             "system_Swap": format_percent(values.get("swap_percent")),
+            "system_Netz down": format_kbps(
+                values.get("net_down_kbps") if values.get("network_available") else None
+            ),
+            "system_Netz up": format_kbps(
+                values.get("net_up_kbps") if values.get("network_available") else None
+            ),
         }
         for key, value in labels.items():
             if key in self.metric_vars:
