@@ -23,9 +23,23 @@ def approval_activity(snapshot: dict[str, Any], *, now: datetime | None = None) 
     try:
         pending = max(0, int(snapshot["pending_count"]))
     except (TypeError, ValueError):
-        return {"available": False, "pending": 0, "elevated": 0, "overdue": 0, "label": "Unavailable"}
+        return {
+            "available": False,
+            "pending": 0,
+            "elevated": 0,
+            "overdue": 0,
+            "severity": "unavailable",
+            "label": "Unavailable",
+        }
     except KeyError:
-        return {"available": False, "pending": 0, "elevated": 0, "overdue": 0, "label": "Unavailable"}
+        return {
+            "available": False,
+            "pending": 0,
+            "elevated": 0,
+            "overdue": 0,
+            "severity": "unavailable",
+            "label": "Unavailable",
+        }
     items = snapshot.get("items")
     safe_items = items if isinstance(items, list) else []
     elevated = sum(
@@ -50,7 +64,15 @@ def approval_activity(snapshot: dict[str, Any], *, now: datetime | None = None) 
         label += f" / {elevated} Elevated"
     if overdue:
         label += f" / {overdue} Overdue"
-    return {"available": True, "pending": pending, "elevated": elevated, "overdue": overdue, "label": label}
+    severity = "critical" if overdue else "warning" if pending else "normal"
+    return {
+        "available": True,
+        "pending": pending,
+        "elevated": elevated,
+        "overdue": overdue,
+        "severity": severity,
+        "label": label,
+    }
 
 
 class ApprovalSurface:

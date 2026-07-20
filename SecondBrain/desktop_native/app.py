@@ -131,6 +131,7 @@ class JarvisNativeApp(tk.Tk):
         self.system_metrics_sampler = SystemMetricsSampler()
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
+        self.approval_alert_label: tk.Label | None = None
         self.pill_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
         self.geometry(str(restored.get("geometry") or "1500x900"))
@@ -264,12 +265,15 @@ class JarvisNativeApp(tk.Tk):
             )
         tk.Frame(bar, height=1, bg=HUD["line2"]).pack(fill="x", side="bottom", pady=(8, 0))
 
-    def _kv(self, parent: tk.Misc, key: str, var: tk.StringVar, *, accent: str | None = None) -> None:
+    def _kv(self, parent: tk.Misc, key: str, var: tk.StringVar, *, accent: str | None = None) -> tk.Label:
         row = tk.Frame(parent, bg=parent.cget("bg"))
         row.pack(fill="x", padx=14, pady=3)
         self._label(row, key, fg=HUD["cyan_soft"], font=("Segoe UI", 9, "bold"), side="left")
-        self._label(row, textvariable=var, fg=accent or HUD["text"], font=("Segoe UI", 9, "bold"), side="right")
+        value_label = self._label(
+            row, textvariable=var, fg=accent or HUD["text"], font=("Segoe UI", 9, "bold"), side="right"
+        )
         tk.Frame(parent, height=1, bg=HUD["line2"]).pack(fill="x", padx=14)
+        return value_label
 
     def _build_layout(self) -> None:
         root = tk.Frame(self, bg=HUD["bg"])
@@ -519,7 +523,9 @@ class JarvisNativeApp(tk.Tk):
         ]:
             var = tk.StringVar(value=value)
             self.alert_vars[key] = var
-            self._kv(alerts, key, var, accent=color)
+            label = self._kv(alerts, key, var, accent=color)
+            if key == "Approvals":
+                self.approval_alert_label = label
 
     def _build_console(self, content: tk.Misc) -> None:
         console = self._panel(content, row=3, column=0, columnspan=3, sticky="nsew", pady=(16, 0))
@@ -776,6 +782,14 @@ class JarvisNativeApp(tk.Tk):
         current = snapshot if snapshot is not None else safe_status(self.approval_surface.snapshot)
         activity = approval_activity(dict(current))
         self.alert_vars.get("Approvals", tk.StringVar()).set(activity["label"])
+        if self.approval_alert_label is not None:
+            color = {
+                "critical": HUD["bad"],
+                "warning": HUD["warn"],
+                "normal": HUD["good"],
+                "unavailable": HUD["bad"],
+            }[activity["severity"]]
+            self.approval_alert_label.configure(fg=color)
         if schedule:
             self.after(2000, self._refresh_approval_status)
 
