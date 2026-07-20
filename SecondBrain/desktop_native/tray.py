@@ -75,5 +75,14 @@ class SystemTrayController:
         if icon is not None:
             icon.stop()
 
+    def notify(self, message: str, *, title: str = "Jarvis Freigaben") -> bool:
+        if self._icon is None:
+            return False
+        try:
+            self._icon.notify(message, title)
+        except Exception:
+            return False
+        return True
+
     def status(self) -> TrayStatus:
         return TrayStatus(self.available, self.running, "" if self.available else "pystray/Pillow nicht installiert")

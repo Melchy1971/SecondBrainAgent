@@ -39,11 +39,13 @@ def test_tray_menu_callbacks_and_shutdown(monkeypatch):
 
     class Icon:
         def __init__(self, name, image, title, menu):
-            made["icon"], self.menu, self.stopped = self, menu, False
+            made["icon"], self.menu, self.stopped, self.notifications = self, menu, False, []
         def run_detached(self):
             made["detached"] = True
         def stop(self):
             self.stopped = True
+        def notify(self, message, title):
+            self.notifications.append((title, message))
 
     fake_pystray = types.SimpleNamespace(Menu=lambda *items: items, MenuItem=Item, Icon=Icon)
     fake_image = types.SimpleNamespace(new=lambda *args: object())
@@ -61,5 +63,8 @@ def test_tray_menu_callbacks_and_shutdown(monkeypatch):
     icon.menu[3].action(None, None)
     icon.menu[6].action(None, None)
     assert calls == ["open", "mute", "approvals", "ptt", "listen", "exit"]
+    assert tray.notify("1 neue Freigabe") is True
+    assert icon.notifications == [("Jarvis Freigaben", "1 neue Freigabe")]
     tray.stop()
     assert icon.stopped is True
+    assert tray.notify("ignored") is False

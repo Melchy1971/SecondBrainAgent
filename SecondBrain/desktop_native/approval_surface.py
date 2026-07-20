@@ -9,6 +9,17 @@ ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
 APPROVAL_OVERDUE_AFTER = timedelta(minutes=15)
 
 
+def approval_notification(previous: int | None, current: int) -> str | None:
+    current = max(0, int(current))
+    if previous is None:
+        return None
+    added = current - max(0, int(previous))
+    if added <= 0:
+        return None
+    noun = "Freigabe wartet" if added == 1 else "Freigaben warten"
+    return f"{added} neue {noun} auf Entscheidung."
+
+
 def _created_at(value: Any) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
