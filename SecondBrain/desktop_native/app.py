@@ -13,7 +13,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from secondbrain.desktop_native.action_bus import NativeActionBus
-from secondbrain.desktop_native.alert_surface import live_alert_labels
+from secondbrain.desktop_native.alert_surface import live_alert_labels, queue_activity
 from secondbrain.desktop_native.approval_surface import ApprovalSurface
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
@@ -153,6 +153,7 @@ class JarvisNativeApp(tk.Tk):
         self.global_hotkey.start()
         self.after(100, self.refresh_status)
         self.after(5000, self._refresh_system_metrics)
+        self.after(1000, self._refresh_queue_status)
         self.after(200, self._drain_queue)
         self.after(300, self._request_weather)
         self.after(100, self._sync_voice_state)
@@ -605,7 +606,7 @@ class JarvisNativeApp(tk.Tk):
         self._draw_ring(name, pct, color)
         self._label(wrap, name, fg=HUD["cyan_dim"], font=("Segoe UI", 7, "bold"), anchor="center")
 
-    def _draw_ring(self, name: str, pct: int, color: str) -> None:
+    def _draw_ring(self, name: str, pct: int, color: str, *, text: str | None = None) -> None:
         canvas = self.metric_rings.get(name)
         if canvas is None:
             return
@@ -613,7 +614,7 @@ class JarvisNativeApp(tk.Tk):
         canvas.create_oval(8, 8, 68, 68, outline="#0b3d4c", width=7)
         extent = max(0, min(100, pct)) * 3.6
         canvas.create_arc(8, 8, 68, 68, start=90, extent=-extent, outline=color, width=7, style="arc")
-        canvas.create_text(38, 38, text=str(pct), fill=HUD["text"], font=("Segoe UI", 11, "bold"))
+        canvas.create_text(38, 38, text=text or str(pct), fill=HUD["text"], font=("Segoe UI", 11, "bold"))
 
     def _draw_reactor(self, pct: int) -> None:
         c = self.reactor
@@ -743,17 +744,15 @@ class JarvisNativeApp(tk.Tk):
         pending = self.approval_surface.snapshot()["pending_count"]
         self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
         jobs = self.job_surface.snapshot()
-        running = jobs["running_count"]
-        self.info_vars.get("Queue", tk.StringVar()).set(f"Running: {running}")
         alerts = live_alert_labels(health=health, jobs=jobs)
         for key, value in {
             "Embedding": alerts["embedding"],
             "PostgreSQL": alerts["postgresql"],
             "pgvector": alerts["pgvector"],
             "Ollama": alerts["ollama"],
-            "Queue": alerts["queue"],
         }.items():
             self.alert_vars.get(key, tk.StringVar()).set(value)
+        self._refresh_queue_status(jobs=jobs, schedule=False)
         storage_alerts = storage_alert_labels(
             backup=safe_status(self.backup_center.snapshot),
             vector=read_vector_validation(self.project_root),
@@ -769,6 +768,19 @@ class JarvisNativeApp(tk.Tk):
         self._write(bootstrap_text(self.project_root, repair=True))
         self._write("\nNative Status:")
         self._json(payload)
+
+    def _refresh_queue_status(self, *, jobs: dict[str, Any] | None = None, schedule: bool = True) -> None:
+        snapshot = jobs if jobs is not None else safe_status(self.job_surface.snapshot)
+        activity = queue_activity(snapshot)
+        self.info_vars.get("Queue", tk.StringVar()).set(
+            f"Running: {activity['running']} / Active: {activity['active']}"
+        )
+        self.alert_vars.get("Queue", tk.StringVar()).set(activity["alert"])
+        active = int(activity["active"])
+        color = HUD["warn"] if activity["blocked"] or active else HUD["line"]
+        self._draw_ring("QUEUE", 100 if active else 0, color, text=str(active))
+        if schedule:
+            self.after(2000, self._refresh_queue_status)
 
     def _refresh_system_metrics(self, *, schedule: bool = True) -> None:
         metrics = self.system_metrics_sampler.read(self.project_root)

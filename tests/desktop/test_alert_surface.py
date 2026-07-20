@@ -1,4 +1,4 @@
-from secondbrain.desktop_native.alert_surface import live_alert_labels
+from secondbrain.desktop_native.alert_surface import live_alert_labels, queue_activity
 
 
 def test_configured_postgres_and_queue_counts_are_projected() -> None:
@@ -40,3 +40,30 @@ def test_invalid_counts_and_unknown_health_degrade_safely() -> None:
         "queue": "0 Pending",
     }
     assert "secret" not in str(result)
+
+
+def test_queue_activity_combines_active_states_without_payloads() -> None:
+    result = queue_activity(
+        {
+            "counts": {"pending": 2, "retry": 1, "running": 3, "blocked": 4, "success": 99},
+            "items": [{"payload": "secret"}],
+        }
+    )
+    assert result == {
+        "pending": 3,
+        "running": 3,
+        "blocked": 4,
+        "active": 10,
+        "alert": "3 Pending / 4 Blocked",
+    }
+    assert "secret" not in str(result)
+
+
+def test_queue_activity_normalizes_invalid_counts() -> None:
+    assert queue_activity({"counts": {"pending": "bad", "retry": -1, "running": None}}) == {
+        "pending": 0,
+        "running": 0,
+        "blocked": 0,
+        "active": 0,
+        "alert": "0 Pending",
+    }
