@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from secondbrain.desktop_native.approval_surface import ApprovalSurface, approval_activity
 from secondbrain.native.approval import NativeApprovalQueue
 
@@ -63,6 +65,7 @@ def test_approval_activity_counts_elevated_visible_items_without_payloads():
         "available": True,
         "pending": 3,
         "elevated": 2,
+        "overdue": 0,
         "label": "3 Pending / 2 Elevated",
     }
     assert "secret" not in str(result)
@@ -73,5 +76,27 @@ def test_approval_activity_normalizes_invalid_snapshot():
         "available": False,
         "pending": 0,
         "elevated": 0,
+        "overdue": 0,
         "label": "Unavailable",
+    }
+
+
+def test_approval_activity_marks_visible_items_overdue_after_fifteen_minutes():
+    result = approval_activity(
+        {
+            "pending_count": 3,
+            "items": [
+                {"created_at": "2026-07-20T09:44:59Z"},
+                {"created_at": "2026-07-20T09:45:00+00:00"},
+                {"created_at": "invalid"},
+            ],
+        },
+        now=datetime(2026, 7, 20, 10, 0, tzinfo=timezone.utc),
+    )
+    assert result == {
+        "available": True,
+        "pending": 3,
+        "elevated": 0,
+        "overdue": 2,
+        "label": "3 Pending / 2 Overdue",
     }
