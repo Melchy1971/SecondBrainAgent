@@ -22,6 +22,7 @@ from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleI
 from secondbrain.desktop_native.navigation import VIEWS, display_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.status import write_native_status_report
+from secondbrain.desktop_native.storage_alerts import read_vector_validation, storage_alert_labels
 from secondbrain.desktop_native.system_metrics import format_bytes, format_percent, format_uptime, read_system_metrics
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
@@ -74,6 +75,7 @@ class JarvisNativeApp(tk.Tk):
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
         self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.job_surface = JobSurface(JobQueueService(self.project_root))
+        self.backup_center = BackupCenterViewModel(self.project_root)
         self.live_data = LiveDataService(self.project_root)
         self.voice = GermanVoiceController(
             self.project_root,
@@ -486,8 +488,8 @@ class JarvisNativeApp(tk.Tk):
             ("PostgreSQL", "Unknown", HUD["good"]),
             ("pgvector", "Not checked", HUD["cyan"]),
             ("Ollama", "Unknown", HUD["cyan"]),
-            ("Backup", "Letztes: -", HUD["good"]),
-            ("Vector Index", "-", HUD["cyan"]),
+            ("Backup", "Not checked", HUD["good"]),
+            ("Vector Index", "Not checked", HUD["cyan"]),
             ("Queue", "0 Pending", HUD["warn"]),
         ]:
             var = tk.StringVar(value=value)
@@ -662,8 +664,7 @@ class JarvisNativeApp(tk.Tk):
         elif view == "Imports":
             self._write("Datei per Button importieren oder Textbefehl: Importiere Datei C:\\Pfad\\datei.pdf")
         elif view == "Backups":
-            model = BackupCenterViewModel(self.project_root)
-            self._json(model.snapshot())
+            self._json(self.backup_center.snapshot())
             self._write(
                 "\nBackup Center / Restore Center:\n"
                 "- Backup: python launcher.py ops-backup --label manuell\n"
@@ -720,6 +721,12 @@ class JarvisNativeApp(tk.Tk):
             "Queue": alerts["queue"],
         }.items():
             self.alert_vars.get(key, tk.StringVar()).set(value)
+        storage_alerts = storage_alert_labels(
+            backup=safe_status(self.backup_center.snapshot),
+            vector=read_vector_validation(self.project_root),
+        )
+        self.alert_vars.get("Backup", tk.StringVar()).set(storage_alerts["backup"])
+        self.alert_vars.get("Vector Index", tk.StringVar()).set(storage_alerts["vector_index"])
         vault = vault_status_labels(safe_status(self.live_data.dashboard))
         self.metric_vars.get("system_Vault MD", tk.StringVar()).set(vault["markdown"])
         self.metric_vars.get("system_Vault", tk.StringVar()).set(vault["vault"])
