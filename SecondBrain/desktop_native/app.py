@@ -17,8 +17,7 @@ from secondbrain.desktop_native.alert_surface import live_alert_labels, queue_ac
 from secondbrain.desktop_native.approval_surface import (
     ApprovalSurface,
     approval_activity,
-    approval_notification,
-    overdue_approval_notification,
+    approval_attention_notification,
 )
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
@@ -801,14 +800,17 @@ class JarvisNativeApp(tk.Tk):
         self.alert_vars.get("Approvals", tk.StringVar()).set(activity["label"])
         self.approval_tray_status = activity["label"]
         if activity["available"]:
-            notification = approval_notification(self.approval_pending_count, activity["pending"])
-            overdue_notification = overdue_approval_notification(self.approval_overdue_count, activity["overdue"])
+            notification = approval_attention_notification(
+                self.approval_pending_count,
+                activity["pending"],
+                self.approval_overdue_count,
+                activity["overdue"],
+            )
             self.approval_pending_count = activity["pending"]
             self.approval_overdue_count = activity["overdue"]
             if notification is not None:
-                self.tray.notify(notification)
-            if overdue_notification is not None:
-                self.tray.notify(overdue_notification, title="Jarvis: überfällige Freigaben")
+                title, message = notification
+                self.tray.notify(message, title=title)
         if self.approval_alert_label is not None:
             color = {
                 "critical": HUD["bad"],
