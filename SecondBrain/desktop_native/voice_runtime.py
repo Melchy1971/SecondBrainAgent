@@ -42,6 +42,7 @@ class VoiceSession:
     """Thread-safe orchestration; audio engines remain replaceable adapters."""
 
     CONFIRMATIONS = {"ja", "bestätigen", "bestaetigen", "ausführen", "ausfuehren"}
+    CANCELLATIONS = {"abbrechen", "abbruch", "stopp", "stop"}
 
     def __init__(self, registry: ActionRegistry, *, workspace_id: str = "", actor: str = "local-user") -> None:
         self.registry = registry
@@ -107,7 +108,7 @@ class VoiceSession:
             if missing:
                 self.dialog = self._context(action, values, missing)
                 self.state = VoiceState.WAITING_FOR_CONFIRMATION
-                return {"status": "slots_required", "missing": missing, "action_id": action.id}
+                return self._slots_required(action.id)
             if action.requires_approval:
                 self.dialog = self._context(action, values, [])
                 self.dialog.approval_state = "pending"
@@ -136,7 +137,7 @@ class VoiceSession:
         if missing:
             self.dialog = self._context(action, values, missing)
             self.state = VoiceState.WAITING_FOR_CONFIRMATION
-            return {"status": "slots_required", "missing": missing, "action_id": action.id}
+            return self._slots_required(action.id)
         if action.requires_approval:
             self.dialog = self._context(action, values, [])
             self.state = VoiceState.WAITING_FOR_APPROVAL
@@ -151,13 +152,15 @@ class VoiceSession:
         with self._lock:
             if not self.dialog or self.dialog.expires_at < time.time():
                 return self._error("no_active_dialog")
+            if self.dialog.workspace_id != self.workspace_id:
+                return self._error("dialog_workspace_mismatch")
             action = self.registry.get(self.dialog.action_id)
             self.dialog.parameters.update(parameters)
             self.dialog.missing_parameters = [
                 name for name in self.dialog.missing_parameters if not self.dialog.parameters.get(name)
             ]
             if self.dialog.missing_parameters:
-                return {"status": "slots_required", "missing": self.dialog.missing_parameters, "action_id": action.id}
+                return self._slots_required(action.id)
             self.dialog = self._context(action, self.dialog.parameters, [])
             self.state = VoiceState.WAITING_FOR_APPROVAL if action.requires_approval else VoiceState.WAITING_FOR_CONFIRMATION
             return {
@@ -165,6 +168,32 @@ class VoiceSession:
                 "action_id": action.id,
                 "binding": self.dialog.binding,
             }
+
+    def continue_dialog(self, utterance: str) -> dict[str, Any]:
+        with self._lock:
+            normalized = " ".join(str(utterance).casefold().strip().split())
+            if not self.dialog or self.dialog.expires_at < time.time():
+                return self._error("no_active_dialog")
+            if self.dialog.workspace_id != self.workspace_id:
+                return self._error("dialog_workspace_mismatch")
+            if normalized in self.CANCELLATIONS:
+                action_id = self.dialog.action_id
+                self.dialog = None
+                self.state = VoiceState.IDLE
+                return {"status": "dialog_cancelled", "action_id": action_id}
+            if normalized in self.CONFIRMATIONS or not normalized:
+                return self._error("slot_value_required")
+            if not self.dialog.missing_parameters:
+                return self._error("no_missing_slots")
+            return self.provide_slots({self.dialog.missing_parameters[0]: utterance.strip()})
+
+    def _slots_required(self, action_id: str) -> dict[str, Any]:
+        missing = list(self.dialog.missing_parameters) if self.dialog else []
+        return {
+            "status": "slots_required",
+            "missing": missing,
+            "action_id": action_id,
+        }
 
     def _context(self, action: ActionDefinition, values: dict[str, Any], missing: list[str]) -> DialogContext:
         raw = json.dumps({"action": action.id, "parameters": values, "workspace": self.workspace_id}, sort_keys=True)
