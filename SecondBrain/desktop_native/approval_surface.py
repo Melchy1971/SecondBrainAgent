@@ -9,6 +9,8 @@ ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
 APPROVAL_OVERDUE_AFTER = timedelta(minutes=15)
 DEFAULT_OVERDUE_MINUTES = 15
 MAX_OVERDUE_MINUTES = 1440
+DEFAULT_REFRESH_SECONDS = 2
+MAX_REFRESH_SECONDS = 60
 DISABLED_NOTIFICATION_VALUES = {"0", "false", "no", "off"}
 
 
@@ -24,6 +26,16 @@ def approval_overdue_after(value: str | None) -> timedelta:
     if not 1 <= minutes <= MAX_OVERDUE_MINUTES:
         minutes = DEFAULT_OVERDUE_MINUTES
     return timedelta(minutes=minutes)
+
+
+def approval_refresh_interval_ms(value: str | None) -> int:
+    try:
+        seconds = DEFAULT_REFRESH_SECONDS if value is None else int(value.strip())
+    except (AttributeError, ValueError):
+        seconds = DEFAULT_REFRESH_SECONDS
+    if not 1 <= seconds <= MAX_REFRESH_SECONDS:
+        seconds = DEFAULT_REFRESH_SECONDS
+    return seconds * 1000
 
 
 def approval_notification(previous: int | None, current: int) -> str | None:

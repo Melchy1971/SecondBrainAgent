@@ -20,6 +20,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_attention_notification,
     approval_notifications_enabled,
     approval_overdue_after,
+    approval_refresh_interval_ms,
 )
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
@@ -143,6 +144,9 @@ class JarvisNativeApp(tk.Tk):
             os.environ.get("SECONDBRAIN_APPROVAL_NOTIFICATIONS_ENABLED")
         )
         self.approval_overdue_after = approval_overdue_after(os.environ.get("SECONDBRAIN_APPROVAL_OVERDUE_MINUTES"))
+        self.approval_refresh_interval_ms = approval_refresh_interval_ms(
+            os.environ.get("SECONDBRAIN_APPROVAL_REFRESH_SECONDS")
+        )
         self.approval_pending_count: int | None = None
         self.approval_elevated_count: int | None = None
         self.approval_overdue_count: int | None = None
@@ -832,7 +836,7 @@ class JarvisNativeApp(tk.Tk):
             }[activity["severity"]]
             self.approval_alert_label.configure(fg=color)
         if schedule:
-            self.after(2000, self._refresh_approval_status)
+            self.after(self.approval_refresh_interval_ms, self._refresh_approval_status)
 
     def _refresh_queue_status(self, *, jobs: dict[str, Any] | None = None, schedule: bool = True) -> None:
         snapshot = jobs if jobs is not None else safe_status(self.job_surface.snapshot)
