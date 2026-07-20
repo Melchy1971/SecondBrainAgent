@@ -7,6 +7,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_notification,
     approval_notifications_enabled,
     approval_overdue_after,
+    approval_refresh_interval_ms,
     elevated_approval_notification,
     overdue_approval_notification,
 )
@@ -180,3 +181,11 @@ def test_approval_activity_uses_custom_overdue_threshold():
         overdue_after=timedelta(minutes=5),
     )
     assert result["overdue"] == 1
+
+
+def test_approval_refresh_interval_is_validated_and_bounded():
+    assert approval_refresh_interval_ms(None) == 2000
+    assert approval_refresh_interval_ms(" 5 ") == 5000
+    assert approval_refresh_interval_ms("0") == 2000
+    assert approval_refresh_interval_ms("61") == 2000
+    assert approval_refresh_interval_ms("invalid") == 2000
