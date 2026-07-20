@@ -21,6 +21,7 @@ from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleI
 from secondbrain.desktop_native.navigation import VIEWS, display_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.status import write_native_status_report
+from secondbrain.desktop_native.system_metrics import format_bytes, format_percent, format_uptime, read_system_metrics
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
@@ -102,6 +103,8 @@ class JarvisNativeApp(tk.Tk):
         self.clock_day = tk.StringVar(value="")
         self.clock_date = tk.StringVar(value="")
         self.metric_vars: dict[str, tk.StringVar] = {}
+        self.metric_rings: dict[str, tk.Canvas] = {}
+        self.system_metrics: dict[str, Any] = {"available": False}
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
@@ -124,6 +127,7 @@ class JarvisNativeApp(tk.Tk):
         self.wake_runtime.start()
         self.global_hotkey.start()
         self.after(100, self.refresh_status)
+        self.after(5000, self._refresh_system_metrics)
         self.after(200, self._drain_queue)
         self.after(100, self._sync_voice_state)
         self._tick_clock()
@@ -361,7 +365,8 @@ class JarvisNativeApp(tk.Tk):
 
         disk = self._panel(parent, row=1, column=0, sticky="ew", pady=(0, 16))
         self._section_title(disk, "Speicher / Disk")
-        for key, value in [("Gesamt", "34.3 GB"), ("Belegt", "26.3 GB"), ("Frei", "8 GB"), ("Verwendung", "77%")]:
+        for key in ["Gesamt", "Belegt", "Frei", "Verwendung"]:
+            value = "Unavailable"
             var = tk.StringVar(value=value)
             self.metric_vars[f"disk_{key}"] = var
             self._kv(disk, key, var)
@@ -373,12 +378,12 @@ class JarvisNativeApp(tk.Tk):
         system = self._panel(parent, row=2, column=0, sticky="ew")
         self._section_title(system, "System")
         for key, value in [
-            ("Uptime", "1d 12h 52min"),
-            ("CPU", "41%"),
-            ("RAM", "88%"),
-            ("Swap", "17%"),
-            ("Netz down", "356.4 KB/s"),
-            ("Netz up", "8.4 KB/s"),
+            ("Uptime", "Unavailable"),
+            ("CPU", "Unavailable"),
+            ("RAM", "Unavailable"),
+            ("Swap", "Unavailable"),
+            ("Netz down", "Unavailable"),
+            ("Netz up", "Unavailable"),
             ("Vault MD", "392"),
             ("Vault", "OK"),
             ("Inbox", "OK"),
@@ -400,10 +405,10 @@ class JarvisNativeApp(tk.Tk):
         rings = tk.Frame(metrics, bg=metrics.cget("bg"))
         rings.pack(fill="x", padx=18, pady=(0, 12))
         for name, pct, color in [
-            ("CPU", 41, HUD["cyan"]),
-            ("RAM", 88, HUD["warn"]),
-            ("SWAP", 17, HUD["cyan"]),
-            ("DISK", 77, HUD["warn"]),
+            ("CPU", 0, HUD["cyan"]),
+            ("RAM", 0, HUD["cyan"]),
+            ("SWAP", 0, HUD["cyan"]),
+            ("DISK", 0, HUD["cyan"]),
             ("QUEUE", 0, HUD["line"]),
         ]:
             self._ring(rings, name, pct, color)
@@ -553,11 +558,19 @@ class JarvisNativeApp(tk.Tk):
         wrap.pack(side="left", expand=True, padx=12)
         canvas = tk.Canvas(wrap, width=76, height=76, bg=parent.cget("bg"), highlightthickness=0)
         canvas.pack()
+        self.metric_rings[name] = canvas
+        self._draw_ring(name, pct, color)
+        self._label(wrap, name, fg=HUD["cyan_dim"], font=("Segoe UI", 7, "bold"), anchor="center")
+
+    def _draw_ring(self, name: str, pct: int, color: str) -> None:
+        canvas = self.metric_rings.get(name)
+        if canvas is None:
+            return
+        canvas.delete("all")
         canvas.create_oval(8, 8, 68, 68, outline="#0b3d4c", width=7)
         extent = max(0, min(100, pct)) * 3.6
         canvas.create_arc(8, 8, 68, 68, start=90, extent=-extent, outline=color, width=7, style="arc")
         canvas.create_text(38, 38, text=str(pct), fill=HUD["text"], font=("Segoe UI", 11, "bold"))
-        self._label(wrap, name, fg=HUD["cyan_dim"], font=("Segoe UI", 7, "bold"), anchor="center")
 
     def _draw_reactor(self, pct: int) -> None:
         c = self.reactor
@@ -679,18 +692,45 @@ class JarvisNativeApp(tk.Tk):
         self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
         running = self.job_surface.snapshot()["running_count"]
         self.info_vars.get("Queue", tk.StringVar()).set(f"Running: {running}")
+        self._refresh_system_metrics(schedule=False)
         self.output.delete("1.0", "end")
         self._write(bootstrap_text(self.project_root, repair=True))
         self._write("\nNative Status:")
         self._json(payload)
-        self.after_idle(lambda: self._draw_reactor(41))
+
+    def _refresh_system_metrics(self, *, schedule: bool = True) -> None:
+        metrics = read_system_metrics(self.project_root)
+        self.system_metrics = metrics
+        values = metrics if metrics.get("available") else {}
+        labels = {
+            "disk_Gesamt": format_bytes(values.get("disk_total")),
+            "disk_Belegt": format_bytes(values.get("disk_used")),
+            "disk_Frei": format_bytes(values.get("disk_free")),
+            "disk_Verwendung": format_percent(values.get("disk_percent")),
+            "system_Uptime": format_uptime(values.get("uptime_seconds")),
+            "system_CPU": format_percent(values.get("cpu_percent")),
+            "system_RAM": format_percent(values.get("ram_percent")),
+            "system_Swap": format_percent(values.get("swap_percent")),
+        }
+        for key, value in labels.items():
+            if key in self.metric_vars:
+                self.metric_vars[key].set(value)
+        for name, key in [("CPU", "cpu_percent"), ("RAM", "ram_percent"), ("SWAP", "swap_percent"), ("DISK", "disk_percent")]:
+            pct = int(float(values.get(key, 0)))
+            color = HUD["warn"] if pct >= 80 else HUD["cyan"]
+            self._draw_ring(name, pct, color)
+        cpu = int(float(values.get("cpu_percent", 0)))
+        self.after_idle(lambda: self._draw_reactor(cpu))
         self.after_idle(self._draw_disk_bar)
+        if schedule:
+            self.after(5000, self._refresh_system_metrics)
 
     def _draw_disk_bar(self) -> None:
         self.disk_bar.delete("all")
         width = max(10, self.disk_bar.winfo_width())
         self.disk_bar.create_rectangle(0, 0, width, 8, fill="#08202b", outline=HUD["line"])
-        self.disk_bar.create_rectangle(0, 0, int(width * 0.77), 8, fill=HUD["cyan"], outline="")
+        pct = float(self.system_metrics.get("disk_percent", 0))
+        self.disk_bar.create_rectangle(0, 0, int(width * pct / 100), 8, fill=HUD["cyan"], outline="")
 
     def run_launcher(self, args: list[str], *, title: str | None = None) -> None:
         self.status_var.set("laeuft")
