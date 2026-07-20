@@ -17,7 +17,7 @@ def _snapshot(**voice_overrides):
         wake={"enabled": True, "running": True, "local_only": True, "raw_audio_persisted": False},
         hotkey={"enabled": True, "available": True, "running": True, "raw_keys_recorded": False},
         tray_running=True,
-        approvals={"pending_count": 2},
+        approvals={"available": True, "pending_count": 2, "elevated_count": 1, "overdue_count": 1},
         jobs={"running_count": 1, "blocked_count": 3},
         approval_config={"notifications_enabled": False, "overdue_minutes": 30, "refresh_seconds": 5},
     )
@@ -28,7 +28,10 @@ def test_ready_runtime_exposes_only_operational_summary():
     assert snapshot["status"] == "ready"
     assert snapshot["components"]["jobs"] == {"running_count": 1, "blocked_count": 3}
     assert snapshot["components"]["approvals"] == {
+        "available": True,
         "pending_count": 2,
+        "elevated_count": 1,
+        "overdue_count": 1,
         "notifications_enabled": False,
         "overdue_minutes": 30,
         "refresh_seconds": 5,
@@ -46,7 +49,10 @@ def test_approval_diagnostics_use_safe_defaults_without_config():
         jobs={},
     )
     assert snapshot["components"]["approvals"] == {
+        "available": False,
         "pending_count": 0,
+        "elevated_count": 0,
+        "overdue_count": 0,
         "notifications_enabled": True,
         "overdue_minutes": 15,
         "refresh_seconds": 2,

@@ -744,13 +744,20 @@ class JarvisNativeApp(tk.Tk):
             self._write(f"Ansicht {view}: bereit")
 
     def _runtime_diagnostics(self) -> dict[str, Any]:
+        approval_snapshot = safe_status(self.approval_surface.snapshot)
+        approval_state = approval_activity(dict(approval_snapshot), overdue_after=self.approval_overdue_after)
         return runtime_diagnostics(
             voice=safe_status(self.voice.status),
             voice_state=self.action_bus.voice.state.value,
             wake=safe_status(self.wake_runtime.status),
             hotkey=safe_status(self.global_hotkey.status),
             tray_running=self.tray.running,
-            approvals=safe_status(self.approval_surface.snapshot),
+            approvals={
+                "available": approval_state["available"],
+                "pending_count": approval_state["pending"],
+                "elevated_count": approval_state["elevated"],
+                "overdue_count": approval_state["overdue"],
+            },
             jobs=safe_status(self.job_surface.snapshot),
             approval_config={
                 "notifications_enabled": self.approval_notifications_enabled,

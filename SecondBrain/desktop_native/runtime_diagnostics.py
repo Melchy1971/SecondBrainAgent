@@ -56,7 +56,10 @@ def runtime_diagnostics(
         },
         "tray": {"running": bool(tray_running)},
         "approvals": {
+            "available": bool(approvals.get("available", "pending_count" in approvals)),
             "pending_count": int(approvals.get("pending_count", 0)),
+            "elevated_count": int(approvals.get("elevated_count", 0)),
+            "overdue_count": int(approvals.get("overdue_count", 0)),
             "notifications_enabled": bool((approval_config or {}).get("notifications_enabled", True)),
             "overdue_minutes": int((approval_config or {}).get("overdue_minutes", 15)),
             "refresh_seconds": int((approval_config or {}).get("refresh_seconds", 2)),
