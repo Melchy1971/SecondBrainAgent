@@ -66,6 +66,7 @@ def test_approval_activity_counts_elevated_visible_items_without_payloads():
         "pending": 3,
         "elevated": 2,
         "overdue": 0,
+        "severity": "warning",
         "label": "3 Pending / 2 Elevated",
     }
     assert "secret" not in str(result)
@@ -77,6 +78,7 @@ def test_approval_activity_normalizes_invalid_snapshot():
         "pending": 0,
         "elevated": 0,
         "overdue": 0,
+        "severity": "unavailable",
         "label": "Unavailable",
     }
 
@@ -98,5 +100,11 @@ def test_approval_activity_marks_visible_items_overdue_after_fifteen_minutes():
         "pending": 3,
         "elevated": 0,
         "overdue": 2,
+        "severity": "critical",
         "label": "3 Pending / 2 Overdue",
     }
+
+
+def test_approval_activity_marks_empty_queue_as_normal():
+    result = approval_activity({"pending_count": 0, "items": []})
+    assert result["severity"] == "normal"
