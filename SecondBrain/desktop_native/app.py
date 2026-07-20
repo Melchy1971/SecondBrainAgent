@@ -13,6 +13,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from secondbrain.desktop_native.action_bus import NativeActionBus
+from secondbrain.desktop_native.approval_surface import ApprovalSurface
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
@@ -62,6 +63,7 @@ class JarvisNativeApp(tk.Tk):
         self.window_state = WindowStateStore(self.project_root)
         restored = self.window_state.load()
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
+        self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.voice = GermanVoiceController(
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
@@ -451,6 +453,7 @@ class JarvisNativeApp(tk.Tk):
         self._section_title(alerts, "Alerts", "System")
         for key, value, color in [
             ("Release Gate", "0 Blocker", HUD["good"]),
+            ("Approvals", "0 Pending", HUD["warn"]),
             ("Embedding", "-", HUD["cyan"]),
             ("PostgreSQL", "-", HUD["good"]),
             ("pgvector", "-", HUD["cyan"]),
@@ -633,6 +636,8 @@ class JarvisNativeApp(tk.Tk):
                 "- Restore: python launcher.py ops-restore <backup-id>\n"
                 "- Rollback: python launcher.py ops-restore-rollback"
             )
+        elif view == "Approvals":
+            self._json(self.approval_surface.snapshot())
         elif view == "Developer":
             self.run_launcher(["command-index"], title="Command Index")
         else:
@@ -648,6 +653,8 @@ class JarvisNativeApp(tk.Tk):
         self.info_vars.get("Embedding", tk.StringVar()).set("-")
         self.info_vars.get("Memory Engine", tk.StringVar()).set(_fmt_status(payload.get("bootstrap", {}).get("ok")))
         self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{len(payload.get('blockers', []))} Blocker")
+        pending = self.approval_surface.snapshot()["pending_count"]
+        self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
         self.output.delete("1.0", "end")
         self._write(bootstrap_text(self.project_root, repair=True))
         self._write("\nNative Status:")
