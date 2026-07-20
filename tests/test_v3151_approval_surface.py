@@ -1,4 +1,4 @@
-from secondbrain.desktop_native.approval_surface import ApprovalSurface
+from secondbrain.desktop_native.approval_surface import ApprovalSurface, approval_activity
 from secondbrain.native.approval import NativeApprovalQueue
 
 
@@ -46,3 +46,32 @@ def test_surface_excludes_non_pending_and_limits_visible_rows(tmp_path):
     snapshot = ApprovalSurface(queue, workspace_id="alpha", limit=1).snapshot()
     assert snapshot["pending_count"] == 2
     assert snapshot["visible_count"] == 1
+
+
+def test_approval_activity_counts_elevated_visible_items_without_payloads():
+    result = approval_activity(
+        {
+            "pending_count": 3,
+            "items": [
+                {"risk_level": "external_write", "payload": "secret"},
+                {"risk_level": "destructive"},
+                {"risk_level": "read_only"},
+            ],
+        }
+    )
+    assert result == {
+        "available": True,
+        "pending": 3,
+        "elevated": 2,
+        "label": "3 Pending / 2 Elevated",
+    }
+    assert "secret" not in str(result)
+
+
+def test_approval_activity_normalizes_invalid_snapshot():
+    assert approval_activity({"pending_count": "invalid", "items": "invalid"}) == {
+        "available": False,
+        "pending": 0,
+        "elevated": 0,
+        "label": "Unavailable",
+    }

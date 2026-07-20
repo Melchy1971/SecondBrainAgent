@@ -4,6 +4,28 @@ from typing import Any
 
 from secondbrain.native.approval import NativeApprovalQueue
 
+ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
+
+
+def approval_activity(snapshot: dict[str, Any]) -> dict[str, Any]:
+    try:
+        pending = max(0, int(snapshot["pending_count"]))
+    except (TypeError, ValueError):
+        return {"available": False, "pending": 0, "elevated": 0, "label": "Unavailable"}
+    except KeyError:
+        return {"available": False, "pending": 0, "elevated": 0, "label": "Unavailable"}
+    items = snapshot.get("items")
+    safe_items = items if isinstance(items, list) else []
+    elevated = sum(
+        1
+        for item in safe_items
+        if isinstance(item, dict) and str(item.get("risk_level", "")).casefold() in ELEVATED_RISK_LEVELS
+    )
+    label = f"{pending} Pending"
+    if elevated:
+        label += f" / {elevated} Elevated"
+    return {"available": True, "pending": pending, "elevated": elevated, "label": label}
+
 
 class ApprovalSurface:
     """Workspace-isolated, payload-free projection for unprivileged desktop display."""
