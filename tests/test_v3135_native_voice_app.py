@@ -68,4 +68,6 @@ def test_native_voice_gate_passes_and_redacts(tmp_path: Path):
     report = run_native_voice_app_gate(tmp_path)
     assert report["status"] == "PASS"
     assert report["privacy"]["raw_audio_persisted"] is False
+    assert report["schema"] == "secondbrain.native_voice_app_gate.v31_54"
+    assert len(report["checks"]) == 15
     assert (tmp_path / "runtime" / "reports" / "native_voice_app_gate.json").exists()
