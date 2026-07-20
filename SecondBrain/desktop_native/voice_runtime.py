@@ -102,6 +102,33 @@ class VoiceSession:
                 return {"status": "confirmation_required", "action_id": action.id, "binding": self.dialog.binding}
             return self._execute(action, values)
 
+    def dispatch(self, action_id: str, parameters: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """Dispatch a trusted adapter mapping while preserving all registry policies."""
+        with self._lock:
+            return self._dispatch(action_id, parameters)
+
+    def _dispatch(self, action_id: str, parameters: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        action = self.registry.get(action_id)
+        values = dict(parameters or {})
+        values.update({name: schema["const"] for name, schema in action.parameters.items() if "const" in schema})
+        missing = [name for name, schema in action.parameters.items()
+                   if schema.get("const") is None and schema.get("minLength", 0) > 0 and not values.get(name)]
+        if action.requires_workspace and not self.workspace_id:
+            return self._error("workspace_required")
+        if missing:
+            self.dialog = self._context(action, values, missing)
+            self.state = VoiceState.WAITING_FOR_CONFIRMATION
+            return {"status": "slots_required", "missing": missing, "action_id": action.id}
+        if action.requires_approval:
+            self.dialog = self._context(action, values, [])
+            self.state = VoiceState.WAITING_FOR_APPROVAL
+            return {"status": "approval_required", "action_id": action.id, "binding": self.dialog.binding}
+        if action.requires_confirmation:
+            self.dialog = self._context(action, values, [])
+            self.state = VoiceState.WAITING_FOR_CONFIRMATION
+            return {"status": "confirmation_required", "action_id": action.id, "binding": self.dialog.binding}
+        return self._execute(action, values)
+
     def provide_slots(self, parameters: Mapping[str, Any]) -> dict[str, Any]:
         with self._lock:
             if not self.dialog or self.dialog.expires_at < time.time():

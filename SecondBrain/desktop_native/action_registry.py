@@ -78,6 +78,10 @@ def _normalize(value: str) -> str:
 
 def build_core_registry(handler: ActionHandler) -> ActionRegistry:
     registry = ActionRegistry()
+
+    def bound(action_id: str) -> ActionHandler:
+        return lambda payload: handler({"action_id": action_id, **payload})
+
     views = {
         "dashboard": "Dashboard", "tasks": "Aufgaben", "projects": "Projekte",
         "documents": "Dokumente", "search": "Suche", "memory": "Memory",
@@ -88,30 +92,40 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
         registry.register(ActionDefinition(
             id=f"navigation.{view}", title=f"{title} öffnen",
             aliases=(f"öffne {title.lower()}", f"zeige {title.lower()}"),
-            parameters={"view": {"type": "string", "const": view}}, handler=handler,
+            parameters={"view": {"type": "string", "const": view}}, handler=bound(f"navigation.{view}"),
             capability_source="native_navigation",
         ))
     registry.register(ActionDefinition(
         id="assistant.ask", title="Assistent fragen", aliases=(),
-        parameters={"text": {"type": "string", "minLength": 1}}, handler=handler,
+        parameters={"text": {"type": "string", "minLength": 1}}, handler=bound("assistant.ask"),
         capability_source="rag_chat_service",
     ))
     registry.register(ActionDefinition(
         id="documents.import", title="Datei importieren", aliases=("importiere datei",),
         risk=ActionRisk.WRITE, requires_confirmation=True, requires_workspace=True,
-        parameters={"path": {"type": "string", "minLength": 1}}, handler=handler,
+        parameters={"path": {"type": "string", "minLength": 1}}, handler=bound("documents.import"),
         capability_source="document_import_service",
     ))
     registry.register(ActionDefinition(
         id="calendar.create", title="Termin erstellen", aliases=("erstelle termin", "neuer termin"),
         risk=ActionRisk.EXTERNAL_WRITE, requires_approval=True, requires_workspace=True,
-        parameters={"title": {"type": "string", "minLength": 1}, "when": {"type": "string", "minLength": 1}}, handler=handler,
+        parameters={"title": {"type": "string", "minLength": 1}, "when": {"type": "string", "minLength": 1}}, handler=bound("calendar.create"),
         capability_source="calendar_assistant",
     ))
     registry.register(ActionDefinition(
         id="mail.send", title="E-Mail senden", aliases=("sende antwort", "sende mail"),
         risk=ActionRisk.EXTERNAL_WRITE, requires_approval=True, requires_workspace=True,
-        parameters={"recipient": {"type": "string", "minLength": 1}, "body": {"type": "string", "minLength": 1}}, handler=handler,
+        parameters={"recipient": {"type": "string", "minLength": 1}, "body": {"type": "string", "minLength": 1}}, handler=bound("mail.send"),
         capability_source="mail_assistant",
+    ))
+    registry.register(ActionDefinition(
+        id="search.query", title="Wissen durchsuchen", aliases=("suche", "suche nach"),
+        parameters={"query": {"type": "string", "minLength": 1}}, handler=bound("search.query"),
+        capability_source="rag_chat_service",
+    ))
+    registry.register(ActionDefinition(
+        id="index.repair", title="Vektorindex reparieren", aliases=("repariere index", "index reparieren"),
+        risk=ActionRisk.WRITE, requires_confirmation=True,
+        handler=bound("index.repair"), capability_source="vector_provider_guard",
     ))
     return registry

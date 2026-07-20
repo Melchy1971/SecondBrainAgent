@@ -12,7 +12,8 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from secondbrain.desktop_native.status import write_native_status_report
-from secondbrain.desktop_native.voice_de import GermanVoiceController, parse_german_voice_command
+from secondbrain.desktop_native.action_bus import NativeActionBus
+from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 
@@ -65,6 +66,7 @@ class JarvisNativeApp(tk.Tk):
         super().__init__()
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.voice = GermanVoiceController(self.project_root, speaker=self._speak_status_only)
+        self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
         self.queue: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
@@ -616,8 +618,10 @@ class JarvisNativeApp(tk.Tk):
             if kind == "voice":
                 self.status_var.set("READY" if payload.get("ok") else "STT FEHLER")
                 self._json(payload)
-                if payload.get("ok") and payload.get("command"):
-                    self.execute_voice_command(payload["command"])
+                if payload.get("ok") and payload.get("text"):
+                    self._submit_action(payload["text"])
+            elif kind == "action_bus":
+                self._handle_action_result(payload)
             elif kind == "launcher":
                 self.status_var.set("READY" if payload["returncode"] == 0 else "BLOCKED")
                 if payload["stdout"]:
@@ -634,9 +638,31 @@ class JarvisNativeApp(tk.Tk):
         self.command_entry.delete(0, "end")
         if not text:
             return
-        command = parse_german_voice_command(text)
-        self._write(f"\n> {text}\nIntent: {command.intent}")
-        self.execute_voice_command(command.to_dict())
+        self._write(f"\n> {text}")
+        self._submit_action(text)
+
+    def _submit_action(self, text: str) -> None:
+        self.status_var.set("VERARBEITET")
+
+        def worker() -> None:
+            self.queue.put(("action_bus", self.action_bus.submit(text)))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _handle_action_result(self, result: dict[str, Any]) -> None:
+        self.status_var.set("READY" if result.get("status") != "error" else "FEHLER")
+        if result.get("status") == "confirmation_required":
+            if messagebox.askyesno("Aktion bestätigen", f"{result.get('action_id')} wirklich ausführen?"):
+                threading.Thread(
+                    target=lambda: self.queue.put(("action_bus", self.action_bus.confirm())), daemon=True
+                ).start()
+            return
+        payload = result.get("result") or {}
+        next_view = payload.get("next_view") if isinstance(payload, dict) else None
+        if next_view:
+            mapping = {"documents": "Documents", "memory": "Memory", "settings": "Settings"}
+            self.show_view(mapping.get(next_view, next_view.title()))
+        self._json(result)
 
     def listen_once(self) -> None:
         self.status_var.set("hoert zu")
