@@ -13,6 +13,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from secondbrain.desktop_native.action_bus import NativeActionBus
+from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
 from secondbrain.desktop_native.status import write_native_status_report
@@ -99,6 +100,9 @@ class JarvisNativeApp(tk.Tk):
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
         self.voice_var = tk.StringVar(value="Deutsch - bereit fuer Textbefehle")
+        self.dialog_tts_enabled = os.environ.get("SECONDBRAIN_DIALOG_TTS_ENABLED", "").casefold() in {
+            "1", "true", "yes", "on"
+        }
         self.voice_state_var = tk.StringVar(value=self.action_bus.voice.state.value)
         self.clock_time = tk.StringVar(value="")
         self.clock_day = tk.StringVar(value="")
@@ -735,12 +739,12 @@ class JarvisNativeApp(tk.Tk):
 
     def _handle_action_result(self, result: dict[str, Any]) -> None:
         self.status_var.set("READY" if result.get("status") != "error" else "FEHLER")
-        if result.get("status") == "confirmation_required":
-            if messagebox.askyesno("Aktion bestätigen", f"{result.get('action_id')} wirklich ausführen?"):
-                threading.Thread(
-                    target=lambda: self.queue.put(("action_bus", self.action_bus.confirm())), daemon=True
-                ).start()
-            return
+        prompt = dialog_prompt(result)
+        if prompt:
+            self.voice_var.set(prompt)
+            self._write(f"\nJarvis: {prompt}")
+            if self.dialog_tts_enabled:
+                threading.Thread(target=lambda: self.voice.speak(prompt), daemon=True).start()
         payload = result.get("result") or {}
         next_view = payload.get("next_view") if isinstance(payload, dict) else None
         if next_view:
