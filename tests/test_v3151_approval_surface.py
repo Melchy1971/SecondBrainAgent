@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from secondbrain.desktop_native.approval_surface import ApprovalSurface, approval_activity
+from secondbrain.desktop_native.approval_surface import ApprovalSurface, approval_activity, approval_notification
 from secondbrain.native.approval import NativeApprovalQueue
 
 
@@ -108,3 +108,11 @@ def test_approval_activity_marks_visible_items_overdue_after_fifteen_minutes():
 def test_approval_activity_marks_empty_queue_as_normal():
     result = approval_activity({"pending_count": 0, "items": []})
     assert result["severity"] == "normal"
+
+
+def test_approval_notification_only_reports_new_pending_items():
+    assert approval_notification(None, 3) is None
+    assert approval_notification(3, 3) is None
+    assert approval_notification(3, 2) is None
+    assert approval_notification(2, 3) == "1 neue Freigabe wartet auf Entscheidung."
+    assert approval_notification(1, 3) == "2 neue Freigaben warten auf Entscheidung."
