@@ -21,6 +21,7 @@ class SystemTrayController:
         self,
         *,
         on_open: Callable[[], None],
+        on_open_approvals: Callable[[], None],
         on_toggle_mute: Callable[[], None],
         on_toggle_listening: Callable[[], None],
         on_push_to_talk: Callable[[], None],
@@ -28,6 +29,7 @@ class SystemTrayController:
         status_text: Callable[[], str],
     ) -> None:
         self.on_open = on_open
+        self.on_open_approvals = on_open_approvals
         self.on_toggle_mute = on_toggle_mute
         self.on_toggle_listening = on_toggle_listening
         self.on_push_to_talk = on_push_to_talk
@@ -58,6 +60,7 @@ class SystemTrayController:
         menu = pystray.Menu(
             pystray.MenuItem("Jarvis öffnen", lambda _icon, _item: self.on_open(), default=True),
             pystray.MenuItem(lambda _item: self.status_text(), None, enabled=False),
+            pystray.MenuItem("Freigaben öffnen", lambda _icon, _item: self.on_open_approvals()),
             pystray.MenuItem("Zuhören umschalten", lambda _icon, _item: self.on_toggle_listening()),
             pystray.MenuItem("Mikrofon stummschalten", lambda _icon, _item: self.on_toggle_mute()),
             pystray.MenuItem("Push-to-Talk", lambda _icon, _item: self.on_push_to_talk()),

@@ -144,6 +144,7 @@ class JarvisNativeApp(tk.Tk):
         self._build_layout()
         self.tray = SystemTrayController(
             on_open=lambda: self.after(0, self._restore_window),
+            on_open_approvals=lambda: self.after(0, self._open_approvals),
             on_toggle_listening=lambda: self.after(0, self._toggle_wake_listening),
             on_toggle_mute=lambda: self.after(0, self._toggle_mute),
             on_push_to_talk=lambda: self.after(0, self.listen_once),
@@ -177,6 +178,10 @@ class JarvisNativeApp(tk.Tk):
         self.deiconify()
         self.lift()
         self.focus_force()
+
+    def _open_approvals(self) -> None:
+        self._restore_window()
+        self.show_view("Approvals")
 
     def _toggle_mute(self) -> None:
         muted = self.action_bus.voice.state != "MUTED"

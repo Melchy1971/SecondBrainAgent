@@ -7,6 +7,7 @@ from secondbrain.desktop_native.tray import SystemTrayController, tray_status_te
 def controller(calls):
     return SystemTrayController(
         on_open=lambda: calls.append("open"),
+        on_open_approvals=lambda: calls.append("approvals"),
         on_toggle_listening=lambda: calls.append("listen"),
         on_toggle_mute=lambda: calls.append("mute"),
         on_push_to_talk=lambda: calls.append("ptt"),
@@ -54,10 +55,11 @@ def test_tray_menu_callbacks_and_shutdown(monkeypatch):
     assert tray.start().running is True
     icon = made["icon"]
     icon.menu[0].action(None, None)
-    icon.menu[3].action(None, None)
     icon.menu[4].action(None, None)
     icon.menu[2].action(None, None)
     icon.menu[5].action(None, None)
-    assert calls == ["open", "mute", "ptt", "listen", "exit"]
+    icon.menu[3].action(None, None)
+    icon.menu[6].action(None, None)
+    assert calls == ["open", "mute", "approvals", "ptt", "listen", "exit"]
     tray.stop()
     assert icon.stopped is True
