@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from .stt import LocalSttPolicy
+
 
 @dataclass(frozen=True)
 class VoiceCommand:
@@ -75,12 +77,13 @@ class GermanVoiceController:
     typed German commands and exposes clear readiness diagnostics.
     """
 
-    def __init__(self, project_root: str | Path | None = None, *, speaker: Callable[[str], None] | None = None):
+    def __init__(self, project_root: str | Path | None = None, *, speaker: Callable[[str], None] | None = None, stt_policy: LocalSttPolicy | None = None):
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.speaker = speaker
         self.language = os.environ.get("SECONDBRAIN_VOICE_LANGUAGE", "de-DE")
         self._listening = False
         self._thread: threading.Thread | None = None
+        self.stt_policy = stt_policy or LocalSttPolicy()
 
     def status(self) -> dict[str, Any]:
         modules: dict[str, bool] = {}
@@ -94,10 +97,11 @@ class GermanVoiceController:
             "ok": True,
             "schema": "secondbrain.voice.de.v1",
             "language": self.language,
-            "stt_ready": modules["speech_recognition"] or modules["faster_whisper"] or modules["vosk"],
+            "stt_ready": self.stt_policy.status()["selected_engine"] != "none",
             "tts_ready": modules["pyttsx3"] or modules["edge_tts"],
             "modules": modules,
             "listening": self._listening,
+            "stt_policy": self.stt_policy.status(),
             "supported_intents": [
                 "status",
                 "production_gate",
@@ -144,8 +148,11 @@ class GermanVoiceController:
                 recognizer.adjust_for_ambient_noise(source, duration=0.4)
                 audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
             try:
-                text = recognizer.recognize_google(audio, language=self.language)
-                return {"ok": True, "text": text, "command": self.parse(text), "engine": "google_speech_recognition"}
+                result = self.stt_policy.transcribe(audio, recognizer, language=self.language)
+                if not result.get("ok"):
+                    return result
+                text = str(result["text"])
+                return {**result, "command": self.parse(text)}
             except sr.UnknownValueError:
                 return {"ok": False, "error": "Sprache nicht verstanden"}
             except sr.RequestError as exc:
