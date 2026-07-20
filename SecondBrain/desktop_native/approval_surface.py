@@ -1,19 +1,31 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from secondbrain.native.approval import NativeApprovalQueue
 
 ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
+APPROVAL_OVERDUE_AFTER = timedelta(minutes=15)
 
 
-def approval_activity(snapshot: dict[str, Any]) -> dict[str, Any]:
+def _created_at(value: Any) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def approval_activity(snapshot: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
     try:
         pending = max(0, int(snapshot["pending_count"]))
     except (TypeError, ValueError):
-        return {"available": False, "pending": 0, "elevated": 0, "label": "Unavailable"}
+        return {"available": False, "pending": 0, "elevated": 0, "overdue": 0, "label": "Unavailable"}
     except KeyError:
-        return {"available": False, "pending": 0, "elevated": 0, "label": "Unavailable"}
+        return {"available": False, "pending": 0, "elevated": 0, "overdue": 0, "label": "Unavailable"}
     items = snapshot.get("items")
     safe_items = items if isinstance(items, list) else []
     elevated = sum(
@@ -21,10 +33,24 @@ def approval_activity(snapshot: dict[str, Any]) -> dict[str, Any]:
         for item in safe_items
         if isinstance(item, dict) and str(item.get("risk_level", "")).casefold() in ELEVATED_RISK_LEVELS
     )
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+    else:
+        current = current.astimezone(timezone.utc)
+    overdue = sum(
+        1
+        for item in safe_items
+        if isinstance(item, dict)
+        and (created := _created_at(item.get("created_at"))) is not None
+        and current - created >= APPROVAL_OVERDUE_AFTER
+    )
     label = f"{pending} Pending"
     if elevated:
         label += f" / {elevated} Elevated"
-    return {"available": True, "pending": pending, "elevated": elevated, "label": label}
+    if overdue:
+        label += f" / {overdue} Overdue"
+    return {"available": True, "pending": pending, "elevated": elevated, "overdue": overdue, "label": label}
 
 
 class ApprovalSurface:
