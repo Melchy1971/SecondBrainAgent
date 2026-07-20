@@ -1,7 +1,7 @@
 import sys
 import types
 
-from secondbrain.desktop_native.tray import SystemTrayController
+from secondbrain.desktop_native.tray import SystemTrayController, tray_status_text
 
 
 def controller(calls):
@@ -20,6 +20,12 @@ def test_missing_optional_dependencies_is_degraded(monkeypatch):
     result = controller([]).start()
     assert result.available is False
     assert result.running is False
+
+
+def test_tray_status_text_includes_cached_approval_activity():
+    assert tray_status_text(status="READY", voice="IDLE", approvals="2 Pending / 1 Overdue") == (
+        "Status: READY · Voice: IDLE · Approvals: 2 Pending / 1 Overdue"
+    )
 
 
 def test_tray_menu_callbacks_and_shutdown(monkeypatch):

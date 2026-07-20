@@ -12,6 +12,10 @@ class TrayStatus:
     degraded_reason: str = ""
 
 
+def tray_status_text(*, status: str, voice: str, approvals: str) -> str:
+    return f"Status: {status} · Voice: {voice} · Approvals: {approvals}"
+
+
 class SystemTrayController:
     def __init__(
         self,

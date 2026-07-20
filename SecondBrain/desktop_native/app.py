@@ -36,7 +36,7 @@ from secondbrain.desktop_native.system_metrics import (
     format_percent,
     format_uptime,
 )
-from secondbrain.desktop_native.tray import SystemTrayController
+from secondbrain.desktop_native.tray import SystemTrayController, tray_status_text
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
 from secondbrain.desktop_native.vault_surface import vault_status_labels
@@ -132,6 +132,7 @@ class JarvisNativeApp(tk.Tk):
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
         self.approval_alert_label: tk.Label | None = None
+        self.approval_tray_status = "Unavailable"
         self.pill_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
         self.geometry(str(restored.get("geometry") or "1500x900"))
@@ -147,7 +148,11 @@ class JarvisNativeApp(tk.Tk):
             on_toggle_mute=lambda: self.after(0, self._toggle_mute),
             on_push_to_talk=lambda: self.after(0, self.listen_once),
             on_exit=lambda: self.after(0, self._exit_app),
-            status_text=lambda: f"Status: {self.status_var.get()} · Voice: {self.action_bus.voice.state}",
+            status_text=lambda: tray_status_text(
+                status=self.status_var.get(),
+                voice=str(self.action_bus.voice.state),
+                approvals=self.approval_tray_status,
+            ),
         )
         self.tray.start()
         self.wake_runtime.start()
@@ -782,6 +787,7 @@ class JarvisNativeApp(tk.Tk):
         current = snapshot if snapshot is not None else safe_status(self.approval_surface.snapshot)
         activity = approval_activity(dict(current))
         self.alert_vars.get("Approvals", tk.StringVar()).set(activity["label"])
+        self.approval_tray_status = activity["label"]
         if self.approval_alert_label is not None:
             color = {
                 "critical": HUD["bad"],
