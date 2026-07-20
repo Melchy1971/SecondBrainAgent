@@ -12,11 +12,12 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
-from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.action_bus import NativeActionBus
-from secondbrain.desktop_native.tts import LocalTtsRuntime
+from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
+from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.tray import SystemTrayController
+from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
@@ -84,6 +85,15 @@ class JarvisNativeApp(tk.Tk):
             config=WakeWordConfig(enabled=wake_enabled),
             on_activation=lambda _phrase: self.after(0, self.listen_once),
         )
+        hotkey_enabled = os.environ.get("SECONDBRAIN_GLOBAL_HOTKEY_ENABLED", "").casefold() in {"1", "true", "yes", "on"}
+        try:
+            self.global_hotkey = GlobalPushToTalkHotkey(
+                lambda: self.after(0, self.listen_once),
+                hotkey=os.environ.get("SECONDBRAIN_PUSH_TO_TALK_HOTKEY", "<ctrl>+<alt>+j"),
+                enabled=hotkey_enabled,
+            )
+        except ValueError:
+            self.global_hotkey = GlobalPushToTalkHotkey(lambda: None)
         self.queue: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
@@ -112,6 +122,7 @@ class JarvisNativeApp(tk.Tk):
         )
         self.tray.start()
         self.wake_runtime.start()
+        self.global_hotkey.start()
         self.after(100, self.refresh_status)
         self.after(200, self._drain_queue)
         self._tick_clock()
@@ -144,6 +155,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _exit_app(self) -> None:
         self.window_state.save(geometry=self.geometry(), view=self.current_view.get())
+        self.global_hotkey.stop()
         self.wake_runtime.stop()
         self.tray.stop()
         self.destroy()
