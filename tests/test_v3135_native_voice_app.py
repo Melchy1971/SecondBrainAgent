@@ -6,6 +6,23 @@ from secondbrain.desktop_native.qt_shell import VIEWS, capabilities
 from secondbrain.desktop_native.voice_runtime import VoiceSession, VoiceState
 
 
+def _ready_voice_status():
+    return {
+        "stt_ready": True,
+        "tts_ready": True,
+        "stt_policy": {
+            "selected_engine": "faster_whisper",
+            "faster_whisper_ready": True,
+            "vosk_ready": False,
+            "windows_speech_ready": False,
+            "cloud_opt_in": False,
+            "raw_audio_persisted": False,
+            "model_download_allowed": False,
+        },
+        "microphone": {"inventory": {"available": True}},
+    }
+
+
 def test_registry_rejects_duplicate_ids_and_exposes_policy():
     registry = build_core_registry(lambda payload: payload)
     assert registry.get("mail.send").requires_approval is True
@@ -65,9 +82,9 @@ def test_qt_shell_is_optional_and_has_required_views():
 def test_native_voice_gate_passes_and_redacts(tmp_path: Path):
     (tmp_path / "SecondBrain" / "desktop_native").mkdir(parents=True)
     (tmp_path / "SecondBrain" / "desktop_native" / "app.py").write_text("", encoding="utf-8")
-    report = run_native_voice_app_gate(tmp_path)
+    report = run_native_voice_app_gate(tmp_path, voice_status=_ready_voice_status())
     assert report["status"] == "PASS"
     assert report["privacy"]["raw_audio_persisted"] is False
-    assert report["schema"] == "secondbrain.native_voice_app_gate.v31_54"
+    assert report["schema"] == "secondbrain.native_voice_app_gate.v31_79"
     assert len(report["checks"]) == 15
     assert (tmp_path / "runtime" / "reports" / "native_voice_app_gate.json").exists()
