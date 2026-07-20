@@ -43,6 +43,7 @@ from secondbrain.desktop_native.system_metrics import (
     format_percent,
     format_uptime,
 )
+from secondbrain.desktop_native.task_surface import TaskSurface, task_view_text
 from secondbrain.desktop_native.tray import SystemTrayController, tray_status_text
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
@@ -50,6 +51,7 @@ from secondbrain.desktop_native.vault_surface import vault_status_labels
 from secondbrain.desktop_native.weather import fetch_weather, weather_config, weather_labels
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.desktop.gui.data_providers import LiveDataService
+from secondbrain.desktop_app import DesktopAppRuntime
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 from secondbrain.native.job_queue_center.service import JobQueueService
@@ -94,6 +96,7 @@ class JarvisNativeApp(tk.Tk):
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
         self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.job_surface = JobSurface(JobQueueService(self.project_root))
+        self.task_surface = TaskSurface(DesktopAppRuntime(self.project_root))
         self.backup_center = BackupCenterViewModel(self.project_root)
         self.live_data = LiveDataService(self.project_root)
         self.voice = GermanVoiceController(
@@ -716,6 +719,8 @@ class JarvisNativeApp(tk.Tk):
             self.run_launcher(["p1-production"], title="Production Gate")
         elif view == "Documents":
             self.run_launcher(["p1-rag-status"], title="Document/RAG Status")
+        elif view == "Tasks":
+            self._write(task_view_text(self.task_surface.snapshot()))
         elif view == "Memory":
             self.run_launcher(["p3-rag-store-status"], title="Memory/RAG Store Status")
         elif view == "Search":
@@ -992,6 +997,10 @@ class JarvisNativeApp(tk.Tk):
         next_view = payload.get("next_view") if isinstance(payload, dict) else None
         if next_view:
             self.show_view(display_view(next_view))
+        action_id = str(result.get("action_id") or "")
+        if result.get("status") == "executed" and action_id.startswith("tasks.") and self.current_view.get() == "Tasks":
+            self.show_view("Tasks")
+            return
         self._json(result)
 
     def listen_once(self) -> None:
