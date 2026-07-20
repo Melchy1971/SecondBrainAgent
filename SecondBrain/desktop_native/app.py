@@ -491,6 +491,7 @@ class JarvisNativeApp(tk.Tk):
         self.command_entry.bind("<Return>", lambda _e: self.handle_typed_command())
         self._hud_button(cmdbar, "DEUTSCH AUSFUEHREN", self.handle_typed_command).grid(row=0, column=1, padx=(8, 0))
         self._hud_button(cmdbar, "MIKROFON 1X", self.listen_once).grid(row=0, column=2, padx=(8, 0))
+        self._hud_button(cmdbar, "ABBRECHEN", self.cancel_listening, warn=True).grid(row=0, column=3, padx=(8, 0))
 
         self.output = tk.Text(
             console,
@@ -696,9 +697,10 @@ class JarvisNativeApp(tk.Tk):
             except queue.Empty:
                 break
             if kind == "voice":
-                if not payload.get("ok"):
+                capture_status = payload.get("status")
+                if not payload.get("ok") and capture_status not in {"busy", "cancelled"}:
                     self.action_bus.voice.set_audio_state("ERROR")
-                self.status_var.set("READY" if payload.get("ok") else "STT FEHLER")
+                self.status_var.set("READY" if payload.get("ok") or capture_status in {"busy", "cancelled"} else "STT FEHLER")
                 self._json(payload)
                 if payload.get("ok") and payload.get("text"):
                     self._submit_action(payload["text"])
@@ -754,6 +756,11 @@ class JarvisNativeApp(tk.Tk):
             self.queue.put(("voice", result))
 
         threading.Thread(target=worker, daemon=True).start()
+
+    def cancel_listening(self) -> None:
+        if self.voice.cancel_listening():
+            self.action_bus.voice.set_audio_state("IDLE")
+            self.voice_var.set("Sprachaufnahme abgebrochen")
 
     def execute_voice_command(self, command: dict[str, Any]) -> None:
         intent = command.get("intent")

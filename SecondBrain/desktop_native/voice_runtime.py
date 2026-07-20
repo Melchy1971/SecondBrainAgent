@@ -61,7 +61,7 @@ class VoiceSession:
     def set_audio_state(self, state: VoiceState | str) -> VoiceState:
         """Accept lifecycle updates only from the replaceable audio adapter."""
         next_state = VoiceState(state)
-        if next_state not in {VoiceState.LISTENING, VoiceState.TRANSCRIBING, VoiceState.ERROR}:
+        if next_state not in {VoiceState.IDLE, VoiceState.LISTENING, VoiceState.TRANSCRIBING, VoiceState.ERROR}:
             raise ValueError(f"invalid audio state: {next_state}")
         with self._lock:
             if self.state == VoiceState.MUTED or self.tts_active:

@@ -94,6 +94,8 @@ class GermanVoiceController:
         self.language = os.environ.get("SECONDBRAIN_VOICE_LANGUAGE", "de-DE")
         self._listening = False
         self._thread: threading.Thread | None = None
+        self._capture_lock = threading.Lock()
+        self._cancel_capture = threading.Event()
         self.stt_policy = stt_policy or LocalSttPolicy()
         self.on_state = on_state or (lambda _state: None)
         self.tts_runtime = tts_runtime or LocalTtsRuntime()
@@ -116,6 +118,7 @@ class GermanVoiceController:
             "tts_ready": modules["pyttsx3"] or modules["edge_tts"],
             "modules": modules,
             "listening": self._listening,
+            "cancellation_requested": self._cancel_capture.is_set(),
             "stt_policy": self.stt_policy.status(),
             "microphone": {
                 "config": self.microphone_config.to_dict(),
@@ -152,6 +155,29 @@ class GermanVoiceController:
         *,
         report_state: bool = True,
     ) -> dict[str, Any]:
+        if not self._capture_lock.acquire(blocking=False):
+            return {"ok": False, "status": "busy", "error": "Eine Sprachaufnahme läuft bereits"}
+        self._listening = True
+        self._cancel_capture.clear()
+        try:
+            return self._listen_once(timeout, phrase_time_limit, report_state=report_state)
+        finally:
+            self._listening = False
+            self._capture_lock.release()
+
+    def cancel_listening(self) -> bool:
+        if not self._listening:
+            return False
+        self._cancel_capture.set()
+        return True
+
+    def _listen_once(
+        self,
+        timeout: float | None,
+        phrase_time_limit: float | None,
+        *,
+        report_state: bool,
+    ) -> dict[str, Any]:
         if report_state:
             self.on_state("LISTENING")
         try:
@@ -167,10 +193,14 @@ class GermanVoiceController:
             with sr.Microphone(device_index=self.microphone_config.device_index) as source:
                 recognizer.adjust_for_ambient_noise(source, duration=self.microphone_config.calibration_seconds)
                 audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
+            if self._cancel_capture.is_set():
+                return {"ok": False, "status": "cancelled", "error": "Sprachaufnahme abgebrochen"}
             if report_state:
                 self.on_state("TRANSCRIBING")
             try:
                 result = self.stt_policy.transcribe(audio, recognizer, language=self.language)
+                if self._cancel_capture.is_set():
+                    return {"ok": False, "status": "cancelled", "error": "Sprachaufnahme abgebrochen"}
                 if not result.get("ok"):
                     return result
                 text = str(result["text"])
