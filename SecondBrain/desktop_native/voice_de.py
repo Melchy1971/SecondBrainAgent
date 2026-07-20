@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .stt import LocalSttPolicy
+from .microphone import MicrophoneConfig, MicrophoneInventory
 from .tts import LocalTtsRuntime
 
 
@@ -86,6 +87,7 @@ class GermanVoiceController:
         stt_policy: LocalSttPolicy | None = None,
         tts_runtime: LocalTtsRuntime | None = None,
         on_state: Callable[[str], None] | None = None,
+        microphone_config: MicrophoneConfig | None = None,
     ):
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.speaker = speaker
@@ -95,6 +97,8 @@ class GermanVoiceController:
         self.stt_policy = stt_policy or LocalSttPolicy()
         self.on_state = on_state or (lambda _state: None)
         self.tts_runtime = tts_runtime or LocalTtsRuntime()
+        self.microphone_config = microphone_config or MicrophoneConfig.from_environ()
+        self.microphones = MicrophoneInventory()
 
     def status(self) -> dict[str, Any]:
         modules: dict[str, bool] = {}
@@ -113,6 +117,10 @@ class GermanVoiceController:
             "modules": modules,
             "listening": self._listening,
             "stt_policy": self.stt_policy.status(),
+            "microphone": {
+                "config": self.microphone_config.to_dict(),
+                "inventory": self.microphones.status(self.microphone_config.device_index),
+            },
             "supported_intents": [
                 "status",
                 "production_gate",
@@ -138,7 +146,11 @@ class GermanVoiceController:
         return self.tts_runtime.speak(text, sensitive=sensitive, allow_sensitive=allow_sensitive)
 
     def listen_once(
-        self, timeout: int = 5, phrase_time_limit: int = 8, *, report_state: bool = True
+        self,
+        timeout: float | None = None,
+        phrase_time_limit: float | None = None,
+        *,
+        report_state: bool = True,
     ) -> dict[str, Any]:
         if report_state:
             self.on_state("LISTENING")
@@ -147,9 +159,13 @@ class GermanVoiceController:
         except Exception as exc:
             return {"ok": False, "error": f"speech_recognition nicht installiert: {exc}"}
         recognizer = sr.Recognizer()
+        timeout = self.microphone_config.timeout_seconds if timeout is None else timeout
+        phrase_time_limit = (
+            self.microphone_config.phrase_time_limit_seconds if phrase_time_limit is None else phrase_time_limit
+        )
         try:
-            with sr.Microphone() as source:
-                recognizer.adjust_for_ambient_noise(source, duration=0.4)
+            with sr.Microphone(device_index=self.microphone_config.device_index) as source:
+                recognizer.adjust_for_ambient_noise(source, duration=self.microphone_config.calibration_seconds)
                 audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
             if report_state:
                 self.on_state("TRANSCRIBING")
