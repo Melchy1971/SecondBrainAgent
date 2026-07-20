@@ -77,6 +77,7 @@ class JarvisNativeApp(tk.Tk):
         self.voice = GermanVoiceController(
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
+            on_state=self.action_bus.voice.set_audio_state,
         )
         wake_enabled = os.environ.get("SECONDBRAIN_WAKE_WORD_ENABLED", "").casefold() in {"1", "true", "yes", "on"}
         self.wake_runtime = WakeWordRuntime(
@@ -98,6 +99,7 @@ class JarvisNativeApp(tk.Tk):
         self.current_view = tk.StringVar(value="Dashboard")
         self.status_var = tk.StringVar(value="Initialisiere")
         self.voice_var = tk.StringVar(value="Deutsch - bereit fuer Textbefehle")
+        self.voice_state_var = tk.StringVar(value=self.action_bus.voice.state.value)
         self.clock_time = tk.StringVar(value="")
         self.clock_day = tk.StringVar(value="")
         self.clock_date = tk.StringVar(value="")
@@ -125,6 +127,7 @@ class JarvisNativeApp(tk.Tk):
         self.global_hotkey.start()
         self.after(100, self.refresh_status)
         self.after(200, self._drain_queue)
+        self.after(100, self._sync_voice_state)
         self._tick_clock()
 
     def _on_close(self) -> None:
@@ -149,8 +152,12 @@ class JarvisNativeApp(tk.Tk):
         self.wake_runtime.enable(enabled)
         self.voice_var.set("Wake Word aktiv" if enabled else "Wake Word aus")
 
+    def _sync_voice_state(self) -> None:
+        self.voice_state_var.set(self.action_bus.voice.state.value)
+        self.after(100, self._sync_voice_state)
+
     def _wake_phrase_source(self) -> str:
-        result = self.voice.listen_once(timeout=1, phrase_time_limit=2)
+        result = self.voice.listen_once(timeout=1, phrase_time_limit=2, report_state=False)
         return str(result.get("text") or "")
 
     def _exit_app(self) -> None:
@@ -305,6 +312,7 @@ class JarvisNativeApp(tk.Tk):
         self._label(title, f"JARVIS CONTROL CENTER   v{VERSION}", fg=HUD["cyan"], font=("Segoe UI", 8, "bold"), anchor="w")
 
         self._pill(top, "SYSTEM HEALTH", self.status_var, accent=HUD["good"])
+        self._pill(top, "VOICE", self.voice_state_var, accent=HUD["cyan"])
         self._pill(top, "RELEASE GATE", tk.StringVar(value="BLOCKING 0"), accent=HUD["good"])
         self._pill(top, "EMBEDDING", tk.StringVar(value="-"))
         self._pill(top, "POSTGRESQL", tk.StringVar(value="-"))
@@ -688,6 +696,8 @@ class JarvisNativeApp(tk.Tk):
             except queue.Empty:
                 break
             if kind == "voice":
+                if not payload.get("ok"):
+                    self.action_bus.voice.set_audio_state("ERROR")
                 self.status_var.set("READY" if payload.get("ok") else "STT FEHLER")
                 self._json(payload)
                 if payload.get("ok") and payload.get("text"):
