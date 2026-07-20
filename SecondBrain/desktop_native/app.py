@@ -15,6 +15,7 @@ from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
+from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
@@ -92,12 +93,38 @@ class JarvisNativeApp(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self._on_close)
         self._configure_theme()
         self._build_layout()
+        self.tray = SystemTrayController(
+            on_open=lambda: self.after(0, self._restore_window),
+            on_toggle_mute=lambda: self.after(0, self._toggle_mute),
+            on_push_to_talk=lambda: self.after(0, self.listen_once),
+            on_exit=lambda: self.after(0, self._exit_app),
+            status_text=lambda: f"Status: {self.status_var.get()} · Voice: {self.action_bus.voice.state}",
+        )
+        self.tray.start()
         self.after(100, self.refresh_status)
         self.after(200, self._drain_queue)
         self._tick_clock()
 
     def _on_close(self) -> None:
         self.window_state.save(geometry=self.geometry(), view=self.current_view.get())
+        if self.tray.running:
+            self.withdraw()
+        else:
+            self.destroy()
+
+    def _restore_window(self) -> None:
+        self.deiconify()
+        self.lift()
+        self.focus_force()
+
+    def _toggle_mute(self) -> None:
+        muted = self.action_bus.voice.state != "MUTED"
+        self.action_bus.voice.mute(muted)
+        self.voice_var.set("Mikrofon stumm" if muted else "Deutsch - bereit")
+
+    def _exit_app(self) -> None:
+        self.window_state.save(geometry=self.geometry(), view=self.current_view.get())
+        self.tray.stop()
         self.destroy()
 
     def _configure_theme(self) -> None:

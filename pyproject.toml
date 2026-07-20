@@ -33,6 +33,8 @@ openai = [
 ]
 desktop = [
   "psutil>=5.9.0",
+  "pystray>=0.19.5",
+  "Pillow>=10.0.0",
 ]
 voice = [
   "SpeechRecognition>=3.10.0",
