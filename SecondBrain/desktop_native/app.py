@@ -13,6 +13,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from secondbrain.desktop_native.action_bus import NativeActionBus
+from secondbrain.desktop_native.alert_surface import live_alert_labels
 from secondbrain.desktop_native.approval_surface import ApprovalSurface
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
@@ -467,10 +468,10 @@ class JarvisNativeApp(tk.Tk):
         for key, value, color in [
             ("Release Gate", "0 Blocker", HUD["good"]),
             ("Approvals", "0 Pending", HUD["warn"]),
-            ("Embedding", "-", HUD["cyan"]),
-            ("PostgreSQL", "-", HUD["good"]),
-            ("pgvector", "-", HUD["cyan"]),
-            ("Ollama", "0 Models", HUD["cyan"]),
+            ("Embedding", "Unknown", HUD["cyan"]),
+            ("PostgreSQL", "Unknown", HUD["good"]),
+            ("pgvector", "Not checked", HUD["cyan"]),
+            ("Ollama", "Unknown", HUD["cyan"]),
             ("Backup", "Letztes: -", HUD["good"]),
             ("Vector Index", "-", HUD["cyan"]),
             ("Queue", "0 Pending", HUD["warn"]),
@@ -693,8 +694,18 @@ class JarvisNativeApp(tk.Tk):
         self.alert_vars.get("Release Gate", tk.StringVar()).set("0 Blocker" if ok else f"{len(payload.get('blockers', []))} Blocker")
         pending = self.approval_surface.snapshot()["pending_count"]
         self.alert_vars.get("Approvals", tk.StringVar()).set(f"{pending} Pending")
-        running = self.job_surface.snapshot()["running_count"]
+        jobs = self.job_surface.snapshot()
+        running = jobs["running_count"]
         self.info_vars.get("Queue", tk.StringVar()).set(f"Running: {running}")
+        alerts = live_alert_labels(health=health, jobs=jobs)
+        for key, value in {
+            "Embedding": alerts["embedding"],
+            "PostgreSQL": alerts["postgresql"],
+            "pgvector": alerts["pgvector"],
+            "Ollama": alerts["ollama"],
+            "Queue": alerts["queue"],
+        }.items():
+            self.alert_vars.get(key, tk.StringVar()).set(value)
         vault = vault_status_labels(safe_status(self.live_data.dashboard))
         self.metric_vars.get("system_Vault MD", tk.StringVar()).set(vault["markdown"])
         self.metric_vars.get("system_Vault", tk.StringVar()).set(vault["vault"])
