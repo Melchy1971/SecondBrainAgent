@@ -7,11 +7,23 @@ from secondbrain.native.approval import NativeApprovalQueue
 
 ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
 APPROVAL_OVERDUE_AFTER = timedelta(minutes=15)
+DEFAULT_OVERDUE_MINUTES = 15
+MAX_OVERDUE_MINUTES = 1440
 DISABLED_NOTIFICATION_VALUES = {"0", "false", "no", "off"}
 
 
 def approval_notifications_enabled(value: str | None) -> bool:
     return value is None or value.strip().casefold() not in DISABLED_NOTIFICATION_VALUES
+
+
+def approval_overdue_after(value: str | None) -> timedelta:
+    try:
+        minutes = DEFAULT_OVERDUE_MINUTES if value is None else int(value.strip())
+    except (AttributeError, ValueError):
+        minutes = DEFAULT_OVERDUE_MINUTES
+    if not 1 <= minutes <= MAX_OVERDUE_MINUTES:
+        minutes = DEFAULT_OVERDUE_MINUTES
+    return timedelta(minutes=minutes)
 
 
 def approval_notification(previous: int | None, current: int) -> str | None:
@@ -80,7 +92,12 @@ def _created_at(value: Any) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
-def approval_activity(snapshot: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
+def approval_activity(
+    snapshot: dict[str, Any],
+    *,
+    now: datetime | None = None,
+    overdue_after: timedelta = APPROVAL_OVERDUE_AFTER,
+) -> dict[str, Any]:
     try:
         pending = max(0, int(snapshot["pending_count"]))
     except (TypeError, ValueError):
@@ -113,12 +130,13 @@ def approval_activity(snapshot: dict[str, Any], *, now: datetime | None = None) 
         current = current.replace(tzinfo=timezone.utc)
     else:
         current = current.astimezone(timezone.utc)
+    threshold = overdue_after if overdue_after > timedelta(0) else APPROVAL_OVERDUE_AFTER
     overdue = sum(
         1
         for item in safe_items
         if isinstance(item, dict)
         and (created := _created_at(item.get("created_at"))) is not None
-        and current - created >= APPROVAL_OVERDUE_AFTER
+        and current - created >= threshold
     )
     label = f"{pending} Pending"
     if elevated:

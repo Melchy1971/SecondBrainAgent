@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from secondbrain.desktop_native.approval_surface import (
     ApprovalSurface,
@@ -6,6 +6,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_attention_notification,
     approval_notification,
     approval_notifications_enabled,
+    approval_overdue_after,
     elevated_approval_notification,
     overdue_approval_notification,
 )
@@ -162,3 +163,20 @@ def test_approval_notifications_are_enabled_unless_explicitly_disabled():
     assert approval_notifications_enabled("true") is True
     assert approval_notifications_enabled(" OFF ") is False
     assert approval_notifications_enabled("0") is False
+
+
+def test_approval_overdue_threshold_is_validated_and_bounded():
+    assert approval_overdue_after(None) == timedelta(minutes=15)
+    assert approval_overdue_after(" 30 ") == timedelta(minutes=30)
+    assert approval_overdue_after("0") == timedelta(minutes=15)
+    assert approval_overdue_after("1441") == timedelta(minutes=15)
+    assert approval_overdue_after("invalid") == timedelta(minutes=15)
+
+
+def test_approval_activity_uses_custom_overdue_threshold():
+    result = approval_activity(
+        {"pending_count": 1, "items": [{"created_at": "2026-07-20T09:50:00Z"}]},
+        now=datetime(2026, 7, 20, 10, 0, tzinfo=timezone.utc),
+        overdue_after=timedelta(minutes=5),
+    )
+    assert result["overdue"] == 1
