@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 license = { text = "Proprietary" }
 authors = [{ name = "Markus Dickscheit" }]
 dependencies = [
+  "cryptography>=46.0.3",
   "ijson>=3.2.3",
 ]
 

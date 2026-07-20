@@ -961,6 +961,11 @@ def main(argv: list[str] | None = None) -> int:
         return _security_gate_main(raw)
     if cmd == "backup-gate":
         return _backup_gate_main(raw)
+    if cmd == "native-voice-app-gate":
+        from secondbrain.desktop_native.native_voice_app_gate import run_native_voice_app_gate
+        report = run_native_voice_app_gate(_first_project_root(raw))
+        out(report)
+        return 0 if report["status"] != "BLOCKED" else 4
     if cmd == "system-rc-gate":
         return _rc_gate_main(["rc-gate", *raw[1:]])
     if cmd == "rag-eval":

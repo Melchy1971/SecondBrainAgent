@@ -17,11 +17,11 @@ REQUIRED_PATHS: tuple[str, ...] = (
     "requirements-dev.txt",
     "requirements-runtime.txt",
     "README.md",
-    "secondbrain/module_registry.py",
-    "secondbrain/launcher_runtime_v126.py",
-    "secondbrain/p0_runtime.py",
-    "secondbrain/p1_rag_runtime.py",
-    "secondbrain/release/dependency_inventory.py",
+    "SecondBrain/module_registry.py",
+    "SecondBrain/launcher_runtime_v126.py",
+    "SecondBrain/p0_runtime.py",
+    "SecondBrain/p1_rag_runtime.py",
+    "SecondBrain/release/dependency_inventory.py",
     "docs/RELEASE_WORKFLOW_v18_9.md",
 )
 
@@ -382,6 +382,41 @@ def _run_command(root: Path, args: tuple[str, ...], timeout_seconds: int) -> Doc
     }
     if result.returncode == 0:
         return DoctorCheck("launcher:" + " ".join(args), "ok", "blocking", "launcher command returned zero", details)
+    if args == ("health",):
+        try:
+            payload = json.loads(result.stdout)
+        except (json.JSONDecodeError, TypeError):
+            details["stdout_tail"] = result.stdout[-4000:]
+        else:
+            failed_modules: list[dict[str, Any]] = []
+            for section_name in ("import_health", "runtime_health"):
+                section = payload.get(section_name)
+                if not isinstance(section, dict):
+                    continue
+                for module in section.get("modules", []):
+                    if not isinstance(module, dict):
+                        continue
+                    result_payload = module.get("result")
+                    result_status = result_payload.get("status") if isinstance(result_payload, dict) else None
+                    result_failed = isinstance(result_payload, dict) and (
+                        result_payload.get("ok") is False or result_payload.get("healthy") is False
+                    )
+                    if (
+                        module.get("status") in {"error", "degraded", "blocked"}
+                        or module.get("error")
+                        or result_status in {"error", "degraded", "blocked"}
+                        or result_failed
+                    ):
+                        failed_modules.append({
+                            "section": section_name,
+                            "key": module.get("key"),
+                            "status": module.get("status"),
+                            "critical": module.get("critical"),
+                            "error": module.get("error"),
+                            "result": result_payload,
+                        })
+            details["health_status"] = payload.get("status")
+            details["failed_modules"] = failed_modules
     return DoctorCheck("launcher:" + " ".join(args), "error", "blocking", "launcher command returned non-zero", details)
 
 
