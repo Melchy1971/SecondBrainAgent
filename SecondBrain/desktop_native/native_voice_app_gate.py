@@ -7,6 +7,7 @@ from typing import Any
 from .action_registry import build_core_registry
 from .stt import LocalSttPolicy
 from .voice_runtime import VoiceSession, VoiceState
+from .wake_word import WakeWordConfig, WakeWordRuntime
 
 
 def run_native_voice_app_gate(project_root: str | Path, *, write_report: bool = True) -> dict[str, Any]:
@@ -18,13 +19,15 @@ def run_native_voice_app_gate(project_root: str | Path, *, write_report: bool = 
     session.set_speaking(True)
     tts_guard = not session.wake("Jarvis")
     session.set_speaking(False)
+    wake_runtime = WakeWordRuntime(session, lambda: "", config=WakeWordConfig(enabled=True))
+    wake_ready = wake_runtime.process_phrase("Jarvis")
     stt_policy = LocalSttPolicy(environ={}, module_available=lambda _name: False).status()
     checks = {
         "application_shell": (root / "SecondBrain" / "desktop_native" / "app.py").exists(),
         "service_integration": len(registry.list()) >= 10,
         "voice_input": session.push_to_talk() == VoiceState.LISTENING,
         "voice_output": tts_guard,
-        "wake_word": session.wake("Jarvis"),
+        "wake_word": wake_ready and wake_runtime.status()["local_only"],
         "intent_coverage": registry.resolve_alias("öffne dokumente") is not None,
         "dialog_state": mail["status"] == "approval_required",
         "confirmation": orphan_yes.get("error") == "no_bound_confirmation",

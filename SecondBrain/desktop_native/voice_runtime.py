@@ -58,6 +58,12 @@ class VoiceSession:
                 self.state = VoiceState.LISTENING
             return self.state
 
+    def listen_for_wake_word(self, enabled: bool = True) -> VoiceState:
+        with self._lock:
+            if self.state != VoiceState.MUTED and not self.tts_active:
+                self.state = VoiceState.LISTENING_FOR_WAKE_WORD if enabled else VoiceState.IDLE
+            return self.state
+
     def mute(self, enabled: bool = True) -> VoiceState:
         with self._lock:
             self.state = VoiceState.MUTED if enabled else VoiceState.IDLE
