@@ -18,6 +18,7 @@ from secondbrain.desktop_native.approval_surface import (
     ApprovalSurface,
     approval_activity,
     approval_attention_notification,
+    approval_notifications_enabled,
 )
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
@@ -137,6 +138,9 @@ class JarvisNativeApp(tk.Tk):
         self.alert_vars: dict[str, tk.StringVar] = {}
         self.approval_alert_label: tk.Label | None = None
         self.approval_tray_status = "Unavailable"
+        self.approval_notifications_enabled = approval_notifications_enabled(
+            os.environ.get("SECONDBRAIN_APPROVAL_NOTIFICATIONS_ENABLED")
+        )
         self.approval_pending_count: int | None = None
         self.approval_elevated_count: int | None = None
         self.approval_overdue_count: int | None = None
@@ -800,6 +804,8 @@ class JarvisNativeApp(tk.Tk):
         activity = approval_activity(dict(current))
         self.alert_vars.get("Approvals", tk.StringVar()).set(activity["label"])
         self.approval_tray_status = activity["label"]
+        if not self.approval_notifications_enabled:
+            self.approval_tray_status += " / Notifications Off"
         if activity["available"]:
             notification = approval_attention_notification(
                 self.approval_pending_count,
@@ -812,7 +818,7 @@ class JarvisNativeApp(tk.Tk):
             self.approval_pending_count = activity["pending"]
             self.approval_elevated_count = activity["elevated"]
             self.approval_overdue_count = activity["overdue"]
-            if notification is not None:
+            if notification is not None and self.approval_notifications_enabled:
                 title, message = notification
                 self.tray.notify(message, title=title)
         if self.approval_alert_label is not None:
