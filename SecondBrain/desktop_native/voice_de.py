@@ -78,13 +78,22 @@ class GermanVoiceController:
     typed German commands and exposes clear readiness diagnostics.
     """
 
-    def __init__(self, project_root: str | Path | None = None, *, speaker: Callable[[str], None] | None = None, stt_policy: LocalSttPolicy | None = None, tts_runtime: LocalTtsRuntime | None = None):
+    def __init__(
+        self,
+        project_root: str | Path | None = None,
+        *,
+        speaker: Callable[[str], None] | None = None,
+        stt_policy: LocalSttPolicy | None = None,
+        tts_runtime: LocalTtsRuntime | None = None,
+        on_state: Callable[[str], None] | None = None,
+    ):
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.speaker = speaker
         self.language = os.environ.get("SECONDBRAIN_VOICE_LANGUAGE", "de-DE")
         self._listening = False
         self._thread: threading.Thread | None = None
         self.stt_policy = stt_policy or LocalSttPolicy()
+        self.on_state = on_state or (lambda _state: None)
         self.tts_runtime = tts_runtime or LocalTtsRuntime()
 
     def status(self) -> dict[str, Any]:
@@ -128,7 +137,11 @@ class GermanVoiceController:
             return {"ok": True, "engine": "callback"}
         return self.tts_runtime.speak(text, sensitive=sensitive, allow_sensitive=allow_sensitive)
 
-    def listen_once(self, timeout: int = 5, phrase_time_limit: int = 8) -> dict[str, Any]:
+    def listen_once(
+        self, timeout: int = 5, phrase_time_limit: int = 8, *, report_state: bool = True
+    ) -> dict[str, Any]:
+        if report_state:
+            self.on_state("LISTENING")
         try:
             import speech_recognition as sr
         except Exception as exc:
@@ -138,6 +151,8 @@ class GermanVoiceController:
             with sr.Microphone() as source:
                 recognizer.adjust_for_ambient_noise(source, duration=0.4)
                 audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
+            if report_state:
+                self.on_state("TRANSCRIBING")
             try:
                 result = self.stt_policy.transcribe(audio, recognizer, language=self.language)
                 if not result.get("ok"):

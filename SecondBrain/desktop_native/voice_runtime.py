@@ -58,6 +58,17 @@ class VoiceSession:
                 self.state = VoiceState.LISTENING
             return self.state
 
+    def set_audio_state(self, state: VoiceState | str) -> VoiceState:
+        """Accept lifecycle updates only from the replaceable audio adapter."""
+        next_state = VoiceState(state)
+        if next_state not in {VoiceState.LISTENING, VoiceState.TRANSCRIBING, VoiceState.ERROR}:
+            raise ValueError(f"invalid audio state: {next_state}")
+        with self._lock:
+            if self.state == VoiceState.MUTED or self.tts_active:
+                return self.state
+            self.state = next_state
+            return self.state
+
     def listen_for_wake_word(self, enabled: bool = True) -> VoiceState:
         with self._lock:
             if self.state != VoiceState.MUTED and not self.tts_active:
@@ -114,6 +125,7 @@ class VoiceSession:
             return self._dispatch(action_id, parameters)
 
     def _dispatch(self, action_id: str, parameters: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        self.state = VoiceState.UNDERSTANDING
         action = self.registry.get(action_id)
         values = dict(parameters or {})
         values.update({name: schema["const"] for name, schema in action.parameters.items() if "const" in schema})
