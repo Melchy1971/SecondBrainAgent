@@ -16,6 +16,7 @@ from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
+from secondbrain.desktop_native.navigation import VIEWS, display_view
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
@@ -43,21 +44,7 @@ HUD = {
     "text": "#eafcff",
 }
 
-NAV_ITEMS = [
-    "Dashboard",
-    "Assistant",
-    "Documents",
-    "Memory",
-    "Knowledge",
-    "Search",
-    "Imports",
-    "Jobs",
-    "Connectors",
-    "Agents",
-    "Backups",
-    "Settings",
-    "Developer",
-]
+NAV_ITEMS = [*VIEWS, "Imports", "Production", "Developer"]
 
 
 def _fmt_status(value: Any) -> str:
@@ -748,8 +735,7 @@ class JarvisNativeApp(tk.Tk):
         payload = result.get("result") or {}
         next_view = payload.get("next_view") if isinstance(payload, dict) else None
         if next_view:
-            mapping = {"documents": "Documents", "memory": "Memory", "settings": "Settings"}
-            self.show_view(mapping.get(next_view, next_view.title()))
+            self.show_view(display_view(next_view))
         self._json(result)
 
     def listen_once(self) -> None:

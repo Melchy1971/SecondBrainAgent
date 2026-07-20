@@ -4,6 +4,8 @@ from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import Any, Callable, Mapping
 
+from .navigation import NAVIGATION_VIEWS
+
 
 class ActionRisk(StrEnum):
     READ = "read"
@@ -82,16 +84,10 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
     def bound(action_id: str) -> ActionHandler:
         return lambda payload: handler({"action_id": action_id, **payload})
 
-    views = {
-        "dashboard": "Dashboard", "tasks": "Aufgaben", "projects": "Projekte",
-        "documents": "Dokumente", "search": "Suche", "memory": "Memory",
-        "calendar": "Kalender", "mail": "Mail", "jobs": "Jobs",
-        "approvals": "Freigaben", "settings": "Einstellungen", "diagnostics": "Diagnose",
-    }
-    for view, title in views.items():
+    for view, display, spoken in NAVIGATION_VIEWS:
         registry.register(ActionDefinition(
-            id=f"navigation.{view}", title=f"{title} öffnen",
-            aliases=(f"öffne {title.lower()}", f"zeige {title.lower()}"),
+            id=f"navigation.{view}", title=f"{display} öffnen",
+            aliases=(f"öffne {spoken.lower()}", f"zeige {spoken.lower()}"),
             parameters={"view": {"type": "string", "const": view}}, handler=bound(f"navigation.{view}"),
             capability_source="native_navigation",
         ))
