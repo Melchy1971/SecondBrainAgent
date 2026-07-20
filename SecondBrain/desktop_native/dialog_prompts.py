@@ -10,6 +10,7 @@ _SLOT_PROMPTS = {
     "body": "Wie lautet der Inhalt der E-Mail?",
     "path": "Welche Datei soll verwendet werden?",
     "query": "Wonach soll ich suchen?",
+    "task": "Welche Aufgabe soll abgeschlossen werden?",
     "text": "Was möchtest du wissen?",
 }
 

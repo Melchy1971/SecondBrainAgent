@@ -104,6 +104,8 @@ class NativeActionBus:
             if priority not in {"low", "medium", "high"}:
                 raise ValueError("task priority must be low, medium, or high")
             return DesktopAppRuntime(self.project_root).add_task(title, priority=priority)
+        if action_id == "tasks.complete":
+            return DesktopAppRuntime(self.project_root).complete_task(payload["task"])
         runtime = P1RagRuntime(self.project_root)
         if action_id == "documents.import":
             return runtime.ingest_file(str(payload["path"]))

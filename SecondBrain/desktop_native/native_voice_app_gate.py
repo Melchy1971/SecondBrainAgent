@@ -111,7 +111,8 @@ def run_native_voice_app_gate(
         "service_integration": all(
             registry.get(action_id)
             for action_id in (
-                "assistant.ask", "documents.import", "tasks.list", "tasks.create", "calendar.create",
+                "assistant.ask", "documents.import", "tasks.list", "tasks.create", "tasks.complete",
+                "calendar.create",
                 "mail.send", "search.query", "index.repair",
             )
         ),

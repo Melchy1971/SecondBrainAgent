@@ -105,6 +105,29 @@ class DesktopAppRuntime:
     def tasks(self):
         return self.store.load("tasks", [])
 
+    def complete_task(self, reference):
+        value = str(reference or "").strip()
+        if not value:
+            raise ValueError("task reference must not be empty")
+        tasks = self.tasks()
+        if not isinstance(tasks, list):
+            raise RuntimeError("task store must contain a list")
+        matches = [task for task in tasks if str(task.get("id") or "") == value]
+        if not matches:
+            normalized = value.casefold()
+            matches = [task for task in tasks if str(task.get("title") or "").strip().casefold() == normalized]
+        if not matches:
+            raise LookupError("task not found")
+        if len(matches) > 1:
+            raise ValueError("task reference is ambiguous")
+        task = matches[0]
+        if task.get("column") == "done":
+            return task
+        task["column"] = "done"
+        task["completed_at"] = datetime.now(timezone.utc).isoformat()
+        self.store.save("tasks", tasks)
+        return task
+
     def seed(self):
         self.start_runtime()
         self.notify("SecondBrain", "Desktop App bereit")

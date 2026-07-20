@@ -99,5 +99,37 @@ def test_task_actions_are_workspace_bound_and_reject_invalid_priority(tmp_path: 
     assert DesktopAppRuntime(tmp_path).tasks() == []
 
 
+def test_task_completion_collects_reference_and_requires_confirmation(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    runtime.add_task("Quartalsbericht")
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    first = bus.submit("aufgabe abschliessen")
+    assert first == {"status": "slots_required", "missing": ["task"], "action_id": "tasks.complete"}
+    pending = bus.submit("Quartalsbericht")
+    assert pending["status"] == "confirmation_required"
+
+    result = bus.confirm()
+
+    assert result["status"] == "executed"
+    assert result["result"]["column"] == "done"
+    assert runtime.tasks()[0]["column"] == "done"
+
+
+def test_task_completion_rejects_ambiguous_title_without_write(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    runtime.add_task("Review")
+    runtime.add_task("REVIEW")
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    pending = bus.submit("erledige aufgabe", {"task": "review"})
+    assert pending["status"] == "confirmation_required"
+    result = bus.confirm()
+
+    assert result["status"] == "error"
+    assert "ambiguous" in result["error"]
+    assert [task["column"] for task in runtime.tasks()] == ["backlog", "backlog"]
+
+
 def test_desktop_shell_is_wired_to_action_bus():
     assert "self.action_bus = NativeActionBus" in Path(desktop_app.__file__).read_text(encoding="utf-8")
