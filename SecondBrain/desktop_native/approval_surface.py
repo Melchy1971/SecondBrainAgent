@@ -31,6 +31,21 @@ def overdue_approval_notification(previous: int | None, current: int) -> str | N
     return f"{added} {noun} jetzt überfällig."
 
 
+def approval_attention_notification(
+    previous_pending: int | None,
+    current_pending: int,
+    previous_overdue: int | None,
+    current_overdue: int,
+) -> tuple[str, str] | None:
+    pending = approval_notification(previous_pending, current_pending)
+    overdue = overdue_approval_notification(previous_overdue, current_overdue)
+    messages = [message for message in (pending, overdue) if message is not None]
+    if not messages:
+        return None
+    title = "Jarvis: überfällige Freigaben" if overdue and not pending else "Jarvis Freigaben"
+    return title, " ".join(messages)
+
+
 def _created_at(value: Any) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))

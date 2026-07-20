@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from secondbrain.desktop_native.approval_surface import (
     ApprovalSurface,
     approval_activity,
+    approval_attention_notification,
     approval_notification,
     overdue_approval_notification,
 )
@@ -129,3 +130,16 @@ def test_overdue_notification_only_reports_newly_overdue_items():
     assert overdue_approval_notification(2, 1) is None
     assert overdue_approval_notification(0, 1) == "1 Freigabe ist jetzt überfällig."
     assert overdue_approval_notification(1, 3) == "2 Freigaben sind jetzt überfällig."
+
+
+def test_attention_notification_coalesces_pending_and_overdue_changes():
+    assert approval_attention_notification(None, 2, None, 1) is None
+    assert approval_attention_notification(1, 2, 0, 1) == (
+        "Jarvis Freigaben",
+        "1 neue Freigabe wartet auf Entscheidung. 1 Freigabe ist jetzt überfällig.",
+    )
+    assert approval_attention_notification(2, 2, 0, 1) == (
+        "Jarvis: überfällige Freigaben",
+        "1 Freigabe ist jetzt überfällig.",
+    )
+    assert approval_attention_notification(2, 2, 1, 1) is None
