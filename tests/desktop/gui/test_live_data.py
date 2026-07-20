@@ -42,6 +42,20 @@ def test_dashboard_live_counts(project):
     assert vm["status"] == "ready"
 
 
+def test_dashboard_prefers_vault_and_inbox_inside_project(tmp_path):
+    project = tmp_path / "SecondBrain-Agent"
+    (project / "SecondBrain").mkdir(parents=True)
+    (project / "SecondBrain" / "local.md").write_text("# Local", encoding="utf-8")
+    (project / "SecondBrain-Inbox").mkdir()
+    (project / "SecondBrain-Inbox" / "drop.txt").write_text("x", encoding="utf-8")
+
+    vm = LiveDataService(project).dashboard()
+
+    assert vm["vault_exists"] is True
+    assert vm["markdown_files"] == 1
+    assert vm["inbox_files"] == 1
+
+
 def test_documents_live(project):
     vm = LiveDataService(project).documents()
     assert vm["total"] == 2

@@ -81,11 +81,13 @@ class LiveDataService:
     # --- Pfade -------------------------------------------------------------
     @property
     def vault(self) -> Path:
-        return self.root.parent / "SecondBrain"
+        local = self.root / "SecondBrain"
+        return local if local.exists() else self.root.parent / "SecondBrain"
 
     @property
     def inbox(self) -> Path:
-        return self.root.parent / "SecondBrain-Inbox"
+        local = self.root / "SecondBrain-Inbox"
+        return local if local.exists() else self.root.parent / "SecondBrain-Inbox"
 
     @property
     def config_dir(self) -> Path:
