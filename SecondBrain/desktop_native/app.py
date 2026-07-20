@@ -28,9 +28,10 @@ from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 from secondbrain.native.job_queue_center.service import JobQueueService
+from secondbrain.version import get_version
 
-VERSION = "30.25"
-TITLE = "Jarvis SecondBrain - Native Desktop"
+VERSION = get_version()
+TITLE = f"Jarvis SecondBrain {VERSION} - Native Desktop"
 
 HUD = {
     "bg": "#02060b",
@@ -439,7 +440,7 @@ class JarvisNativeApp(tk.Tk):
         info = self._panel(parent, row=0, column=0, sticky="ew", pady=(0, 16))
         self._section_title(info, "System-Info")
         for key in ["Version", "Environment", "Database", "Embedding", "Ollama", "Memory Engine", "Queue", "Log Level"]:
-            value = "v30.25" if key == "Version" else "-"
+            value = f"v{VERSION}" if key == "Version" else "-"
             if key == "Ollama":
                 value = "Models: 0"
             if key == "Queue":
