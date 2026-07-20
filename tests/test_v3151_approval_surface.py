@@ -5,6 +5,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_activity,
     approval_attention_notification,
     approval_notification,
+    approval_notifications_enabled,
     elevated_approval_notification,
     overdue_approval_notification,
 )
@@ -153,3 +154,11 @@ def test_attention_notification_prioritizes_new_elevated_risk():
         "Jarvis: erhöhte Freigaben",
         "1 neue Freigabe wartet auf Entscheidung. 1 neue Freigabe hat erhöhtes Risiko.",
     )
+
+
+def test_approval_notifications_are_enabled_unless_explicitly_disabled():
+    assert approval_notifications_enabled(None) is True
+    assert approval_notifications_enabled("") is True
+    assert approval_notifications_enabled("true") is True
+    assert approval_notifications_enabled(" OFF ") is False
+    assert approval_notifications_enabled("0") is False

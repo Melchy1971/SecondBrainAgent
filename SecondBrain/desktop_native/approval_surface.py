@@ -7,6 +7,11 @@ from secondbrain.native.approval import NativeApprovalQueue
 
 ELEVATED_RISK_LEVELS = {"external_write", "destructive", "privileged"}
 APPROVAL_OVERDUE_AFTER = timedelta(minutes=15)
+DISABLED_NOTIFICATION_VALUES = {"0", "false", "no", "off"}
+
+
+def approval_notifications_enabled(value: str | None) -> bool:
+    return value is None or value.strip().casefold() not in DISABLED_NOTIFICATION_VALUES
 
 
 def approval_notification(previous: int | None, current: int) -> str | None:
