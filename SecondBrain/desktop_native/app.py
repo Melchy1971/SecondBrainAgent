@@ -14,6 +14,7 @@ from typing import Any
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.tts import LocalTtsRuntime
+from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
 from secondbrain.desktop_native.voice_de import GermanVoiceController
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
@@ -66,6 +67,8 @@ class JarvisNativeApp(tk.Tk):
     def __init__(self, project_root: str | Path | None = None):
         super().__init__()
         self.project_root = Path(project_root or Path.cwd()).resolve()
+        self.window_state = WindowStateStore(self.project_root)
+        restored = self.window_state.load()
         self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
         self.voice = GermanVoiceController(
             self.project_root,
@@ -82,15 +85,20 @@ class JarvisNativeApp(tk.Tk):
         self.info_vars: dict[str, tk.StringVar] = {}
         self.alert_vars: dict[str, tk.StringVar] = {}
         self.nav_buttons: dict[str, tk.Button] = {}
-        self.geometry("1500x900")
+        self.geometry(str(restored.get("geometry") or "1500x900"))
         self.minsize(1180, 720)
         self.title(TITLE)
         self.configure(bg=HUD["bg"])
+        self.protocol("WM_DELETE_WINDOW", self._on_close)
         self._configure_theme()
         self._build_layout()
         self.after(100, self.refresh_status)
         self.after(200, self._drain_queue)
         self._tick_clock()
+
+    def _on_close(self) -> None:
+        self.window_state.save(geometry=self.geometry(), view=self.current_view.get())
+        self.destroy()
 
     def _configure_theme(self) -> None:
         style = ttk.Style(self)
@@ -716,6 +724,12 @@ class JarvisNativeApp(tk.Tk):
 
 
 def main(project_root: str | Path | None = None) -> int:
-    app = JarvisNativeApp(project_root)
-    app.mainloop()
-    return 0
+    root = Path(project_root or Path.cwd()).resolve()
+    try:
+        with SingleInstanceLock(root):
+            app = JarvisNativeApp(root)
+            app.mainloop()
+            return 0
+    except InstanceAlreadyRunning as exc:
+        print(str(exc), file=sys.stderr)
+        return 3
