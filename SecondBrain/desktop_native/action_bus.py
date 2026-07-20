@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping
 
+from secondbrain.desktop_app import DesktopAppRuntime
 from secondbrain.native.approval import NativeApprovalQueue
 from secondbrain.native.chat import ChatEngine
 from secondbrain.p1_rag_runtime import P1RagRuntime
@@ -92,6 +93,17 @@ class NativeActionBus:
             return ChatEngine(self.project_root).ask(str(payload["text"]))
         if action_id == "search.query":
             return ChatEngine(self.project_root).search(str(payload["query"]))
+        if action_id == "tasks.list":
+            tasks = DesktopAppRuntime(self.project_root).tasks()
+            return {"count": len(tasks), "items": tasks}
+        if action_id == "tasks.create":
+            title = str(payload["title"]).strip()
+            if not title:
+                raise ValueError("task title must not be empty")
+            priority = str(payload.get("priority") or "medium").strip().casefold()
+            if priority not in {"low", "medium", "high"}:
+                raise ValueError("task priority must be low, medium, or high")
+            return DesktopAppRuntime(self.project_root).add_task(title, priority=priority)
         runtime = P1RagRuntime(self.project_root)
         if action_id == "documents.import":
             return runtime.ingest_file(str(payload["path"]))

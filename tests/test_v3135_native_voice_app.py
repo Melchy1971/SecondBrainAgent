@@ -26,6 +26,12 @@ def _ready_voice_status():
 def test_registry_rejects_duplicate_ids_and_exposes_policy():
     registry = build_core_registry(lambda payload: payload)
     assert registry.get("mail.send").requires_approval is True
+    task_create = registry.get("tasks.create")
+    assert task_create.risk.value == "write"
+    assert task_create.requires_confirmation is True
+    assert task_create.requires_workspace is True
+    assert registry.resolve_alias("NEUE AUFGABE").id == "tasks.create"
+    assert registry.get("tasks.list").requires_workspace is True
     assert registry.resolve_alias("  ÖFFNE   DOKUMENTE ").id == "navigation.documents"
     try:
         registry.register(ActionDefinition("mail.send", "duplicate"))
