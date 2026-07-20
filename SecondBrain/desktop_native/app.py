@@ -19,6 +19,7 @@ from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.job_surface import JobSurface
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
 from secondbrain.desktop_native.navigation import VIEWS, display_view
+from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.status import write_native_status_report
 from secondbrain.desktop_native.tray import SystemTrayController
 from secondbrain.desktop_native.tts import LocalTtsRuntime
@@ -643,10 +644,23 @@ class JarvisNativeApp(tk.Tk):
             self._json(self.approval_surface.snapshot())
         elif view == "Jobs":
             self._json(self.job_surface.snapshot())
+        elif view == "Diagnostics":
+            self._json(self._runtime_diagnostics())
         elif view == "Developer":
             self.run_launcher(["command-index"], title="Command Index")
         else:
             self._write(f"Ansicht {view}: bereit")
+
+    def _runtime_diagnostics(self) -> dict[str, Any]:
+        return runtime_diagnostics(
+            voice=safe_status(self.voice.status),
+            voice_state=self.action_bus.voice.state.value,
+            wake=safe_status(self.wake_runtime.status),
+            hotkey=safe_status(self.global_hotkey.status),
+            tray_running=self.tray.running,
+            approvals=safe_status(self.approval_surface.snapshot),
+            jobs=safe_status(self.job_surface.snapshot),
+        )
 
     def refresh_status(self) -> None:
         payload = write_native_status_report(self.project_root)
