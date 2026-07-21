@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 
+from secondbrain.storage.vector_index import DEFAULT_DIMENSIONS, requires_halfvec
 from secondbrain.storage.vector_models import VectorRecord, VectorSearchResult
 
 
@@ -16,9 +17,21 @@ def to_pgvector_literal(values: list[float]) -> str:
     return "[" + ",".join(str(float(v)) for v in values) + "]"
 
 
+def _distance_sql(dimensions: int) -> str:
+    """Cosine-Distanz gegen :query_embedding, indexkompatibel formuliert."""
+    if requires_halfvec(dimensions):
+        dims = int(dimensions)
+        return (
+            f"CAST(embedding AS halfvec({dims})) "
+            f"<=> CAST(:query_embedding AS halfvec({dims}))"
+        )
+    return "embedding <=> CAST(:query_embedding AS vector)"
+
+
 class PgVectorRepository:
-    def __init__(self, database):
+    def __init__(self, database, *, dimensions: int = DEFAULT_DIMENSIONS):
         self.database = database
+        self.dimensions = int(dimensions)
 
     def upsert(self, record: VectorRecord) -> None:
         from sqlalchemy import text
@@ -79,16 +92,22 @@ class PgVectorRepository:
             params["model"] = model
         where_clause = "WHERE " + " AND ".join(filters) if filters else ""
 
+        # Der Distanzausdruck muss exakt dem Indexausdruck aus
+        # storage/migrations/002_pgvector_embeddings.sql entsprechen. Weicht er
+        # ab, existiert der HNSW-Index zwar, wird aber nie benutzt und jede
+        # Suche degradiert still zum Sequential Scan.
+        distance = _distance_sql(self.dimensions)
+
         sql = f"""
             SELECT
                 id,
                 owner_type,
                 owner_id,
                 metadata,
-                embedding <=> CAST(:query_embedding AS vector) AS distance
+                {distance} AS distance
             FROM embeddings
             {where_clause}
-            ORDER BY embedding <=> CAST(:query_embedding AS vector)
+            ORDER BY {distance}
             LIMIT :limit
         """
         with self.database.session() as session:

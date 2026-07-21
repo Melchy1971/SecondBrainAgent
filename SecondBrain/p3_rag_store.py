@@ -435,7 +435,7 @@ class PgVectorRagStore:
             return {"schema": RAG_STORE_SCHEMA, "backend": self.backend, "ok": True, "status": "pass", "operation": "vector_search", "hit_count": 0, "hits": []}
         query_literal = _vector_literal(query_vector)
         dimensions = len(query_vector)
-        sql = self.build_vector_search_sql(provider=provider)
+        sql = self.build_vector_search_sql(provider=provider, dimensions=dimensions)
 
         def callback(conn: Any) -> dict[str, Any]:
             params: list[Any] = [query_literal, dimensions]
@@ -536,8 +536,22 @@ on conflict (chunk_id) do update set
     created_at = excluded.created_at;
 """.strip()
 
-    def build_vector_search_sql(self, *, provider: str | None = None) -> str:
+    def build_vector_search_sql(self, *, provider: str | None = None,
+                                dimensions: int | None = None) -> str:
+        from secondbrain.storage.vector_index import DEFAULT_DIMENSIONS, requires_halfvec
+
         provider_filter = "and e.provider = %s" if provider else ""
+
+        # Der Distanzausdruck muss dem Indexausdruck entsprechen, sonst nutzt
+        # PostgreSQL den Vektorindex nicht und die Suche degradiert still zum
+        # Sequential Scan. Ueber 2000 Dimensionen ist nur halfvec indizierbar.
+        dims = int(dimensions if dimensions is not None else DEFAULT_DIMENSIONS)
+        if requires_halfvec(dims):
+            cast = f"halfvec({dims})"
+            distance = f"e.embedding::{cast} <=> %s::{cast}"
+        else:
+            distance = "e.embedding <=> %s::vector"
+
         return f"""
 select
     c.id as chunk_id,
@@ -547,13 +561,13 @@ select
     c.text,
     e.provider,
     e.dimensions,
-    1 - (e.embedding <=> %s::vector) as score
+    1 - ({distance}) as score
 from {self._table('chunk_embeddings')} e
 join {self._table('chunks')} c on c.id = e.chunk_id
 join {self._table('documents')} d on d.id = c.document_id
 where e.dimensions = %s
 {provider_filter}
-order by e.embedding <=> %s::vector
+order by {distance}
 limit %s;
 """.strip()
 

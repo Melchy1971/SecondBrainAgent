@@ -6,6 +6,7 @@ the control flow is testable without a live PostgreSQL / SQLAlchemy.
 
 from __future__ import annotations
 
+import importlib.util
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,7 +14,11 @@ from typing import Callable
 
 from secondbrain.storage.db_policy import resolve, DbResolution, DatabaseStartupError, read_env
 from secondbrain.storage.db_retry import RetryPolicy, run_with_retry
-from secondbrain.storage.db_executor import SqlExecutor, SqliteExecutor
+from secondbrain.storage.db_executor import (
+    DatabaseConfigurationError,
+    SqlExecutor,
+    SqliteExecutor,
+)
 
 DEFAULT_MIGRATIONS_DIR = Path(__file__).resolve().parent / "migrations"
 
@@ -40,11 +45,44 @@ def _require_ping(executor: SqlExecutor) -> bool:
     return True
 
 
+def _module_installed(name: str) -> bool:  # pragma: no cover - trivial wrapper
+    return importlib.util.find_spec(name) is not None
+
+
+def normalize_postgres_url(
+    url: str,
+    *,
+    is_installed: Callable[[str], bool] = _module_installed,
+) -> str:
+    """Ergaenzt den DBAPI-Dialekt, wenn er fehlt.
+
+    SQLAlchemy bildet ein blankes ``postgresql://`` auf psycopg2 ab. Ist nur
+    psycopg 3 installiert -- was requirements-db.txt als Standard vorgibt --
+    scheitert die Verbindung mit ``No module named 'psycopg2'``. Statt das dem
+    Aufrufer zu ueberlassen, waehlen wir den Dialekt anhand des tatsaechlich
+    installierten Treibers.
+
+    ``is_installed`` ist injizierbar, damit die Logik ohne installierten
+    Treiber pruefbar bleibt.
+    """
+    if not url.startswith("postgresql://") and not url.startswith("postgres://"):
+        return url
+
+    _, _, rest = url.partition("://")
+    for driver in ("psycopg", "psycopg2"):
+        if is_installed(driver):
+            return f"postgresql+{driver}://{rest}"
+
+    raise DatabaseConfigurationError(
+        "No PostgreSQL driver installed. Run: pip install -r requirements-db.txt"
+    )
+
+
 def _default_pg_executor_factory(url: str) -> SqlExecutor:  # pragma: no cover - needs sqlalchemy
     from secondbrain.storage.database import Database
     from secondbrain.storage.database_config import DatabaseConfig
     from secondbrain.storage.db_executor import SqlAlchemyExecutor
-    return SqlAlchemyExecutor(Database(DatabaseConfig(url=url)))
+    return SqlAlchemyExecutor(Database(DatabaseConfig(url=normalize_postgres_url(url))))
 
 
 def validate_and_connect(
@@ -77,6 +115,11 @@ def validate_and_connect(
                                False, executor, True, "postgresql connected")
     except DatabaseStartupError:
         raise
+    except DatabaseConfigurationError as exc:
+        # Konfigurationsfehler: kein Retry, kein SQLite-Fallback. Ein fehlender
+        # Treiber oder abgelehntes TLS ist keine unerreichbare Datenbank, und
+        # ein stiller Fallback wuerde die Ursache verdecken.
+        raise DatabaseStartupError(f"database configuration error: {exc}") from exc
     except BaseException as exc:  # noqa: BLE001 - connection failure handling
         if allow_fallback:
             sqlite_url = "sqlite:///" + read_env(env)["sqlite_dev_path"]
