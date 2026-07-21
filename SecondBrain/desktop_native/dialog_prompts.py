@@ -18,6 +18,7 @@ _SLOT_PROMPTS = {
 _ACTION_SLOT_PROMPTS = {
     ("tasks.rename", "task"): "Welche Aufgabe soll umbenannt werden?",
     ("tasks.archive", "task"): "Welche Aufgabe soll archiviert werden?",
+    ("tasks.restore", "task"): "Welche Aufgabe soll wiederhergestellt werden?",
 }
 
 

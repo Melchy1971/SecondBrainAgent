@@ -143,6 +143,13 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
         handler=bound("tasks.archive"), capability_source="desktop_task_service",
     ))
     registry.register(ActionDefinition(
+        id="tasks.restore", title="Aufgabe wiederherstellen",
+        aliases=("aufgabe wiederherstellen", "stelle aufgabe wieder her"),
+        risk=ActionRisk.WRITE, requires_confirmation=True, requires_workspace=True,
+        parameters={"task": {"type": "string", "minLength": 1}},
+        handler=bound("tasks.restore"), capability_source="desktop_task_service",
+    ))
+    registry.register(ActionDefinition(
         id="calendar.create", title="Termin erstellen", aliases=("erstelle termin", "neuer termin"),
         risk=ActionRisk.EXTERNAL_WRITE, requires_approval=True, requires_workspace=True,
         parameters={"title": {"type": "string", "minLength": 1}, "when": {"type": "string", "minLength": 1}}, handler=bound("calendar.create"),
