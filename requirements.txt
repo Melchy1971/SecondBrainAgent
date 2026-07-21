@@ -1,6 +1,7 @@
-# Core security and streaming import dependencies.
+# Core runtime dependencies.
 cryptography>=46.0.3
 ijson>=3.2.3
+tzdata>=2025.2
 
 # Remaining feature dependencies are optional.
 # Install optional feature sets through pyproject extras, for example:

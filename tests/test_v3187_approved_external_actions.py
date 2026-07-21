@@ -70,22 +70,19 @@ def test_approved_calendar_executes_service_bound_payload(tmp_path):
     assert bus.approvals.get(proposal["approval_id"])["status"] == "completed"
 
 
-def test_unresolved_calendar_time_remains_pending_before_connector_call(tmp_path):
+def test_unresolved_calendar_time_requests_correction_before_approval(tmp_path):
     connector = _CalendarConnector()
     bus = NativeActionBus(
         tmp_path,
         workspace_id="alpha",
         calendar_service=CalendarService(connector),
     )
-    proposal = bus.submit("erstelle termin", {"title": "Arzt", "when": "morgen um zwei"})
+    result = bus.submit("erstelle termin", {"title": "Arzt", "when": "morgen um zwei"})
 
-    bus.submit("freigabe genehmigen", {"approval": proposal["approval_id"]})
-    result = bus.confirm()
-
-    assert result["status"] == "error"
-    assert "time is unresolved" in result["error"]
+    assert result["status"] == "slots_required"
+    assert result["error"] == "calendar_time_unresolved"
     assert connector.created == []
-    assert bus.approvals.get(proposal["approval_id"])["status"] == "pending"
+    assert bus.approvals.list() == []
 
 
 def test_rejected_external_write_never_invokes_connector(tmp_path):
