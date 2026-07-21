@@ -110,22 +110,29 @@
     {
       "release": "v31.15",
       "capability": "Produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks und Projekte",
-      "status": "feature_branch_pending_merge"
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/tasks/repository.py",
+      "live_certified": false
     },
     {
       "release": "v31.16",
       "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
-      "status": "feature_branch_pending_merge"
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/planner_v2/service.py",
+      "live_certified": false
     },
     {
       "release": "v31.17-v31.18",
-      "capability": "Long-Running-Job-Runtime und erweiterte proaktive Assistenz auf separaten Feature-Branches",
-      "status": "feature_branches_pending_merge"
+      "capability": "Long-Running-Job-Runtime und erweiterte proaktive Assistenz",
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/jobs/",
+      "live_certified": false
     },
     {
       "release": "v31.19",
       "capability": "Persoenliches Dashboard mit vollstaendigem Snapshot, PostgreSQL-Personalisierung, parallelen Reads, Timeout und Cancellation",
-      "status": "feature_branch_pending_merge"
+      "status": "completed_on_main",
+      "live_certified": false
     },
     {
       "release": "v31.26",
@@ -140,19 +147,89 @@
     {
       "release": "v31.32",
       "capability": "Testkonto-gebundenes Connector-E2E-Gate fuer Gmail, Outlook und Kalender mit Read-Sync, Cursor-Persistenz und Approval-Pflicht",
-      "status": "implemented_conditional_pass_without_test_accounts_or_write_evidence"
+      "status": "implemented_conditional_pass_without_test_accounts_or_write_evidence",
+      "live_certified": false
+    },
+    {
+      "release": "v31.35-v31.43",
+      "capability": "Native Desktop- und Voice-Runtime: Qt-Shell, Action Bus, Navigation, Lifecycle, System Tray, Windows-Autostart, lokale STT-Policy, TTS-Safety und lokales Wake Word",
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/desktop_native/",
+      "live_certified": false
+    },
+    {
+      "release": "v31.56-v31.64",
+      "capability": "Live-Statusflaechen im Desktop: Health, System Metrics, Vault, Alerts, Storage, Weather, Netzwerk, Runtime Info und Queue Status",
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/desktop_native/",
+      "live_certified": false
+    },
+    {
+      "release": "v31.84-v31.88",
+      "capability": "Task-Archivierung, Restore, View-Filter, freigegebene externe Aktionen und Live-Connector-Anbindung im Desktop",
+      "status": "completed_on_main",
+      "evidence_path": "SecondBrain/desktop_native/external_action_connectors.py",
+      "live_certified": false
     }
   ],
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
     "provider_live_validation_openai_ollama_pending",
-    "real_connector_runtime_rollout",
-    "installer_exe_msi_pipeline",
-    "secret_vault_encryption_rollout",
+    "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
-    "task_postgresql_branch_merge_pending",
-    "planner_parallel_runtime_branch_merge_pending"
-    ,"remaining_job_type_migrations_pending"
+    "remaining_job_type_migrations_pending",
+    "pyside6_runtime_dependency_not_declared",
+    "windows_installer_live_certification_pending",
+    "code_signing_certificate_missing",
+    "vault_os_keyring_backend_missing",
+    "disaster_recovery_rollback_unproven",
+    "desktop_shell_live_certification_pending",
+    "voice_runtime_live_certification_pending",
+    "package_version_behind_documented_feature_level",
+    "duplicate_planner_subsystems_unresolved",
+    "duplicate_voice_de_modules_unresolved"
+  ],
+  "removed_blockers": [
+    {
+      "blocker": "task_postgresql_branch_merge_pending",
+      "reason": "PostgresTaskRepository inklusive JSONL-Migration und Produktions-Guard ist auf main vorhanden",
+      "evidence_path": "SecondBrain/tasks/repository.py",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "planner_parallel_runtime_branch_merge_pending",
+      "reason": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks ist auf main vorhanden; approval-pflichtige Knoten bleiben seriell",
+      "evidence_path": "SecondBrain/planner_v2/service.py",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "feature_branch_pending_merge",
+      "reason": "Sammelblocker ohne Gegenstand; alle referenzierten Branches sind gemergt",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "feature_branches_pending_merge",
+      "reason": "Sammelblocker ohne Gegenstand; alle referenzierten Branches sind gemergt",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "installer_exe_msi_pipeline",
+      "reason": "Pipeline ist implementiert; ersetzt durch windows_installer_live_certification_pending, da nur der Nachweis fehlt",
+      "evidence_path": "packaging/windows/",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "secret_vault_encryption_rollout",
+      "reason": "Verschluesselung, Audit, Redaction und Health sind implementiert; ersetzt durch vault_os_keyring_backend_missing",
+      "evidence_path": "SecondBrain/secret_manager/",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "real_connector_runtime_rollout",
+      "reason": "Connector-Runtime ist auf main; ersetzt durch connector_e2e_live_certification_pending",
+      "evidence_path": "SecondBrain/connectors/",
+      "removed_at": "2026-07-21"
+    }
   ],
   "degraded_modes": [
     "sqlite_rag_prototype_without_database_url",
@@ -168,17 +245,19 @@
     "live_provider_and_database_evidence_remains_environment_dependent"
   ],
   "next_sprint": {
-    "focus": "Production readiness hardening",
+    "focus": "Live certification instead of new features",
     "goals": [
+      "declare_pyside6_runtime_dependency",
       "postgresql_pgvector_live_gate_green",
-      "provider_live_health_gate_green",
-      "connector_runtime_stabilization",
-      "secret_vault_rollout_completion"
+      "approval_provider_connector_live_certification",
+      "remaining_job_type_migrations",
+      "disaster_recovery_and_vault_certification"
     ]
   },
   "release_readiness": {
-    "state": "CONDITIONAL_READY",
-    "basis": "v31.01-v31.14 are integrated on main; v31.15-v31.16 await merge; production certification still requires live PostgreSQL/provider/installer evidence",
+    "state": "IMPLEMENTATION_AHEAD_OF_CERTIFICATION",
+    "basis": "Der Codebestand auf main reicht bis Feature-Stufe v31.88 und umfasst PostgreSQL-Repositories, Job-Runtime, Qt-Desktop, Voice-Runtime, Secret Vault und Windows-Installerbau. Fuer keinen dieser Bereiche liegt ein produktionsnaher Live-Nachweis vor. Der begrenzende Faktor fuer Jarvis 1.0 ist Zertifizierung, nicht Implementierung.",
+    "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Zuerst pyside6_runtime_dependency_not_declared beheben, da dieser Blocker Desktop- und Installer-Nachweis gleichzeitig verhindert.",
     "required_gates": [
       "repo-doctor",
       "dependency-inventory",
@@ -187,12 +266,88 @@
       "p1-gate",
       "pytest",
       "review-approval-release-gate"
+    ],
+    "missing_gates": [
+      "postgres-live-gate",
+      "live-certification",
+      "disaster-recovery-gate",
+      "windows-installer-gate",
+      "support-bundle",
+      "jarvis-1.0-gate"
+    ]
+  },
+  "capability_inventory": {
+    "path": "docs/status/current_capability_inventory.md",
+    "generated_at": "2026-07-21",
+    "inventoried_commit": "f0a9dd904da0d0a8b36322f2775653d803d72cda",
+    "principle": "implementation_status_and_live_evidence_are_tracked_separately"
+  },
+  "desktop_status": {
+    "shell": "PySide6",
+    "code_path": "SecondBrain/desktop_native/qt_shell.py",
+    "implementation": "implemented",
+    "live_certified": false,
+    "blocking_issue": "PySide6 ist in keiner requirements-Datei und nicht in pyproject.toml deklariert",
+    "fallback": "Tkinter-Anwendung bleibt vorhanden"
+  },
+  "voice_status": {
+    "language": "de",
+    "code_path": "SecondBrain/desktop_native/voice_runtime.py",
+    "implementation": "implemented",
+    "live_certified": false,
+    "components": {
+      "stt": "implemented",
+      "tts": "implemented",
+      "wake_word": "implemented",
+      "hotkey": "implemented",
+      "command_router": "implemented"
+    },
+    "blocking_issue": "Kein Nachweis ohne Audiohardware auf der Zielmaschine; zwei parallele voice_de-Module ungeklaert",
+    "gate_command": "python launcher.py native-voice-app-gate"
+  },
+  "installer_status": {
+    "implementation": "implemented",
+    "live_certified": false,
+    "artifacts": {
+      "pyinstaller_spec": "packaging/windows/jarvis.spec",
+      "wix_msi": "packaging/windows/jarvis.wxs",
+      "inno_setup": "packaging/windows/installer.iss",
+      "build_script": "packaging/windows/build.ps1",
+      "smoke_test": "packaging/windows/installer_smoke.ps1",
+      "uninstall": "uninstall_jarvis.ps1"
+    },
+    "code_signing": "missing",
+    "blocking_issue": "Kein Nachweis auf sauberer Windows-VM; PySide6 fehlt im Paketumfang"
+  },
+  "private_beta_status": {
+    "state": "not_started",
+    "telemetry": "missing",
+    "support_bundle_command": "missing",
+    "blocking_issue": "Voraussetzung ist ein installierbares und startfaehiges Paket"
+  },
+  "live_gates": {
+    "certified": [],
+    "implemented_not_certified": [
+      "review-approval-release-gate",
+      "connector-e2e-gate",
+      "provider-live-gate",
+      "native-voice-app-gate",
+      "backup-gate"
+    ],
+    "missing": [
+      "postgres-live-gate",
+      "live-certification",
+      "disaster-recovery-gate",
+      "windows-installer-gate",
+      "jarvis-1.0-gate"
     ]
   },
   "build": 307700,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.32",
-  "documentation_updated_at": "2026-07-17",
+  "documented_feature_level": "v31.88",
+  "feature_level_source": "highest merged pull request on main (#116)",
+  "version_string_note": "pyproject.toml steht auf 30.77.0. Die v31.xx-Bezeichner sind Release-Labels der Entwicklungspakete und wurden nie in die Paketversion ueberfuehrt. version-sync leitet version, current_version und build weiterhin aus pyproject.toml ab.",
+  "documentation_updated_at": "2026-07-21",
   "ci_validation": {
     "release": "v31.26",
     "python_versions": [
