@@ -14,9 +14,10 @@ from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.p1_vector_provider_guard import repair_vector_index
 
 from .action_registry import ActionDefinition, ActionRegistry, build_core_registry
+from .calendar_time_de import resolve_german_calendar_time
 from .task_surface import TASK_FILTERS, TaskSurface
 from .voice_de import parse_german_voice_command
-from .voice_runtime import DialogContext, VoiceSession
+from .voice_runtime import DialogContext, VoiceSession, VoiceState
 
 
 class NativeActionBus:
@@ -59,13 +60,22 @@ class NativeActionBus:
         parameters = dict(dialog.parameters)
         if dialog.action_id == "calendar.create":
             raw_start = str(parameters["when"])
-            start = parse_dt(raw_start)
-            resolved = start is not None and start.tzinfo is not None
+            start = resolve_german_calendar_time(raw_start)
+            if start is None:
+                dialog.parameters.pop("when", None)
+                dialog.missing_parameters = ["when"]
+                self.voice.state = VoiceState.WAITING_FOR_CONFIRMATION
+                return {
+                    "status": "slots_required",
+                    "missing": ["when"],
+                    "action_id": dialog.action_id,
+                    "error": "calendar_time_unresolved",
+                }
             execution_payload = {
                 "event_id": "",
                 "title": str(parameters["title"]),
-                "start": start.isoformat() if resolved else raw_start,
-                "end": (start + timedelta(hours=1)).isoformat() if resolved else raw_start,
+                "start": start.isoformat(),
+                "end": (start + timedelta(hours=1)).isoformat(),
             }
             prepared = self.calendar_service.prepare_change(
                 "create_event",

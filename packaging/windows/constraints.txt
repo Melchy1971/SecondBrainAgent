@@ -1,6 +1,7 @@
 # Direct build inputs are pinned; update intentionally and review the resulting SBOM.
 ijson==3.4.0
 cryptography==46.0.3
+tzdata==2025.2
 pytesseract==0.3.13
 pillow==12.1.0
 mss==10.1.0

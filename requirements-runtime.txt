@@ -1,7 +1,9 @@
 # Curated runtime dependencies.
 #
-# The core runtime uses ijson for bounded-memory streaming imports.
+# The core runtime uses ijson for bounded-memory imports and tzdata for
+# deterministic IANA timezone handling on Windows.
 ijson>=3.2.3
+tzdata>=2025.2
 # Optional feature dependencies are declared in pyproject.toml extras:
 #
 #   pip install -e ".[pdf]"        # PDF parsing via PyMuPDF/pypdf
