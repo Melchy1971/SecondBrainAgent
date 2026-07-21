@@ -139,3 +139,45 @@ def test_archive_task_rejects_ambiguous_reference_without_write(tmp_path):
     else:
         raise AssertionError("ambiguous task archive was accepted")
     assert rt.tasks() == before
+
+
+def test_restore_task_returns_to_previous_column_and_clears_archive_state(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    created = rt.add_task("Review", column="doing")
+    archived = rt.archive_task(created["id"])
+    archived_at = archived["archived_at"]
+
+    restored = rt.restore_task(created["id"])
+
+    assert restored["column"] == "doing"
+    assert restored["archived_from"] == "doing"
+    assert restored["archived_at"] is None
+    assert restored["last_archived_at"] == archived_at
+    assert restored["restored_at"]
+
+
+def test_restore_task_rejects_active_task_without_write(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    created = rt.add_task("Review")
+    before = rt.tasks()
+
+    try:
+        rt.restore_task(created["id"])
+    except ValueError as exc:
+        assert str(exc) == "task is not archived"
+    else:
+        raise AssertionError("active task restore was accepted")
+    assert rt.tasks() == before
+
+
+def test_restore_task_uses_safe_fallback_for_invalid_previous_column(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    created = rt.add_task("Review")
+    rt.archive_task(created["id"])
+    tasks = rt.tasks()
+    tasks[0]["archived_from"] = "archived"
+    rt.store.save("tasks", tasks)
+
+    restored = rt.restore_task(created["id"])
+
+    assert restored["column"] == "backlog"

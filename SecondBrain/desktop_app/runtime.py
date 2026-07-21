@@ -158,6 +158,21 @@ class DesktopAppRuntime:
         self.store.save("tasks", tasks)
         return task
 
+    def restore_task(self, reference):
+        tasks, task = self._resolve_task(reference)
+        if task.get("column") != "archived":
+            raise ValueError("task is not archived")
+        previous_column = str(task.get("archived_from") or "").strip()
+        if not previous_column or previous_column.casefold() == "archived":
+            previous_column = "backlog"
+        task["column"] = previous_column
+        if task.get("archived_at"):
+            task["last_archived_at"] = task["archived_at"]
+        task["archived_at"] = None
+        task["restored_at"] = datetime.now(timezone.utc).isoformat()
+        self.store.save("tasks", tasks)
+        return task
+
     def seed(self):
         self.start_runtime()
         self.notify("SecondBrain", "Desktop App bereit")

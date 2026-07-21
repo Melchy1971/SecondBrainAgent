@@ -170,5 +170,23 @@ def test_task_archive_collects_reference_and_requires_confirmation(tmp_path: Pat
     assert runtime.tasks()[0]["archived_from"] == "doing"
 
 
+def test_task_restore_collects_reference_and_requires_confirmation(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    created = runtime.add_task("Alt", column="doing")
+    runtime.archive_task(created["id"])
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    first = bus.submit("aufgabe wiederherstellen")
+    assert first == {"status": "slots_required", "missing": ["task"], "action_id": "tasks.restore"}
+    pending = bus.submit("Alt")
+    assert pending["status"] == "confirmation_required"
+
+    result = bus.confirm()
+
+    assert result["status"] == "executed"
+    assert result["result"]["column"] == "doing"
+    assert runtime.tasks()[0]["archived_at"] is None
+
+
 def test_desktop_shell_is_wired_to_action_bus():
     assert "self.action_bus = NativeActionBus" in Path(desktop_app.__file__).read_text(encoding="utf-8")
