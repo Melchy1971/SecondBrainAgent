@@ -48,6 +48,11 @@ def test_registry_rejects_duplicate_ids_and_exposes_policy():
     assert task_restore.requires_confirmation is True
     assert task_restore.requires_workspace is True
     assert registry.resolve_alias("AUFGABE WIEDERHERSTELLEN").id == "tasks.restore"
+    assert registry.get("tasks.filter.all").requires_workspace is True
+    assert registry.resolve_alias("ZEIGE OFFENE AUFGABEN").id == "tasks.filter.open"
+    assert registry.resolve_alias("AKTIVE AUFGABEN").id == "tasks.filter.open"
+    assert registry.resolve_alias("ERLEDIGTE AUFGABEN").id == "tasks.filter.completed"
+    assert registry.resolve_alias("ARCHIVIERTE AUFGABEN").id == "tasks.filter.archived"
     assert registry.resolve_alias("  ÖFFNE   DOKUMENTE ").id == "navigation.documents"
     try:
         registry.register(ActionDefinition("mail.send", "duplicate"))

@@ -86,6 +86,31 @@ def test_task_list_reads_the_same_workspace_store(tmp_path: Path):
     assert result["result"]["items"][0]["priority"] == "high"
 
 
+def test_task_filter_actions_return_safe_workspace_projections(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    open_task = runtime.add_task("Offen")
+    completed_task = runtime.add_task("Erledigt")
+    archived_task = runtime.add_task("Archiv")
+    runtime.complete_task(completed_task["id"])
+    runtime.archive_task(archived_task["id"])
+    before = runtime.tasks()
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    for utterance, task_filter, expected_ids in (
+        ("zeige alle aufgaben", "all", {open_task["id"], completed_task["id"], archived_task["id"]}),
+        ("zeige aktive aufgaben", "open", {open_task["id"]}),
+        ("zeige erledigte aufgaben", "completed", {completed_task["id"]}),
+        ("zeige archivierte aufgaben", "archived", {archived_task["id"]}),
+    ):
+        result = bus.submit(utterance)
+        assert result["status"] == "executed"
+        assert result["result"]["task_filter"] == task_filter
+        assert result["result"]["next_view"] == "tasks"
+        assert {item["task_id"] for item in result["result"]["items"]} == expected_ids
+
+    assert runtime.tasks() == before
+
+
 def test_task_actions_are_workspace_bound_and_reject_invalid_priority(tmp_path: Path):
     without_workspace = NativeActionBus(tmp_path)
     assert without_workspace.submit("liste aufgaben")["error"] == "workspace_required"

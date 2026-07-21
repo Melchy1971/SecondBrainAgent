@@ -10,6 +10,7 @@ from secondbrain.p1_rag_runtime import P1RagRuntime
 from secondbrain.p1_vector_provider_guard import repair_vector_index
 
 from .action_registry import ActionDefinition, ActionRegistry, build_core_registry
+from .task_surface import TASK_FILTERS, TaskSurface
 from .voice_de import parse_german_voice_command
 from .voice_runtime import VoiceSession
 
@@ -96,6 +97,12 @@ class NativeActionBus:
         if action_id == "tasks.list":
             tasks = DesktopAppRuntime(self.project_root).tasks()
             return {"count": len(tasks), "items": tasks}
+        if action_id.startswith("tasks.filter."):
+            task_filter = action_id.rsplit(".", 1)[-1]
+            if task_filter not in TASK_FILTERS:
+                raise ValueError(f"unsupported task filter: {task_filter}")
+            snapshot = TaskSurface(DesktopAppRuntime(self.project_root)).snapshot(task_filter)
+            return {**snapshot, "next_view": "tasks"}
         if action_id == "tasks.create":
             title = str(payload["title"]).strip()
             if not title:

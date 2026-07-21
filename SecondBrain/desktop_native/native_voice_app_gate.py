@@ -113,6 +113,7 @@ def run_native_voice_app_gate(
             for action_id in (
                 "assistant.ask", "documents.import", "tasks.list", "tasks.create", "tasks.complete", "tasks.rename",
                 "tasks.archive", "tasks.restore",
+                "tasks.filter.all", "tasks.filter.open", "tasks.filter.completed", "tasks.filter.archived",
                 "calendar.create",
                 "mail.send", "search.query", "index.repair",
             )

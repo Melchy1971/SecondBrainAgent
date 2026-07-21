@@ -108,6 +108,23 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
         requires_workspace=True, handler=bound("tasks.list"),
         capability_source="desktop_task_service",
     ))
+    for task_filter, title, aliases in (
+        ("all", "Alle Aufgaben anzeigen", ("zeige alle aufgaben", "alle aufgaben")),
+        (
+            "open", "Offene Aufgaben anzeigen",
+            ("zeige offene aufgaben", "offene aufgaben", "zeige aktive aufgaben", "aktive aufgaben"),
+        ),
+        (
+            "completed", "Erledigte Aufgaben anzeigen",
+            ("zeige erledigte aufgaben", "erledigte aufgaben", "abgeschlossene aufgaben"),
+        ),
+        ("archived", "Archivierte Aufgaben anzeigen", ("zeige archivierte aufgaben", "archivierte aufgaben")),
+    ):
+        registry.register(ActionDefinition(
+            id=f"tasks.filter.{task_filter}", title=title, aliases=aliases,
+            requires_workspace=True, handler=bound(f"tasks.filter.{task_filter}"),
+            capability_source="desktop_task_service",
+        ))
     registry.register(ActionDefinition(
         id="tasks.create", title="Aufgabe erstellen",
         aliases=("erstelle aufgabe", "neue aufgabe", "aufgabe erstellen"),

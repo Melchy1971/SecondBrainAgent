@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from secondbrain.desktop_app import DesktopAppRuntime
 from secondbrain.desktop_native import app as desktop_app
 from secondbrain.desktop_native.task_surface import TaskSurface, task_view_text
@@ -40,6 +42,27 @@ def test_task_surface_counts_archived_tasks_separately(tmp_path):
     assert open_task["id"]
 
 
+def test_task_surface_filters_before_applying_visibility_limit(tmp_path):
+    runtime = DesktopAppRuntime(tmp_path)
+    first_open = runtime.add_task("Erste offene Aufgabe")
+    completed = runtime.add_task("Erledigt")
+    runtime.complete_task(completed["id"])
+    second_open = runtime.add_task("Zweite offene Aufgabe")
+
+    snapshot = TaskSurface(runtime, limit=1).snapshot("open")
+
+    assert snapshot["task_filter"] == "open"
+    assert snapshot["filtered_count"] == 2
+    assert snapshot["visible_count"] == 1
+    assert snapshot["items"][0]["task_id"] == second_open["id"]
+    assert first_open["id"] != second_open["id"]
+
+
+def test_task_surface_rejects_unknown_filter(tmp_path):
+    with pytest.raises(ValueError, match="unsupported task filter"):
+        TaskSurface(DesktopAppRuntime(tmp_path)).snapshot("deleted")
+
+
 def test_task_surface_sanitizes_control_characters_and_bounds_fields(tmp_path):
     runtime = DesktopAppRuntime(tmp_path)
     runtime.add_task("Zeile 1\nZeile 2\x1b[31m" + "x" * 300)
@@ -71,17 +94,20 @@ def test_task_view_text_is_human_readable(tmp_path):
     rendered = task_view_text(TaskSurface(runtime).snapshot())
 
     assert "1 offen" in rendered
+    assert "FILTER: ALLE" in rendered
     assert "[ ] Review · high" in rendered
     assert task["id"] in rendered
     assert "Aufgabe abschließen" in rendered
     assert "Aufgabe umbenennen" in rendered
     assert "Aufgabe archivieren" in rendered
     assert "Aufgabe wiederherstellen" in rendered
+    assert "Zeige archivierte Aufgaben" in rendered
 
 
 def test_native_shell_routes_tasks_to_surface_and_refreshes_after_writes():
     source = Path(desktop_app.__file__).read_text(encoding="utf-8")
 
     assert 'elif view == "Tasks":' in source
-    assert "task_view_text(self.task_surface.snapshot())" in source
+    assert "task_view_text(self.task_surface.snapshot(self.task_filter))" in source
+    assert "isinstance(task_filter, str) and task_filter in TASK_FILTERS" in source
     assert 'action_id.startswith("tasks.")' in source
