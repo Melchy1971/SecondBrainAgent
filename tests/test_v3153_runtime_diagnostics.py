@@ -1,7 +1,7 @@
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 
 
-def _snapshot(**voice_overrides):
+def _snapshot(*, external_actions=None, **voice_overrides):
     voice = {
         "language": "de-DE",
         "stt_ready": True,
@@ -20,6 +20,7 @@ def _snapshot(**voice_overrides):
         approvals={"available": True, "pending_count": 2, "elevated_count": 1, "overdue_count": 1},
         jobs={"running_count": 1, "blocked_count": 3},
         approval_config={"notifications_enabled": False, "overdue_minutes": 30, "refresh_seconds": 5},
+        external_actions=external_actions,
     )
 
 
@@ -57,6 +58,36 @@ def test_approval_diagnostics_use_safe_defaults_without_config():
         "overdue_minutes": 15,
         "refresh_seconds": 2,
     }
+    assert snapshot["components"]["external_actions"] == {
+        "provider": "disabled",
+        "configured": False,
+        "authenticated": False,
+        "calendar_write": False,
+        "mail_write": False,
+        "reason": "disabled",
+    }
+
+
+def test_external_action_diagnostics_expose_readiness_without_secrets():
+    snapshot = _snapshot(external_actions={
+        "provider": "google",
+        "configured": True,
+        "authenticated": True,
+        "calendar_write": True,
+        "mail_write": True,
+        "reason": "ready",
+        "access_token": "must-not-appear",
+    })
+
+    assert snapshot["components"]["external_actions"] == {
+        "provider": "google",
+        "configured": True,
+        "authenticated": True,
+        "calendar_write": True,
+        "mail_write": True,
+        "reason": "ready",
+    }
+    assert "must-not-appear" not in repr(snapshot)
 
 
 def test_missing_microphone_or_stt_reports_degraded_without_blocking():

@@ -20,6 +20,7 @@ def runtime_diagnostics(
     approvals: Mapping[str, Any],
     jobs: Mapping[str, Any],
     approval_config: Mapping[str, Any] | None = None,
+    external_actions: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     stt = voice.get("stt_policy") or {}
     microphone = (voice.get("microphone") or {}).get("inventory") or {}
@@ -67,6 +68,14 @@ def runtime_diagnostics(
         "jobs": {
             "running_count": int(jobs.get("running_count", 0)),
             "blocked_count": int(jobs.get("blocked_count", 0)),
+        },
+        "external_actions": {
+            "provider": str((external_actions or {}).get("provider") or "disabled"),
+            "configured": bool((external_actions or {}).get("configured")),
+            "authenticated": bool((external_actions or {}).get("authenticated")),
+            "calendar_write": bool((external_actions or {}).get("calendar_write")),
+            "mail_write": bool((external_actions or {}).get("mail_write")),
+            "reason": str((external_actions or {}).get("reason") or "disabled"),
         },
     }
     degraded = not components["voice"]["stt_ready"] or not components["microphone"]["available"]
