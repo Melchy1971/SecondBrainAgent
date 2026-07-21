@@ -6,10 +6,16 @@ Phase 1  Preflight: Treiber, Verbindung, Version, SSL, Rechte, Zeitzone,
          Migrationsstand, pgvector-Extension und Indexfaehigkeit.
 Phase 2  Isolierte Testumgebung: eigenes Schema je Lauf, Aufraeumen im
          ``finally``-Block, niemals Zugriff auf produktive Tabellen.
+Phase 5  Concurrency: ``FOR UPDATE SKIP LOCKED`` ohne Doppelvergabe,
+         optimistische Versionierung, doppelter Idempotency Key.
+Phase 6  Vektorsuche: Golden Dataset, Trefferqualitaet, Mindest-Recall,
+         nachgewiesene Indexnutzung, Dimension Guard, Reindex.
 Phase 8  Redigierter Report.
 
-Die Phasen 3 bis 7 (Repository-, Isolations-, Concurrency- und
-Vektor-Suchtests) folgen als eigene Pakete. Der Report weist sie als
+Offen bleiben Phase 3 (Repository-Vertraege) und Phase 4
+(Workspace-Isolation). Phase 4 ist gegen die Datenbank nicht sinnvoll
+pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist -- siehe
+``tests/test_workspace_isolation_contract.py``. Der Report weist beide als
 ``not_implemented`` aus, damit ein Teilumfang nicht als vollstaendige
 Zertifizierung missverstanden wird.
 
@@ -46,10 +52,19 @@ PROJECT_DIMENSIONS = 3072
 
 NOT_IMPLEMENTED_PHASES = (
     "repository_contracts",
+    # Workspace-Isolation ist im Projekt rein anwendungsseitig umgesetzt; es
+    # gibt keine Row Level Security. Eine Pruefung gegen die Datenbank wuerde
+    # daher immer bestehen und nichts aussagen. Siehe
+    # tests/test_workspace_isolation_contract.py und den Masterplan-Abschnitt
+    # workspace_isolation.
     "workspace_isolation",
-    "concurrency",
-    "vector_search_recall",
 )
+
+# Golden Dataset: klein, deterministisch, ohne Zufall. Ein Recall-Nachweis,
+# dessen Erwartung sich zwischen Laeufen aendert, ist kein Nachweis.
+GOLDEN_ROWS = 64
+GOLDEN_TOP_K = 5
+MIN_RECALL = 0.8
 
 
 # --------------------------------------------------------------------------
@@ -241,6 +256,259 @@ def _schema_checks(connection, schema: str) -> tuple[list[dict[str, Any]], dict[
     return checks, facts
 
 
+# --------------------------------------------------------------------------
+# Phase 6 -- Vektorsuche
+# --------------------------------------------------------------------------
+
+
+def golden_vector(index: int, dimensions: int = PROJECT_DIMENSIONS) -> list[float]:
+    """Deterministischer Einheitsvektor: Achse ``index`` traegt 1.0.
+
+    Damit ist die erwartete Rangfolge einer Cosine-Suche analytisch bekannt und
+    muss nicht aus einem Referenzlauf abgeleitet werden.
+    """
+    vector = [0.0] * dimensions
+    vector[index % dimensions] = 1.0
+    return vector
+
+
+def _literal(vector: list[float]) -> str:
+    return "[" + ",".join(f"{v:.6f}" for v in vector) + "]"
+
+
+def _vector_search_checks(connection, schema: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+    table = f"{schema}.golden"
+    cast = f"halfvec({PROJECT_DIMENSIONS})"
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"CREATE TABLE {table} (id int primary key, e vector({PROJECT_DIMENSIONS}))"
+        )
+        for i in range(GOLDEN_ROWS):
+            cursor.execute(
+                f"INSERT INTO {table} (id, e) VALUES (%s, %s::vector)",
+                (i, _literal(golden_vector(i))),
+            )
+        cursor.execute(
+            f"CREATE INDEX golden_hnsw ON {table} "
+            f"USING hnsw ((e::{cast}) halfvec_cosine_ops)"
+        )
+        cursor.execute(f"ANALYZE {table}")
+
+    # -- Trefferqualitaet -------------------------------------------------
+    probe = 0
+    query = _literal(golden_vector(probe))
+    order_by = f"e::{cast} <=> %s::{cast}"
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"SELECT id FROM {table} ORDER BY {order_by} LIMIT %s",
+            (query, GOLDEN_TOP_K),
+        )
+        hits = [row[0] for row in cursor.fetchall()]
+
+    facts["search_top_k"] = hits
+    checks.append(
+        _check("vector_search_returns_results", len(hits) == GOLDEN_TOP_K,
+               detail=f"{len(hits)} of {GOLDEN_TOP_K}")
+    )
+    checks.append(
+        _check("vector_search_exact_match_first", bool(hits) and hits[0] == probe,
+               detail=f"expected {probe}, got {hits[0] if hits else None}")
+    )
+
+    # Recall gegen die analytisch bekannte Erwartung: der Anfragevektor ist
+    # orthogonal zu allen anderen, also ist nur der Treffer selbst relevant.
+    relevant = {probe}
+    recall = len(relevant & set(hits)) / len(relevant)
+    facts["recall"] = recall
+    checks.append(
+        _check("vector_search_min_recall", recall >= MIN_RECALL,
+               detail=f"{recall:.2f} >= {MIN_RECALL}")
+    )
+
+    # -- Indexnutzung -----------------------------------------------------
+    # Kernpruefung. Ein Ausdrucksindex wird nur genutzt, wenn die Abfrage
+    # denselben Ausdruck traegt. Weicht sie ab, existiert der Index und jede
+    # Suche degradiert still zum Sequential Scan.
+    usable, plan = _index_usable(connection, table, order_by, query)
+    facts["index_scan_plan"] = plan
+    checks.append(
+        _check("vector_index_used_by_query", usable,
+               detail="query expression cannot use the halfvec index" if not usable else plan)
+    )
+
+    # -- Dimension Guard --------------------------------------------------
+    wrong = _try(
+        connection,
+        f"INSERT INTO {table} (id, e) VALUES (9001, '{_literal([0.1, 0.2, 0.3])}'::vector)",
+    )
+    checks.append(
+        _check("dimension_guard_rejects_mismatch", wrong is False,
+               detail="a 3-dimensional vector was accepted" if wrong else "rejected")
+    )
+
+    # -- Reindex ----------------------------------------------------------
+    reindexed = _try(connection, f"REINDEX INDEX {schema}.golden_hnsw")
+    checks.append(_check("reindex", reindexed))
+    if reindexed:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"SELECT id FROM {table} ORDER BY {order_by} LIMIT 1", (query,)
+            )
+            row = cursor.fetchone()
+        checks.append(
+            _check("search_after_reindex", bool(row) and row[0] == probe)
+        )
+
+    return checks, facts
+
+
+# --------------------------------------------------------------------------
+# Phase 5 -- Concurrency
+# --------------------------------------------------------------------------
+
+
+def _concurrency_checks(connector: Callable[[str], Any], dsn: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Zwei echte Sessions gegen dieselbe Tabelle.
+
+    Anders als die uebrigen Phasen laeuft das committet: ``FOR UPDATE SKIP
+    LOCKED`` ist ohne eine zweite, die Zeilen sehende Session nicht pruefbar.
+    Das Schema wird deshalb eigenstaendig verwaltet und im ``finally`` entfernt.
+    """
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+
+    schema = f"{SCHEMA_PREFIX}_conc_{uuid4().hex[:10]}"
+    table = f"{schema}.queue"
+    setup = connector(dsn)
+    setup.autocommit = True
+    worker_a = None
+    worker_b = None
+
+    try:
+        with setup.cursor() as cursor:
+            cursor.execute(f"CREATE SCHEMA {schema}")
+            cursor.execute(
+                f"CREATE TABLE {table} ("
+                "  id int primary key,"
+                "  idempotency_key text UNIQUE,"
+                "  version int NOT NULL DEFAULT 1,"
+                "  claimed_by text"
+                ")"
+            )
+            for i in (1, 2):
+                cursor.execute(
+                    f"INSERT INTO {table} (id, idempotency_key) VALUES (%s, %s)",
+                    (i, f"key-{i}"),
+                )
+
+        # -- Idempotenz: doppelter Schluessel muss abgewiesen werden -------
+        duplicate = _try(
+            setup,
+            f"INSERT INTO {table} (id, idempotency_key) VALUES (99, 'key-1')",
+        )
+        checks.append(
+            _check("idempotency_key_unique", duplicate is False,
+                   detail="duplicate key accepted" if duplicate else "rejected")
+        )
+
+        # -- Claiming ohne Doppelvergabe -----------------------------------
+        worker_a = connector(dsn)
+        worker_b = connector(dsn)
+        worker_a.autocommit = False
+        worker_b.autocommit = False
+
+        claim = (
+            f"SELECT id FROM {table} WHERE claimed_by IS NULL "
+            "ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 1"
+        )
+        with worker_a.cursor() as cursor:
+            cursor.execute(claim)
+            row_a = cursor.fetchone()
+        with worker_b.cursor() as cursor:
+            cursor.execute(claim)
+            row_b = cursor.fetchone()
+
+        claimed_a = row_a[0] if row_a else None
+        claimed_b = row_b[0] if row_b else None
+        facts["claimed"] = [claimed_a, claimed_b]
+
+        checks.append(_check("skip_locked_both_workers_get_work",
+                             claimed_a is not None and claimed_b is not None))
+        checks.append(
+            _check("skip_locked_no_double_claim", claimed_a != claimed_b,
+                   detail=f"worker_a={claimed_a}, worker_b={claimed_b}")
+        )
+
+        worker_a.rollback()
+        worker_b.rollback()
+
+        # -- Optimistische Versionierung ------------------------------------
+        # Beide Sessions aktualisieren dieselbe Zeile mit derselben erwarteten
+        # Version. Genau eine darf zum Zug kommen.
+        update = f"UPDATE {table} SET version = version + 1 WHERE id = 1 AND version = %s"
+        with worker_a.cursor() as cursor:
+            cursor.execute(update, (1,))
+            first = int(cursor.rowcount)
+        worker_a.commit()
+        with worker_b.cursor() as cursor:
+            cursor.execute(update, (1,))
+            second = int(cursor.rowcount)
+        worker_b.commit()
+
+        facts["optimistic_update_rowcounts"] = [first, second]
+        checks.append(
+            _check("optimistic_versioning_blocks_stale_write", second == 0,
+                   detail=f"second update affected {second} rows, expected 0")
+        )
+
+    except Exception as exc:  # noqa: BLE001
+        checks.append(_check("concurrency", False, detail=type(exc).__name__))
+    finally:
+        for connection in (worker_a, worker_b):
+            if connection is not None:
+                try:
+                    connection.rollback()
+                    connection.close()
+                except Exception:  # noqa: BLE001
+                    pass
+        try:
+            setup.autocommit = True
+            with setup.cursor() as cursor:
+                cursor.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+            facts["cleanup_schema_dropped"] = True
+        except Exception:  # noqa: BLE001
+            facts["cleanup_schema_dropped"] = False
+        finally:
+            try:
+                setup.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+    return checks, facts
+
+
+def _index_usable(connection, table: str, order_by: str, query: str) -> tuple[bool, str]:
+    """Kann die Abfrage den Vektorindex nutzen?
+
+    Bei kleinen Tabellen waehlt der Planner legitim einen Sequential Scan. Die
+    kritische Eigenschaft ist nicht seine Wahl, sondern ob der Index ueberhaupt
+    in Frage kommt. Deshalb wird der Seq Scan testweise abgeschaltet: bleibt es
+    dann immer noch beim Seq Scan, passt der Abfrageausdruck nicht zum Index.
+    """
+    statement = f"EXPLAIN SELECT id FROM {table} ORDER BY {order_by} LIMIT 5"
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SET LOCAL enable_seqscan = off")
+            cursor.execute(statement, (query,))
+            plan = " ".join(str(row[0]) for row in cursor.fetchall())
+    except Exception:  # noqa: BLE001
+        return False, "explain failed"
+    return ("Index Scan" in plan or "Index Only Scan" in plan), plan[:200]
+
+
 def _try(connection, statement: str) -> bool:
     """Fuehrt ``statement`` in einem SAVEPOINT aus und meldet nur Erfolg."""
     savepoint = f"sp_{uuid4().hex[:8]}"
@@ -317,6 +585,17 @@ def run_postgres_live_gate(
                     schema_checks, schema_facts = _schema_checks(connection, schema)
                     report["checks"].extend(schema_checks)
                     report["facts"].update(schema_facts)
+
+                    # Phase 6 setzt einen anlegbaren halfvec-Index voraus.
+                    if schema_facts.get("halfvec_index_supported"):
+                        search_checks, search_facts = _vector_search_checks(connection, schema)
+                        report["checks"].extend(search_checks)
+                        report["facts"].update(search_facts)
+                    else:
+                        report["checks"].append(
+                            _check("vector_search", False,
+                                   detail="skipped: no usable vector index")
+                        )
                 report["cleanup"]["schema_dropped"] = True
             except Exception as exc:  # noqa: BLE001
                 report["checks"].append(
@@ -326,6 +605,12 @@ def run_postgres_live_gate(
             finally:
                 connection.rollback()
                 connection.autocommit = True
+            # Phase 5 laeuft committet und benoetigt eigene Verbindungen.
+            conc_checks, conc_facts = _concurrency_checks(connector, dsn)
+            report["checks"].extend(conc_checks)
+            report["facts"].update(conc_facts)
+            if conc_facts.get("cleanup_schema_dropped") is False:
+                report["cleanup"]["concurrency_schema_dropped"] = False
         else:
             report["checks"].append(
                 _check("isolated_schema", False, detail="CREATE privilege missing")

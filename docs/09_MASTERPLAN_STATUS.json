@@ -175,6 +175,8 @@
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
     "test_database_connection_without_ssl",
+    "workspace_isolation_without_database_enforcement",
+    "task_repository_isolation_is_application_level_only",
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
@@ -326,16 +328,47 @@
       "command": "python launcher.py postgres-live-gate",
       "module": "SecondBrain/release/postgres_live_gate.py",
       "report": "runtime/reports/postgres_live_gate.json",
-      "implemented_phases": ["preflight", "isolated_schema", "report"],
+      "implemented_phases": [
+        "preflight",
+        "isolated_schema",
+        "concurrency",
+        "vector_search_recall",
+        "report"
+      ],
       "not_implemented_phases": [
         "repository_contracts",
-        "workspace_isolation",
-        "concurrency",
-        "vector_search_recall"
+        "workspace_isolation"
+      ],
+      "workspace_isolation_note": "Gegen die Datenbank nicht sinnvoll pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist. Stattdessen als statischer Vertrag in tests/test_workspace_isolation_contract.py gesichert.",
+      "concurrency_checks": [
+        "FOR UPDATE SKIP LOCKED vergibt keine Zeile doppelt",
+        "beide Worker erhalten Arbeit",
+        "optimistische Versionierung weist veralteten Schreibzugriff ab",
+        "doppelter Idempotency Key wird abgelehnt"
+      ],
+      "vector_search_checks": [
+        "golden dataset with analytically known ranking",
+        "exact match ranked first",
+        "minimum recall",
+        "index usage proven via EXPLAIN with enable_seqscan off",
+        "dimension guard rejects mismatched vectors",
+        "reindex followed by search"
       ],
       "max_status_until_complete": "CONDITIONAL_PASS",
       "control_flow_test": "tests/test_postgres_live_gate.py",
       "live_run_evidence": null
+    },
+    "workspace_isolation": {
+      "assessed_at": "2026-07-21",
+      "enforcement_level": "application_only",
+      "row_level_security_present": false,
+      "contract_test": "tests/test_workspace_isolation_contract.py",
+      "structurally_safe": ["SecondBrain/jobs/repository.py"],
+      "convention_dependent": ["SecondBrain/tasks/repository.py"],
+      "detail": "PostgresTaskRepository.read(collection) hat keinen workspace_id-Parameter und liefert alle Workspaces; TaskService filtert erst danach in Python. write(collection, rows) loescht jeden Datensatz der Collection, der nicht in rows enthalten ist - ebenfalls ohne Workspace-Bezug.",
+      "current_risk": "kein aktiver Datenverlust: alle bekannten Aufrufer schreiben die vollstaendige ungefilterte Zeilenliste zurueck. Der Schutz haengt an dieser Konvention, die bis jetzt nirgends erzwungen wurde.",
+      "residual_risk": "Uebergibt ein Aufrufer je eine gefilterte Teilmenge, loescht write die Datensaetze aller anderen Workspaces. Ohne RLS gibt es keinen Backstop auf Datenbankebene.",
+      "prompt68_phase4_gap": "Die Anforderung 'Raw SQL Bypass muss blockiert werden' ist mit rein anwendungsseitiger Filterung nicht erfuellbar."
     },
     "test_server_tls": {
       "state": "not_supported_by_server",
