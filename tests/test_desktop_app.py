@@ -76,3 +76,36 @@ def test_complete_task_rejects_missing_reference_without_write(tmp_path):
     else:
         raise AssertionError("missing task reference was accepted")
     assert rt.tasks() == before
+
+
+def test_rename_task_resolves_id_and_is_idempotent(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    created = rt.add_task("Alter Titel")
+
+    renamed = rt.rename_task(created["id"], "  Neuer   Titel  ")
+    repeated = rt.rename_task(created["id"], "Neuer Titel")
+
+    assert renamed["title"] == "Neuer Titel"
+    assert renamed["updated_at"]
+    assert repeated["updated_at"] == renamed["updated_at"]
+
+
+def test_rename_task_rejects_ambiguous_reference_and_invalid_title(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    rt.add_task("Review")
+    rt.add_task("REVIEW")
+    before = rt.tasks()
+
+    for reference, title, message in (
+        ("review", "Neu", "task reference is ambiguous"),
+        (before[0]["id"], " ", "task title must not be empty"),
+        (before[0]["id"], "Review\x1b", "task title must not contain control characters"),
+        (before[0]["id"], "x" * 201, "task title must not exceed 200 characters"),
+    ):
+        try:
+            rt.rename_task(reference, title)
+        except ValueError as exc:
+            assert str(exc) == message
+        else:
+            raise AssertionError("invalid task rename was accepted")
+    assert rt.tasks() == before

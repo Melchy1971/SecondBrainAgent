@@ -91,5 +91,6 @@ def task_view_text(snapshot: dict[str, Any]) -> str:
         "- Neue Aufgabe",
         "- Liste Aufgaben",
         "- Aufgabe abschließen",
+        "- Aufgabe umbenennen",
     ])
     return "\n".join(lines)

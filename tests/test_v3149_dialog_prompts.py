@@ -12,6 +12,15 @@ def test_task_completion_prompt_requests_a_reference():
     )
 
 
+def test_task_rename_prompt_requests_the_new_title():
+    assert dialog_prompt({"status": "slots_required", "missing": ["task"], "action_id": "tasks.rename"}) == (
+        "Welche Aufgabe soll umbenannt werden?"
+    )
+    assert dialog_prompt({"status": "slots_required", "missing": ["new_title"]}) == (
+        "Wie soll die Aufgabe künftig heißen?"
+    )
+
+
 def test_confirmation_prompt_supports_spoken_yes_and_cancel():
     prompt = dialog_prompt({"status": "confirmation_required", "action_id": "documents.import"})
     assert "Sage Ja" in prompt
