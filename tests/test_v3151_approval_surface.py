@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from secondbrain.desktop_native.approval_surface import (
     ApprovalSurface,
@@ -11,6 +12,7 @@ from secondbrain.desktop_native.approval_surface import (
     elevated_approval_notification,
     overdue_approval_notification,
 )
+from secondbrain.desktop_native import app as desktop_app
 from secondbrain.native.approval import NativeApprovalQueue
 
 
@@ -58,6 +60,14 @@ def test_surface_excludes_non_pending_and_limits_visible_rows(tmp_path):
     snapshot = ApprovalSurface(queue, workspace_id="alpha", limit=1).snapshot()
     assert snapshot["pending_count"] == 2
     assert snapshot["visible_count"] == 1
+
+
+def test_native_approval_view_exposes_safe_decision_commands():
+    source = Path(desktop_app.__file__).read_text(encoding="utf-8")
+
+    assert "Freigabe genehmigen" in source
+    assert "Freigabe ablehnen" in source
+    assert 'action_id.startswith("approvals.")' in source
 
 
 def test_approval_activity_counts_elevated_visible_items_without_payloads():

@@ -53,6 +53,13 @@ def test_registry_rejects_duplicate_ids_and_exposes_policy():
     assert registry.resolve_alias("AKTIVE AUFGABEN").id == "tasks.filter.open"
     assert registry.resolve_alias("ERLEDIGTE AUFGABEN").id == "tasks.filter.completed"
     assert registry.resolve_alias("ARCHIVIERTE AUFGABEN").id == "tasks.filter.archived"
+    approval = registry.get("approvals.approve")
+    assert approval.risk.value == "external_write"
+    assert approval.requires_confirmation is True
+    assert approval.requires_approval is False
+    assert approval.requires_workspace is True
+    assert registry.resolve_alias("FREIGABE GENEHMIGEN").id == "approvals.approve"
+    assert registry.resolve_alias("FREIGABE ABLEHNEN").id == "approvals.reject"
     assert registry.resolve_alias("  ÖFFNE   DOKUMENTE ").id == "navigation.documents"
     try:
         registry.register(ActionDefinition("mail.send", "duplicate"))

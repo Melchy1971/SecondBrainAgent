@@ -115,7 +115,7 @@ def run_native_voice_app_gate(
                 "tasks.archive", "tasks.restore",
                 "tasks.filter.all", "tasks.filter.open", "tasks.filter.completed", "tasks.filter.archived",
                 "calendar.create",
-                "mail.send", "search.query", "index.repair",
+                "mail.send", "approvals.approve", "approvals.reject", "search.query", "index.repair",
             )
         ),
         "voice_input": session.push_to_talk() == VoiceState.LISTENING,
