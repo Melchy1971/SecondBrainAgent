@@ -1,0 +1,828 @@
+{
+  "scanned_files": 1509,
+  "candidates": 67,
+  "marker_summary": {
+    "pool": 9,
+    "queue": 1,
+    "retry_loop": 9,
+    "sleep": 12,
+    "subprocess": 42,
+    "thread": 12,
+    "while_loop": 14
+  },
+  "results": [
+    {
+      "path": "SecondBrain/desktop_native/app.py",
+      "loc": 1092,
+      "imports_job_runtime": false,
+      "hits": {
+        "queue": [
+          133
+        ],
+        "subprocess": [
+          935
+        ],
+        "thread": [
+          946,
+          986,
+          1003,
+          1012,
+          1038
+        ],
+        "while_loop": [
+          949
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/agent/tool_registry.py",
+      "loc": 834,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          584,
+          788
+        ],
+        "sleep": [
+          796
+        ],
+        "thread": [
+          820
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/jarvis_hud_server.py",
+      "loc": 1862,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          1802
+        ],
+        "subprocess": [
+          1823,
+          1862
+        ],
+        "thread": [
+          1812
+        ],
+        "while_loop": [
+          438,
+          916,
+          1741,
+          1801,
+          1819
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/operations_v119.py",
+      "loc": 912,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          273
+        ],
+        "sleep": [
+          277
+        ],
+        "subprocess": [
+          861,
+          896
+        ],
+        "while_loop": [
+          387
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/planner_v2/service.py",
+      "loc": 366,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          253
+        ],
+        "retry_loop": [
+          326
+        ],
+        "while_loop": [
+          172,
+          355
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/agent/parallel_executor.py",
+      "loc": 9,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          8
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/agent/review_approval_gate.py",
+      "loc": 430,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          362
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/agent/review_approval_release_gate.py",
+      "loc": 1150,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          873
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/agent/toolchain/executor.py",
+      "loc": 171,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          109
+        ],
+        "while_loop": [
+          146
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/chat/streaming.py",
+      "loc": 99,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          80
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/connector_runtime/center.py",
+      "loc": 106,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          47
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/connector_runtime/resilience.py",
+      "loc": 110,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          42
+        ],
+        "sleep": [
+          32,
+          64
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/desktop/jobs/background_executor.py",
+      "loc": 20,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          14
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/desktop_native/lifecycle.py",
+      "loc": 99,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          24
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/desktop_native/voice_de.py",
+      "loc": 233,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          218
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/desktop_native/wake_word.py",
+      "loc": 105,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          47
+        ],
+        "while_loop": [
+          97
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/document_center/core.py",
+      "loc": 303,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          301
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/gui/launch.py",
+      "loc": 287,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          168
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/gui/secret_manager_panel.py",
+      "loc": 169,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          67
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/hud_core.py",
+      "loc": 80,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          38
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/importing/pipeline.py",
+      "loc": 298,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          122
+        ],
+        "thread": [
+          103
+        ],
+        "while_loop": [
+          116,
+          127
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/jobs/worker.py",
+      "loc": 138,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          102
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/launcher_runtime_v108.py",
+      "loc": 390,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          286
+        ],
+        "subprocess": [
+          209
+        ],
+        "while_loop": [
+          95,
+          281
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/monitoring/operations_monitor.py",
+      "loc": 271,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          157
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/actions.py",
+      "loc": 202,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          167
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/agent_control/gui.py",
+      "loc": 332,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          185,
+          187
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/app.py",
+      "loc": 478,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          438,
+          478
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/approval.py",
+      "loc": 1451,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          223
+        ],
+        "sleep": [
+          150,
+          156,
+          230
+        ],
+        "while_loop": [
+          140
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/command_center.py",
+      "loc": 318,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          205,
+          264
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/native/streaming_import_panel.py",
+      "loc": 160,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          150
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/personal_dashboard/runtime.py",
+      "loc": 112,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          64
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/release/approval_postgres_live_gate.py",
+      "loc": 200,
+      "imports_job_runtime": false,
+      "hits": {
+        "pool": [
+          141
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/release/repo_doctor.py",
+      "loc": 462,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          364
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/release_gate.py",
+      "loc": 100,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          14
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/service_runtime/runtime.py",
+      "loc": 183,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          182
+        ],
+        "thread": [
+          171
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/storage/db_retry.py",
+      "loc": 55,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          46
+        ],
+        "sleep": [
+          42
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/utils.py",
+      "loc": 56,
+      "imports_job_runtime": false,
+      "hits": {
+        "retry_loop": [
+          41
+        ],
+        "sleep": [
+          48
+        ],
+        "while_loop": [
+          33
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/voice/assistant.py",
+      "loc": 287,
+      "imports_job_runtime": false,
+      "hits": {
+        "thread": [
+          128,
+          259
+        ],
+        "while_loop": [
+          264
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/voice_layer_v103.py",
+      "loc": 130,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          116
+        ]
+      }
+    },
+    {
+      "path": "SecondBrain/workflow_engine_v9.py",
+      "loc": 49,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          10
+        ]
+      }
+    },
+    {
+      "path": "scripts/api_gateway_v9.py",
+      "loc": 29,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          22
+        ]
+      }
+    },
+    {
+      "path": "scripts/ci_gate.py",
+      "loc": 160,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          34,
+          35,
+          52,
+          94,
+          114,
+          121,
+          131
+        ]
+      }
+    },
+    {
+      "path": "scripts/import_ai_exports.py",
+      "loc": 18,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          17
+        ]
+      }
+    },
+    {
+      "path": "scripts/menu.py",
+      "loc": 60,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          8,
+          28,
+          30,
+          32,
+          34,
+          38,
+          40,
+          43,
+          46,
+          48,
+          51,
+          53
+        ],
+        "while_loop": [
+          11
+        ]
+      }
+    },
+    {
+      "path": "scripts/rest_api.py",
+      "loc": 56,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          15
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_agi_os_cycle.py",
+      "loc": 47,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          25,
+          29
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_autonomy_cycle.py",
+      "loc": 23,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          13,
+          17,
+          18
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_hardening_tests.py",
+      "loc": 20,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          17
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_life_os_cycle.py",
+      "loc": 47,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          23,
+          28
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_os_cycle.py",
+      "loc": 54,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          28,
+          32
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_pytest_q.py",
+      "loc": 31,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          26
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_regression_tests_v9.py",
+      "loc": 52,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          37
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_secondbrain_os_cycle.py",
+      "loc": 47,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          25
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_tests.py",
+      "loc": 10,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          9
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v101_cycle.py",
+      "loc": 24,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          13
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v102_cycle.py",
+      "loc": 45,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          11
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v103_cycle.py",
+      "loc": 18,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          10
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v10_cycle.py",
+      "loc": 32,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          17
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v95_cycle.py",
+      "loc": 32,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          16
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v97_cycle.py",
+      "loc": 30,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          16
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v98_cycle.py",
+      "loc": 32,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          17
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v99_cycle.py",
+      "loc": 32,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          17
+        ]
+      }
+    },
+    {
+      "path": "scripts/run_v9_cycle.py",
+      "loc": 45,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          24
+        ]
+      }
+    },
+    {
+      "path": "scripts/scheduler.py",
+      "loc": 43,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          43
+        ],
+        "subprocess": [
+          14,
+          32,
+          36,
+          40
+        ],
+        "while_loop": [
+          28
+        ]
+      }
+    },
+    {
+      "path": "scripts/update_chatgpt_index.py",
+      "loc": 17,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          12,
+          15
+        ]
+      }
+    },
+    {
+      "path": "scripts/watchdog_inbox.py",
+      "loc": 39,
+      "imports_job_runtime": false,
+      "hits": {
+        "sleep": [
+          36
+        ],
+        "subprocess": [
+          22
+        ],
+        "while_loop": [
+          35
+        ]
+      }
+    },
+    {
+      "path": "scripts/web_dashboard.py",
+      "loc": 89,
+      "imports_job_runtime": false,
+      "hits": {
+        "subprocess": [
+          23
+        ]
+      }
+    }
+  ]
+}

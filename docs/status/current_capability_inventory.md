@@ -131,7 +131,11 @@ Statuswerte: `implemented`, `implemented_not_certified`, `partially_implemented`
 | Health/Alert/Storage/Metrics Surfaces | `SecondBrain/desktop_native/{health,alert,storage_alerts,system_metrics}*.py` (PR #84–#92) | implemented | offen |
 | Vault Surface | `SecondBrain/desktop_native/vault_surface.py` (PR #86) | implemented | offen |
 
-**Kritischer Befund:** `qt_shell.py` importiert PySide6, aber **PySide6 ist in keiner `requirements*.txt` und nicht in `pyproject.toml` deklariert.** Auf einer sauberen Installation startet die Qt-Shell nicht. Das blockiert Prompt 74 (Installer) unmittelbar.
+**Befund (behoben am 2026-07-21):** `qt_shell.py` importierte PySide6, ohne dass das Paket deklariert war. Die Anwendung stürzte dadurch nicht ab — `capabilities()` prüft per `find_spec` und meldet `degraded_mode`. Der Effekt war stiller Funktionsverlust: die Qt-Oberfläche fehlte auf jeder frischen Installation und im Windows-Paket.
+
+Behoben durch `PySide6>=6.8.0` im `desktop`- und `all`-Extra, `requirements-desktop.txt`, Pin `PySide6==6.11.1` im Windows-Build und den Regressionstest `tests/test_desktop_runtime_dependencies.py`.
+
+**Weiterhin offen:** zwei parallele Qt-Implementierungen — `SecondBrain/desktop_app/app.py` und `SecondBrain/desktop_native/qt_shell.py`. Welche produktiv ist, ist ungeklärt.
 
 ---
 
@@ -227,9 +231,18 @@ SecondBrain/native/voice_de.py
 
 Zwei Pfade mit gleichem Dateinamen. Prompt 73 fordert ausdrücklich „nur erweitern, nicht parallel neu bauen" — dafür muss zuerst geklärt werden, welcher der beiden der aktive ist.
 
-### 11.3 PySide6 nicht deklariert
+### 11.3 PySide6 nicht deklariert — behoben
 
-Siehe Abschnitt 6. Blockiert jeden Installer- und Desktop-Nachweis.
+Siehe Abschnitt 6. Behoben am 2026-07-21 inklusive Regressionstest.
+
+### 11.5 Zwei parallele Qt-Implementierungen
+
+```
+SecondBrain/desktop_app/app.py          <- eigene QApplication/QMainWindow
+SecondBrain/desktop_native/qt_shell.py  <- Shell mit Capabilities und Degraded Mode
+```
+
+`desktop_app/app.py` importiert Qt direkt auf Modulebene und wirft bei fehlendem PySide6 einen `RuntimeError`. `desktop_native/qt_shell.py` verzichtet bewusst auf Importe während der Discovery, weil das manche Windows-Qt-Builds vor Existenz einer `QApplication` zum Absturz bringt. Beide Varianten nebeneinander zu betreiben ist ein Risiko. Entscheidung erforderlich, welche `deprecated` wird.
 
 ### 11.4 `auto.crt` war versioniert
 

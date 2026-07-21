@@ -16,6 +16,40 @@ from pathlib import Path
 from typing import Any, Iterator, Sequence
 
 
+class DatabaseConfigurationError(RuntimeError):
+    """Dauerhafter Fehler: fehlender Treiber, falscher Dialekt, abgelehntes TLS.
+
+    Von :class:`ConnectionError` bewusst getrennt. Ein Wiederholungsversuch kann
+    diese Bedingung nie aufloesen -- er verschleiert sie nur hinter Backoff.
+    """
+
+
+# Fehlertexte, die auf Konfiguration statt auf Erreichbarkeit hindeuten.
+_PERMANENT_MARKERS = (
+    "does not support ssl",
+    "no pg_hba.conf entry",
+    "password authentication failed",
+    "role \"",
+    "database \"",
+    "does not exist",
+    "invalid dsn",
+    "unsupported dialect",
+    "can't load plugin",
+)
+
+
+def classify_error(exc: BaseException) -> str:
+    """'permanent' bei Konfigurationsfehlern, sonst 'transient'."""
+    if isinstance(exc, (ModuleNotFoundError, ImportError)):
+        return "permanent"
+    if isinstance(exc, DatabaseConfigurationError):
+        return "permanent"
+    text = str(exc).lower()
+    if any(marker in text for marker in _PERMANENT_MARKERS):
+        return "permanent"
+    return "transient"
+
+
 class SqlExecutor:
     dialect: str
 
@@ -30,10 +64,19 @@ class SqlExecutor:
         raise NotImplementedError
 
     def ping(self) -> bool:
+        """True bei Erreichbarkeit, False bei transientem Fehler.
+
+        Konfigurationsfehler werden als :class:`DatabaseConfigurationError`
+        weitergereicht statt zu False zu kollabieren. Frueher wurde jeder
+        Fehler zu 'database ping failed' -- ein fehlender Treiber sah damit aus
+        wie eine nicht erreichbare Datenbank und lief in vier Retries.
+        """
         try:
             self.execute("SELECT 1")
             return True
-        except Exception:
+        except Exception as exc:
+            if classify_error(exc) == "permanent":
+                raise DatabaseConfigurationError(str(exc)) from exc
             return False
 
 

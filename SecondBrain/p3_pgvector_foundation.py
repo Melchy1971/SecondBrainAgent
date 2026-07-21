@@ -86,9 +86,22 @@ def load_pgvector_config(project_root: str | Path) -> PgVectorConfig:
 
 
 def build_pgvector_schema_sql(config: PgVectorConfig) -> str:
+    from secondbrain.storage.vector_index import ivfflat_index_sql
+
     schema = _safe_identifier(config.schema_name, fallback="secondbrain")
     prefix = _safe_identifier(config.table_prefix, fallback="p1")
     dimensions = max(1, int(config.vector_dimensions))
+
+    # Bei konfigurierten Dimensionen ueber 2000 waere ein direkter
+    # ivfflat (embedding vector_cosine_ops) nicht anlegbar. Der Builder waehlt
+    # Ausdruck und Operatorklasse passend zur Dimension.
+    vector_index_ddl = ivfflat_index_sql(
+        metric="cosine",
+        dimensions=dimensions,
+        table=f"{schema}.{prefix}_chunk_embeddings",
+        column="embedding",
+        name=f"idx_{prefix}_embeddings_vector",
+    ).lower()
     return f"""-- SecondBrain pgvector foundation schema
 create extension if not exists vector;
 create schema if not exists {schema};
@@ -125,7 +138,7 @@ create table if not exists {schema}.{prefix}_chunk_embeddings (
 create index if not exists idx_{prefix}_documents_source on {schema}.{prefix}_documents(source);
 create index if not exists idx_{prefix}_chunks_document on {schema}.{prefix}_chunks(document_id);
 create index if not exists idx_{prefix}_embeddings_provider on {schema}.{prefix}_chunk_embeddings(provider);
-create index if not exists idx_{prefix}_embeddings_vector on {schema}.{prefix}_chunk_embeddings using ivfflat (embedding vector_cosine_ops);
+{vector_index_ddl};
 """
 
 

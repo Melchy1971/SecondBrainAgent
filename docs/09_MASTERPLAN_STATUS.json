@@ -174,11 +174,13 @@
   ],
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
+    "test_database_connection_without_ssl",
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
+    "job_runtime_implemented_but_not_wired_to_production_entrypoint",
+    "four_parallel_job_subsystems_unresolved",
     "remaining_job_type_migrations_pending",
-    "pyside6_runtime_dependency_not_declared",
     "windows_installer_live_certification_pending",
     "code_signing_certificate_missing",
     "vault_os_keyring_backend_missing",
@@ -190,6 +192,12 @@
     "duplicate_voice_de_modules_unresolved"
   ],
   "removed_blockers": [
+    {
+      "blocker": "pyside6_runtime_dependency_not_declared",
+      "reason": "PySide6 ist im desktop- und all-Extra deklariert, in requirements-desktop.txt gespiegelt und im Windows-Build gepinnt. Regressionstest tests/test_desktop_runtime_dependencies.py verhindert erneutes Auseinanderlaufen.",
+      "evidence_path": "requirements-desktop.txt",
+      "removed_at": "2026-07-21"
+    },
     {
       "blocker": "task_postgresql_branch_merge_pending",
       "reason": "PostgresTaskRepository inklusive JSONL-Migration und Produktions-Guard ist auf main vorhanden",
@@ -247,7 +255,6 @@
   "next_sprint": {
     "focus": "Live certification instead of new features",
     "goals": [
-      "declare_pyside6_runtime_dependency",
       "postgresql_pgvector_live_gate_green",
       "approval_provider_connector_live_certification",
       "remaining_job_type_migrations",
@@ -257,7 +264,7 @@
   "release_readiness": {
     "state": "IMPLEMENTATION_AHEAD_OF_CERTIFICATION",
     "basis": "Der Codebestand auf main reicht bis Feature-Stufe v31.88 und umfasst PostgreSQL-Repositories, Job-Runtime, Qt-Desktop, Voice-Runtime, Secret Vault und Windows-Installerbau. Fuer keinen dieser Bereiche liegt ein produktionsnaher Live-Nachweis vor. Der begrenzende Faktor fuer Jarvis 1.0 ist Zertifizierung, nicht Implementierung.",
-    "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Zuerst pyside6_runtime_dependency_not_declared beheben, da dieser Blocker Desktop- und Installer-Nachweis gleichzeitig verhindert.",
+    "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Naechster Schritt ist das PostgreSQL-/pgvector-Live-Gate; es blockiert Approval-, Connector- und Disaster-Recovery-Nachweis.",
     "required_gates": [
       "repo-doctor",
       "dependency-inventory",
@@ -268,7 +275,6 @@
       "review-approval-release-gate"
     ],
     "missing_gates": [
-      "postgres-live-gate",
       "live-certification",
       "disaster-recovery-gate",
       "windows-installer-gate",
@@ -282,12 +288,88 @@
     "inventoried_commit": "f0a9dd904da0d0a8b36322f2775653d803d72cda",
     "principle": "implementation_status_and_live_evidence_are_tracked_separately"
   },
+  "pgvector_status": {
+    "preflight_at": "2026-07-21",
+    "server_version": "PostgreSQL 18.4",
+    "pgvector_version": "0.8.4",
+    "environment_usable": true,
+    "create_schema_permitted": true,
+    "timezone": "UTC",
+    "ssl_in_use": false,
+    "defect_found": "storage/migrations/002_pgvector_embeddings.sql legte einen direkten HNSW-Index auf vector(3072) an. pgvector indiziert vector mit HNSW und IVFFlat nur bis 2000 Dimensionen; die Migration konnte gegen echtes PostgreSQL nie laufen.",
+    "index_variants_tested": {
+      "hnsw_vector": false,
+      "ivfflat_vector": false,
+      "hnsw_halfvec_expression": true,
+      "hnsw_halfvec_column": true,
+      "hnsw_vector_1536": true
+    },
+    "decision": "halfvec-Ausdrucksindex. Spalte bleibt vector(3072) in voller Praezision, der HNSW-Index arbeitet auf einem halfvec-Cast.",
+    "follow_up_completed": {
+      "completed_at": "2026-07-21",
+      "paths": [
+        "SecondBrain/p3_rag_store.py",
+        "SecondBrain/rag/sql/002_pgvector_queries.sql",
+        "SecondBrain/p3_pgvector_foundation.py",
+        "SecondBrain/storage/vector_index_manager.py"
+      ],
+      "note": "SecondBrain/rag/pgvector_repository.py war faelschlich gelistet - die Datei ist ein leerer Stub mit 'pass' und enthaelt kein SQL.",
+      "regression_test": "tests/test_pgvector_index_expression_coverage.py"
+    },
+    "regression_test": "tests/test_pgvector_dimension_contract.py",
+    "diagnostics_fixed": {
+      "ping_collapsed_configuration_errors": "SqlExecutor.ping() lieferte fuer jeden Fehler False. Fehlender Treiber und abgelehntes TLS erschienen als 'database ping failed' und liefen in vier Retries mit Backoff. Behoben per classify_error und DatabaseConfigurationError.",
+      "missing_dialect_normalization": "SQLAlchemy bildet postgresql:// auf psycopg2 ab. normalize_postgres_url waehlt jetzt den installierten Treiber.",
+      "regression_test": "tests/storage/test_db_error_classification.py"
+    },
+    "live_gate": {
+      "command": "python launcher.py postgres-live-gate",
+      "module": "SecondBrain/release/postgres_live_gate.py",
+      "report": "runtime/reports/postgres_live_gate.json",
+      "implemented_phases": ["preflight", "isolated_schema", "report"],
+      "not_implemented_phases": [
+        "repository_contracts",
+        "workspace_isolation",
+        "concurrency",
+        "vector_search_recall"
+      ],
+      "max_status_until_complete": "CONDITIONAL_PASS",
+      "control_flow_test": "tests/test_postgres_live_gate.py",
+      "live_run_evidence": null
+    },
+    "test_server_tls": {
+      "state": "not_supported_by_server",
+      "evidence": "server does not support SSL, but SSL was required",
+      "risk": "PostgreSQL auf oeffentlicher IP ohne Transportverschluesselung; Zugangsdaten und Query-Inhalte im Klartext",
+      "decision": "TLS am Server aktivieren, bevor das Gate zertifiziert wird"
+    }
+  },
+  "job_runtime_status": {
+    "inventory_path": "docs/jobs/job_runtime_migration_inventory.md",
+    "generated_at": "2026-07-21",
+    "canonical_runtime": "SecondBrain/jobs/",
+    "implementation": "implemented",
+    "wired_to_production_entrypoint": false,
+    "production_backend_available": "PostgresJobRepository mit FOR UPDATE SKIP LOCKED und Guard jsonl_not_allowed_in_production",
+    "production_backend_wired": false,
+    "currently_wired_backend": "JobStore (JSONL) aus SecondBrain/jobs/service.py",
+    "parallel_subsystems": [
+      "SecondBrain/jobs/",
+      "SecondBrain/desktop/jobs/",
+      "SecondBrain/agent/background/",
+      "SecondBrain/importing/pipeline.py"
+    ],
+    "streaming_import": "implementiert per ijson in SecondBrain/importing/streaming.py; Checkpoints liegen jedoch in SQLite",
+    "blocking_issue": "Die vorhandene Runtime wird von keinem produktiven Einstiegspunkt instanziiert. create_job_repository und jobs/integrations.py werden ausschliesslich von Tests aufgerufen."
+  },
   "desktop_status": {
     "shell": "PySide6",
     "code_path": "SecondBrain/desktop_native/qt_shell.py",
     "implementation": "implemented",
     "live_certified": false,
-    "blocking_issue": "PySide6 ist in keiner requirements-Datei und nicht in pyproject.toml deklariert",
+    "dependency_declared": true,
+    "degradation_contract": "qt_shell.capabilities() prueft PySide6 per find_spec und meldet degraded_mode statt zu stuerzen",
+    "blocking_issue": "Live-Start auf der Zielmaschine steht aus; zwei parallele Qt-Implementierungen (desktop_app/app.py und desktop_native/qt_shell.py) sind ungeklaert",
     "fallback": "Tkinter-Anwendung bleibt vorhanden"
   },
   "voice_status": {
@@ -317,7 +399,7 @@
       "uninstall": "uninstall_jarvis.ps1"
     },
     "code_signing": "missing",
-    "blocking_issue": "Kein Nachweis auf sauberer Windows-VM; PySide6 fehlt im Paketumfang"
+    "blocking_issue": "Kein Nachweis auf sauberer Windows-VM"
   },
   "private_beta_status": {
     "state": "not_started",
@@ -334,8 +416,10 @@
       "native-voice-app-gate",
       "backup-gate"
     ],
+    "partially_implemented": [
+      "postgres-live-gate"
+    ],
     "missing": [
-      "postgres-live-gate",
       "live-certification",
       "disaster-recovery-gate",
       "windows-installer-gate",

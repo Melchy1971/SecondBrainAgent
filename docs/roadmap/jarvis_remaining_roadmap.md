@@ -12,17 +12,22 @@ Konsequenz für die Reihenfolge: Zuerst fällt, was andere Nachweise blockiert.
 
 ---
 
-## Stufe 0 — Vorbedingung (nicht in der ursprünglichen Reihenfolge enthalten)
+## Stufe 0 — Vorbedingung — ERLEDIGT (2026-07-21)
 
 **PySide6 als Laufzeitabhängigkeit deklarieren**
 
-`SecondBrain/desktop_native/qt_shell.py` importiert PySide6. Weder `requirements*.txt` noch `pyproject.toml` deklarieren das Paket.
+`SecondBrain/desktop_native/qt_shell.py` importierte PySide6, ohne dass das Paket deklariert war.
 
-Wirkung: blockiert Stufe 7 (Desktop), Stufe 8 (Voice, läuft in der Shell) und Stufe 9 (Installer) gleichzeitig. Solange dieser Punkt offen ist, kann keiner der drei Nachweise geführt werden.
+Präzisierung gegenüber der Erstfassung dieser Roadmap: die Anwendung stürzte dadurch **nicht** ab. `capabilities()` prüft PySide6 per `find_spec` und fällt sauber in `degraded_mode`. Der Fehler war stiller Funktionsverlust — die Qt-Oberfläche fehlte auf jeder frischen Installation und im Windows-Paket, ohne dass es auffiel.
 
-Aufwand gering, Hebel hoch. Gehört vor alles andere.
+Umgesetzt:
 
-Abschlusskriterium: `pip install -r requirements.txt` in einer frischen Umgebung, danach startet `qt_shell` ohne manuelle Nachinstallation.
+- `PySide6>=6.8.0` im `desktop`- und `all`-Extra von `pyproject.toml`
+- `requirements-desktop.txt` neu, deckungsgleich mit dem Extra
+- `PySide6==6.11.1` in `packaging/windows/constraints.txt` gepinnt
+- `tests/test_desktop_runtime_dependencies.py` als Regressionsschutz für PySide6, PySide2, PyQt5 und PyQt6
+
+Offen bleibt der Live-Start auf der Zielmaschine — das gehört zu Stufe 8.
 
 ---
 
@@ -116,7 +121,7 @@ Entspricht Prompt 72, ist aber weitgehend erledigt. Auf `main` liegen Qt-Shell, 
 
 Verbleibend:
 
-- Stufe 0 (PySide6-Deklaration)
+- Entscheidung über die zwei parallelen Qt-Implementierungen (`desktop_app/app.py` und `desktop_native/qt_shell.py`)
 - Entscheidung über die fünf parallelen Planner-Implementierungen
 - Degraded Mode nachweisen: Start bei offline PostgreSQL, offline Provider, fehlendem Mikrofon, gesperrtem Vault, fehlendem pgvector
 - Headless-Tests, soweit möglich
@@ -186,7 +191,7 @@ Entspricht Prompt 76. Aggregiert alle Teilgates, keine neuen Features.
 
 Die Vorgabe aus Prompt 67 listet zwölf Punkte beginnend mit dem PostgreSQL-Gate. Zwei Korrekturen:
 
-1. **Stufe 0 vorgezogen.** Die fehlende PySide6-Deklaration blockiert drei spätere Stufen. Sie kostet Minuten und muss vor allem anderen stehen.
+1. **Stufe 0 vorgezogen.** Die fehlende PySide6-Deklaration blockierte drei spätere Stufen. Erledigt am 2026-07-21.
 
 2. **Stufe 8 und 9 stark reduziert.** Prompt 72 und 73 sind als Neubau-Pakete formuliert. Der Code existiert bereits auf `main`. Beide als vollständige Pakete zu fahren würde parallele Subsysteme erzeugen — genau das, was die Projektregeln untersagen. Der Umfang reduziert sich auf Nachweis, Aufräumen der Dubletten und die in Stufe 8 und 9 benannten Lücken.
 
