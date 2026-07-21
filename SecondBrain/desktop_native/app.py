@@ -12,6 +12,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
+from secondbrain.calendar_assistant.service import CalendarService
 from secondbrain.desktop_native.action_bus import NativeActionBus
 from secondbrain.desktop_native.alert_surface import live_alert_labels, queue_activity
 from secondbrain.desktop_native.approval_surface import (
@@ -23,6 +24,7 @@ from secondbrain.desktop_native.approval_surface import (
     approval_refresh_interval_ms,
 )
 from secondbrain.desktop_native.dialog_prompts import dialog_prompt
+from secondbrain.desktop_native.external_action_connectors import build_external_action_connectors
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.job_surface import JobSurface
 from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
@@ -54,6 +56,7 @@ from secondbrain.desktop.gui.data_providers import LiveDataService
 from secondbrain.desktop_app import DesktopAppRuntime
 from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
+from secondbrain.mail_assistant.service import MailAssistant
 from secondbrain.native.job_queue_center.service import JobQueueService
 from secondbrain.version import get_version
 
@@ -93,7 +96,13 @@ class JarvisNativeApp(tk.Tk):
         self.project_root = Path(project_root or Path.cwd()).resolve()
         self.window_state = WindowStateStore(self.project_root)
         restored = self.window_state.load()
-        self.action_bus = NativeActionBus(self.project_root, workspace_id=str(self.project_root))
+        self.external_action_connectors = build_external_action_connectors(self.project_root)
+        self.action_bus = NativeActionBus(
+            self.project_root,
+            workspace_id=str(self.project_root),
+            calendar_service=CalendarService(self.external_action_connectors.calendar),
+            mail_assistant=MailAssistant(connector=self.external_action_connectors.mail),
+        )
         self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.job_surface = JobSurface(JobQueueService(self.project_root))
         self.task_surface = TaskSurface(DesktopAppRuntime(self.project_root))
@@ -740,6 +749,7 @@ class JarvisNativeApp(tk.Tk):
             )
         elif view == "Approvals":
             self._json(self.approval_surface.snapshot())
+            self._json({"external_actions": self.external_action_connectors.status()})
             self._write(
                 "\nBefehle:\n"
                 "- Freigabe genehmigen\n"
@@ -775,6 +785,7 @@ class JarvisNativeApp(tk.Tk):
                 "overdue_minutes": int(self.approval_overdue_after.total_seconds() // 60),
                 "refresh_seconds": self.approval_refresh_interval_ms // 1000,
             },
+            external_actions=self.external_action_connectors.status(),
         )
 
     def refresh_status(self) -> None:
