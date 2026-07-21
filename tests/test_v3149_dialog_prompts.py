@@ -33,6 +33,15 @@ def test_task_restore_prompt_is_action_specific():
     )
 
 
+def test_approval_decision_prompts_are_action_specific():
+    assert dialog_prompt({
+        "status": "slots_required", "missing": ["approval"], "action_id": "approvals.approve",
+    }) == "Welche Freigabe soll genehmigt werden?"
+    assert dialog_prompt({
+        "status": "slots_required", "missing": ["approval"], "action_id": "approvals.reject",
+    }) == "Welche Freigabe soll abgelehnt werden?"
+
+
 def test_confirmation_prompt_supports_spoken_yes_and_cancel():
     prompt = dialog_prompt({"status": "confirmation_required", "action_id": "documents.import"})
     assert "Sage Ja" in prompt

@@ -19,6 +19,8 @@ _ACTION_SLOT_PROMPTS = {
     ("tasks.rename", "task"): "Welche Aufgabe soll umbenannt werden?",
     ("tasks.archive", "task"): "Welche Aufgabe soll archiviert werden?",
     ("tasks.restore", "task"): "Welche Aufgabe soll wiederhergestellt werden?",
+    ("approvals.approve", "approval"): "Welche Freigabe soll genehmigt werden?",
+    ("approvals.reject", "approval"): "Welche Freigabe soll abgelehnt werden?",
 }
 
 

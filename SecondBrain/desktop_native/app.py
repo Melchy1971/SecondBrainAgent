@@ -740,6 +740,11 @@ class JarvisNativeApp(tk.Tk):
             )
         elif view == "Approvals":
             self._json(self.approval_surface.snapshot())
+            self._write(
+                "\nBefehle:\n"
+                "- Freigabe genehmigen\n"
+                "- Freigabe ablehnen"
+            )
         elif view == "Jobs":
             self._json(self.job_surface.snapshot())
         elif view == "Diagnostics":
@@ -1006,6 +1011,9 @@ class JarvisNativeApp(tk.Tk):
                 return
         if result.get("status") == "executed" and action_id.startswith("tasks.") and self.current_view.get() == "Tasks":
             self.show_view("Tasks")
+            return
+        if result.get("status") == "executed" and action_id.startswith("approvals.") and self.current_view.get() == "Approvals":
+            self.show_view("Approvals")
             return
         self._json(result)
 

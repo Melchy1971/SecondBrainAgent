@@ -179,6 +179,20 @@ def build_core_registry(handler: ActionHandler) -> ActionRegistry:
         capability_source="mail_assistant",
     ))
     registry.register(ActionDefinition(
+        id="approvals.approve", title="Freigabe genehmigen",
+        aliases=("freigabe genehmigen", "genehmige freigabe"),
+        risk=ActionRisk.EXTERNAL_WRITE, requires_confirmation=True, requires_workspace=True,
+        parameters={"approval": {"type": "string", "minLength": 1}},
+        handler=bound("approvals.approve"), capability_source="native_approval_queue",
+    ))
+    registry.register(ActionDefinition(
+        id="approvals.reject", title="Freigabe ablehnen",
+        aliases=("freigabe ablehnen", "lehne freigabe ab"),
+        risk=ActionRisk.WRITE, requires_confirmation=True, requires_workspace=True,
+        parameters={"approval": {"type": "string", "minLength": 1}},
+        handler=bound("approvals.reject"), capability_source="native_approval_queue",
+    ))
+    registry.register(ActionDefinition(
         id="search.query", title="Wissen durchsuchen", aliases=("suche", "suche nach"),
         parameters={"query": {"type": "string", "minLength": 1}}, handler=bound("search.query"),
         capability_source="rag_chat_service",
