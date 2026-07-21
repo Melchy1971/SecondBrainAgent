@@ -26,12 +26,14 @@ class TaskSurface:
             return self._unavailable()
         tasks = [self._safe_item(task) for task in raw_tasks if isinstance(task, dict)]
         completed_count = sum(task["completed"] for task in tasks)
+        archived_count = sum(task["archived"] for task in tasks)
         items = list(reversed(tasks[-self.limit :]))
         return {
             "status": "ready",
             "total": len(tasks),
-            "open_count": len(tasks) - completed_count,
+            "open_count": len(tasks) - completed_count - archived_count,
             "completed_count": completed_count,
+            "archived_count": archived_count,
             "visible_count": len(items),
             "invalid_count": len(raw_tasks) - len(tasks),
             "items": items,
@@ -49,6 +51,7 @@ class TaskSurface:
             "created_at": _safe_text(task.get("created_at"), limit=48),
             "completed_at": _safe_text(task.get("completed_at"), limit=48),
             "completed": column.casefold() == "done",
+            "archived": column.casefold() == "archived",
         }
 
     @staticmethod
@@ -58,6 +61,7 @@ class TaskSurface:
             "total": 0,
             "open_count": 0,
             "completed_count": 0,
+            "archived_count": 0,
             "visible_count": 0,
             "invalid_count": 0,
             "items": [],
@@ -71,7 +75,8 @@ def task_view_text(snapshot: dict[str, Any]) -> str:
     lines = [
         (
             f"TASKS · {snapshot.get('open_count', 0)} offen · "
-            f"{snapshot.get('completed_count', 0)} erledigt · {snapshot.get('total', 0)} gesamt"
+            f"{snapshot.get('completed_count', 0)} erledigt · "
+            f"{snapshot.get('archived_count', 0)} archiviert · {snapshot.get('total', 0)} gesamt"
         ),
         "",
     ]
@@ -81,7 +86,7 @@ def task_view_text(snapshot: dict[str, Any]) -> str:
     for task in items:
         if not isinstance(task, dict):
             continue
-        marker = "x" if task.get("completed") else " "
+        marker = "-" if task.get("archived") else "x" if task.get("completed") else " "
         lines.append(f"- [{marker}] {task.get('title', 'Ohne Titel')} · {task.get('priority', 'medium')}")
         if task.get("task_id"):
             lines.append(f"  ID: {task['task_id']}")
@@ -92,5 +97,6 @@ def task_view_text(snapshot: dict[str, Any]) -> str:
         "- Liste Aufgaben",
         "- Aufgabe abschließen",
         "- Aufgabe umbenennen",
+        "- Aufgabe archivieren",
     ])
     return "\n".join(lines)

@@ -109,3 +109,33 @@ def test_rename_task_rejects_ambiguous_reference_and_invalid_title(tmp_path):
         else:
             raise AssertionError("invalid task rename was accepted")
     assert rt.tasks() == before
+
+
+def test_archive_task_preserves_previous_state_and_is_idempotent(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    created = rt.add_task("Review", column="doing")
+
+    archived = rt.archive_task(created["id"])
+    archived_at = archived["archived_at"]
+    repeated = rt.archive_task(created["id"])
+
+    assert archived["column"] == "archived"
+    assert archived["archived_from"] == "doing"
+    assert archived["archived_at"]
+    assert repeated["archived_at"] == archived_at
+    assert repeated["archived_from"] == "doing"
+
+
+def test_archive_task_rejects_ambiguous_reference_without_write(tmp_path):
+    rt = DesktopAppRuntime(tmp_path)
+    rt.add_task("Review")
+    rt.add_task("REVIEW")
+    before = rt.tasks()
+
+    try:
+        rt.archive_task("review")
+    except ValueError as exc:
+        assert str(exc) == "task reference is ambiguous"
+    else:
+        raise AssertionError("ambiguous task archive was accepted")
+    assert rt.tasks() == before

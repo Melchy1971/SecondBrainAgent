@@ -21,6 +21,12 @@ def test_task_rename_prompt_requests_the_new_title():
     )
 
 
+def test_task_archive_prompt_is_action_specific():
+    assert dialog_prompt({"status": "slots_required", "missing": ["task"], "action_id": "tasks.archive"}) == (
+        "Welche Aufgabe soll archiviert werden?"
+    )
+
+
 def test_confirmation_prompt_supports_spoken_yes_and_cancel():
     prompt = dialog_prompt({"status": "confirmation_required", "action_id": "documents.import"})
     assert "Sage Ja" in prompt

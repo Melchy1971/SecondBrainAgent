@@ -40,6 +40,10 @@ def test_registry_rejects_duplicate_ids_and_exposes_policy():
     assert task_rename.requires_confirmation is True
     assert task_rename.requires_workspace is True
     assert registry.resolve_alias("AUFGABE UMBENENNEN").id == "tasks.rename"
+    task_archive = registry.get("tasks.archive")
+    assert task_archive.requires_confirmation is True
+    assert task_archive.requires_workspace is True
+    assert registry.resolve_alias("AUFGABE ARCHIVIEREN").id == "tasks.archive"
     assert registry.resolve_alias("  ÖFFNE   DOKUMENTE ").id == "navigation.documents"
     try:
         registry.register(ActionDefinition("mail.send", "duplicate"))
