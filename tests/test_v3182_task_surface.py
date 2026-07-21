@@ -22,6 +22,24 @@ def test_task_surface_reports_live_counts_and_recent_items(tmp_path):
     assert snapshot["workspace_local"] is True
 
 
+def test_task_surface_counts_archived_tasks_separately(tmp_path):
+    runtime = DesktopAppRuntime(tmp_path)
+    open_task = runtime.add_task("Offen")
+    completed_task = runtime.add_task("Erledigt")
+    archived_task = runtime.add_task("Archiv")
+    runtime.complete_task(completed_task["id"])
+    runtime.archive_task(archived_task["id"])
+
+    snapshot = TaskSurface(runtime).snapshot()
+
+    assert snapshot["total"] == 3
+    assert snapshot["open_count"] == 1
+    assert snapshot["completed_count"] == 1
+    assert snapshot["archived_count"] == 1
+    assert next(item for item in snapshot["items"] if item["task_id"] == archived_task["id"])["archived"] is True
+    assert open_task["id"]
+
+
 def test_task_surface_sanitizes_control_characters_and_bounds_fields(tmp_path):
     runtime = DesktopAppRuntime(tmp_path)
     runtime.add_task("Zeile 1\nZeile 2\x1b[31m" + "x" * 300)
@@ -57,6 +75,7 @@ def test_task_view_text_is_human_readable(tmp_path):
     assert task["id"] in rendered
     assert "Aufgabe abschließen" in rendered
     assert "Aufgabe umbenennen" in rendered
+    assert "Aufgabe archivieren" in rendered
 
 
 def test_native_shell_routes_tasks_to_surface_and_refreshes_after_writes():

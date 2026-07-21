@@ -153,5 +153,22 @@ def test_task_rename_collects_reference_and_title_before_confirmation(tmp_path: 
     assert runtime.tasks()[0]["title"] == "Neuer Titel"
 
 
+def test_task_archive_collects_reference_and_requires_confirmation(tmp_path: Path):
+    runtime = DesktopAppRuntime(tmp_path)
+    runtime.add_task("Alt", column="doing")
+    bus = NativeActionBus(tmp_path, workspace_id="alpha")
+
+    first = bus.submit("aufgabe archivieren")
+    assert first == {"status": "slots_required", "missing": ["task"], "action_id": "tasks.archive"}
+    pending = bus.submit("Alt")
+    assert pending["status"] == "confirmation_required"
+
+    result = bus.confirm()
+
+    assert result["status"] == "executed"
+    assert result["result"]["column"] == "archived"
+    assert runtime.tasks()[0]["archived_from"] == "doing"
+
+
 def test_desktop_shell_is_wired_to_action_bus():
     assert "self.action_bus = NativeActionBus" in Path(desktop_app.__file__).read_text(encoding="utf-8")

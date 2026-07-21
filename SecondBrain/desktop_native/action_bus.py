@@ -108,6 +108,8 @@ class NativeActionBus:
             return DesktopAppRuntime(self.project_root).complete_task(payload["task"])
         if action_id == "tasks.rename":
             return DesktopAppRuntime(self.project_root).rename_task(payload["task"], payload["new_title"])
+        if action_id == "tasks.archive":
+            return DesktopAppRuntime(self.project_root).archive_task(payload["task"])
         runtime = P1RagRuntime(self.project_root)
         if action_id == "documents.import":
             return runtime.ingest_file(str(payload["path"]))
