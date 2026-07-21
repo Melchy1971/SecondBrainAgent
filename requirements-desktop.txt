@@ -1,0 +1,9 @@
+# Native Desktop Shell (Qt). Ohne diese Abhaengigkeiten laeuft die Anwendung
+# weiter, aber SecondBrain/desktop_native/qt_shell.py meldet degraded_mode und
+# die Qt-Oberflaeche steht nicht zur Verfuegung.
+# Deckungsgleich mit dem Extra [project.optional-dependencies].desktop.
+PySide6>=6.8.0             # Qt-Shell, Fenster, Navigation
+psutil>=5.9.0              # System Metrics Surface
+pystray>=0.19.5            # System Tray
+Pillow>=10.0.0             # Tray-Icons
+pynput>=1.7.7              # globaler Hotkey

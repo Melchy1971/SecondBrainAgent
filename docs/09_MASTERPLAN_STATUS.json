@@ -178,7 +178,6 @@
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
     "remaining_job_type_migrations_pending",
-    "pyside6_runtime_dependency_not_declared",
     "windows_installer_live_certification_pending",
     "code_signing_certificate_missing",
     "vault_os_keyring_backend_missing",
@@ -190,6 +189,12 @@
     "duplicate_voice_de_modules_unresolved"
   ],
   "removed_blockers": [
+    {
+      "blocker": "pyside6_runtime_dependency_not_declared",
+      "reason": "PySide6 ist im desktop- und all-Extra deklariert, in requirements-desktop.txt gespiegelt und im Windows-Build gepinnt. Regressionstest tests/test_desktop_runtime_dependencies.py verhindert erneutes Auseinanderlaufen.",
+      "evidence_path": "requirements-desktop.txt",
+      "removed_at": "2026-07-21"
+    },
     {
       "blocker": "task_postgresql_branch_merge_pending",
       "reason": "PostgresTaskRepository inklusive JSONL-Migration und Produktions-Guard ist auf main vorhanden",
@@ -247,7 +252,6 @@
   "next_sprint": {
     "focus": "Live certification instead of new features",
     "goals": [
-      "declare_pyside6_runtime_dependency",
       "postgresql_pgvector_live_gate_green",
       "approval_provider_connector_live_certification",
       "remaining_job_type_migrations",
@@ -257,7 +261,7 @@
   "release_readiness": {
     "state": "IMPLEMENTATION_AHEAD_OF_CERTIFICATION",
     "basis": "Der Codebestand auf main reicht bis Feature-Stufe v31.88 und umfasst PostgreSQL-Repositories, Job-Runtime, Qt-Desktop, Voice-Runtime, Secret Vault und Windows-Installerbau. Fuer keinen dieser Bereiche liegt ein produktionsnaher Live-Nachweis vor. Der begrenzende Faktor fuer Jarvis 1.0 ist Zertifizierung, nicht Implementierung.",
-    "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Zuerst pyside6_runtime_dependency_not_declared beheben, da dieser Blocker Desktop- und Installer-Nachweis gleichzeitig verhindert.",
+    "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Naechster Schritt ist das PostgreSQL-/pgvector-Live-Gate; es blockiert Approval-, Connector- und Disaster-Recovery-Nachweis.",
     "required_gates": [
       "repo-doctor",
       "dependency-inventory",
@@ -287,7 +291,9 @@
     "code_path": "SecondBrain/desktop_native/qt_shell.py",
     "implementation": "implemented",
     "live_certified": false,
-    "blocking_issue": "PySide6 ist in keiner requirements-Datei und nicht in pyproject.toml deklariert",
+    "dependency_declared": true,
+    "degradation_contract": "qt_shell.capabilities() prueft PySide6 per find_spec und meldet degraded_mode statt zu stuerzen",
+    "blocking_issue": "Live-Start auf der Zielmaschine steht aus; zwei parallele Qt-Implementierungen (desktop_app/app.py und desktop_native/qt_shell.py) sind ungeklaert",
     "fallback": "Tkinter-Anwendung bleibt vorhanden"
   },
   "voice_status": {
@@ -317,7 +323,7 @@
       "uninstall": "uninstall_jarvis.ps1"
     },
     "code_signing": "missing",
-    "blocking_issue": "Kein Nachweis auf sauberer Windows-VM; PySide6 fehlt im Paketumfang"
+    "blocking_issue": "Kein Nachweis auf sauberer Windows-VM"
   },
   "private_beta_status": {
     "state": "not_started",
