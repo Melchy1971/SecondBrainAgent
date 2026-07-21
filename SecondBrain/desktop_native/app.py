@@ -43,7 +43,7 @@ from secondbrain.desktop_native.system_metrics import (
     format_percent,
     format_uptime,
 )
-from secondbrain.desktop_native.task_surface import TaskSurface, task_view_text
+from secondbrain.desktop_native.task_surface import TASK_FILTERS, TaskSurface, task_view_text
 from secondbrain.desktop_native.tray import SystemTrayController, tray_status_text
 from secondbrain.desktop_native.tts import LocalTtsRuntime
 from secondbrain.desktop_native.wake_word import WakeWordConfig, WakeWordRuntime
@@ -97,6 +97,7 @@ class JarvisNativeApp(tk.Tk):
         self.approval_surface = ApprovalSurface(self.action_bus.approvals, workspace_id=str(self.project_root))
         self.job_surface = JobSurface(JobQueueService(self.project_root))
         self.task_surface = TaskSurface(DesktopAppRuntime(self.project_root))
+        self.task_filter = "all"
         self.backup_center = BackupCenterViewModel(self.project_root)
         self.live_data = LiveDataService(self.project_root)
         self.voice = GermanVoiceController(
@@ -720,7 +721,7 @@ class JarvisNativeApp(tk.Tk):
         elif view == "Documents":
             self.run_launcher(["p1-rag-status"], title="Document/RAG Status")
         elif view == "Tasks":
-            self._write(task_view_text(self.task_surface.snapshot()))
+            self._write(task_view_text(self.task_surface.snapshot(self.task_filter)))
         elif view == "Memory":
             self.run_launcher(["p3-rag-store-status"], title="Memory/RAG Store Status")
         elif view == "Search":
@@ -994,10 +995,15 @@ class JarvisNativeApp(tk.Tk):
             if self.dialog_tts_enabled:
                 threading.Thread(target=lambda: self.voice.speak(prompt), daemon=True).start()
         payload = result.get("result") or {}
+        action_id = str(result.get("action_id") or "")
+        task_filter = payload.get("task_filter") if isinstance(payload, dict) else None
+        if isinstance(task_filter, str) and task_filter in TASK_FILTERS:
+            self.task_filter = task_filter
         next_view = payload.get("next_view") if isinstance(payload, dict) else None
         if next_view:
             self.show_view(display_view(next_view))
-        action_id = str(result.get("action_id") or "")
+            if action_id.startswith("tasks."):
+                return
         if result.get("status") == "executed" and action_id.startswith("tasks.") and self.current_view.get() == "Tasks":
             self.show_view("Tasks")
             return
