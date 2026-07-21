@@ -23,6 +23,7 @@ config/hud_settings.json
 backups/**/config/hud_settings.json
 config/mediamtx.yml
 auto.key
+auto.crt
 mediamtx.exe
 
 # Build artifacts
@@ -31,6 +32,7 @@ dist/
 *.egg-info/
 htmlcov/
 .coverage
+coverage.xml
 
 # Local runtime artifacts
 runtime/
@@ -50,3 +52,12 @@ Thumbs.db
 
 # v30.67: stray pytest temp dirs (all suffixed variants)
 .pytest_tmp*/
+
+# Schreib-/Umgebungssonden und Temporaerdateien frueherer Laeufe
+*.tmp
+.sbx_write_test
+OUTPUTS_probe.txt
+_sync_v*/
+
+# Artefakt: als Ordnername angelegter Windows-Pfad
+H:\\SecondBrainAgent\\SecondBrain-Agent/
