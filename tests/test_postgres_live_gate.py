@@ -28,6 +28,7 @@ class FakeCursor:
     def __init__(self, connection: "FakeConnection") -> None:
         self.connection = connection
         self.description = None
+        self.rowcount = 1
         self._result: list[tuple] = []
 
     def execute(self, sql: str, params: Any = None) -> None:
@@ -38,6 +39,10 @@ class FakeCursor:
                     raise RuntimeError(f"simulated failure: {pattern}")
         self._result = self.connection.answer(sql)
         self.description = [("col",)] if self._result else None
+        # rowcount ist ein schlichtes Attribut, kein Property: ein Getter mit
+        # Seiteneffekt wird schon von hasattr() ausgeloest.
+        if sql.strip().upper().startswith("UPDATE") and self.connection.rowcounts:
+            self.rowcount = self.connection.rowcounts.pop(0)
 
     def fetchone(self):
         return self._result[0] if self._result else None
@@ -54,15 +59,28 @@ class FakeCursor:
 
 class FakeConnection:
     def __init__(self, *, answers: dict[str, list[tuple]] | None = None,
-                 failures: dict[str, str] | None = None) -> None:
+                 failures: dict[str, str] | None = None,
+                 sequences: dict[str, list[list[tuple]]] | None = None) -> None:
         self.answers = answers or {}
         self.failures = failures or {}
+        self.sequences = sequences or {}
         self.statements: list[str] = []
         self.autocommit = False
         self.closed = False
         self.rolled_back = 0
+        self.committed = 0
+        # Optimistische Versionierung: erste Aktualisierung greift, zweite nicht.
+        self.rowcounts: list[int] = [1, 0]
+
+    def commit(self) -> None:
+        self.committed += 1
 
     def answer(self, sql: str) -> list[tuple]:
+        # Sequenzen zuerst: aufeinanderfolgende Aufrufe derselben Abfrage
+        # liefern unterschiedliche Ergebnisse -- noetig fuer SKIP LOCKED.
+        for pattern, queue in self.sequences.items():
+            if pattern.lower() in sql.lower() and queue:
+                return queue.pop(0)
         for pattern, rows in self.answers.items():
             if pattern.lower() in sql.lower():
                 return rows
@@ -80,6 +98,9 @@ class FakeConnection:
 
 def _healthy_answers() -> dict[str, list[tuple]]:
     return {
+        # EXPLAIN zuerst: die Zeichenkette enthaelt auch "SELECT id FROM".
+        "EXPLAIN": [("Limit  (cost=..)",), ("  ->  Index Scan using golden_hnsw on golden",)],
+        "SELECT id FROM": [(0,), (1,), (2,), (3,), (4,)],
         "SHOW server_version": [("18.4",)],
         "SELECT current_user": [("gate_user",)],
         "SELECT current_database()": [("secondbrain_test",)],
@@ -100,7 +121,16 @@ DSN = "postgresql://user:secret@db.example.com:5432/secondbrain_test"
 # Echtes pgvector 0.8.4 lehnt einen direkten hnsw-Index auf vector(3072) ab und
 # akzeptiert den halfvec-Cast. Der Fake muss das nachbilden, sonst prueft der
 # Test eine Umgebung, die es nicht gibt.
-REALISTIC_PGVECTOR = {"vector_cosine_ops": "raise"}
+REALISTIC_PGVECTOR = {
+    "vector_cosine_ops": "raise",   # direkter Index auf 3072 Dimensionen
+    "9001": "raise",                # Dimension Guard weist 3-dim Vektor ab
+    "(99,": "raise",                # doppelter Idempotency Key
+}
+
+
+def _skip_locked_sequence() -> dict[str, list[list[tuple]]]:
+    """Zwei Worker, zwei verschiedene Zeilen -- so verhaelt sich SKIP LOCKED."""
+    return {"FOR UPDATE SKIP LOCKED": [[(1,)], [(2,)]]}
 
 
 def _healthy_connection(**overrides: Any) -> FakeConnection:
@@ -108,7 +138,9 @@ def _healthy_connection(**overrides: Any) -> FakeConnection:
     answers.update(overrides.pop("answers", {}))
     failures = dict(REALISTIC_PGVECTOR)
     failures.update(overrides.pop("failures", {}))
-    return FakeConnection(answers=answers, failures=failures)
+    sequences = _skip_locked_sequence()
+    sequences.update(overrides.pop("sequences", {}))
+    return FakeConnection(answers=answers, failures=failures, sequences=sequences)
 
 
 def _run(connection: FakeConnection, *, dsn: str = DSN, **kw):
@@ -196,12 +228,14 @@ def test_unexpected_direct_vector_index_blocks() -> None:
 
 
 def test_schema_is_dropped_on_success() -> None:
+    """Jedes erzeugte Schema wird wieder entfernt -- Phase 2 und Phase 5."""
     connection = _healthy_connection()
     _run(connection)
-    created = [s for s in connection.statements if s.startswith("CREATE SCHEMA")]
-    dropped = [s for s in connection.statements if s.startswith("DROP SCHEMA")]
-    assert len(created) == 1 and len(dropped) == 1
-    assert created[0].split()[-1] in dropped[0]
+    created = [s.split()[-1] for s in connection.statements if s.startswith("CREATE SCHEMA")]
+    dropped = " ".join(s for s in connection.statements if s.startswith("DROP SCHEMA"))
+    assert created, "kein Testschema angelegt"
+    for schema in created:
+        assert schema in dropped, f"{schema} wurde nicht entfernt"
 
 
 def test_schema_is_dropped_when_checks_fail() -> None:
@@ -215,14 +249,17 @@ def test_schema_is_dropped_when_checks_fail() -> None:
 
 
 def test_schema_name_is_unique_per_run() -> None:
-    names = set()
-    for _ in range(3):
+    """Parallele Gate-Laeufe duerfen sich nicht gegenseitig das Schema wegziehen."""
+    runs = 3
+    names: list[str] = []
+    for _ in range(runs):
         connection = _healthy_connection()
         _run(connection)
-        names.update(
+        names.extend(
             s.split()[-1] for s in connection.statements if s.startswith("CREATE SCHEMA")
         )
-    assert len(names) == 3, "Schemanamen kollidieren zwischen Laeufen"
+    assert len(names) == len(set(names)), f"Schemanamen kollidieren: {names}"
+    assert len(names) == runs * 2, "erwartet je ein Schema fuer Phase 2 und Phase 5"
 
 
 def test_connection_is_closed() -> None:
@@ -240,6 +277,138 @@ def test_no_destructive_statements() -> None:
     for statement in connection.statements:
         if statement.startswith("DROP SCHEMA"):
             assert gate.SCHEMA_PREFIX in statement, "DROP SCHEMA ausserhalb des Testschemas"
+
+
+# --------------------------------------------------------------------------
+# Phase 6 -- Vektorsuche
+# --------------------------------------------------------------------------
+
+
+def _named(report, name: str) -> dict:
+    for check in report["checks"]:
+        if check["name"] == name:
+            return check
+    raise AssertionError(f"Pruefung {name!r} fehlt im Report")
+
+
+def test_golden_vector_is_deterministic() -> None:
+    """Eine Recall-Erwartung, die sich zwischen Laeufen aendert, ist kein Nachweis."""
+    assert gate.golden_vector(3) == gate.golden_vector(3)
+    assert gate.golden_vector(3) != gate.golden_vector(4)
+    vector = gate.golden_vector(7)
+    assert len(vector) == gate.PROJECT_DIMENSIONS
+    assert sum(vector) == 1.0 and vector[7] == 1.0
+
+
+def test_vector_search_checks_run_in_healthy_environment() -> None:
+    report = _run(_healthy_connection())
+    for name in (
+        "vector_search_returns_results",
+        "vector_search_exact_match_first",
+        "vector_search_min_recall",
+        "vector_index_used_by_query",
+        "dimension_guard_rejects_mismatch",
+        "reindex",
+        "search_after_reindex",
+    ):
+        assert _named(report, name)["ok"], f"{name} fehlgeschlagen"
+    assert report["facts"]["recall"] >= gate.MIN_RECALL
+
+
+def test_sequential_scan_despite_index_is_blocked() -> None:
+    """Die stille Fehlerklasse: Index vorhanden, Abfrage trifft ihn nicht."""
+    report = _run(_healthy_connection(answers={"EXPLAIN": [("Seq Scan on golden",)]}))
+    assert report["status"] == gate.BLOCKED
+    assert "vector_index_used_by_query" in report["blockers"]
+
+
+def test_wrong_search_result_order_is_blocked() -> None:
+    report = _run(_healthy_connection(answers={"SELECT id FROM": [(42,), (1,), (2,), (3,), (4,)]}))
+    assert report["status"] == gate.BLOCKED
+    assert "vector_search_exact_match_first" in report["blockers"]
+    assert "vector_search_min_recall" in report["blockers"]
+
+
+def test_accepted_dimension_mismatch_is_blocked() -> None:
+    """Nimmt die Datenbank einen 3-dim Vektor in vector(3072) an, ist der Guard defekt."""
+    # "allow" ueberschreibt das "raise" aus REALISTIC_PGVECTOR: die Datenbank
+    # nimmt den zu kurzen Vektor entgegen, statt ihn abzuweisen.
+    report = _run(_healthy_connection(failures={"9001": "allow"}))
+    assert report["status"] == gate.BLOCKED
+    assert "dimension_guard_rejects_mismatch" in report["blockers"]
+
+
+def test_vector_search_skipped_when_index_unavailable() -> None:
+    report = _run(_healthy_connection(failures={"halfvec_cosine_ops": "raise"}))
+    assert report["status"] == gate.BLOCKED
+    assert "halfvec_index_creatable" in report["blockers"]
+    assert _named(report, "vector_search")["ok"] is False
+
+
+def test_golden_dataset_stays_inside_test_schema() -> None:
+    connection = _healthy_connection()
+    _run(connection)
+    for statement in connection.statements:
+        if statement.startswith(("CREATE TABLE", "INSERT INTO", "CREATE INDEX", "ANALYZE")):
+            assert gate.SCHEMA_PREFIX in statement or "golden_hnsw" in statement, (
+                f"Statement ausserhalb des Testschemas: {statement[:80]}"
+            )
+
+
+# --------------------------------------------------------------------------
+# Phase 5 -- Concurrency
+# --------------------------------------------------------------------------
+
+
+def test_concurrency_checks_run_in_healthy_environment() -> None:
+    report = _run(_healthy_connection())
+    for name in (
+        "idempotency_key_unique",
+        "skip_locked_both_workers_get_work",
+        "skip_locked_no_double_claim",
+        "optimistic_versioning_blocks_stale_write",
+    ):
+        assert _named(report, name)["ok"], f"{name} fehlgeschlagen"
+    assert report["facts"]["claimed"] == [1, 2]
+
+
+def test_double_claim_is_blocked() -> None:
+    """Zwei Worker duerfen niemals dieselbe Zeile beanspruchen."""
+    report = _run(_healthy_connection(
+        sequences={"FOR UPDATE SKIP LOCKED": [[(1,)], [(1,)]]}
+    ))
+    assert report["status"] == gate.BLOCKED
+    assert "skip_locked_no_double_claim" in report["blockers"]
+
+
+def test_accepted_duplicate_idempotency_key_is_blocked() -> None:
+    report = _run(_healthy_connection(failures={"(99,": "allow"}))
+    assert report["status"] == gate.BLOCKED
+    assert "idempotency_key_unique" in report["blockers"]
+
+
+def test_stale_write_that_succeeds_is_blocked() -> None:
+    """Greift die zweite Aktualisierung mit veralteter Version, fehlt der Schutz."""
+    connection = _healthy_connection()
+    connection.rowcounts = [1, 1]
+    report = _run(connection)
+    assert report["status"] == gate.BLOCKED
+    assert "optimistic_versioning_blocks_stale_write" in report["blockers"]
+
+
+def test_concurrency_schema_is_dropped() -> None:
+    connection = _healthy_connection()
+    report = _run(connection)
+    dropped = [s for s in connection.statements if s.startswith("DROP SCHEMA")]
+    assert any("_conc_" in s for s in dropped), "Concurrency-Schema blieb zurueck"
+    assert report["facts"]["cleanup_schema_dropped"] is True
+
+
+def test_concurrency_connections_are_closed() -> None:
+    """Drei Verbindungen werden geoeffnet -- keine darf offen bleiben."""
+    connection = _healthy_connection()
+    _run(connection)
+    assert connection.closed
 
 
 # --------------------------------------------------------------------------
