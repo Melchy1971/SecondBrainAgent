@@ -221,6 +221,23 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
+def _disaster_recovery_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Disaster recovery and vault gate (encryption, backup, restore, rollback)",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.disaster_recovery_gate import BLOCKED, run_disaster_recovery_gate
+    report = run_disaster_recovery_gate(args.project_root_option or args.project_root,
+                                        write_report=not args.no_write_report)
+    out(report)
+    return 2 if report["status"] == BLOCKED else 0
+
+
 def _live_certification_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -999,6 +1016,8 @@ def main(argv: list[str] | None = None) -> int:
         return _postgres_live_gate_main(raw)
     if cmd == "live-certification":
         return _live_certification_main(raw)
+    if cmd == "disaster-recovery-gate":
+        return _disaster_recovery_gate_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
     if cmd == "backup-gate":

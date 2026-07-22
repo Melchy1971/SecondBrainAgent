@@ -288,7 +288,6 @@
       "review-approval-release-gate"
     ],
     "missing_gates": [
-      "disaster-recovery-gate",
       "windows-installer-gate",
       "support-bundle",
       "jarvis-1.0-gate"
@@ -398,6 +397,30 @@
       "decision": "TLS am Server aktivieren, bevor das Gate zertifiziert wird"
     }
   },
+  "disaster_recovery_status": {
+    "command": "python launcher.py disaster-recovery-gate",
+    "module": "SecondBrain/release/disaster_recovery_gate.py",
+    "report": "runtime/reports/disaster_recovery_gate.json",
+    "control_flow_test": "tests/test_disaster_recovery_gate.py",
+    "verified_here": [
+      "encrypted backup roundtrip against real AES-GCM",
+      "wrong key rejected",
+      "tampered ciphertext rejected",
+      "aad context binding",
+      "no plaintext secret in encrypted artifact",
+      "key rotation preserves data",
+      "restore that loses data is blocked",
+      "missing rollback is blocked"
+    ],
+    "delegated_to_live_gates": {
+      "pgvector_after_restore": "postgres-live-gate",
+      "approvals_after_restore": "approval-live-gate",
+      "audit_after_restore": "approval-live-gate"
+    },
+    "max_status_until_delegated_checks_run": "CONDITIONAL_PASS",
+    "note": "Backup/Restore-Schritte sind injizierbar und werden ueber Fakes geprueft. Der Live-Nachweis gegen echtes Dateisystem und echte Datenbank steht aus.",
+    "outstanding": "Windows Credential Manager / OS-Keyring-Backend fehlt weiterhin (Blocker vault_os_keyring_backend_missing)."
+  },
   "live_certification_status": {
     "command": "python launcher.py live-certification --scope <area>",
     "module": "SecondBrain/release/live_certification.py",
@@ -483,10 +506,10 @@
     ],
     "partially_implemented": [
       "postgres-live-gate",
-      "live-certification"
+      "live-certification",
+      "disaster-recovery-gate"
     ],
     "missing": [
-      "disaster-recovery-gate",
       "windows-installer-gate",
       "jarvis-1.0-gate"
     ]
