@@ -221,6 +221,28 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
+def _native_web_shell_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Native desktop that renders the web GUI in a window (QWebEngine)",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=8851)
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.desktop_native.web_shell import run_web_shell
+    result = run_web_shell(args.project_root_option or args.project_root, host=args.host, port=args.port)
+    if result.get("status") == "webengine_missing":
+        # Sauberer Rueckfall auf die klassische native GUI.
+        result["note"] = "QtWebEngine nicht verfuegbar - starte klassische Shell mit 'launcher.py jarvis'"
+        out(result)
+        return 1
+    out(result)
+    return 0 if result.get("ok") else 2
+
+
 def _support_bundle_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -1047,6 +1069,8 @@ def main(argv: list[str] | None = None) -> int:
         return _disaster_recovery_gate_main(raw)
     if cmd == "support-bundle":
         return _support_bundle_main(raw)
+    if cmd in {"native-web-shell", "jarvis-web", "desktop-web"}:
+        return _native_web_shell_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
     if cmd == "backup-gate":
