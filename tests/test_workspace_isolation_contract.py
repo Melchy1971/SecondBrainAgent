@@ -59,13 +59,19 @@ def _method(tree: ast.Module, klass: str, name: str) -> ast.FunctionDef:
 
 
 def test_write_deletes_records_not_present_in_input() -> None:
-    """Dokumentiert das Verhalten, auf dem die Konvention aufsetzt."""
+    """Dokumentiert das Verhalten, auf dem die Konvention aufsetzt.
+
+    Seit der Haertung traegt der DELETE optional einen Workspace-Scope
+    (``{scope}``). Fehlt er (ungebundener Pfad), ist das Loeschverhalten
+    unveraendert; ist er gesetzt, bleibt die Loeschung auf den Workspace
+    begrenzt.
+    """
     source = REPOSITORY.read_text(encoding="utf-8")
     assert "set(current) - desired_ids" in source, (
         "Die Loeschlogik hat sich geaendert. Pruefe, ob die Aufrufer-Konvention "
         "noch gilt -- dieser Test war ihr einziger Waechter."
     )
-    assert "DELETE FROM task_project_records WHERE collection=:collection AND record_id=:record_id" in source
+    assert "DELETE FROM {_TABLE} WHERE collection=:collection AND record_id=:record_id{scope}" in source
 
 
 def test_service_write_calls_pass_unfiltered_rows() -> None:
@@ -128,49 +134,33 @@ def test_job_repository_scopes_row_access_by_workspace() -> None:
     assert not unscoped, f"Zeilenzugriff ohne workspace_id: {unscoped}"
 
 
-def test_task_repository_read_is_documented_as_unscoped() -> None:
-    """Bewusst festgehalten: read() ist nicht workspace-gebunden.
+def test_task_repository_read_is_workspace_bindable() -> None:
+    """read() akzeptiert seit der Haertung einen optionalen workspace_id.
 
-    Faellt dieser Test aus, weil ein workspace_id-Parameter ergaenzt wurde, ist
-    das eine Verbesserung -- dann gehoert dieser Test entfernt und die
-    Aufrufer-Konvention aus test_service_write_calls_pass_unfiltered_rows
-    ebenfalls neu bewertet.
+    Historie: Zuvor hielt dieser Test fest, dass read() NICHT gebunden war --
+    als Vertrag ueber einen Schwachpunkt. Der Schwachpunkt ist behoben, also
+    prueft der Test jetzt die Gegenrichtung.
     """
     tree = _tree(REPOSITORY)
     read = _method(tree, "PostgresTaskRepository", "read")
     names = {a.arg for a in read.args.args} | {a.arg for a in read.args.kwonlyargs}
-
-    assert "workspace_id" not in names, (
-        "read() ist jetzt workspace-gebunden. Bitte diesen Test und den "
-        "Blocker task_repository_isolation_is_application_level_only entfernen."
-    )
+    assert "workspace_id" in names, "read() sollte workspace_id binden koennen"
 
 
-def test_no_row_level_security_anywhere() -> None:
-    """Ohne RLS ist ein Raw-SQL-Bypass nicht verhinderbar.
+def test_row_level_security_protects_task_records() -> None:
+    """RLS ist der Datenbank-Backstop gegen Raw-SQL-Bypass (Prompt 68 Phase 4).
 
-    Prompt 68 Phase 4 verlangt, dass auch direkter SQL-Zugriff Workspaces nicht
-    ueberschreiten kann. Mit rein anwendungsseitiger Filterung ist diese
-    Anforderung nicht erfuellbar.
+    Historie: Zuvor stellte dieser Test fest, dass es NIRGENDS RLS gibt. Sie
+    wurde eingefuehrt; der Test sichert jetzt ihr Vorhandensein.
     """
-    root = Path(__file__).resolve().parents[1] / "SecondBrain"
-    markers = ("enable row level security", "create policy", "force row level security")
-    found: list[str] = []
+    context = (_SB / "storage" / "workspace_context.py").read_text(encoding="utf-8").lower()
+    assert "enable row level security" in context
+    assert "force row level security" in context
+    assert "create policy" in context
+    # fail-closed: der zweite Parameter true macht current_setting nullbar.
+    assert "current_setting('app.workspace_id', true)" in context
 
-    for suffix in ("*.sql", "*.py"):
-        for path in root.rglob(suffix):
-            if "__pycache__" in path.parts:
-                continue
-            try:
-                lowered = path.read_text(encoding="utf-8").lower()
-            except (UnicodeDecodeError, OSError):
-                continue
-            if any(marker in lowered for marker in markers):
-                found.append(str(path.relative_to(root.parent)))
-
-    if found:
-        pytest.fail(
-            "Row Level Security ist aufgetaucht in:\n  " + "\n  ".join(found)
-            + "\nDas ist eine Verbesserung. Bitte diesen Test und den Blocker "
-              "workspace_isolation_without_database_enforcement neu bewerten."
-        )
+    repository = REPOSITORY.read_text(encoding="utf-8")
+    assert "rls_setup_statements" in repository, (
+        "ensure_schema richtet keine RLS ein"
+    )

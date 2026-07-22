@@ -221,6 +221,71 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
+def _support_bundle_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Collect a redacted local support bundle (JSON + ZIP, no network)",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-zip", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    root = Path(args.project_root_option or args.project_root)
+    from secondbrain.support.bundle import SupportBundle
+    bundle = SupportBundle(root)
+    payload = bundle.collect()
+    report_dir = root / "runtime" / "reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    json_path = report_dir / "support_bundle.json"
+    json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    result = {"ok": True, "schema": payload.get("schema"), "json": str(json_path.as_posix())}
+    if not args.no_zip:
+        zip_path = report_dir / "support_bundle.zip"
+        bundle.build_zip(zip_path, bundle=payload)
+        result["zip"] = str(zip_path.as_posix())
+    out(result)
+    return 0
+
+
+def _disaster_recovery_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Disaster recovery and vault gate (encryption, backup, restore, rollback)",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.disaster_recovery_gate import BLOCKED, run_disaster_recovery_gate
+    report = run_disaster_recovery_gate(args.project_root_option or args.project_root,
+                                        write_report=not args.no_write_report)
+    out(report)
+    return 2 if report["status"] == BLOCKED else 0
+
+
+def _live_certification_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Orchestrate PostgreSQL, approval, provider and connector live gates",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--scope", default="all")
+    parser.add_argument("--no-write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.live_certification import BLOCKED, run_live_certification
+    report = run_live_certification(
+        args.project_root_option or args.project_root,
+        scope=args.scope,
+        write_report=not args.no_write_report,
+    )
+    out(report)
+    return 2 if report["status"] == BLOCKED else 0
+
+
 def _security_gate_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -976,6 +1041,12 @@ def main(argv: list[str] | None = None) -> int:
         return _provider_live_gate_main(raw)
     if cmd == "postgres-live-gate":
         return _postgres_live_gate_main(raw)
+    if cmd == "live-certification":
+        return _live_certification_main(raw)
+    if cmd == "disaster-recovery-gate":
+        return _disaster_recovery_gate_main(raw)
+    if cmd == "support-bundle":
+        return _support_bundle_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
     if cmd == "backup-gate":
