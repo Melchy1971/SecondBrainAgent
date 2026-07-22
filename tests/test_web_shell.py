@@ -13,6 +13,8 @@ import sys
 import types
 from pathlib import Path
 
+import pytest
+
 _DN = Path(__file__).resolve().parents[1] / "SecondBrain" / "desktop_native"
 
 
@@ -107,7 +109,7 @@ def test_server_is_ensured_before_window() -> None:
         order.append("server")
         return {"ok": True, "action": "started"}
 
-    def opener(url, *, title):
+    def opener(url, *, title, **_kw):
         order.append("window")
         return 0
 
@@ -129,7 +131,7 @@ def test_window_not_opened_when_server_fails() -> None:
 def test_url_is_passed_to_window() -> None:
     seen = {}
 
-    def opener(url, *, title):
+    def opener(url, *, title, **_kw):
         seen["url"] = url
         seen["title"] = title
         return 7
@@ -207,6 +209,69 @@ def test_lock_released_even_when_server_fails() -> None:
         lock_factory=lambda root: lock,
     )
     assert lock.released == 1
+
+
+# --------------------------------------------------------------------------
+# Fenstergeometrie
+# --------------------------------------------------------------------------
+
+
+def test_geometry_format() -> None:
+    assert ws.format_geometry(1280, 800, 100, 50) == "1280x800+100+50"
+    assert ws.format_geometry(1280, 800, -5, -20) == "1280x800-5-20"
+
+
+def test_geometry_roundtrip() -> None:
+    for w, h, x, y in [(1280, 800, 100, 50), (640, 480, 0, 0), (1920, 1080, -10, -20)]:
+        assert ws.parse_geometry(ws.format_geometry(w, h, x, y)) == (w, h, x, y)
+
+
+@pytest.mark.parametrize("bad", ["", "abc", "1280x800", "1280x800+100", "10x10+0+0", "not+a+geo"])
+def test_parse_geometry_rejects_invalid(bad: str) -> None:
+    assert ws.parse_geometry(bad) is None
+
+
+def test_geometry_shares_format_with_window_state_store() -> None:
+    """Der Helfer und der vorhandene WindowStateStore muessen dasselbe Format nutzen.
+
+    Sonst speichert das Fenster eine Geometrie, die der Store beim naechsten
+    Start als ungueltig verwirft -- die Groesse ginge still verloren.
+    """
+    import importlib
+
+    lifecycle = importlib.import_module("secondbrain.desktop_native.lifecycle")
+    geo = ws.format_geometry(1280, 800, 100, 50)
+    assert lifecycle.WindowStateStore.valid_geometry(geo)
+    assert ws.parse_geometry(geo) is not None
+
+
+def test_window_state_store_roundtrip(tmp_path) -> None:
+    import importlib
+
+    lifecycle = importlib.import_module("secondbrain.desktop_native.lifecycle")
+    store = lifecycle.WindowStateStore(tmp_path)
+    store.save(geometry="1280x800+100+50", view="Dashboard")
+    loaded = store.load()
+    assert loaded["geometry"] == "1280x800+100+50"
+    assert ws.parse_geometry(loaded["geometry"]) == (1280, 800, 100, 50)
+
+
+# --------------------------------------------------------------------------
+# System-Tray
+# --------------------------------------------------------------------------
+
+
+def test_tray_menu_has_show_hide_quit() -> None:
+    ids = [item["id"] for item in ws.tray_menu_spec()]
+    assert ids == ["show", "hide", "quit"]
+    for item in ws.tray_menu_spec():
+        assert item["label"], "jeder Tray-Eintrag braucht ein Label"
+
+
+def test_tray_spec_only_lists_backed_actions() -> None:
+    """Keine Fiktion: nur Aktionen, die der Fensterbauer wirklich verdrahtet."""
+    ids = {item["id"] for item in ws.tray_menu_spec()}
+    assert ids == {"show", "hide", "quit"}
 
 
 def test_ensure_server_does_not_open_browser() -> None:

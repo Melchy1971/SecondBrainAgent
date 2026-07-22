@@ -477,6 +477,8 @@
     "properties": [
       "identical to web GUI (same HTML via embedded HUD)",
       "single instance via existing SingleInstanceLock",
+      "system tray with show/hide/quit; close hides to tray instead of quitting",
+      "window geometry restored and persisted via existing WindowStateStore",
       "server ensured before window, no extra browser",
       "fail-closed fallback to widget shell when QtWebEngine missing"
     ],
