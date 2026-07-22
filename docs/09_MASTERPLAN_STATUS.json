@@ -289,9 +289,17 @@
     ],
     "missing_gates": [
       "windows-installer-gate",
-      "support-bundle",
       "jarvis-1.0-gate"
     ]
+  },
+  "support_bundle_status": {
+    "command": "python launcher.py support-bundle",
+    "module": "SecondBrain/support/bundle.py",
+    "was": "implemented_but_not_wired",
+    "now": "wired_to_launcher",
+    "outputs": ["runtime/reports/support_bundle.json", "runtime/reports/support_bundle.zip"],
+    "redaction_test": "tests/test_support_bundle_redaction.py",
+    "properties": ["recursive redaction proven", "offline (no network imports)", "env names kept, values masked"]
   },
   "capability_inventory": {
     "path": "docs/status/current_capability_inventory.md",
@@ -490,10 +498,10 @@
     "blocking_issue": "Kein Nachweis auf sauberer Windows-VM"
   },
   "private_beta_status": {
-    "state": "not_started",
-    "telemetry": "missing",
-    "support_bundle_command": "missing",
-    "blocking_issue": "Voraussetzung ist ein installierbares und startfaehiges Paket"
+    "state": "partially_prepared",
+    "telemetry": "local telemetry_center and support diagnostics exist; beta metrics aggregation not yet built",
+    "support_bundle_command": "wired (python launcher.py support-bundle)",
+    "blocking_issue": "Voraussetzung fuer den eigentlichen Beta-Lauf ist ein installierbares und startfaehiges Paket"
   },
   "live_gates": {
     "certified": [],

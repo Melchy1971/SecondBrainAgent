@@ -221,6 +221,33 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
+def _support_bundle_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Collect a redacted local support bundle (JSON + ZIP, no network)",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-zip", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    root = Path(args.project_root_option or args.project_root)
+    from secondbrain.support.bundle import SupportBundle
+    bundle = SupportBundle(root)
+    payload = bundle.collect()
+    report_dir = root / "runtime" / "reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    json_path = report_dir / "support_bundle.json"
+    json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    result = {"ok": True, "schema": payload.get("schema"), "json": str(json_path.as_posix())}
+    if not args.no_zip:
+        zip_path = report_dir / "support_bundle.zip"
+        bundle.build_zip(zip_path, bundle=payload)
+        result["zip"] = str(zip_path.as_posix())
+    out(result)
+    return 0
+
+
 def _disaster_recovery_gate_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -1018,6 +1045,8 @@ def main(argv: list[str] | None = None) -> int:
         return _live_certification_main(raw)
     if cmd == "disaster-recovery-gate":
         return _disaster_recovery_gate_main(raw)
+    if cmd == "support-bundle":
+        return _support_bundle_main(raw)
     if cmd == "security-gate":
         return _security_gate_main(raw)
     if cmd == "backup-gate":
