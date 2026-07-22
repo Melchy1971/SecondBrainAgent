@@ -76,6 +76,11 @@ def _default_open_window(url: str, *, title: str) -> int:  # pragma: no cover - 
     return int(app.exec())
 
 
+def _default_lock(project_root: Path):
+    from secondbrain.desktop_native.lifecycle import SingleInstanceLock
+    return SingleInstanceLock(project_root)
+
+
 def run_web_shell(
     project_root: str | Path = ".",
     *,
@@ -84,11 +89,16 @@ def run_web_shell(
     ensure_server: Callable[[Path, str, int], dict[str, Any]] | None = None,
     open_window: Callable[..., int] | None = None,
     caps: WebShellCapabilities | None = None,
+    lock_factory: Callable[[Path], Any] | None = None,
 ) -> dict[str, Any]:
     """Stellt das HUD sicher und oeffnet es in einem nativen WebEngine-Fenster.
 
-    ``ensure_server`` und ``open_window`` sind injizierbar, damit die
-    Orchestrierung ohne echten Server und ohne Display pruefbar ist.
+    Single-Instance: ein zweiter Start meldet ``already_running`` statt ein
+    zweites Fenster und einen zweiten HUD-Server zu erzeugen.
+
+    ``ensure_server``, ``open_window`` und ``lock_factory`` sind injizierbar,
+    damit die Orchestrierung ohne echten Server, ohne Display und ohne echte
+    Instanzsperre pruefbar ist.
     """
     root = Path(project_root).resolve()
     caps = caps or capabilities()
@@ -103,18 +113,30 @@ def run_web_shell(
             "url": url,
         }
 
-    ensure = ensure_server or _default_ensure_server
-    server = ensure(root, host, port)
-    if not server.get("ok"):
-        return {"ok": False, "status": "server_unavailable", "server": server, "url": url}
+    from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning
 
-    opener = open_window or _default_open_window
-    title = f"Jarvis SecondBrain {get_version()}"
-    exit_code = opener(url, title=title)
-    return {
-        "ok": True,
-        "status": "closed",
-        "url": url,
-        "exit_code": int(exit_code),
-        "server_action": server.get("action"),
-    }
+    lock = (lock_factory or _default_lock)(root)
+    try:
+        lock.acquire()
+    except InstanceAlreadyRunning as exc:
+        # Zweiter Start: kein zweites Fenster, keine zweite Server-Instanz.
+        return {"ok": True, "status": "already_running", "detail": str(exc), "url": url}
+
+    try:
+        ensure = ensure_server or _default_ensure_server
+        server = ensure(root, host, port)
+        if not server.get("ok"):
+            return {"ok": False, "status": "server_unavailable", "server": server, "url": url}
+
+        opener = open_window or _default_open_window
+        title = f"Jarvis SecondBrain {get_version()}"
+        exit_code = opener(url, title=title)
+        return {
+            "ok": True,
+            "status": "closed",
+            "url": url,
+            "exit_code": int(exit_code),
+            "server_action": server.get("action"),
+        }
+    finally:
+        lock.release()

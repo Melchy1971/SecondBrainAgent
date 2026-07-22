@@ -10,18 +10,36 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+import types
 from pathlib import Path
 
-# desktop_native/__init__.py zieht ueber .app das tkinter-Modul, das in reinen
-# Headless-Umgebungen fehlt. web_shell selbst braucht es nicht -- daher direkt
-# per Dateipfad laden, am Paket-__init__ vorbei. Registrierung in sys.modules,
-# damit dataclass(slots=True) das Modul aufloesen kann.
-_NAME = "_web_shell_under_test"
-_PATH = Path(__file__).resolve().parents[1] / "SecondBrain" / "desktop_native" / "web_shell.py"
-_spec = importlib.util.spec_from_file_location(_NAME, _PATH)
-ws = importlib.util.module_from_spec(_spec)
-sys.modules[_NAME] = ws
-_spec.loader.exec_module(ws)
+_DN = Path(__file__).resolve().parents[1] / "SecondBrain" / "desktop_native"
+
+
+def _load_isolated(mod_name: str, file_name: str):
+    """Laedt ein desktop_native-Modul ohne dessen Paket-__init__.
+
+    ``desktop_native/__init__.py`` zieht ueber ``.app`` tkinter, das in reinen
+    Headless-Umgebungen fehlt. lifecycle und web_shell brauchen es nicht -- sie
+    werden direkt per Dateipfad geladen und in sys.modules registriert, damit
+    lazy Imports untereinander sowie dataclass(slots=True) aufloesen.
+    """
+    spec = importlib.util.spec_from_file_location(mod_name, _DN / file_name)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[mod_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# Stub-Elternpaket, damit die echten Modulpfade aufloesen, ohne das reale
+# __init__ (tkinter) auszufuehren.
+if "secondbrain.desktop_native" not in sys.modules:
+    _pkg = types.ModuleType("secondbrain.desktop_native")
+    _pkg.__path__ = [str(_DN)]
+    sys.modules["secondbrain.desktop_native"] = _pkg
+
+_load_isolated("secondbrain.desktop_native.lifecycle", "lifecycle.py")
+ws = _load_isolated("secondbrain.desktop_native.web_shell", "web_shell.py")
 
 
 def test_hud_url_shape() -> None:
@@ -125,6 +143,70 @@ def test_url_is_passed_to_window() -> None:
     assert "Jarvis SecondBrain" in seen["title"]
     assert result["exit_code"] == 7
     assert result["ok"] is True
+
+
+# --------------------------------------------------------------------------
+# Single-Instance
+# --------------------------------------------------------------------------
+
+
+class _FakeLock:
+    def __init__(self, *, taken: bool = False) -> None:
+        self.taken = taken
+        self.released = 0
+
+    def acquire(self) -> None:
+        from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning
+        if self.taken:
+            raise InstanceAlreadyRunning("Jarvis Desktop laeuft bereits (PID 4321)")
+
+    def release(self) -> None:
+        self.released += 1
+
+
+def test_second_instance_does_not_open_window() -> None:
+    opened = []
+    result = ws.run_web_shell(
+        ".", caps=_caps(True, True),
+        ensure_server=lambda *a: {"ok": True, "action": "started"},
+        open_window=lambda *a, **k: opened.append(True) or 0,
+        lock_factory=lambda root: _FakeLock(taken=True),
+    )
+    assert result["status"] == "already_running"
+    assert not opened, "Zweite Instanz darf kein Fenster oeffnen"
+
+
+def test_second_instance_does_not_start_server() -> None:
+    started = []
+    ws.run_web_shell(
+        ".", caps=_caps(True, True),
+        ensure_server=lambda *a: started.append(True) or {"ok": True},
+        open_window=lambda *a, **k: 0,
+        lock_factory=lambda root: _FakeLock(taken=True),
+    )
+    assert not started, "Zweite Instanz darf keinen zweiten HUD-Server starten"
+
+
+def test_lock_is_released_after_window_closes() -> None:
+    lock = _FakeLock(taken=False)
+    ws.run_web_shell(
+        ".", caps=_caps(True, True),
+        ensure_server=lambda *a: {"ok": True, "action": "started"},
+        open_window=lambda *a, **k: 0,
+        lock_factory=lambda root: lock,
+    )
+    assert lock.released == 1, "Instanzsperre muss nach Fensterschluss freigegeben werden"
+
+
+def test_lock_released_even_when_server_fails() -> None:
+    lock = _FakeLock(taken=False)
+    ws.run_web_shell(
+        ".", caps=_caps(True, True),
+        ensure_server=lambda *a: {"ok": False},
+        open_window=lambda *a, **k: 0,
+        lock_factory=lambda root: lock,
+    )
+    assert lock.released == 1
 
 
 def test_ensure_server_does_not_open_browser() -> None:

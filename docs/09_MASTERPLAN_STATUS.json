@@ -468,6 +468,22 @@
     "blocking_issue": "Live-Start auf der Zielmaschine steht aus; zwei parallele Qt-Implementierungen (desktop_app/app.py und desktop_native/qt_shell.py) sind ungeklaert",
     "fallback": "Tkinter-Anwendung bleibt vorhanden"
   },
+  "web_shell_status": {
+    "purpose": "Nativer Desktop, der die Web-GUI pixelgleich in einem Fenster rendert (QWebEngineView)",
+    "module": "SecondBrain/desktop_native/web_shell.py",
+    "command": "python launcher.py native-web-shell",
+    "launchers": ["Jarvis.bat", "Start-Jarvis-GUI.bat"],
+    "control_flow_test": "tests/test_web_shell.py",
+    "properties": [
+      "identical to web GUI (same HTML via embedded HUD)",
+      "single instance via existing SingleInstanceLock",
+      "server ensured before window, no extra browser",
+      "fail-closed fallback to widget shell when QtWebEngine missing"
+    ],
+    "verified_here": "orchestration, single-instance, fallback, url (headless tests)",
+    "visually_confirmed_on_target": "2026-07-21 - natives Fenster rendert die Web-GUI wie gewuenscht",
+    "note": "launcher.py jarvis oeffnet weiterhin unveraendert die klassische Tkinter-Shell; qt_shell.py bleibt verwaist und ist Kandidat fuer deprecation."
+  },
   "voice_status": {
     "language": "de",
     "code_path": "SecondBrain/desktop_native/voice_runtime.py",
