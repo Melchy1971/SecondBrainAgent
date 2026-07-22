@@ -229,6 +229,14 @@ def migrate_jsonl_to_repository(project_root: str | Path, target: TaskRepository
         validated[collection] = rows
     report["status"] = "ready" if not report["invalid"] and not report["duplicates"] else "blocked"
     if not dry_run and report["status"] == "ready":
+        # Workspace-gruppiert schreiben: gegen die RLS-gehaertete Tabelle wird
+        # ein Insert ohne gesetzten Workspace-Kontext abgewiesen (WITH CHECK).
+        # Jede Gruppe geht daher scoped ueber write(..., workspace_id=ws).
         for collection, rows in validated.items():
-            target.write(collection, rows)
+            by_workspace: dict[str, list[dict[str, Any]]] = {}
+            for row in rows:
+                by_workspace.setdefault(str(row["workspace_id"]), []).append(row)
+            # Leere Collection: nichts zu migrieren, kein kontextloser Schreibzugriff.
+            for workspace_id, ws_rows in by_workspace.items():
+                target.write(collection, ws_rows, workspace_id=workspace_id)
     return report

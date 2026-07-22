@@ -11,12 +11,15 @@ auffaellt, ist als Nachweisinstrument wertlos.
 from __future__ import annotations
 
 import json
+import os
 from contextlib import contextmanager
 from typing import Any
 
 import pytest
 
 from secondbrain.release import postgres_live_gate as gate
+
+_TEST_DB = os.environ.get("TEST_DATABASE_URL")
 
 
 # --------------------------------------------------------------------------
@@ -155,11 +158,112 @@ def _healthy_connection(**overrides: Any) -> FakeConnection:
     return FakeConnection(answers=answers, failures=failures, sequences=sequences)
 
 
+def _passing_repository_contracts(connector, dsn, schema):
+    """Kontrollfluss-Stub: die produktiven Contracts brauchen ein echtes
+    PostgreSQL. Hier wird nur die Aggregation geprueft, daher passieren alle."""
+    names = [
+        "repo_crud", "repo_optimistic_version", "repo_idempotent_repeat",
+        "repo_version_conflict", "repo_workspace_isolation",
+        "repo_cross_workspace_prevented", "repo_transaction_rollback",
+        "repo_jsonl_migration", "repo_utc_serialization",
+    ]
+    return [{"name": n, "ok": True, "contract_status": "PASS", "detail": "ok",
+             "duration_ms": 0.1, "blocking": True} for n in names]
+
+
 def _run(connection: FakeConnection, *, dsn: str = DSN, **kw):
+    kw.setdefault("repository_contracts_impl", _passing_repository_contracts)
     return gate.run_postgres_live_gate(
         ".", env={"TEST_DATABASE_URL": dsn}, connect=lambda _: connection,
         write_report=False, **kw
     )
+
+
+# --------------------------------------------------------------------------
+# Phase 3 -- Repository-Vertraege (Kontrollfluss, ohne Datenbank)
+# --------------------------------------------------------------------------
+
+
+def test_not_implemented_phases_is_empty() -> None:
+    assert gate.NOT_IMPLEMENTED_PHASES == ()
+
+
+def test_repository_contracts_appears_in_report() -> None:
+    report = _run(_healthy_connection())
+    names = {c["name"] for c in report["checks"]}
+    assert "repo_crud" in names
+    assert "repository_contracts" in report["facts"]
+    assert "repository_contracts" in report["scope"]["implemented_phases"]
+
+
+def test_healthy_environment_reaches_pass() -> None:
+    """Mit erreichbarer DB und bestandenen Contracts ist PASS moeglich."""
+    report = _run(_healthy_connection())
+    assert report["status"] == gate.PASS, report.get("blockers")
+    assert report["scope"]["not_implemented_phases"] == []
+
+
+def test_repository_contracts_schema_is_dropped() -> None:
+    connection = _healthy_connection()
+    _run(connection)
+    dropped = [s for s in connection.statements if s.startswith("DROP SCHEMA")]
+    assert any("_repo_" in s for s in dropped), "Contract-Testschema blieb zurueck"
+
+
+def test_repository_contract_failure_blocks() -> None:
+    def failing_impl(connector, dsn, schema):
+        return [{"name": "repo_crud", "ok": False, "contract_status": "FAIL",
+                 "detail": "AssertionError", "duration_ms": 1.0, "blocking": True}]
+
+    report = _run(_healthy_connection(), repository_contracts_impl=failing_impl)
+    assert report["status"] == gate.BLOCKED
+    assert "repo_crud" in report["blockers"]
+
+
+def test_repository_contracts_schema_dropped_even_on_error() -> None:
+    def exploding_impl(connector, dsn, schema):
+        raise RuntimeError("contract crashed")
+
+    connection = _healthy_connection()
+    report = _run(connection, repository_contracts_impl=exploding_impl)
+    assert any("_repo_" in s for s in connection.statements if s.startswith("DROP SCHEMA")), (
+        "Contract-Schema muss auch bei Absturz entfernt werden"
+    )
+    assert report["status"] == gate.BLOCKED
+
+
+def test_repository_contract_error_is_redacted() -> None:
+    """Ein Contract-Fehler darf keine DSN oder rohe Meldung durchreichen."""
+    def leaky_impl(connector, dsn, schema):
+        raise RuntimeError(f"boom against {dsn}")
+
+    report = _run(_healthy_connection(), repository_contracts_impl=leaky_impl)
+    assert DSN not in json.dumps(report)
+    assert "secret" not in json.dumps(report)
+
+
+def test_contract_helper_records_status_and_duration() -> None:
+    ok = gate._contract("x", lambda: (True, "fine"))
+    assert ok["contract_status"] == "PASS" and ok["ok"] is True
+    assert isinstance(ok["duration_ms"], float)
+
+    bad = gate._contract("y", lambda: (False, "nope"))
+    assert bad["contract_status"] == "FAIL" and bad["blocking"] is True
+
+    def _raise():
+        raise ValueError("with dsn postgresql://u:p@h/db inside")
+    red = gate._contract("z", _raise)
+    assert red["contract_status"] == "FAIL"
+    assert red["detail"] == "ValueError"  # nur Klasse, keine Meldung
+    assert "postgresql://" not in json.dumps(red)
+
+
+def test_contract_skip_is_non_blocking() -> None:
+    def _skip():
+        raise gate._ContractSkip("not applicable to production class")
+    result = gate._contract("s", _skip)
+    assert result["contract_status"] == "SKIPPED"
+    assert result["blocking"] is False and result["ok"] is True
 
 
 # --------------------------------------------------------------------------
@@ -194,12 +298,17 @@ def test_invalid_dsn_is_blocked(dsn: str) -> None:
 # --------------------------------------------------------------------------
 
 
-def test_healthy_environment_is_conditional_pass_not_pass() -> None:
-    """Teilumfang darf niemals als vollstaendige Zertifizierung gelten."""
+def test_conditional_pass_when_a_phase_is_still_missing(monkeypatch) -> None:
+    """Solange eine Phase als not_implemented gilt, ist PASS unzulaessig.
+
+    Historie: Frueher galt das dauerhaft (repository_contracts fehlte). Seit die
+    Phase implementiert ist, wird die Regel hier durch einen simulierten
+    Rueckfall geprueft -- der Deckel gegen falsches PASS muss bleiben.
+    """
+    monkeypatch.setattr(gate, "NOT_IMPLEMENTED_PHASES", ("simulated_pending",))
     report = _run(_healthy_connection())
     assert report["status"] == gate.CONDITIONAL_PASS
     assert report["blockers"] == []
-    assert set(report["scope"]["not_implemented_phases"]) == set(gate.NOT_IMPLEMENTED_PHASES)
 
 
 def test_missing_pgvector_blocks() -> None:
@@ -271,8 +380,9 @@ def test_schema_name_is_unique_per_run() -> None:
             s.split()[-1] for s in connection.statements if s.startswith("CREATE SCHEMA")
         )
     assert len(names) == len(set(names)), f"Schemanamen kollidieren: {names}"
-    # Je Lauf: Phase 2 (isolated), Phase 4 (RLS), Phase 5 (concurrency).
-    assert len(names) == runs * 3, "erwartet je drei Schemata pro Lauf"
+    # Je Lauf: Phase 2 (isolated), Phase 3 (repository_contracts), Phase 4 (RLS),
+    # Phase 5 (concurrency).
+    assert len(names) == runs * 4, "erwartet je vier Schemata pro Lauf"
 
 
 def test_connection_is_closed() -> None:
@@ -517,3 +627,42 @@ def test_connection_error_is_redacted() -> None:
     assert report["status"] == gate.BLOCKED
     assert DSN not in json.dumps(report)
     assert report["error"]["message"] == "live database operation failed"
+
+
+# --------------------------------------------------------------------------
+# Optionaler Integrationstest -- nur mit gesetzter TEST_DATABASE_URL
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.skipif(not _TEST_DB, reason="set TEST_DATABASE_URL for the live repository-contract run")
+def test_repository_contracts_live() -> None:
+    """Faehrt die produktiven Repository-Contracts gegen echtes PostgreSQL.
+
+    Ohne TEST_DATABASE_URL wird der Test uebersprungen -- niemals faelschlich
+    als PASS gewertet. Das Testschema wird im finally-Pfad entfernt.
+    """
+    pytest.importorskip("psycopg")
+    from secondbrain.release.postgres_live_gate import (
+        _default_connect,
+        _repository_contracts_checks,
+    )
+
+    checks, facts = _repository_contracts_checks(_default_connect, _TEST_DB)
+    by_name = {c["name"]: c for c in checks}
+    for contract in (
+        "repo_crud", "repo_optimistic_version", "repo_idempotent_repeat",
+        "repo_version_conflict", "repo_workspace_isolation",
+        "repo_cross_workspace_prevented", "repo_transaction_rollback",
+        "repo_jsonl_migration", "repo_utc_serialization",
+    ):
+        assert contract in by_name, f"{contract} fehlt im Report"
+        assert by_name[contract]["ok"], f"{contract}: {by_name[contract]['detail']}"
+    assert facts["cleanup_schema_dropped"] is True
+
+
+@pytest.mark.skipif(not _TEST_DB, reason="set TEST_DATABASE_URL for the full live gate run")
+def test_full_gate_live_reaches_pass_or_conditional() -> None:
+    pytest.importorskip("psycopg")
+    report = gate.run_postgres_live_gate(".", env={"TEST_DATABASE_URL": _TEST_DB}, write_report=False)
+    assert report["status"] in {gate.PASS, gate.CONDITIONAL_PASS}, report.get("blockers")
+    assert _TEST_DB not in json.dumps(report)

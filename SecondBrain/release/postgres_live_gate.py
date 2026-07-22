@@ -33,6 +33,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,9 +51,11 @@ SCHEMA_PREFIX = "sb_gate"
 MAX_VECTOR_INDEX_DIMENSIONS = 2000
 PROJECT_DIMENSIONS = 3072
 
-NOT_IMPLEMENTED_PHASES = (
-    "repository_contracts",
-)
+NOT_IMPLEMENTED_PHASES: tuple[str, ...] = ()
+
+# Workspace-Bezeichner fuer die Repository-Contract-Phase.
+_RC_WS_A = "gate-ws-a"
+_RC_WS_B = "gate-ws-b"
 
 # Golden Dataset: klein, deterministisch, ohne Zufall. Ein Recall-Nachweis,
 # dessen Erwartung sich zwischen Laeufen aendert, ist kein Nachweis.
@@ -487,6 +490,233 @@ def _write_rejected_under_context(connection, table: str, *, workspace: str, for
 
 
 # --------------------------------------------------------------------------
+# Phase 3 -- Repository-Vertraege gegen die produktiven Repository-Klassen
+# --------------------------------------------------------------------------
+
+
+def _contract(name: str, fn: Callable[[], tuple[bool, str]]) -> dict[str, Any]:
+    """Fuehrt einen Contract aus und misst die Dauer.
+
+    Ergebnis: PASS/FAIL/SKIPPED, Dauer in ms und -- im Fehlerfall -- nur die
+    Fehlerklasse. Niemals str(exc): dort koennten DSN-Fragmente stehen.
+    """
+    start = time.perf_counter()
+    try:
+        ok, detail = fn()
+        status = "PASS" if ok else "FAIL"
+    except _ContractSkip as skip:
+        ok, status, detail = True, "SKIPPED", str(skip)
+        return {"name": name, "ok": True, "contract_status": status, "detail": detail,
+                "duration_ms": round((time.perf_counter() - start) * 1000, 1), "blocking": False}
+    except Exception as exc:  # noqa: BLE001 - Fehlerklasse redigiert
+        ok, status, detail = False, "FAIL", type(exc).__name__
+    return {"name": name, "ok": ok, "contract_status": status, "detail": detail,
+            "duration_ms": round((time.perf_counter() - start) * 1000, 1), "blocking": True}
+
+
+class _ContractSkip(RuntimeError):
+    """Ein Contract ist gegen die produktive Klasse nicht anwendbar."""
+
+
+def _repository_contracts_checks(
+    connector: Callable[[str], Any],
+    dsn: str,
+    *,
+    contracts_impl: Callable[[Callable[[str], Any], str, str], list[dict[str, Any]]] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Isoliertes Schema anlegen, produktive Repository-Contracts fahren, aufraeumen.
+
+    ``contracts_impl`` ist injizierbar, damit der Kontrollfluss (Anlegen,
+    Aufraeumen im Fehlerfall, Aggregation) ohne Datenbank pruefbar ist. Die
+    Standardimplementierung nutzt ``PostgresTaskRepository`` -- keine parallele
+    Testimplementierung.
+    """
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+
+    schema = f"{SCHEMA_PREFIX}_repo_{uuid4().hex[:10]}"
+    setup = connector(dsn)
+    setup.autocommit = True
+
+    try:
+        with setup.cursor() as cursor:
+            cursor.execute(f"CREATE SCHEMA {schema}")
+        impl = contracts_impl or _default_repository_contracts
+        checks.extend(impl(connector, dsn, schema))
+    except Exception as exc:  # noqa: BLE001
+        checks.append(_check("repository_contracts", False, detail=type(exc).__name__))
+    finally:
+        try:
+            setup.autocommit = True
+            with setup.cursor() as cursor:
+                cursor.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+            facts["cleanup_schema_dropped"] = True
+        except Exception:  # noqa: BLE001
+            facts["cleanup_schema_dropped"] = False
+        finally:
+            try:
+                setup.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+    return checks, facts
+
+
+def _default_repository_contracts(connector: Callable[[str], Any], dsn: str, schema: str) -> list[dict[str, Any]]:  # pragma: no cover - benoetigt PostgreSQL
+    """Fuehrt die Contracts gegen das echte PostgresTaskRepository im Testschema."""
+    from secondbrain.release.approval_postgres_live_gate import PsycopgExecutor
+    from secondbrain.tasks.repository import (
+        PostgresTaskRepository,
+        TaskRepositoryConflict,
+        TaskRepositoryError,
+        migrate_jsonl_to_repository,
+    )
+
+    work = connector(dsn)
+    checks: list[dict[str, Any]] = []
+    try:
+        # search_path committen, damit task_project_records im Testschema landet.
+        work.autocommit = True
+        with work.cursor() as cursor:
+            cursor.execute(f"SET search_path TO {schema}, public")
+        work.autocommit = False
+
+        executor = PsycopgExecutor(work)
+        repo = PostgresTaskRepository(executor, require_workspace=True)
+        repo.ensure_schema()
+
+        def _project(pid: str, ws: str, *, title: str = "P", version: int = 1) -> dict[str, Any]:
+            return {"project_id": pid, "workspace_id": ws, "title": title, "version": version}
+
+        def _task(tid: str, ws: str, *, title: str = "T", version: int = 1) -> dict[str, Any]:
+            return {"task_id": tid, "workspace_id": ws, "title": title, "version": version}
+
+        # 1 -- CRUD
+        def crud() -> tuple[bool, str]:
+            repo.write("projects", [_project("p1", _RC_WS_A)], workspace_id=_RC_WS_A)
+            repo.write("tasks", [_task("t1", _RC_WS_A)], workspace_id=_RC_WS_A)
+            got = {r["project_id"] for r in repo.read("projects", workspace_id=_RC_WS_A)}
+            repo.write("projects", [_project("p1", _RC_WS_A, title="P2", version=2)], workspace_id=_RC_WS_A)
+            updated = repo.read("projects", workspace_id=_RC_WS_A)[0]["title"]
+            repo.write("tasks", [], workspace_id=_RC_WS_A)
+            tasks_after = repo.read("tasks", workspace_id=_RC_WS_A)
+            return (got == {"p1"} and updated == "P2" and tasks_after == []), "crud"
+        checks.append(_contract("repo_crud", crud))
+
+        # 2 -- optimistische Versionspruefung
+        def optimistic() -> tuple[bool, str]:
+            repo.write("projects", [_project("p2", _RC_WS_A)], workspace_id=_RC_WS_A)
+            try:
+                repo.write("projects", [_project("p2", _RC_WS_A, title="stale", version=1)], workspace_id=_RC_WS_A)
+            except TaskRepositoryConflict:
+                return True, "stale write rejected"
+            return False, "stale write was accepted"
+        checks.append(_contract("repo_optimistic_version", optimistic))
+
+        # 3 -- idempotente Wiederholung
+        def idempotent() -> tuple[bool, str]:
+            repo.write("projects", [_project("p3", _RC_WS_A)], workspace_id=_RC_WS_A)
+            repo.write("projects", [_project("p3", _RC_WS_A)], workspace_id=_RC_WS_A)
+            hits = [r for r in repo.read("projects", workspace_id=_RC_WS_A) if r["project_id"] == "p3"]
+            return len(hits) == 1, "identical rewrite is a no-op"
+        checks.append(_contract("repo_idempotent_repeat", idempotent))
+
+        # 4 -- Konflikt bei nicht-fortlaufender Version
+        def version_conflict() -> tuple[bool, str]:
+            repo.write("projects", [_project("p4", _RC_WS_A)], workspace_id=_RC_WS_A)
+            try:
+                repo.write("projects", [_project("p4", _RC_WS_A, title="jump", version=5)], workspace_id=_RC_WS_A)
+            except TaskRepositoryConflict:
+                return True, "non-sequential version rejected"
+            return False, "version jump accepted"
+        checks.append(_contract("repo_version_conflict", version_conflict))
+
+        # 5 -- Workspace-Isolation ueber Repository-Methoden
+        def isolation() -> tuple[bool, str]:
+            repo.write("projects", [_project("pa", _RC_WS_A)], workspace_id=_RC_WS_A)
+            repo.write("projects", [_project("pb", _RC_WS_B)], workspace_id=_RC_WS_B)
+            a = {r["project_id"] for r in repo.read("projects", workspace_id=_RC_WS_A)}
+            b = {r["project_id"] for r in repo.read("projects", workspace_id=_RC_WS_B)}
+            return ("pb" not in a and "pa" not in b and "pa" in a and "pb" in b), "scoped reads isolated"
+        checks.append(_contract("repo_workspace_isolation", isolation))
+
+        # 6 -- Cross-Workspace Read/Update/Delete verhindert
+        def cross_workspace() -> tuple[bool, str]:
+            # Fremde Zeile im Schreibsatz -> abgewiesen.
+            try:
+                repo.write("projects", [_project("pc", _RC_WS_B)], workspace_id=_RC_WS_A)
+                return False, "cross-workspace write accepted"
+            except TaskRepositoryError:
+                pass
+            # Scoped Delete von ws-a laesst pb (ws-b) unberuehrt.
+            repo.write("projects", [], workspace_id=_RC_WS_A)
+            b = {r["project_id"] for r in repo.read("projects", workspace_id=_RC_WS_B)}
+            return "pb" in b, "foreign rows untouched by scoped delete"
+        checks.append(_contract("repo_cross_workspace_prevented", cross_workspace))
+
+        # 7 -- Transaktions-Rollback nach absichtlichem Fehler
+        def rollback() -> tuple[bool, str]:
+            repo.write("projects", [_project("p7", _RC_WS_A)], workspace_id=_RC_WS_A)
+            # Batch: neue Zeile zuerst, dann veraltete Version -> Konflikt mitten drin.
+            batch = [_project("p7new", _RC_WS_A), _project("p7", _RC_WS_A, title="x", version=1)]
+            try:
+                repo.write("projects", batch, workspace_id=_RC_WS_A)
+            except TaskRepositoryConflict:
+                pass
+            present = {r["project_id"] for r in repo.read("projects", workspace_id=_RC_WS_A)}
+            return "p7new" not in present, "partial batch rolled back"
+        checks.append(_contract("repo_transaction_rollback", rollback))
+
+        # 8 -- JSONL-Migration in das isolierte Schema mit Mengen-/Feldvergleich
+        def migration() -> tuple[bool, str]:
+            import tempfile
+
+            with tempfile.TemporaryDirectory() as tmp:
+                tdir = Path(tmp) / "runtime" / "tasks"
+                tdir.mkdir(parents=True)
+                rows = [
+                    {"project_id": "m1", "workspace_id": _RC_WS_A, "title": "M1", "version": 1},
+                    {"project_id": "m2", "workspace_id": _RC_WS_B, "title": "M2", "version": 1},
+                ]
+                (tdir / "projects.jsonl").write_text(
+                    "\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+                report = migrate_jsonl_to_repository(tmp, repo, dry_run=False)
+                migrated_a = repo.read("projects", workspace_id=_RC_WS_A)
+                migrated_b = repo.read("projects", workspace_id=_RC_WS_B)
+                count_ok = report["collections"]["projects"]["valid"] == 2
+                m1 = next((r for r in migrated_a if r["project_id"] == "m1"), None)
+                field_ok = m1 is not None and m1["title"] == "M1"
+                set_ok = any(r["project_id"] == "m2" for r in migrated_b)
+            return (count_ok and field_ok and set_ok), "counts and fields match"
+        checks.append(_contract("repo_jsonl_migration", migration))
+
+        # 9 -- UTC-Zeitstempel und Serialisierungs-Roundtrip
+        def serialization() -> tuple[bool, str]:
+            payload = {
+                "project_id": "p9", "workspace_id": _RC_WS_A, "title": "ünïcode ✓",
+                "version": 1, "created_at": "2026-07-22T00:00:00Z",
+                "nested": {"k": [1, 2, 3], "flag": True},
+            }
+            repo.write("projects", [payload], workspace_id=_RC_WS_A)
+            back = next(r for r in repo.read("projects", workspace_id=_RC_WS_A) if r["project_id"] == "p9")
+            utc_ok = back.get("created_at", "").endswith("Z")
+            roundtrip_ok = back["title"] == payload["title"] and back["nested"] == payload["nested"]
+            return (utc_ok and roundtrip_ok), "utc timestamp and nested payload preserved"
+        checks.append(_contract("repo_utc_serialization", serialization))
+
+        return checks
+    finally:
+        try:
+            work.rollback()
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            work.close()
+        except Exception:  # noqa: BLE001
+            pass
+
+
+# --------------------------------------------------------------------------
 # Phase 5 -- Concurrency
 # --------------------------------------------------------------------------
 
@@ -654,6 +884,7 @@ def run_postgres_live_gate(
     *,
     env: dict[str, str] | None = None,
     connect: Callable[[str], Any] | None = None,
+    repository_contracts_impl: Callable[[Callable[[str], Any], str, str], list[dict[str, Any]]] | None = None,
     write_report: bool = True,
 ) -> dict[str, Any]:
     values = dict(os.environ if env is None else env)
@@ -663,7 +894,10 @@ def run_postgres_live_gate(
         "gate": "postgres_live_gate",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "scope": {
-            "implemented_phases": ["preflight", "isolated_schema", "report"],
+            "implemented_phases": [
+                "preflight", "isolated_schema", "repository_contracts",
+                "workspace_isolation", "concurrency", "vector_search_recall", "report",
+            ],
             "not_implemented_phases": list(NOT_IMPLEMENTED_PHASES),
         },
         "checks": [],
@@ -726,7 +960,14 @@ def run_postgres_live_gate(
             finally:
                 connection.rollback()
                 connection.autocommit = True
-            # Phase 4 und 5 laufen committet und benoetigen eigene Verbindungen.
+            # Phase 3, 4 und 5 laufen committet und benoetigen eigene Verbindungen.
+            repo_checks, repo_facts = _repository_contracts_checks(
+                connector, dsn, contracts_impl=repository_contracts_impl)
+            report["checks"].extend(repo_checks)
+            report["facts"]["repository_contracts"] = repo_facts
+            if repo_facts.get("cleanup_schema_dropped") is False:
+                report["cleanup"]["repository_contracts_schema_dropped"] = False
+
             iso_checks, iso_facts = _workspace_isolation_checks(connector, dsn)
             report["checks"].extend(iso_checks)
             report["facts"]["workspace_isolation"] = iso_facts
