@@ -288,7 +288,6 @@
       "review-approval-release-gate"
     ],
     "missing_gates": [
-      "live-certification",
       "disaster-recovery-gate",
       "windows-installer-gate",
       "support-bundle",
@@ -399,6 +398,17 @@
       "decision": "TLS am Server aktivieren, bevor das Gate zertifiziert wird"
     }
   },
+  "live_certification_status": {
+    "command": "python launcher.py live-certification --scope <area>",
+    "module": "SecondBrain/release/live_certification.py",
+    "config_example": "config/live-certification.example.toml",
+    "runbook": "docs/certification/live_certification_runbook.md",
+    "report": "runtime/reports/live_certification_summary.json",
+    "orchestrates": ["postgres", "approval", "provider", "gmail", "outlook", "google-calendar", "microsoft-calendar"],
+    "control_flow_test": "tests/test_live_certification.py",
+    "note": "Aggregiert vorhandene Gates. Optionaler nicht konfigurierter Bereich = SKIPPED, kein Blocker. PASS nur ohne uebersprungene Bereiche. Erbt CONDITIONAL_PASS des PostgreSQL-Gates.",
+    "live_run_evidence": null
+  },
   "job_runtime_status": {
     "inventory_path": "docs/jobs/job_runtime_migration_inventory.md",
     "generated_at": "2026-07-21",
@@ -472,10 +482,10 @@
       "backup-gate"
     ],
     "partially_implemented": [
-      "postgres-live-gate"
+      "postgres-live-gate",
+      "live-certification"
     ],
     "missing": [
-      "live-certification",
       "disaster-recovery-gate",
       "windows-installer-gate",
       "jarvis-1.0-gate"
