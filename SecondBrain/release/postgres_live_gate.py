@@ -6,16 +6,16 @@ Phase 1  Preflight: Treiber, Verbindung, Version, SSL, Rechte, Zeitzone,
          Migrationsstand, pgvector-Extension und Indexfaehigkeit.
 Phase 2  Isolierte Testumgebung: eigenes Schema je Lauf, Aufraeumen im
          ``finally``-Block, niemals Zugriff auf produktive Tabellen.
+Phase 4  Workspace-Isolation per Row Level Security: Lese-Isolation,
+         fail-closed ohne Kontext, WITH-CHECK gegen Cross-Workspace-Schreiben,
+         kein Update ueber die Grenze.
 Phase 5  Concurrency: ``FOR UPDATE SKIP LOCKED`` ohne Doppelvergabe,
          optimistische Versionierung, doppelter Idempotency Key.
 Phase 6  Vektorsuche: Golden Dataset, Trefferqualitaet, Mindest-Recall,
          nachgewiesene Indexnutzung, Dimension Guard, Reindex.
 Phase 8  Redigierter Report.
 
-Offen bleiben Phase 3 (Repository-Vertraege) und Phase 4
-(Workspace-Isolation). Phase 4 ist gegen die Datenbank nicht sinnvoll
-pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist -- siehe
-``tests/test_workspace_isolation_contract.py``. Der Report weist beide als
+Offen bleibt allein Phase 3 (Repository-Vertraege). Der Report weist sie als
 ``not_implemented`` aus, damit ein Teilumfang nicht als vollstaendige
 Zertifizierung missverstanden wird.
 
@@ -52,12 +52,6 @@ PROJECT_DIMENSIONS = 3072
 
 NOT_IMPLEMENTED_PHASES = (
     "repository_contracts",
-    # Workspace-Isolation ist im Projekt rein anwendungsseitig umgesetzt; es
-    # gibt keine Row Level Security. Eine Pruefung gegen die Datenbank wuerde
-    # daher immer bestehen und nichts aussagen. Siehe
-    # tests/test_workspace_isolation_contract.py und den Masterplan-Abschnitt
-    # workspace_isolation.
-    "workspace_isolation",
 )
 
 # Golden Dataset: klein, deterministisch, ohne Zufall. Ein Recall-Nachweis,
@@ -366,6 +360,133 @@ def _vector_search_checks(connection, schema: str) -> tuple[list[dict[str, Any]]
 
 
 # --------------------------------------------------------------------------
+# Phase 4 -- Workspace-Isolation per Row Level Security
+# --------------------------------------------------------------------------
+
+
+def _workspace_isolation_checks(connector: Callable[[str], Any], dsn: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Weist nach, dass RLS Workspaces auch gegen direkten SQL-Zugriff trennt.
+
+    Committet, mit eigener Verbindung und eigenem Schema. Genau das ist die
+    Anforderung aus Prompt 68 Phase 4: ein Raw-SQL-Bypass darf Workspaces nicht
+    ueberschreiten.
+    """
+    from secondbrain.storage.workspace_context import (
+        rls_setup_statements,
+        set_workspace_sql,
+    )
+
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+
+    schema = f"{SCHEMA_PREFIX}_rls_{uuid4().hex[:10]}"
+    table = f"{schema}.records"
+    setup = connector(dsn)
+    setup.autocommit = True
+
+    try:
+        with setup.cursor() as cursor:
+            cursor.execute(f"CREATE SCHEMA {schema}")
+            cursor.execute(
+                f"CREATE TABLE {table} (id int primary key, workspace_id text NOT NULL, data text)"
+            )
+            for statement in rls_setup_statements(table):
+                cursor.execute(statement)
+
+        # -- Schreiben unter ws-a, dann ws-b -------------------------------
+        with setup.cursor() as cursor:
+            cursor.execute("BEGIN")
+            cursor.execute(set_workspace_sql("ws-a"))
+            cursor.execute(f"INSERT INTO {table} (id, workspace_id, data) VALUES (1, 'ws-a', 'a')")
+            cursor.execute("COMMIT")
+        with setup.cursor() as cursor:
+            cursor.execute("BEGIN")
+            cursor.execute(set_workspace_sql("ws-b"))
+            cursor.execute(f"INSERT INTO {table} (id, workspace_id, data) VALUES (2, 'ws-b', 'b')")
+            cursor.execute("COMMIT")
+
+        # -- ws-a sieht nur die eigene Zeile -------------------------------
+        with setup.cursor() as cursor:
+            cursor.execute("BEGIN")
+            cursor.execute(set_workspace_sql("ws-a"))
+            cursor.execute(f"SELECT id FROM {table}")
+            visible_a = sorted(row[0] for row in cursor.fetchall())
+            cursor.execute("COMMIT")
+        facts["visible_to_ws_a"] = visible_a
+        checks.append(
+            _check("rls_read_isolation", visible_a == [1],
+                   detail=f"ws-a sees {visible_a}, expected [1]")
+        )
+
+        # -- Ohne gesetzten Workspace: nichts sichtbar (fail-closed) -------
+        with setup.cursor() as cursor:
+            cursor.execute("BEGIN")
+            cursor.execute(f"SELECT count(*) FROM {table}")
+            without_context = cursor.fetchone()[0]
+            cursor.execute("COMMIT")
+        checks.append(
+            _check("rls_fail_closed_without_context", without_context == 0,
+                   detail=f"{without_context} rows visible without workspace context")
+        )
+
+        # -- Cross-Workspace-Schreibversuch muss scheitern -----------------
+        blocked = _write_rejected_under_context(setup, table, workspace="ws-b", foreign_id=3, foreign_ws="ws-a")
+        checks.append(
+            _check("rls_write_check_blocks_cross_workspace", blocked,
+                   detail="WITH CHECK did not reject a foreign-workspace insert" if not blocked else "rejected")
+        )
+
+        # -- ws-a kann die Zeile von ws-b nicht aktualisieren --------------
+        with setup.cursor() as cursor:
+            cursor.execute("BEGIN")
+            cursor.execute(set_workspace_sql("ws-a"))
+            cursor.execute(f"UPDATE {table} SET data = 'hijack' WHERE id = 2")
+            affected = cursor.rowcount
+            cursor.execute("COMMIT")
+        checks.append(
+            _check("rls_update_cannot_reach_other_workspace", affected == 0,
+                   detail=f"update affected {affected} foreign rows, expected 0")
+        )
+
+    except Exception as exc:  # noqa: BLE001
+        checks.append(_check("workspace_isolation", False, detail=type(exc).__name__))
+    finally:
+        try:
+            setup.autocommit = True
+            with setup.cursor() as cursor:
+                cursor.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+            facts["cleanup_schema_dropped"] = True
+        except Exception:  # noqa: BLE001
+            facts["cleanup_schema_dropped"] = False
+        finally:
+            try:
+                setup.close()
+            except Exception:  # noqa: BLE001
+                pass
+
+    return checks, facts
+
+
+def _write_rejected_under_context(connection, table: str, *, workspace: str, foreign_id: int, foreign_ws: str) -> bool:
+    """True, wenn ein Insert mit fremdem workspace_id von WITH CHECK abgewiesen wird."""
+    from secondbrain.storage.workspace_context import set_workspace_sql
+
+    with connection.cursor() as cursor:
+        cursor.execute("BEGIN")
+        cursor.execute(set_workspace_sql(workspace))
+        try:
+            cursor.execute(
+                f"INSERT INTO {table} (id, workspace_id, data) VALUES (%s, %s, 'x')",
+                (foreign_id, foreign_ws),
+            )
+            cursor.execute("COMMIT")
+            return False
+        except Exception:
+            cursor.execute("ROLLBACK")
+            return True
+
+
+# --------------------------------------------------------------------------
 # Phase 5 -- Concurrency
 # --------------------------------------------------------------------------
 
@@ -605,7 +726,13 @@ def run_postgres_live_gate(
             finally:
                 connection.rollback()
                 connection.autocommit = True
-            # Phase 5 laeuft committet und benoetigt eigene Verbindungen.
+            # Phase 4 und 5 laufen committet und benoetigen eigene Verbindungen.
+            iso_checks, iso_facts = _workspace_isolation_checks(connector, dsn)
+            report["checks"].extend(iso_checks)
+            report["facts"]["workspace_isolation"] = iso_facts
+            if iso_facts.get("cleanup_schema_dropped") is False:
+                report["cleanup"]["workspace_isolation_schema_dropped"] = False
+
             conc_checks, conc_facts = _concurrency_checks(connector, dsn)
             report["checks"].extend(conc_checks)
             report["facts"].update(conc_facts)

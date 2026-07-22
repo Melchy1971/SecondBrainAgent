@@ -175,8 +175,7 @@
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
     "test_database_connection_without_ssl",
-    "workspace_isolation_without_database_enforcement",
-    "task_repository_isolation_is_application_level_only",
+    "task_service_not_yet_threading_workspace_id",
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
@@ -194,6 +193,18 @@
     "duplicate_voice_de_modules_unresolved"
   ],
   "removed_blockers": [
+    {
+      "blocker": "workspace_isolation_without_database_enforcement",
+      "reason": "Row Level Security auf task_project_records eingefuehrt: ENABLE + FORCE + Policy mit fail-closed current_setting. Im Live-Gate Phase 4 gegen echtes Postgres pruefbar.",
+      "evidence_path": "SecondBrain/storage/workspace_context.py",
+      "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "task_repository_isolation_is_application_level_only",
+      "reason": "PostgresTaskRepository.read/write/append binden an workspace_id, setzen SET LOCAL und lehnen Cross-Workspace-Schreibzugriffe ab. RLS ergaenzt den Datenbank-Backstop.",
+      "evidence_path": "SecondBrain/tasks/repository.py",
+      "removed_at": "2026-07-21"
+    },
     {
       "blocker": "pyside6_runtime_dependency_not_declared",
       "reason": "PySide6 ist im desktop- und all-Extra deklariert, in requirements-desktop.txt gespiegelt und im Windows-Build gepinnt. Regressionstest tests/test_desktop_runtime_dependencies.py verhindert erneutes Auseinanderlaufen.",
@@ -331,15 +342,20 @@
       "implemented_phases": [
         "preflight",
         "isolated_schema",
+        "workspace_isolation",
         "concurrency",
         "vector_search_recall",
         "report"
       ],
       "not_implemented_phases": [
-        "repository_contracts",
-        "workspace_isolation"
+        "repository_contracts"
       ],
-      "workspace_isolation_note": "Gegen die Datenbank nicht sinnvoll pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist. Stattdessen als statischer Vertrag in tests/test_workspace_isolation_contract.py gesichert.",
+      "workspace_isolation_checks": [
+        "RLS trennt Lesezugriff zwischen Workspaces",
+        "fail-closed: ohne gesetzten Kontext keine Zeilen sichtbar",
+        "WITH CHECK weist Cross-Workspace-Insert ab",
+        "kein Update ueber die Workspace-Grenze"
+      ],
       "concurrency_checks": [
         "FOR UPDATE SKIP LOCKED vergibt keine Zeile doppelt",
         "beide Worker erhalten Arbeit",
@@ -360,15 +376,21 @@
     },
     "workspace_isolation": {
       "assessed_at": "2026-07-21",
-      "enforcement_level": "application_only",
-      "row_level_security_present": false,
+      "hardened_at": "2026-07-21",
+      "spec": "docs/specs/workspace_isolation_spec.md",
+      "enforcement_level": "row_level_security_plus_bound_methods",
+      "row_level_security_present": true,
+      "primitives": "SecondBrain/storage/workspace_context.py",
+      "repository_binding": "SecondBrain/tasks/repository.py",
+      "live_gate_phase": "workspace_isolation",
+      "require_flag": "TASK_REPOSITORY_REQUIRE_WORKSPACE",
+      "backstops": {
+        "application": "read/write/append binden an workspace_id; write lehnt fremde Zeilen ab (SQLite und Postgres)",
+        "database": "RLS ENABLE + FORCE + Policy mit fail-closed current_setting (nur Postgres)"
+      },
+      "remaining_gap": "TaskService reicht workspace_id noch nicht an _read/_write/_append durch. Bis dahin bleibt der ungebundene Pfad aktiv und require_flag muss in Produktion aus bleiben. Umstellung ist test-abhaengig (Python 3.11) und als eigener Schritt geplant.",
       "contract_test": "tests/test_workspace_isolation_contract.py",
-      "structurally_safe": ["SecondBrain/jobs/repository.py"],
-      "convention_dependent": ["SecondBrain/tasks/repository.py"],
-      "detail": "PostgresTaskRepository.read(collection) hat keinen workspace_id-Parameter und liefert alle Workspaces; TaskService filtert erst danach in Python. write(collection, rows) loescht jeden Datensatz der Collection, der nicht in rows enthalten ist - ebenfalls ohne Workspace-Bezug.",
-      "current_risk": "kein aktiver Datenverlust: alle bekannten Aufrufer schreiben die vollstaendige ungefilterte Zeilenliste zurueck. Der Schutz haengt an dieser Konvention, die bis jetzt nirgends erzwungen wurde.",
-      "residual_risk": "Uebergibt ein Aufrufer je eine gefilterte Teilmenge, loescht write die Datensaetze aller anderen Workspaces. Ohne RLS gibt es keinen Backstop auf Datenbankebene.",
-      "prompt68_phase4_gap": "Die Anforderung 'Raw SQL Bypass muss blockiert werden' ist mit rein anwendungsseitiger Filterung nicht erfuellbar."
+      "binding_test": "tests/test_task_repository_workspace.py"
     },
     "test_server_tls": {
       "state": "not_supported_by_server",

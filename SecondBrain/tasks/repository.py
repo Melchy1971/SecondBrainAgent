@@ -19,9 +19,9 @@ class TaskRepositoryConflict(TaskRepositoryError):
 
 class TaskRepository(Protocol):
     backend: str
-    def read(self, collection: str) -> list[dict[str, Any]]: ...
-    def write(self, collection: str, rows: Iterable[dict[str, Any]]) -> None: ...
-    def append(self, collection: str, row: dict[str, Any]) -> None: ...
+    def read(self, collection: str, *, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
+    def write(self, collection: str, rows: Iterable[dict[str, Any]], *, workspace_id: str | None = None) -> None: ...
+    def append(self, collection: str, row: dict[str, Any], *, workspace_id: str | None = None) -> None: ...
 
 
 _ID_FIELDS = {
@@ -37,39 +37,89 @@ _SCHEMA = (
     "CREATE INDEX IF NOT EXISTS idx_task_records_workspace ON task_project_records(workspace_id, collection)",
 )
 
+_TABLE = "task_project_records"
+
 
 class PostgresTaskRepository:
     backend = "postgres"
 
-    def __init__(self, executor: Any) -> None:
+    def __init__(self, executor: Any, *, require_workspace: bool | None = None,
+                 env: Mapping[str, str] | None = None) -> None:
         self.executor = executor
         self.dialect = getattr(executor, "dialect", "postgresql")
+        if require_workspace is None:
+            values = env if env is not None else os.environ
+            require_workspace = str(values.get("TASK_REPOSITORY_REQUIRE_WORKSPACE", "")).lower() in {"1", "true", "yes"}
+        self.require_workspace = bool(require_workspace)
+
+    def _supports_rls(self) -> bool:
+        return self.dialect not in {"sqlite", ""}
+
+    def _require_check(self, workspace_id: str | None) -> None:
+        if workspace_id is None and self.require_workspace:
+            raise TaskRepositoryError("workspace_id_required")
+
+    def _apply_workspace(self, tx: Any, workspace_id: str | None) -> None:
+        """Setzt die RLS-Sitzungsvariable, sofern Postgres und Workspace gegeben."""
+        if workspace_id is None or not self._supports_rls():
+            return
+        from secondbrain.storage.workspace_context import set_workspace_sql
+        tx.execute(set_workspace_sql(workspace_id))
 
     def ensure_schema(self) -> None:
         with self._transaction() as tx:
             for statement in _SCHEMA:
                 tx.execute(statement)
+            if self._supports_rls():
+                from secondbrain.storage.workspace_context import rls_setup_statements
+                for statement in rls_setup_statements(_TABLE):
+                    tx.execute(statement)
 
-    def read(self, collection: str) -> list[dict[str, Any]]:
+    def read(self, collection: str, *, workspace_id: str | None = None) -> list[dict[str, Any]]:
         self._validate_collection(collection)
-        rows = self.executor.execute(
-            "SELECT data FROM task_project_records WHERE collection = :collection ORDER BY record_id",
-            {"collection": collection},
-        )
+        self._require_check(workspace_id)
+        params: dict[str, Any] = {"collection": collection}
+        clause = ""
+        if workspace_id is not None:
+            from secondbrain.storage.workspace_context import validate_workspace_id
+            params["workspace_id"] = validate_workspace_id(workspace_id)
+            clause = " AND workspace_id = :workspace_id"
+        # In einer Transaktion, damit SET LOCAL fuer denselben SELECT gilt.
+        with self._transaction() as tx:
+            self._apply_workspace(tx, workspace_id)
+            rows = tx.execute(
+                f"SELECT data FROM {_TABLE} WHERE collection = :collection{clause} ORDER BY record_id",
+                params,
+            )
         return [json.loads(row[0]) for row in rows]
 
-    def write(self, collection: str, rows: Iterable[dict[str, Any]]) -> None:
+    def write(self, collection: str, rows: Iterable[dict[str, Any]], *, workspace_id: str | None = None) -> None:
         self._validate_collection(collection)
+        self._require_check(workspace_id)
         desired = [dict(row) for row in rows]
         id_field = _ID_FIELDS[collection]
         for row in desired:
             if not row.get(id_field) or not row.get("workspace_id"):
                 raise TaskRepositoryError(f"invalid_{collection}_record")
+        base_params: dict[str, Any] = {"collection": collection}
+        scope = ""
+        if workspace_id is not None:
+            from secondbrain.storage.workspace_context import validate_workspace_id
+            workspace_id = validate_workspace_id(workspace_id)
+            # Ein gebundener Schreibvorgang darf nur Zeilen des eigenen Workspaces
+            # enthalten. Sonst wuerde RLS WITH CHECK sie ablehnen -- wir fangen es
+            # frueher und mit klarer Meldung ab.
+            foreign = {str(r["workspace_id"]) for r in desired if str(r["workspace_id"]) != workspace_id}
+            if foreign:
+                raise TaskRepositoryError("write_crosses_workspace")
+            base_params["workspace_id"] = workspace_id
+            scope = " AND workspace_id = :workspace_id"
         with self._transaction() as tx:
+            self._apply_workspace(tx, workspace_id)
             lock = " FOR UPDATE" if self.dialect not in {"sqlite", ""} else ""
             current_rows = tx.execute(
-                f"SELECT record_id, version, data FROM task_project_records WHERE collection = :collection{lock}",
-                {"collection": collection},
+                f"SELECT record_id, version, data FROM {_TABLE} WHERE collection = :collection{scope}{lock}",
+                base_params,
             )
             current = {str(record_id): (int(version), str(data)) for record_id, version, data in current_rows}
             desired_ids = {str(row[id_field]) for row in desired}
@@ -97,8 +147,9 @@ class PostgresTaskRepository:
                         "INSERT INTO task_project_records(collection,record_id,workspace_id,version,data) "
                         "VALUES(:collection,:record_id,:workspace_id,:version,:data)", params)
             for record_id in set(current) - desired_ids:
-                tx.execute("DELETE FROM task_project_records WHERE collection=:collection AND record_id=:record_id",
-                           {"collection": collection, "record_id": record_id})
+                tx.execute(
+                    f"DELETE FROM {_TABLE} WHERE collection=:collection AND record_id=:record_id{scope}",
+                    {**base_params, "record_id": record_id})
 
     @contextmanager
     def _transaction(self):
@@ -116,10 +167,10 @@ class PostgresTaskRepository:
         with database.session() as session:
             yield SessionExecutor(session)
 
-    def append(self, collection: str, row: dict[str, Any]) -> None:
-        existing = self.read(collection)
+    def append(self, collection: str, row: dict[str, Any], *, workspace_id: str | None = None) -> None:
+        existing = self.read(collection, workspace_id=workspace_id)
         existing.append(dict(row))
-        self.write(collection, existing)
+        self.write(collection, existing, workspace_id=workspace_id)
 
     @staticmethod
     def _validate_collection(collection: str) -> None:
@@ -145,7 +196,7 @@ def create_task_repository(*, env: Mapping[str, str] | None = None, executor: An
         from secondbrain.storage.database_config import DatabaseConfig
         from secondbrain.storage.db_executor import SqlAlchemyExecutor
         executor = SqlAlchemyExecutor(Database(DatabaseConfig(url=database_url)))
-    repository = PostgresTaskRepository(executor)
+    repository = PostgresTaskRepository(executor, env=values)
     repository.ensure_schema()
     return repository
 
