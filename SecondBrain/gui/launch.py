@@ -199,8 +199,12 @@ def start_native_gui(project_root: str | Path | None = None, *, dry_run: bool = 
     if dry_run or not payload["ok"]:
         return payload
     try:
-        from secondbrain.native.ai_workspace.gui import run_gui
-        code = run_gui(root)
+        # Kanonische Desktop-Huelle: visuell an das Web-HUD angelehnt und mit
+        # derselben Action-Registry sowie deutscher Voice-Pipeline verbunden.
+        # Die generische AIWorkspace-GUI bleibt als Modul verfuegbar, ist aber
+        # nicht der Jarvis-/Desktop-Startpunkt.
+        from secondbrain.desktop_native.app import main as run_native_desktop
+        code = run_native_desktop(root)
         payload.update({"status": "closed", "exit_code": code})
         return payload
     except Exception as exc:

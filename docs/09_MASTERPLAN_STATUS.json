@@ -285,7 +285,7 @@
     ]
   },
   "release_readiness": {
-    "state": "IMPLEMENTATION_AHEAD_OF_CERTIFICATION",
+    "state": "BLOCKED",
     "basis": "Der Codebestand auf main reicht bis Feature-Stufe v31.88 und umfasst PostgreSQL-Repositories, Job-Runtime, Qt-Desktop, Voice-Runtime, Secret Vault und Windows-Installerbau. Fuer keinen dieser Bereiche liegt ein produktionsnaher Live-Nachweis vor. Der begrenzende Faktor fuer Jarvis 1.0 ist Zertifizierung, nicht Implementierung.",
     "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Naechster Schritt ist das PostgreSQL-/pgvector-Live-Gate; es blockiert Approval-, Connector- und Disaster-Recovery-Nachweis.",
     "required_gates": [
@@ -298,9 +298,9 @@
       "review-approval-release-gate"
     ],
     "missing_gates": [
-      "windows-installer-gate",
-      "jarvis-1.0-gate"
-    ]
+      "windows-installer-gate"
+    ],
+    "jarvis_1_0_gate": "BLOCKED"
   },
   "support_bundle_status": {
     "command": "python launcher.py support-bundle",
@@ -463,7 +463,13 @@
       "preferred_backend": "OS-Keyring (Windows Credential Manager / macOS Keychain / Secret Service)",
       "ci_backend": "Env-Variable nur nach explizitem SECRET_KEY_BACKEND=env, in Produktion nur mit SECRET_KEY_ALLOW_ENV_IN_PROD=1",
       "production_fail_closed": "kein sicheres Keyring -> KeyProviderUnavailable, Secret-Funktionen starten nicht",
-      "lifecycle": ["create", "load", "rotate", "revoke", "health"],
+      "lifecycle": [
+        "create",
+        "load",
+        "rotate",
+        "revoke",
+        "health"
+      ],
       "rotation": "gibt (old,new) zurueck; bestehende AES-GCM-Daten bleiben mit dem alten Key lesbar bis zur Umschluesselung",
       "redaction": "Health/Fehler enthalten weder Key noch Klartext-Alias, Benutzer oder Pfad",
       "health_surface": "SecondBrain/secret_manager/health.py::key_backend_health",
@@ -589,12 +595,12 @@
       "backup-gate",
       "postgres-live-gate",
       "live-certification",
-      "disaster-recovery-gate"
+      "disaster-recovery-gate",
+      "jarvis-1.0-gate"
     ],
     "partially_implemented": [],
     "missing": [
-      "windows-installer-gate",
-      "jarvis-1.0-gate"
+      "windows-installer-gate"
     ]
   },
   "build": 319400,
@@ -649,5 +655,11 @@
   "inventoried_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
   "verified_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
   "live_evidence": null,
-  "release_state": "verified_integration"
+  "release_state": "verified_integration",
+  "jarvis_1_0_certification": {
+    "status": "BLOCKED",
+    "report": "runtime/reports/jarvis_1_0_gate.json",
+    "commit_sha": "a42b7fcd0b756e372a99d991ca082cb2372d90a5",
+    "evaluated_at": "2026-07-23T09:02:07.867980+00:00"
+  }
 }

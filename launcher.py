@@ -265,6 +265,51 @@ def _disaster_recovery_gate_main(argv: list[str]) -> int:
     return 2 if report["status"] == BLOCKED else 0
 
 
+def _windows_installer_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Reproducible Windows installer certification gate",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.windows_installer_gate import (
+        PASS,
+        run_windows_installer_gate,
+    )
+    report = run_windows_installer_gate(
+        args.project_root_option or args.project_root,
+        write_report=not args.no_write_report,
+    )
+    out(report)
+    return 0 if report["status"] == PASS else 2
+
+
+def _jarvis_1_0_gate_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Strict Jarvis 1.0 certification evidence gate",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--max-age-hours", type=int, default=24)
+    parser.add_argument("--no-write-report", action="store_true")
+    parser.add_argument("--no-update-masterplan", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+    from secondbrain.release.jarvis_1_0_gate import PASS, run_jarvis_1_0_gate
+    report = run_jarvis_1_0_gate(
+        args.project_root_option or args.project_root,
+        max_age_hours=args.max_age_hours,
+        write_report=not args.no_write_report,
+        update_masterplan=not args.no_update_masterplan,
+    )
+    out(report)
+    return 0 if report["status"] == PASS else 2
+
+
 def _live_certification_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -1045,6 +1090,10 @@ def main(argv: list[str] | None = None) -> int:
         return _live_certification_main(raw)
     if cmd == "disaster-recovery-gate":
         return _disaster_recovery_gate_main(raw)
+    if cmd == "windows-installer-gate":
+        return _windows_installer_gate_main(raw)
+    if cmd == "jarvis-1.0-gate":
+        return _jarvis_1_0_gate_main(raw)
     if cmd == "support-bundle":
         return _support_bundle_main(raw)
     if cmd == "security-gate":
