@@ -1,6 +1,6 @@
 ![Jarvis](jarvis.jpg)
 
-# SecondBrain-Agent v30.77.0
+# SecondBrain-Agent v31.94.0
 
 ## Version (Single Source of Truth)
 
@@ -9,7 +9,7 @@ Alles andere leitet sich daraus ab:
 
 - `secondbrain/version.py` liest pyproject (Fallback: installierte Paket-Metadaten) und liefert
   `get_version()`, `get_build_number()` und `version_info()`. Die Buildnummer wird deterministisch
-  aus der Version berechnet (30.77.0 -> Build 307700).
+  aus der Version berechnet (31.94.0 -> Build 319400).
 - Paket (`secondbrain.__version__`), GUI (`secondbrain.gui.version`), CLI (`secondbrain.cli.version`)
   und Launcher (`python launcher.py version`) beziehen die Version von dort.
 - `python launcher.py version-sync` schreibt die abgeleiteten Anker (README-Titel,
@@ -254,7 +254,7 @@ docs/releases/
 docs/09_MASTERPLAN_STATUS.json
 ```
 
-Aktueller dokumentierter Stand: v30.77.0 UI Path Override and Import Consolidation (Quelle: `RELEASE_NOTES.md`; strukturierter Status in `docs/09_MASTERPLAN_STATUS.json`).
+Aktueller dokumentierter Stand: v31.94.0 UI Path Override and Import Consolidation (Quelle: `RELEASE_NOTES.md`; strukturierter Status in `docs/09_MASTERPLAN_STATUS.json`).
 
 Bekannte lokale Warnungen:
 

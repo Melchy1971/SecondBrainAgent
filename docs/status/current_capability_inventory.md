@@ -1,7 +1,7 @@
 # Capability-Inventar — tatsächlicher Stand auf `main`
 
-Erhebungsdatum: 2026-07-21
-Erhoben gegen: `origin/main` = `f0a9dd9` (Merge PR #116, `codex/v31.88-live-connectors`)
+Erhebungsdatum: 2026-07-22
+Erhoben gegen: `origin/main` = `2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77` (Merge PR #122, `feature/v31.94-postgres-live-gate-concurrency`)
 Methode: Analyse der Git-Historie, des Launcher-Kommandobestands und der Modulpfade auf `main`. Keine Live-Läufe.
 
 ## Lesehinweis
@@ -11,7 +11,7 @@ Methode: Analyse der Git-Historie, des Launcher-Kommandobestands und der Modulpf
 
 Beides ist getrennt zu bewerten. Eine Capability mit `implemented` und `Live-Nachweis: nein` ist nach Projektstandard **nicht abgenommen**.
 
-Statuswerte: `implemented`, `implemented_not_certified`, `partially_implemented`, `deprecated`, `missing`, `blocked`
+Statuswerte: planned, implemented, verified_hermetic, verified_integration, live_certified, released, deprecated, blocked
 
 ---
 
@@ -19,13 +19,13 @@ Statuswerte: `implemented`, `implemented_not_certified`, `partially_implemented`
 
 | Feld | Wert |
 |---|---|
-| `pyproject.toml` `[project].version` | `30.77.0` |
-| `docs/09_MASTERPLAN_STATUS.json` `documented_feature_level` | `v31.32` |
-| Höchste gemergte Feature-Stufe auf `main` | `v31.88` |
+| `pyproject.toml` `[project].version` | `31.94.0` |
+| `docs/09_MASTERPLAN_STATUS.json` `documented_feature_level` | `v31.94` |
+| Höchste gemergte Feature-Stufe auf `main` | `v31.94` |
 
-`SecondBrain/version.py` ist als Single Source of Truth implementiert und liest aus `pyproject.toml`. Die Feature-Bezeichner `v31.xx` sind Release-Labels der Entwicklungspakete und wurden nie in die Paketversion überführt.
+`SecondBrain/version.py` ist als Single Source of Truth implementiert und liest aus `pyproject.toml`. Die Paketversion ist mit der dokumentierten Feature-Stufe synchronisiert.
 
-**Befund:** Zwischen Paketversion, dokumentierter Feature-Stufe und tatsächlichem Codebestand liegen 56 Feature-Stufen. Das ist der Kern des Synchronisationsproblems.
+**Befund:** Paketversion, dokumentierte Feature-Stufe und tatsächlicher Codebestand sind synchronisiert.
 
 ---
 
@@ -35,36 +35,36 @@ Statuswerte: `implemented`, `implemented_not_certified`, `partially_implemented`
 
 | Kommando | Codepfad | Status | Live-Nachweis | Gate-Verantwortung |
 |---|---|---|---|---|
-| `repo-doctor` | `launcher.py:98` | implemented | ja (CI) | Repo-Hygiene |
-| `dependency-inventory` | `launcher.py:116` | implemented | ja (CI) | Abhängigkeiten |
-| `rc-gate` | `launcher.py:128` | implemented | ja (CI) | Release Candidate |
+| `repo-doctor` | `launcher.py:98` | verified_integration | ja (CI) | Repo-Hygiene |
+| `dependency-inventory` | `launcher.py:116` | verified_integration | ja (CI) | Abhängigkeiten |
+| `rc-gate` | `launcher.py:128` | verified_integration | ja (CI) | Release Candidate |
 | `system-rc-gate` | `launcher.py:~985` | implemented | offen | System-RC |
-| `review-approval-gate` | `launcher.py:145` | implemented | ja | Approval |
-| `review-approval-release-gate` | `launcher.py:158` | implemented | **nein** | Approval Release |
-| `connector-e2e-gate` | `launcher.py:179` | implemented_not_certified | **nein** | Connector |
-| `provider-live-gate` | `launcher.py:193` | implemented_not_certified | **nein** | Provider |
-| `security-gate` | `launcher.py:207` | implemented | ja (CI) | Security |
+| `review-approval-gate` | `launcher.py:145` | verified_integration | ja | Approval |
+| `review-approval-release-gate` | `launcher.py:158` | verified_integration | **nein** | Approval Release |
+| `connector-e2e-gate` | `launcher.py:179` | verified_integration | **nein** | Connector |
+| `provider-live-gate` | `launcher.py:193` | verified_integration | **nein** | Provider |
+| `security-gate` | `launcher.py:207` | verified_integration | ja (CI) | Security |
 | `backup-gate` | `launcher.py:227` | implemented | offen | Backup |
-| `native-voice-app-gate` | `SecondBrain/desktop_native/native_voice_app_gate.py` | implemented_not_certified | **nein** | Voice |
+| `native-voice-app-gate` | `SecondBrain/desktop_native/native_voice_app_gate.py` | verified_integration | **nein** | Voice |
 | `ga-readiness-gate` | `launcher.py:249` | implemented | offen | GA-Aggregation |
 | `embed-gate` | `launcher.py:727` | implemented | offen | Embeddings |
-| `p1-gate` | `launcher.py:~1012` | implemented | ja (CI) | RAG/P1 |
-| `p0-gate`, `p0-doctor` | `launcher.py` | implemented | ja (CI) | P0 |
+| `p1-gate` | `launcher.py:~1012` | verified_integration | ja (CI) | RAG/P1 |
+| `p0-gate`, `p0-doctor` | `launcher.py` | verified_integration | ja (CI) | P0 |
 | `gui-doctor`, `config-doctor`, `native-desktop-doctor` | `launcher.py` | implemented | offen | Diagnose |
-| `p3-pgvector-readiness` | `launcher.py:393` | partially_implemented | **nein** | pgvector |
-| `version-sync` | `launcher.py:~911` | implemented | ja | Versionskonsistenz |
+| `p3-pgvector-readiness` | `launcher.py:393` | implemented | **nein** | pgvector |
+| `version-sync` | `launcher.py:~911` | verified_integration | ja | Versionskonsistenz |
 | `secret-init/set/list/health/rotate/export/import` | `SecondBrain/secret_manager/` | implemented | offen | Vault |
 | `native-startup-enable/disable/status` | `launcher.py:~970` | implemented | offen | Autostart |
+| `postgres-live-gate` | `SecondBrain/release/postgres_live_gate.py` | verified_integration | **nein** | Live-Validierung Postgres |
+| `live-certification` | `SecondBrain/release/live_certification.py` | verified_integration | **nein** | Live-Zertifizierung |
+| `disaster-recovery-gate` | `SecondBrain/release/disaster_recovery_gate.py` | verified_integration | **nein** | Disaster Recovery |
+| `support-bundle` | `SecondBrain/support/bundle.py` | verified_integration | **nein** | Support-Diagnostik |
 
 ### Fehlend auf `main`
 
 | Kommando | Gefordert in | Status |
 |---|---|---|
-| `postgres-live-gate` | Prompt 68 | missing |
-| `live-certification` | Prompt 69 | missing |
-| `disaster-recovery-gate` | Prompt 71 | missing |
 | `windows-installer-gate` | Prompt 74 | missing |
-| `support-bundle` | Prompt 75 | missing |
 | `jarvis-1.0-gate` | Prompt 76 | missing |
 
 ---

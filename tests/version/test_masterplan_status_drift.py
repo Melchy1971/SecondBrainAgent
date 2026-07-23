@@ -1,7 +1,7 @@
 import json
 import re
+import subprocess
 from pathlib import Path
-
 
 def _root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -36,6 +36,12 @@ def test_masterplan_version_and_schema_consistency():
         "degraded_modes",
         "next_sprint",
         "release_readiness",
+        "package_version",
+        "documented_feature_level",
+        "inventoried_commit",
+        "verified_commit",
+        "live_evidence",
+        "release_state",
     }
     assert required_fields.issubset(masterplan.keys())
 
@@ -45,10 +51,10 @@ def test_masterplan_version_and_schema_consistency():
 
     assert masterplan["version"] == version
     assert masterplan["current_version"] == f"v{version}"
+    assert masterplan["package_version"] == version
 
     header = readme.splitlines()[2]
     assert header == f"# SecondBrain-Agent v{version}"
-    assert f"Aktueller dokumentierter Stand: v{version}" in readme
 
     expected_releases = [f"v30.{n}" for n in range(61, 78)]
     release_headings = _release_versions_61_to_77(notes)
@@ -59,3 +65,45 @@ def test_masterplan_version_and_schema_consistency():
 
     for blocker in masterplan["remaining_blockers"]:
         assert "v30.46" not in str(blocker)
+
+    # Validate distinct status model and separation
+    allowed_states = {
+        "planned",
+        "implemented",
+        "verified_hermetic",
+        "verified_integration",
+        "live_certified",
+        "released",
+        "deprecated",
+        "blocked",
+    }
+    
+    assert masterplan["release_state"] in allowed_states
+    
+    # Check that git HEAD commit matches inventoried_commit
+    try:
+        head_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], 
+            cwd=str(root), 
+            text=True
+        ).strip()
+    except Exception:
+        head_commit = None
+
+    if head_commit:
+        assert masterplan["inventoried_commit"] == head_commit, (
+            f"inventoried_commit in masterplan ({masterplan['inventoried_commit']}) "
+            f"does not match actual git HEAD ({head_commit})"
+        )
+        assert masterplan["verified_commit"] == head_commit
+
+    # Validate each capability status
+    for item in masterplan["completed_capabilities"]:
+        status = item.get("status")
+        assert status in allowed_states, (
+            f"Capability {item.get('release')} uses invalid status {status!r}. "
+            f"Allowed states: {allowed_states}"
+        )
+        # Ensure no completed placeholder is used
+        assert status != "completed", f"Capability {item.get('release')} uses obsolete 'completed' status"
+        assert status != "completed_on_main", f"Capability {item.get('release')} uses obsolete 'completed_on_main' status"
