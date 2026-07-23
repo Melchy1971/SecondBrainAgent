@@ -14,6 +14,26 @@ class InstanceAlreadyRunning(RuntimeError):
     pass
 
 
+def responsive_geometry(screen_width: int, screen_height: int, saved: str = "") -> str:
+    """Fit a restored/default window completely onto the current display."""
+    screen_width = max(640, int(screen_width))
+    screen_height = max(480, int(screen_height))
+    available_width = max(640, screen_width - 32)
+    available_height = max(480, screen_height - 72)
+    match = _GEOMETRY.fullmatch(str(saved or ""))
+    if match:
+        width = min(int(match.group(1)), available_width)
+        height = min(int(match.group(2)), available_height)
+        x = min(max(0, int(match.group(3))), max(0, screen_width - width))
+        y = min(max(0, int(match.group(4))), max(0, screen_height - height))
+    else:
+        width = min(1500, max(640, int(screen_width * 0.92)), available_width)
+        height = min(900, max(480, int(screen_height * 0.90)), available_height)
+        x = max(0, (screen_width - width) // 2)
+        y = max(0, (screen_height - height) // 2)
+    return f"{width}x{height}+{x}+{y}"
+
+
 class SingleInstanceLock:
     def __init__(self, project_root: str | Path) -> None:
         self.path = Path(project_root).resolve() / "runtime" / "native" / "desktop.pid"
