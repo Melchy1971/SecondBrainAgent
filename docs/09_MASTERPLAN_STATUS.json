@@ -186,7 +186,6 @@
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
-    "job_runtime_implemented_but_not_wired_to_production_entrypoint",
     "four_parallel_job_subsystems_unresolved",
     "remaining_job_type_migrations_pending",
     "windows_installer_live_certification_pending",
@@ -485,18 +484,28 @@
     "generated_at": "2026-07-21",
     "canonical_runtime": "SecondBrain/jobs/",
     "implementation": "implemented",
-    "wired_to_production_entrypoint": false,
+    "wired_to_production_entrypoint": true,
+    "wired_at": "2026-07-22",
+    "runtime_lifecycle": "SecondBrain/jobs/runtime.py",
+    "production_entrypoint": "SecondBrain/gui/launch.py::start_native_gui -> start_job_runtime",
+    "central_factory": "create_job_repository (einzige Factory, keine zweite erstellt)",
     "production_backend_available": "PostgresJobRepository mit FOR UPDATE SKIP LOCKED und Guard jsonl_not_allowed_in_production",
-    "production_backend_wired": false,
-    "currently_wired_backend": "JobStore (JSONL) aus SecondBrain/jobs/service.py",
-    "parallel_subsystems": [
-      "SecondBrain/jobs/",
+    "production_backend_wired": true,
+    "profile_behaviour": {
+      "production_without_postgres": "fail-closed -> state=blocked, kein Worker",
+      "production_with_postgres": "state=running, Recovery beim Start",
+      "development_without_postgres": "state=degraded (sichtbar), kein Worker; JSONL nur nach expliziter Konfiguration"
+    },
+    "double_start_guard": "Singleton je Projektwurzel + idempotentes start(); persistente Worker-ID in runtime/native/job_worker.json",
+    "status_surface": "job_runtime in build_native_view_model (secondbrain/native/runtime_snapshot.py)",
+    "lifecycle_test": "tests/test_job_runtime.py",
+    "remaining_parallel_subsystems": [
       "SecondBrain/desktop/jobs/",
       "SecondBrain/agent/background/",
       "SecondBrain/importing/pipeline.py"
     ],
-    "streaming_import": "implementiert per ijson in SecondBrain/importing/streaming.py; Checkpoints liegen jedoch in SQLite",
-    "blocking_issue": "Die vorhandene Runtime wird von keinem produktiven Einstiegspunkt instanziiert. create_job_repository und jobs/integrations.py werden ausschliesslich von Tests aufgerufen."
+    "scope_note": "Dieses Paket verdrahtet nur Factory, Lifecycle und Einstiegspunkt. Die Migration der drei uebrigen Subsysteme und ein dauerhaft pollender Worker-Loop folgen als eigene Pakete.",
+    "streaming_import": "implementiert per ijson in SecondBrain/importing/streaming.py; Checkpoints liegen jedoch in SQLite"
   },
   "desktop_status": {
     "shell": "PySide6",

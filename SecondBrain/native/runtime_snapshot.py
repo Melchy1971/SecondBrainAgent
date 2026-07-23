@@ -177,6 +177,24 @@ def _action_surface() -> dict[str, Any]:
     }
 
 
+def _job_runtime_status(root: Path) -> dict[str, Any]:
+    """Health der kanonischen Job-Runtime, ohne sie zu starten.
+
+    Nur die Statusanzeige -- ``build_native_view_model`` darf keinen Worker
+    erzeugen. Es wird der vorhandene Singleton befragt; existiert er noch nicht,
+    gilt der Zustand als ``not_started``.
+    """
+    def call() -> dict[str, Any]:
+        from secondbrain.jobs.runtime import _RUNTIMES, _RUNTIMES_GUARD
+        with _RUNTIMES_GUARD:
+            runtime = _RUNTIMES.get(str(root))
+        if runtime is None:
+            return {"component": "job_runtime", "state": "not_started", "degraded_mode": False}
+        return runtime.health()
+
+    return _safe_call(call, {"component": "job_runtime", "state": "unavailable"})
+
+
 def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
     base = Path(root or Path.cwd()).resolve()
     bootstrap = bootstrap_status(base, repair=False)
@@ -245,6 +263,7 @@ def build_native_view_model(root: str | Path | None = None) -> dict[str, Any]:
         "actions": _action_surface(),
         "audit": audit,
         "chat": chat,
+        "job_runtime": _job_runtime_status(base),
         "pending_reviews": review_inbox["pending_reviews"],
         "pending_approvals": review_inbox["pending_approvals"],
         "deferred_items": review_inbox["deferred_items"],
