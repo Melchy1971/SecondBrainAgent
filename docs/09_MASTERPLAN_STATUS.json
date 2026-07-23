@@ -505,7 +505,23 @@
       "SecondBrain/importing/pipeline.py"
     ],
     "scope_note": "Dieses Paket verdrahtet nur Factory, Lifecycle und Einstiegspunkt. Die Migration der drei uebrigen Subsysteme und ein dauerhaft pollender Worker-Loop folgen als eigene Pakete.",
-    "streaming_import": "implementiert per ijson in SecondBrain/importing/streaming.py; Checkpoints liegen jedoch in SQLite"
+    "streaming_import": "migriert (Phase 1): SecondBrain/jobs/import_runtime.py streamt record-weise, Checkpoints in der kanonischen Job-Repository, keine SQLite-Insel mehr",
+    "job_type_migration": {
+      "phase_1_done": "grosse Chat-/Dokumentimporte -> SecondBrain/jobs/import_runtime.py",
+      "phase_1_checkpoint_schema": "secondbrain.jobs.import.checkpoint.v1 (processed_bytes,total_bytes,records_ok,records_failed,records_processed,dead_letter,done)",
+      "phase_1_idempotency": "Skip-Count beim Resume plus inhaltsbasierter record_key; Sink dedupliziert",
+      "phase_1_memory": "Peak ~1,4% der Dateigroesse (1,4 MB Datei -> 21 KB Peak), unabhaengig von der Groesse",
+      "phase_1_test": "tests/test_import_runtime_streaming.py",
+      "deprecated_pipeline": "SecondBrain/importing/pipeline.py loest DeprecationWarning aus, nicht mehr produktiver Standard",
+      "remaining_phases": [
+        "2 OCR",
+        "3 RAG-Reindex und Embedding-Rebuild",
+        "4 Knowledge-Graph-Rebuild",
+        "5 Connector-Synchronisation",
+        "6 Backup und Restore",
+        "7 Scheduler- und Background-Agent-Aufgaben"
+      ]
+    }
   },
   "desktop_status": {
     "shell": "PySide6",
