@@ -80,9 +80,23 @@ class TaskProjectService:
     def _path(self, name: str) -> Path:
         return self.dir / f"{name}.jsonl"
 
-    def _read(self, name: str) -> list[dict[str, Any]]:
-        if self._repository is not None:
-            return self._repository.read(name)
+    @staticmethod
+    def _scope(workspace_id: str) -> str:
+        """Zentrale Workspace-Validierung. Fail-closed bei fehlend/leer/ungueltig.
+
+        Nutzt die vorhandene Validierung aus workspace_context. Der Fehler traegt
+        nur eine Klasse -- keine Daten, keine Nutzlast, kein Workspace-Wert.
+        """
+        from secondbrain.storage.workspace_context import (
+            WorkspaceContextError,
+            validate_workspace_id,
+        )
+        try:
+            return validate_workspace_id(workspace_id)
+        except WorkspaceContextError:
+            raise TaskServiceError("invalid_workspace_id") from None
+
+    def _read_file(self, name: str) -> list[dict[str, Any]]:
         p = self._path(name)
         if not p.exists():
             return []
@@ -95,13 +109,7 @@ class TaskProjectService:
                     continue
         return rows
 
-    def _write(self, name: str, rows: Iterable[dict[str, Any]]) -> None:
-        if self._repository is not None:
-            try:
-                self._repository.write(name, rows)
-            except TaskRepositoryConflict as exc:
-                raise VersionConflict(str(exc)) from exc
-            return
+    def _write_file(self, name: str, rows: Iterable[dict[str, Any]]) -> None:
         self.dir.mkdir(parents=True, exist_ok=True)
         p = self._path(name)
         tmp = p.with_name(f"{p.name}.{new_id('tmp')}.tmp")
@@ -110,9 +118,36 @@ class TaskProjectService:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
         tmp.replace(p)
 
-    def _append(self, name: str, row: dict[str, Any]) -> None:
+    def _read(self, name: str, *, workspace_id: str) -> list[dict[str, Any]]:
+        ws = self._scope(workspace_id)
         if self._repository is not None:
-            self._repository.append(name, row)
+            return self._repository.read(name, workspace_id=ws)
+        # JSONL-Entwicklungspfad: gleiche Sichtbarkeitsgrenze wie das Repository.
+        return [r for r in self._read_file(name) if str(r.get("workspace_id")) == ws]
+
+    def _write(self, name: str, rows: Iterable[dict[str, Any]], *, workspace_id: str) -> None:
+        ws = self._scope(workspace_id)
+        desired = [dict(r) for r in rows]
+        foreign = [r for r in desired if str(r.get("workspace_id")) != ws]
+        if foreign:
+            # Kein Cross-Workspace-Schreiben ueber den Service-Layer.
+            raise TaskServiceError("write_crosses_workspace")
+        if self._repository is not None:
+            try:
+                self._repository.write(name, desired, workspace_id=ws)
+            except TaskRepositoryConflict as exc:
+                raise VersionConflict(str(exc)) from exc
+            return
+        # JSONL-Entwicklungspfad: fremde Workspaces erhalten, nur diesen ersetzen.
+        existing = [r for r in self._read_file(name) if str(r.get("workspace_id")) != ws]
+        self._write_file(name, existing + desired)
+
+    def _append(self, name: str, row: dict[str, Any], *, workspace_id: str) -> None:
+        ws = self._scope(workspace_id)
+        if str(row.get("workspace_id")) != ws:
+            raise TaskServiceError("append_crosses_workspace")
+        if self._repository is not None:
+            self._repository.append(name, row, workspace_id=ws)
             return
         self.dir.mkdir(parents=True, exist_ok=True)
         with self._path(name).open("a", encoding="utf-8") as fh:
@@ -123,20 +158,20 @@ class TaskProjectService:
             event_id=new_id("evt"), task_id=task.task_id, workspace_id=task.workspace_id,
             event_type=event_type.value, actor=actor, detail=detail, metadata=metadata or {},
         )
-        self._append("events", event.to_dict())
+        self._append("events", event.to_dict(), workspace_id=task.workspace_id)
 
     # -- projects ---------------------------------------------------------
 
     def create_project(self, *, workspace_id: str, title: str, actor: str = "user", **fields: Any) -> Project:
         project = Project(project_id=new_id("prj"), workspace_id=workspace_id, title=title,
                           source=fields.pop("source", "user"), **{k: v for k, v in fields.items() if k in Project.__dataclass_fields__})
-        rows = self._read("projects")
+        rows = self._read("projects", workspace_id=workspace_id)
         rows.append(project.to_dict())
-        self._write("projects", rows)
+        self._write("projects", rows, workspace_id=workspace_id)
         return project
 
     def update_project(self, project_id: str, *, workspace_id: str, **changes: Any) -> Project:
-        rows = self._read("projects")
+        rows = self._read("projects", workspace_id=workspace_id)
         updated: Project | None = None
         for i, row in enumerate(rows):
             if row.get("project_id") == project_id and row.get("workspace_id") == workspace_id:
@@ -153,7 +188,7 @@ class TaskProjectService:
                 break
         if updated is None:
             raise TaskServiceError(f"project_not_found:{project_id}")
-        self._write("projects", rows)
+        self._write("projects", rows, workspace_id=workspace_id)
         return updated
 
     def get_project(self, project_id: str, *, workspace_id: str) -> Project | None:
@@ -164,7 +199,7 @@ class TaskProjectService:
         return self.update_project(project_id, workspace_id=workspace_id, status=Status.ARCHIVED.value, archived_at=utc_now())
 
     def list_projects(self, *, workspace_id: str, include_archived: bool = False) -> list[Project]:
-        out = [Project.from_dict(r) for r in self._read("projects") if r.get("workspace_id") == workspace_id]
+        out = [Project.from_dict(r) for r in self._read("projects", workspace_id=workspace_id)]
         if not include_archived:
             out = [p for p in out if p.status != Status.ARCHIVED.value]
         return out
@@ -174,9 +209,9 @@ class TaskProjectService:
     def create_task(self, *, workspace_id: str, title: str, project_id: str | None = None, actor: str = "user", **fields: Any) -> Task:
         allowed = {k: v for k, v in fields.items() if k in Task.__dataclass_fields__}
         task = Task(task_id=new_id("tsk"), project_id=project_id, workspace_id=workspace_id, title=title, **allowed)
-        rows = self._read("tasks")
+        rows = self._read("tasks", workspace_id=workspace_id)
         rows.append(task.to_dict())
-        self._write("tasks", rows)
+        self._write("tasks", rows, workspace_id=workspace_id)
         self._emit(task, TaskEventType.CREATED, actor=actor, detail=task.source,
                    metadata={"source": task.source, "source_reference": task.source_reference, "confidence": task.confidence})
         if project_id:
@@ -184,13 +219,13 @@ class TaskProjectService:
         return task
 
     def get_task(self, task_id: str, *, workspace_id: str) -> Task | None:
-        for r in self._read("tasks"):
+        for r in self._read("tasks", workspace_id=workspace_id):
             if r.get("task_id") == task_id and r.get("workspace_id") == workspace_id:
                 return Task.from_dict(r)
         return None
 
     def update_task(self, task_id: str, *, workspace_id: str, actor: str = "user", **changes: Any) -> Task:
-        rows = self._read("tasks")
+        rows = self._read("tasks", workspace_id=workspace_id)
         updated: Task | None = None
         for i, row in enumerate(rows):
             if row.get("task_id") == task_id and row.get("workspace_id") == workspace_id:
@@ -210,7 +245,7 @@ class TaskProjectService:
                 break
         if updated is None:
             raise TaskServiceError(f"task_not_found:{task_id}")
-        self._write("tasks", rows)
+        self._write("tasks", rows, workspace_id=workspace_id)
         self._emit(updated, TaskEventType.UPDATED, actor=actor, detail=",".join(changes))
         if updated.project_id:
             self._recompute_progress(updated.project_id, workspace_id)
@@ -256,11 +291,11 @@ class TaskProjectService:
         if not approved:
             approval = self._create_delete_approval(task, actor)
             return {"status": "approval_required", "approval": approval, "task_id": task_id}
-        rows = [r for r in self._read("tasks") if not (r.get("task_id") == task_id and r.get("workspace_id") == workspace_id)]
-        self._write("tasks", rows)
-        deps = [d for d in self._read("dependencies")
+        rows = [r for r in self._read("tasks", workspace_id=workspace_id) if r.get("task_id") != task_id]
+        self._write("tasks", rows, workspace_id=workspace_id)
+        deps = [d for d in self._read("dependencies", workspace_id=workspace_id)
                 if d.get("predecessor_id") != task_id and d.get("successor_id") != task_id]
-        self._write("dependencies", deps)
+        self._write("dependencies", deps, workspace_id=workspace_id)
         self._emit(task, TaskEventType.DELETED, actor=actor)
         return {"status": "deleted", "task_id": task_id}
 
@@ -292,21 +327,20 @@ class TaskProjectService:
             raise DependencyCycleError(f"cycle:{predecessor_id}->{successor_id}")
         dep = TaskDependency(predecessor_id=predecessor_id, successor_id=successor_id,
                              dependency_type=dependency_type, lag_minutes=int(lag_minutes))
-        rows = self._read("dependencies")
+        rows = self._read("dependencies", workspace_id=workspace_id)
         rows.append({**dep.to_dict(), "workspace_id": workspace_id})
-        self._write("dependencies", rows)
+        self._write("dependencies", rows, workspace_id=workspace_id)
         return dep
 
     def remove_dependency(self, predecessor_id: str, successor_id: str, *, workspace_id: str) -> None:
-        rows = [d for d in self._read("dependencies")
-                if not (d.get("predecessor_id") == predecessor_id and d.get("successor_id") == successor_id and d.get("workspace_id") == workspace_id)]
-        self._write("dependencies", rows)
+        rows = [d for d in self._read("dependencies", workspace_id=workspace_id)
+                if not (d.get("predecessor_id") == predecessor_id and d.get("successor_id") == successor_id)]
+        self._write("dependencies", rows, workspace_id=workspace_id)
 
     def _dependency_edges(self, workspace_id: str) -> dict[str, set[str]]:
         edges: dict[str, set[str]] = {}
-        for d in self._read("dependencies"):
-            if d.get("workspace_id") == workspace_id:
-                edges.setdefault(str(d.get("predecessor_id")), set()).add(str(d.get("successor_id")))
+        for d in self._read("dependencies", workspace_id=workspace_id):
+            edges.setdefault(str(d.get("predecessor_id")), set()).add(str(d.get("successor_id")))
         return edges
 
     @staticmethod
@@ -326,7 +360,7 @@ class TaskProjectService:
     # -- queries ----------------------------------------------------------
 
     def list_tasks(self, *, workspace_id: str, status: str | None = None, project_id: str | None = None) -> list[Task]:
-        out = [Task.from_dict(r) for r in self._read("tasks") if r.get("workspace_id") == workspace_id]
+        out = [Task.from_dict(r) for r in self._read("tasks", workspace_id=workspace_id)]
         if status is not None:
             out = [t for t in out if t.status == status]
         if project_id is not None:
@@ -370,9 +404,7 @@ class TaskProjectService:
     def get_blocked(self, *, workspace_id: str) -> list[Task]:
         completed = {t.task_id for t in self.list_tasks(workspace_id=workspace_id) if t.status == Status.COMPLETED.value}
         blockers: dict[str, list[str]] = {}
-        for d in self._read("dependencies"):
-            if d.get("workspace_id") != workspace_id:
-                continue
+        for d in self._read("dependencies", workspace_id=workspace_id):
             pred = str(d.get("predecessor_id"))
             if pred not in completed:  # completed predecessors do not block
                 blockers.setdefault(str(d.get("successor_id")), []).append(pred)
