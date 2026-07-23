@@ -190,7 +190,6 @@
     "remaining_job_type_migrations_pending",
     "windows_installer_live_certification_pending",
     "code_signing_certificate_missing",
-    "vault_os_keyring_backend_missing",
     "disaster_recovery_rollback_unproven",
     "desktop_shell_live_certification_pending",
     "voice_runtime_live_certification_pending",
@@ -458,7 +457,19 @@
     },
     "max_status_until_delegated_checks_run": "CONDITIONAL_PASS",
     "note": "Backup/Restore-Schritte sind injizierbar und werden ueber Fakes geprueft. Der Live-Nachweis gegen echtes Dateisystem und echte Datenbank steht aus.",
-    "outstanding": "Windows Credential Manager / OS-Keyring-Backend fehlt weiterhin (Blocker vault_os_keyring_backend_missing)."
+    "key_backend": {
+      "phase_a_done": "2026-07-22",
+      "module": "SecondBrain/secret_manager/key_provider.py",
+      "preferred_backend": "OS-Keyring (Windows Credential Manager / macOS Keychain / Secret Service)",
+      "ci_backend": "Env-Variable nur nach explizitem SECRET_KEY_BACKEND=env, in Produktion nur mit SECRET_KEY_ALLOW_ENV_IN_PROD=1",
+      "production_fail_closed": "kein sicheres Keyring -> KeyProviderUnavailable, Secret-Funktionen starten nicht",
+      "lifecycle": ["create", "load", "rotate", "revoke", "health"],
+      "rotation": "gibt (old,new) zurueck; bestehende AES-GCM-Daten bleiben mit dem alten Key lesbar bis zur Umschluesselung",
+      "redaction": "Health/Fehler enthalten weder Key noch Klartext-Alias, Benutzer oder Pfad",
+      "health_surface": "SecondBrain/secret_manager/health.py::key_backend_health",
+      "test": "tests/test_key_provider.py",
+      "outstanding_phase_b": "echtes Dateisystem-Backup und pg_dump/pg_restore in isolierter Umgebung (siehe Folgeprompt)"
+    }
   },
   "live_certification_status": {
     "command": "python launcher.py live-certification --scope <area>",
