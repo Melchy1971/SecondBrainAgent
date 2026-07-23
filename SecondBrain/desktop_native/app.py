@@ -33,7 +33,7 @@ from secondbrain.desktop_native.lifecycle import (
     WindowStateStore,
     responsive_geometry,
 )
-from secondbrain.desktop_native.navigation import VIEWS, display_view
+from secondbrain.desktop_native.navigation import VIEWS, display_view, endpoint_for_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.runtime_info import (
     calendar_month,
@@ -63,6 +63,7 @@ from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 from secondbrain.mail_assistant.service import MailAssistant
 from secondbrain.native.job_queue_center.service import JobQueueService
+from secondbrain.native.ai_workspace.service import AIWorkspaceService
 from secondbrain.version import get_version
 
 VERSION = get_version()
@@ -114,6 +115,7 @@ class JarvisNativeApp(tk.Tk):
         self.task_filter = "all"
         self.backup_center = BackupCenterViewModel(self.project_root)
         self.live_data = LiveDataService(self.project_root)
+        self.ai_workspace = AIWorkspaceService(self.project_root)
         self.voice = GermanVoiceController(
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
@@ -782,25 +784,11 @@ class JarvisNativeApp(tk.Tk):
         self.current_view.set(view)
         self._sync_nav()
         self.output.delete("1.0", "end")
+        endpoint = endpoint_for_view(view)
         if view == "Dashboard":
             self.refresh_status()
-        elif view == "Voice":
-            self._json(self.voice.status())
-            self._write("\nDeutsche Beispiele:\n- Jarvis Status\n- Suche PostgreSQL pgvector\n- Frage was fehlt noch\n- Oeffne Dokumente\n- Repariere Index")
-        elif view == "Settings":
-            self.run_launcher(["gui-bootstrap"], title="Bootstrap/Settings")
-        elif view == "Production":
-            self.run_launcher(["p1-production"], title="Production Gate")
-        elif view == "Documents":
-            self.run_launcher(["p1-rag-status"], title="Document/RAG Status")
         elif view == "Tasks":
             self._write(task_view_text(self.task_surface.snapshot(self.task_filter)))
-        elif view == "Memory":
-            self.run_launcher(["p3-rag-store-status"], title="Memory/RAG Store Status")
-        elif view == "Search":
-            self._write("Sucheingabe oben nutzen: Suche <Begriff>")
-        elif view == "Imports":
-            self._write("Datei per Button importieren oder Textbefehl: Importiere Datei C:\\Pfad\\datei.pdf")
         elif view == "Backups":
             self._json(self.backup_center.snapshot())
             self._write(
@@ -823,10 +811,49 @@ class JarvisNativeApp(tk.Tk):
             self._json(self.job_surface.snapshot())
         elif view == "Diagnostics":
             self._json(self._runtime_diagnostics())
-        elif view == "Developer":
-            self.run_launcher(["command-index"], title="Command Index")
+        elif view == "Briefings":
+            self._json(self._briefing_snapshot())
+        elif endpoint.kind == "workspace":
+            self._json(self.ai_workspace.module_payload(endpoint.target))
+        elif endpoint.kind == "live_data":
+            provider = getattr(self.live_data, endpoint.target)
+            self._json(provider())
+            if view == "Search":
+                self._write("\nSucheingabe oben nutzen: Suche <Begriff>")
+        elif endpoint.kind == "external":
+            status = self.external_action_connectors.status()
+            self._json({
+                "endpoint": endpoint.target,
+                "provider": status["provider"],
+                "configured": status["configured"],
+                "authenticated": status["authenticated"],
+                "available": status[f"{endpoint.target}_write"],
+                "status": "ready" if status[f"{endpoint.target}_write"] else "blocked",
+                "reason": status["reason"],
+            })
+        elif endpoint.kind == "launcher":
+            self.run_launcher([endpoint.target], title=view)
         else:
-            self._write(f"Ansicht {view}: bereit")
+            raise RuntimeError(f"desktop endpoint is not implemented: {view}")
+
+    def _briefing_snapshot(self) -> dict[str, Any]:
+        folder = self.live_data.vault / "10_DailyBriefings"
+        items = []
+        if folder.exists():
+            for path in sorted(folder.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)[:25]:
+                stat = path.stat()
+                items.append({
+                    "name": path.name,
+                    "size": stat.st_size,
+                    "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+                })
+        return {
+            "module": "briefings",
+            "endpoint": "vault/10_DailyBriefings",
+            "status": "ready" if folder.exists() else "blocked",
+            "count": len(items),
+            "items": items,
+        }
 
     def _runtime_diagnostics(self) -> dict[str, Any]:
         approval_snapshot = safe_status(self.approval_surface.snapshot)
