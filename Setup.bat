@@ -19,3 +19,4 @@ echo.
 echo Fertig. Optional Sprachsteuerung:  .venv\Scripts\python.exe -m pip install -e ".[voice]"
 echo Starten:  HUD.bat  (Web-HUD)   oder   Jarvis.bat  (nativer Desktop)
 pause
+endlocal

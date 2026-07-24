@@ -269,6 +269,9 @@ class JarvisNativeApp(tk.Tk):
         """Collapse secondary HUD regions before content can leave the viewport."""
         if not hasattr(self, "layout_root"):
             return
+        if self.current_view.get() != "Dashboard":
+            self._activate_content_surface(self.current_view.get())
+            return
         compact = width < 1180
         narrow = width < 980
         self.layout_root.grid_columnconfigure(
@@ -635,6 +638,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _build_console(self, content: tk.Misc) -> None:
         console = self._panel(content, row=3, column=0, columnspan=3, sticky="nsew", pady=(16, 0))
+        self.console = console
         self._section_title(console, "RAG / Konsole")
 
         cmdbar = tk.Frame(console, bg=console.cget("bg"))
@@ -783,6 +787,7 @@ class JarvisNativeApp(tk.Tk):
     def show_view(self, view: str) -> None:
         self.current_view.set(view)
         self._sync_nav()
+        self._activate_content_surface(view)
         self.output.delete("1.0", "end")
         endpoint = endpoint_for_view(view)
         if view == "Dashboard":
@@ -835,6 +840,24 @@ class JarvisNativeApp(tk.Tk):
             self.run_launcher([endpoint.target], title=view)
         else:
             raise RuntimeError(f"desktop endpoint is not implemented: {view}")
+
+    def _activate_content_surface(self, view: str) -> None:
+        """Make the selected endpoint the primary surface instead of a footer."""
+        if view == "Dashboard":
+            self.console.grid_configure(
+                row=3, column=0, columnspan=3, rowspan=1,
+                sticky="nsew", pady=(16, 0),
+            )
+            self.center_column.grid()
+            self._apply_responsive_layout(max(1, self.winfo_width()))
+            return
+        self.left_column.grid_remove()
+        self.center_column.grid_remove()
+        self.right_column.grid_remove()
+        self.console.grid_configure(
+            row=0, column=0, columnspan=3, rowspan=4,
+            sticky="nsew", pady=0,
+        )
 
     def _briefing_snapshot(self) -> dict[str, Any]:
         folder = self.live_data.vault / "10_DailyBriefings"

@@ -1,4 +1,8 @@
 @echo off
-cd /d H:\SecondBrainAgent\SecondBrain-Agent
-python scripts\menu.py
-pause
+setlocal
+cd /d "%~dp0..\.."
+set "PY=python"
+if exist ".venv\Scripts\python.exe" set "PY=.venv\Scripts\python.exe"
+"%PY%" launcher.py jarvis %*
+if errorlevel 1 pause
+endlocal
