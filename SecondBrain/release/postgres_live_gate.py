@@ -33,6 +33,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -533,6 +534,7 @@ def run_postgres_live_gate(
     *,
     env: dict[str, str] | None = None,
     connect: Callable[[str], Any] | None = None,
+    repository_contracts_impl: Callable[[Callable[[str], Any], str, str], list[dict[str, Any]]] | None = None,
     write_report: bool = True,
 ) -> dict[str, Any]:
     values = dict(os.environ if env is None else env)
@@ -542,7 +544,10 @@ def run_postgres_live_gate(
         "gate": "postgres_live_gate",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "scope": {
-            "implemented_phases": ["preflight", "isolated_schema", "report"],
+            "implemented_phases": [
+                "preflight", "isolated_schema", "repository_contracts",
+                "workspace_isolation", "concurrency", "vector_search_recall", "report",
+            ],
             "not_implemented_phases": list(NOT_IMPLEMENTED_PHASES),
         },
         "checks": [],

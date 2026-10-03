@@ -33,6 +33,17 @@ SKIP_PARTS = {"__pycache__", "_archive_starters", "OUTPUTS", "backups", "archive
 # ist damit die einzige Stelle, die beide Varianten nennen darf.
 BUILDER = "SecondBrain/storage/vector_index.py"
 
+# Begruendete Ausnahmen. Jeder Eintrag braucht einen Grund -- eine Ausnahmeliste
+# ohne Begruendung hoehlt die Regel aus.
+ALLOWED = {
+    BUILDER: "waehlt Ausdruck und Operatorklasse dimensionsabhaengig",
+    "SecondBrain/release/postgres_live_gate.py": (
+        "legt den direkten Index absichtlich an, um nachzuweisen, dass pgvector "
+        "ihn oberhalb von 2000 Dimensionen ablehnt (Pruefung "
+        "vector_index_limit_as_documented)"
+    ),
+}
+
 VECTOR_OPCLASS = re.compile(r"\bvector_(cosine|l2|ip)_ops\b")
 INDEX_METHOD = re.compile(r"using\s+(hnsw|ivfflat)\s*\(", re.IGNORECASE)
 
@@ -85,7 +96,7 @@ def test_no_hardcoded_vector_opclass_index_outside_builder() -> None:
     offenders: list[str] = []
 
     for rel, text in _sources():
-        if rel == BUILDER:
+        if rel in ALLOWED:
             continue
         for number, line in _code_lines(text, rel):
             if VECTOR_OPCLASS.search(line) and "halfvec" not in line:
@@ -104,7 +115,7 @@ def test_every_index_ddl_matches_a_known_construction() -> None:
     offenders: list[str] = []
 
     for rel, text in _sources():
-        if rel == BUILDER:
+        if rel in ALLOWED:
             continue
         code = "\n".join(line for _, line in _code_lines(text, rel))
         if not INDEX_METHOD.search(code):
@@ -171,6 +182,37 @@ def test_pgvector_foundation_schema_is_dimension_aware() -> None:
     sql = build_pgvector_schema_sql(config)
     assert "halfvec" in sql
     assert not VECTOR_OPCLASS.search(sql), "direkte vector-Operatorklasse im Schema"
+
+
+def test_pgvector_search_sql_stays_recognizable_to_existing_test_double() -> None:
+    """Kopplung zwischen Produktions-SQL und einem Test-Double festhalten.
+
+    ``tests/test_v191_p3_rag_store.py`` verwendet einen ``_FakeCursor``, der
+    seine Antwort am Vorkommen des Literals ``"embedding <=>"`` in der Abfrage
+    festmacht. Unterhalb von 2001 Dimensionen erzeugt der Store genau diese
+    Form; ab 3072 lautet der Ausdruck ``embedding::halfvec(3072) <=>`` und das
+    Literal verschwindet.
+
+    Heute ist das folgenlos, weil jener Test mit dreidimensionalen Vektoren
+    arbeitet. Wird die Dimension dort je hochgezogen, liefert der Fake
+    stillschweigend keine Treffer und der Test scheitert an ``hit_count == 0``
+    -- ohne Hinweis auf die eigentliche Ursache. Dieser Test macht den
+    Zusammenhang sichtbar.
+    """
+    from types import SimpleNamespace
+
+    from secondbrain.p3_rag_store import PgVectorRagStore
+
+    store = PgVectorRagStore.__new__(PgVectorRagStore)
+    store.config = SimpleNamespace(schema_name="secondbrain", table_prefix="p1")
+    build = PgVectorRagStore.build_vector_search_sql
+
+    assert "embedding <=>" in build(store, dimensions=3), (
+        "Der Fake in tests/test_v191_p3_rag_store.py erkennt die Abfrage nicht mehr"
+    )
+    assert "embedding <=>" not in build(store, dimensions=3072), (
+        "Ab 3072 Dimensionen muss der halfvec-Cast im Ausdruck stehen"
+    )
 
 
 def test_pgvector_foundation_keeps_plain_index_below_limit() -> None:

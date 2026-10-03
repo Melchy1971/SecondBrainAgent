@@ -1,5 +1,23 @@
-"""Parallel import stages backed by the existing native runtime queue."""
+"""Parallel import stages backed by the existing native runtime queue.
+
+.. deprecated::
+    Dieser Pfad ist nicht mehr der produktive Standard fuer Importe. Grosse
+    Chat- und Dokumentimporte laufen ueber die kanonische Job-Runtime
+    (``SecondBrain/jobs/import_runtime.py``) mit Checkpoints in der
+    Job-Repository. Dieses Modul bleibt vorerst fuer Kompatibilitaet erhalten
+    und wird in einer spaeteren Phase entfernt. Beim Import wird eine
+    ``DeprecationWarning`` ausgeloest.
+"""
 from __future__ import annotations
+
+import warnings
+
+warnings.warn(
+    "SecondBrain.importing.pipeline ist deprecated; nutze die kanonische "
+    "Job-Runtime SecondBrain.jobs.import_runtime fuer produktive Importe.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import json
 import hashlib

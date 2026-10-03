@@ -51,9 +51,11 @@ def test_workspace_activity_roundtrip(tmp_path: Path) -> None:
     assert payload["items"][0]["event"] == "integration_test"
 
 
-def test_primary_native_launcher_uses_integrated_workspace() -> None:
+def test_primary_native_launcher_uses_hud_voice_desktop() -> None:
     source = (ROOT / "secondbrain" / "gui" / "launch.py").read_text(encoding="utf-8")
-    assert "secondbrain.native.ai_workspace.gui import run_gui" in source
+    assert "secondbrain.desktop_native.app import main as run_native_desktop" in source
+    assert "code = run_native_desktop(root)" in source
+    assert "secondbrain.native.ai_workspace.gui import run_gui" not in source
 
 
 def test_application_state_controls_navigation() -> None:

@@ -382,6 +382,43 @@ def tail_log(limit: int = 12000) -> str:
 
 
 # --- HTTP-Handler ------------------------------------------------------------
+def native_view_payload(view: str, project_root: Path = ROOT) -> dict:
+    """Return read-only payloads for native menu items mirrored by the HUD."""
+    view = str(view or "").strip().casefold()
+    if view in {"tasks", "projects"}:
+        from secondbrain.native.ai_workspace.service import AIWorkspaceService
+
+        return AIWorkspaceService(project_root).module_payload(view)
+    if view in {"calendar", "mail"}:
+        from secondbrain.desktop_native.external_action_connectors import build_external_action_connectors
+
+        status = build_external_action_connectors(project_root).status()
+        return {
+            "ok": True,
+            "module": view,
+            "provider": status["provider"],
+            "configured": status["configured"],
+            "authenticated": status["authenticated"],
+            "available": status[f"{view}_write"],
+            "status": "ready" if status[f"{view}_write"] else "blocked",
+            "reason": status["reason"],
+        }
+    if view == "briefings":
+        folder = project_root / "SecondBrain" / "10_DailyBriefings"
+        items = [path.name for path in sorted(folder.glob("*.md"), reverse=True)[:25]] if folder.exists() else []
+        return {"ok": folder.exists(), "module": view, "status": "ready" if folder.exists() else "blocked",
+                "count": len(items), "items": items}
+    if view == "backups":
+        from secondbrain.gui.backup_center import BackupCenterViewModel
+
+        return {"ok": True, "module": view, "snapshot": BackupCenterViewModel(project_root).snapshot()}
+    if view == "diagnostics":
+        return {"ok": True, "module": view, "runtime": runtime_truth(project_root)}
+    if view == "production":
+        return {"ok": True, "module": view, "release_gate": release_gate_status()}
+    return {"ok": False, "module": view, "status": "unknown_view"}
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):  # ruhiger Output
         pass
@@ -468,6 +505,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(system_status())
         elif path == "/api/runtime-truth":
             self._json(runtime_truth(ROOT))
+        elif path == "/api/native-view":
+            self._json(native_view_payload(qs.get("view", [""])[0], ROOT))
         elif path == "/api/dashboards":
             self._json({"ok": True, "links": dashboard_links()})
         elif path == "/api/settings":

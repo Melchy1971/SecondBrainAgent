@@ -27,8 +27,13 @@ from secondbrain.desktop_native.dialog_prompts import dialog_prompt
 from secondbrain.desktop_native.external_action_connectors import build_external_action_connectors
 from secondbrain.desktop_native.hotkey import GlobalPushToTalkHotkey
 from secondbrain.desktop_native.job_surface import JobSurface
-from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
-from secondbrain.desktop_native.navigation import VIEWS, display_view
+from secondbrain.desktop_native.lifecycle import (
+    InstanceAlreadyRunning,
+    SingleInstanceLock,
+    WindowStateStore,
+    responsive_geometry,
+)
+from secondbrain.desktop_native.navigation import VIEWS, display_view, endpoint_for_view
 from secondbrain.desktop_native.runtime_diagnostics import runtime_diagnostics, safe_status
 from secondbrain.desktop_native.runtime_info import (
     calendar_month,
@@ -58,6 +63,7 @@ from secondbrain.gui.backup_center import BackupCenterViewModel
 from secondbrain.gui.bootstrap import bootstrap_text
 from secondbrain.mail_assistant.service import MailAssistant
 from secondbrain.native.job_queue_center.service import JobQueueService
+from secondbrain.native.ai_workspace.service import AIWorkspaceService
 from secondbrain.version import get_version
 
 VERSION = get_version()
@@ -109,6 +115,7 @@ class JarvisNativeApp(tk.Tk):
         self.task_filter = "all"
         self.backup_center = BackupCenterViewModel(self.project_root)
         self.live_data = LiveDataService(self.project_root)
+        self.ai_workspace = AIWorkspaceService(self.project_root)
         self.voice = GermanVoiceController(
             self.project_root,
             tts_runtime=LocalTtsRuntime(on_state=self.action_bus.voice.set_speaking),
@@ -164,14 +171,21 @@ class JarvisNativeApp(tk.Tk):
         self.approval_elevated_count: int | None = None
         self.approval_overdue_count: int | None = None
         self.pill_vars: dict[str, tk.StringVar] = {}
+        self.topbar_pills: list[tuple[str, tk.Frame]] = []
         self.nav_buttons: dict[str, tk.Button] = {}
-        self.geometry(str(restored.get("geometry") or "1500x900"))
-        self.minsize(1180, 720)
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(responsive_geometry(
+            screen_width, screen_height, str(restored.get("geometry") or "")
+        ))
+        self.minsize(min(900, max(640, screen_width - 32)),
+                     min(640, max(480, screen_height - 72)))
         self.title(TITLE)
         self.configure(bg=HUD["bg"])
         self.protocol("WM_DELETE_WINDOW", self._on_close)
         self._configure_theme()
         self._build_layout()
+        self.bind("<Configure>", self._on_window_configure, add="+")
         self.tray = SystemTrayController(
             on_open=lambda: self.after(0, self._restore_window),
             on_open_approvals=lambda: self.after(0, self._open_approvals),
@@ -246,6 +260,53 @@ class JarvisNativeApp(tk.Tk):
             pass
         style.configure("Hud.Vertical.TScrollbar", background=HUD["panel"], troughcolor=HUD["bg"])
 
+    def _on_window_configure(self, event: tk.Event) -> None:
+        if event.widget is not self:
+            return
+        self._apply_responsive_layout(int(event.width))
+
+    def _apply_responsive_layout(self, width: int) -> None:
+        """Collapse secondary HUD regions before content can leave the viewport."""
+        if not hasattr(self, "layout_root"):
+            return
+        if self.current_view.get() != "Dashboard":
+            self._activate_content_surface(self.current_view.get())
+            return
+        compact = width < 1180
+        narrow = width < 980
+        self.layout_root.grid_columnconfigure(
+            0, minsize=0 if narrow else (196 if compact else 232)
+        )
+        if narrow:
+            self.sidebar.grid_remove()
+        else:
+            self.sidebar.grid()
+        self.content.grid_columnconfigure(0, minsize=0 if compact else 288,
+                                          weight=0 if compact else 1)
+        self.content.grid_columnconfigure(1, weight=3)
+        self.content.grid_columnconfigure(2, minsize=0 if narrow else (250 if compact else 312),
+                                          weight=0 if narrow else 1)
+        if compact:
+            self.left_column.grid_remove()
+        else:
+            self.left_column.grid()
+        if narrow:
+            self.right_column.grid_remove()
+            self.center_column.grid_configure(padx=(0, 0))
+        else:
+            self.right_column.grid()
+            self.center_column.grid_configure(padx=(0, 12 if compact else 16))
+        visible_pills = (
+            set() if narrow
+            else {"SYSTEM HEALTH", "VOICE"} if compact
+            else {name for name, _pill in self.topbar_pills}
+        )
+        for name, pill in self.topbar_pills:
+            if name not in visible_pills:
+                pill.pack_forget()
+            elif not pill.winfo_manager():
+                pill.pack(side="left", padx=5, pady=8, before=self.topbar_user)
+
     def _panel(self, parent: tk.Misc, **grid: Any) -> tk.Frame:
         frame = tk.Frame(
             parent,
@@ -317,6 +378,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _build_layout(self) -> None:
         root = tk.Frame(self, bg=HUD["bg"])
+        self.layout_root = root
         root.pack(fill="both", expand=True)
         root.grid_columnconfigure(0, minsize=232)
         root.grid_columnconfigure(1, weight=1)
@@ -334,6 +396,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _build_sidebar(self, root: tk.Misc) -> None:
         side = tk.Frame(root, bg=HUD["bg2"], highlightbackground=HUD["line2"], highlightthickness=1, bd=0)
+        self.sidebar = side
         side.grid(row=0, column=0, sticky="nsew")
         side.grid_propagate(False)
 
@@ -400,6 +463,7 @@ class JarvisNativeApp(tk.Tk):
             self._pill(top, key, var, accent=accent)
 
         user = tk.Frame(top, bg=HUD["bg2"])
+        self.topbar_user = user
         user.pack(side="right", padx=16)
         self._label(user, "Jarvis", fg=HUD["text"], font=("Segoe UI", 9, "bold"), side="left", padx=(0, 10))
         avatar = tk.Label(user, text="J", bg=HUD["panel2"], fg=HUD["cyan"], font=("Segoe UI", 12, "bold"), width=3, height=1)
@@ -407,6 +471,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _pill(self, parent: tk.Misc, key: str, value: tk.StringVar, *, accent: str | None = None) -> None:
         pill = tk.Frame(parent, bg=HUD["panel"], highlightbackground=HUD["line"], highlightthickness=1, bd=0)
+        self.topbar_pills.append((key, pill))
         pill.pack(side="left", padx=5, pady=8)
         icon = tk.Label(pill, text="+", bg=HUD["panel"], fg=accent or HUD["cyan"], font=("Segoe UI", 11, "bold"), width=2)
         icon.pack(side="left", padx=(10, 5), pady=6)
@@ -417,6 +482,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _build_content(self, main: tk.Misc) -> None:
         content = tk.Frame(main, bg=HUD["bg"])
+        self.content = content
         content.grid(row=1, column=0, sticky="nsew", padx=20, pady=18)
         content.grid_columnconfigure(0, minsize=288)
         content.grid_columnconfigure(1, weight=1)
@@ -424,10 +490,13 @@ class JarvisNativeApp(tk.Tk):
         content.grid_rowconfigure(3, weight=1)
 
         left = tk.Frame(content, bg=HUD["bg"])
+        self.left_column = left
         left.grid(row=0, column=0, rowspan=3, sticky="nsew", padx=(0, 16))
         center = tk.Frame(content, bg=HUD["bg"])
+        self.center_column = center
         center.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=(0, 16))
         right = tk.Frame(content, bg=HUD["bg"])
+        self.right_column = right
         right.grid(row=0, column=2, rowspan=3, sticky="nsew")
 
         self._build_left_column(left)
@@ -569,6 +638,7 @@ class JarvisNativeApp(tk.Tk):
 
     def _build_console(self, content: tk.Misc) -> None:
         console = self._panel(content, row=3, column=0, columnspan=3, sticky="nsew", pady=(16, 0))
+        self.console = console
         self._section_title(console, "RAG / Konsole")
 
         cmdbar = tk.Frame(console, bg=console.cget("bg"))
@@ -717,26 +787,13 @@ class JarvisNativeApp(tk.Tk):
     def show_view(self, view: str) -> None:
         self.current_view.set(view)
         self._sync_nav()
+        self._activate_content_surface(view)
         self.output.delete("1.0", "end")
+        endpoint = endpoint_for_view(view)
         if view == "Dashboard":
             self.refresh_status()
-        elif view == "Voice":
-            self._json(self.voice.status())
-            self._write("\nDeutsche Beispiele:\n- Jarvis Status\n- Suche PostgreSQL pgvector\n- Frage was fehlt noch\n- Oeffne Dokumente\n- Repariere Index")
-        elif view == "Settings":
-            self.run_launcher(["gui-bootstrap"], title="Bootstrap/Settings")
-        elif view == "Production":
-            self.run_launcher(["p1-production"], title="Production Gate")
-        elif view == "Documents":
-            self.run_launcher(["p1-rag-status"], title="Document/RAG Status")
         elif view == "Tasks":
             self._write(task_view_text(self.task_surface.snapshot(self.task_filter)))
-        elif view == "Memory":
-            self.run_launcher(["p3-rag-store-status"], title="Memory/RAG Store Status")
-        elif view == "Search":
-            self._write("Sucheingabe oben nutzen: Suche <Begriff>")
-        elif view == "Imports":
-            self._write("Datei per Button importieren oder Textbefehl: Importiere Datei C:\\Pfad\\datei.pdf")
         elif view == "Backups":
             self._json(self.backup_center.snapshot())
             self._write(
@@ -759,10 +816,67 @@ class JarvisNativeApp(tk.Tk):
             self._json(self.job_surface.snapshot())
         elif view == "Diagnostics":
             self._json(self._runtime_diagnostics())
-        elif view == "Developer":
-            self.run_launcher(["command-index"], title="Command Index")
+        elif view == "Briefings":
+            self._json(self._briefing_snapshot())
+        elif endpoint.kind == "workspace":
+            self._json(self.ai_workspace.module_payload(endpoint.target))
+        elif endpoint.kind == "live_data":
+            provider = getattr(self.live_data, endpoint.target)
+            self._json(provider())
+            if view == "Search":
+                self._write("\nSucheingabe oben nutzen: Suche <Begriff>")
+        elif endpoint.kind == "external":
+            status = self.external_action_connectors.status()
+            self._json({
+                "endpoint": endpoint.target,
+                "provider": status["provider"],
+                "configured": status["configured"],
+                "authenticated": status["authenticated"],
+                "available": status[f"{endpoint.target}_write"],
+                "status": "ready" if status[f"{endpoint.target}_write"] else "blocked",
+                "reason": status["reason"],
+            })
+        elif endpoint.kind == "launcher":
+            self.run_launcher([endpoint.target], title=view)
         else:
-            self._write(f"Ansicht {view}: bereit")
+            raise RuntimeError(f"desktop endpoint is not implemented: {view}")
+
+    def _activate_content_surface(self, view: str) -> None:
+        """Make the selected endpoint the primary surface instead of a footer."""
+        if view == "Dashboard":
+            self.console.grid_configure(
+                row=3, column=0, columnspan=3, rowspan=1,
+                sticky="nsew", pady=(16, 0),
+            )
+            self.center_column.grid()
+            self._apply_responsive_layout(max(1, self.winfo_width()))
+            return
+        self.left_column.grid_remove()
+        self.center_column.grid_remove()
+        self.right_column.grid_remove()
+        self.console.grid_configure(
+            row=0, column=0, columnspan=3, rowspan=4,
+            sticky="nsew", pady=0,
+        )
+
+    def _briefing_snapshot(self) -> dict[str, Any]:
+        folder = self.live_data.vault / "10_DailyBriefings"
+        items = []
+        if folder.exists():
+            for path in sorted(folder.glob("*.md"), key=lambda item: item.stat().st_mtime, reverse=True)[:25]:
+                stat = path.stat()
+                items.append({
+                    "name": path.name,
+                    "size": stat.st_size,
+                    "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+                })
+        return {
+            "module": "briefings",
+            "endpoint": "vault/10_DailyBriefings",
+            "status": "ready" if folder.exists() else "blocked",
+            "count": len(items),
+            "items": items,
+        }
 
     def _runtime_diagnostics(self) -> dict[str, Any]:
         approval_snapshot = safe_status(self.approval_surface.snapshot)
