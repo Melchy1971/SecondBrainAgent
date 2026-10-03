@@ -1,194 +1,199 @@
 {
-  "version": "30.77.0",
-  "current_version": "v30.77.0",
+  "version": "31.94.0",
+  "current_version": "v31.94.0",
   "completed_capabilities": [
     {
       "release": "v30.61",
       "capability": "Agent Approval and Safety Layer mit zentraler NativeApprovalQueue-Wiederverwendung",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.62",
       "capability": "Workflow Engine mit Checkpoints, Recovery und Approval-Integration",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.63",
       "capability": "Background Agents mit Scheduling, Supervisor und Heartbeats",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.64",
       "capability": "Agent Memory Injection mit Budget, Privacy und Konflikterkennung",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.65",
       "capability": "Goal Tracking inklusive Zielmetriken, Reviews und Reports",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.66",
       "capability": "Native Agent Control GUI im AI Workspace integriert",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.67",
       "capability": "Phase-3-Stabilisierung mit Dubletteninventur, Launcher-Pruefung und Testhygiene",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.68",
       "capability": "Reasoning Engine mit Evidence/Confidence/Audit-Historie",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.69",
       "capability": "Multi-Agent Coordination mit Coordinator, Delegation und Bus-Log",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.70",
       "capability": "ToolChain mit Kontrollfluss, Retry/Fallback/Rollback und Visualisierung",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.71",
       "capability": "Scheduler fuer recurring jobs, cron und dependency-aware Ausfuehrung",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.72",
       "capability": "Semantic Graph Explorer als read-only Projektion ueber RAG und Memory",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.73",
       "capability": "Context Optimization mit Ranking, Dedupe, Conflict Resolution und Compression",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.74",
       "capability": "Layered Prompt Pipeline mit Prompt-Audit und Prompt-History",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.75",
       "capability": "Answer Evaluation mit Hallucination Detection, Source Verification und Ratings",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.76",
       "capability": "Plugin Runtime mit Manifest, Permission-Modell, Host-Trust und Rollback",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.77",
       "capability": "UI Path Override, zentrale Pfadkonsolidierung und Legacy-Import-Kompatibilitaet",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.78",
       "capability": "Review- und Approval-Governance-Layer: Memory Governance, Notifications und Eskalation, Governance-Metriken, Concurrency mit Crash-Recovery und persistente Repository-Abstraktion (JSONL/PostgreSQL), zertifiziert per Release-Gate",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v30.86",
       "capability": "Produktives Review-/Approval-Release-Gate mit acht Prüfgruppen, harter PostgreSQL-Backendvalidierung und atomarem Zertifizierungsreport",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v31.01-v31.04",
       "capability": "Signierte Updates, Windows-Distribution, CI/CD-Releaseautomation und aggregiertes GA-Readiness-Gate",
-      "status": "completed_on_main"
+      "status": "verified_integration"
     },
     {
       "release": "v31.05-v31.14",
       "capability": "Tasks, Kalender, Mail, Briefings, Knowledge Graph, Memory, Planner, Jobs, proaktive Assistenz und Dashboard",
-      "status": "completed_on_main"
+      "status": "verified_integration"
     },
     {
       "release": "v31.15",
       "capability": "Produktives PostgreSQL-Repository und validierende JSONL-Migration fuer Tasks und Projekte",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/tasks/repository.py",
       "live_certified": false
     },
     {
       "release": "v31.16",
       "capability": "Parallele Planner-Ausfuehrung mit Ressourcen-Locks und konsistenten Recovery-Checkpoints",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/planner_v2/service.py",
       "live_certified": false
     },
     {
       "release": "v31.17-v31.18",
       "capability": "Long-Running-Job-Runtime und erweiterte proaktive Assistenz",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/jobs/",
       "live_certified": false
     },
     {
       "release": "v31.19",
       "capability": "Persoenliches Dashboard mit vollstaendigem Snapshot, PostgreSQL-Personalisierung, parallelen Reads, Timeout und Cancellation",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "live_certified": false
     },
     {
       "release": "v31.26",
       "capability": "Stabile CI- und Pull-Request-Validation fuer Python 3.12/3.13 mit portablem Paketlayout, hermetischer Testselektion und redigierten Diagnoseartefakten",
-      "status": "completed"
+      "status": "verified_integration"
     },
     {
       "release": "v31.31",
       "capability": "Opt-in Provider-Live-Gate fuer OpenAI und Ollama mit Chat, strukturiertem JSON, Embeddings, Privacy-, Timeout- und Kostenkontrollen",
-      "status": "implemented_conditional_pass_without_configured_live_provider"
+      "status": "implemented"
     },
     {
       "release": "v31.32",
       "capability": "Testkonto-gebundenes Connector-E2E-Gate fuer Gmail, Outlook und Kalender mit Read-Sync, Cursor-Persistenz und Approval-Pflicht",
-      "status": "implemented_conditional_pass_without_test_accounts_or_write_evidence",
+      "status": "implemented",
       "live_certified": false
     },
     {
       "release": "v31.35-v31.43",
       "capability": "Native Desktop- und Voice-Runtime: Qt-Shell, Action Bus, Navigation, Lifecycle, System Tray, Windows-Autostart, lokale STT-Policy, TTS-Safety und lokales Wake Word",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/desktop_native/",
       "live_certified": false
     },
     {
       "release": "v31.56-v31.64",
       "capability": "Live-Statusflaechen im Desktop: Health, System Metrics, Vault, Alerts, Storage, Weather, Netzwerk, Runtime Info und Queue Status",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/desktop_native/",
       "live_certified": false
     },
     {
       "release": "v31.84-v31.88",
       "capability": "Task-Archivierung, Restore, View-Filter, freigegebene externe Aktionen und Live-Connector-Anbindung im Desktop",
-      "status": "completed_on_main",
+      "status": "verified_integration",
       "evidence_path": "SecondBrain/desktop_native/external_action_connectors.py",
+      "live_certified": false
+    },
+    {
+      "release": "v31.94",
+      "capability": "PostgreSQL Live Gate, Disaster Recovery Gate und Workspace Isolation Contract mit Workspace-Context",
+      "status": "verified_integration",
+      "evidence_path": "SecondBrain/release/postgres_live_gate.py",
       "live_certified": false
     }
   ],
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
     "test_database_connection_without_ssl",
-    "task_service_not_yet_threading_workspace_id",
+    "workspace_isolation_without_database_enforcement",
+    "task_repository_isolation_is_application_level_only",
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
-    "job_runtime_implemented_but_not_wired_to_production_entrypoint",
     "four_parallel_job_subsystems_unresolved",
     "remaining_job_type_migrations_pending",
     "windows_installer_live_certification_pending",
     "code_signing_certificate_missing",
-    "vault_os_keyring_backend_missing",
     "disaster_recovery_rollback_unproven",
     "desktop_shell_live_certification_pending",
     "voice_runtime_live_certification_pending",
-    "package_version_behind_documented_feature_level",
     "duplicate_planner_subsystems_unresolved",
     "duplicate_voice_de_modules_unresolved"
   ],
@@ -250,6 +255,12 @@
       "reason": "Connector-Runtime ist auf main; ersetzt durch connector_e2e_live_certification_pending",
       "evidence_path": "SecondBrain/connectors/",
       "removed_at": "2026-07-21"
+    },
+    {
+      "blocker": "package_version_behind_documented_feature_level",
+      "reason": "Paketversion auf 31.94.0 angehoben und mit documented_feature_level synchronisiert.",
+      "evidence_path": "pyproject.toml",
+      "removed_at": "2026-07-22"
     }
   ],
   "degraded_modes": [
@@ -275,7 +286,7 @@
     ]
   },
   "release_readiness": {
-    "state": "IMPLEMENTATION_AHEAD_OF_CERTIFICATION",
+    "state": "BLOCKED",
     "basis": "Der Codebestand auf main reicht bis Feature-Stufe v31.88 und umfasst PostgreSQL-Repositories, Job-Runtime, Qt-Desktop, Voice-Runtime, Secret Vault und Windows-Installerbau. Fuer keinen dieser Bereiche liegt ein produktionsnaher Live-Nachweis vor. Der begrenzende Faktor fuer Jarvis 1.0 ist Zertifizierung, nicht Implementierung.",
     "recommendation": "Keine neuen Feature-Pakete vor Abschluss der Live-Zertifizierung. Naechster Schritt ist das PostgreSQL-/pgvector-Live-Gate; es blockiert Approval-, Connector- und Disaster-Recovery-Nachweis.",
     "required_gates": [
@@ -288,18 +299,25 @@
       "review-approval-release-gate"
     ],
     "missing_gates": [
-      "windows-installer-gate",
-      "jarvis-1.0-gate"
-    ]
+      "windows-installer-gate"
+    ],
+    "jarvis_1_0_gate": "BLOCKED"
   },
   "support_bundle_status": {
     "command": "python launcher.py support-bundle",
     "module": "SecondBrain/support/bundle.py",
     "was": "implemented_but_not_wired",
     "now": "wired_to_launcher",
-    "outputs": ["runtime/reports/support_bundle.json", "runtime/reports/support_bundle.zip"],
+    "outputs": [
+      "runtime/reports/support_bundle.json",
+      "runtime/reports/support_bundle.zip"
+    ],
     "redaction_test": "tests/test_support_bundle_redaction.py",
-    "properties": ["recursive redaction proven", "offline (no network imports)", "env names kept, values masked"]
+    "properties": [
+      "recursive redaction proven",
+      "offline (no network imports)",
+      "env names kept, values masked"
+    ]
   },
   "capability_inventory": {
     "path": "docs/status/current_capability_inventory.md",
@@ -348,14 +366,42 @@
       "implemented_phases": [
         "preflight",
         "isolated_schema",
-        "workspace_isolation",
         "concurrency",
         "vector_search_recall",
         "report"
       ],
       "not_implemented_phases": [
-        "repository_contracts"
+        "repository_contracts",
+        "workspace_isolation"
       ],
+      "workspace_isolation_note": "Gegen die Datenbank nicht sinnvoll pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist. Stattdessen als statischer Vertrag in tests/test_workspace_isolation_contract.py gesichert.",
+      "concurrency_checks": [
+        "FOR UPDATE SKIP LOCKED vergibt keine Zeile doppelt",
+        "beide Worker erhalten Arbeit",
+        "optimistische Versionierung weist veralteten Schreibzugriff ab",
+        "doppelter Idempotency Key wird abgelehnt"
+      ],
+      "vector_search_checks": [
+        "golden dataset with analytically known ranking",
+        "exact match ranked first",
+        "minimum recall",
+        "index usage proven via EXPLAIN with enable_seqscan off",
+        "dimension guard rejects mismatched vectors",
+        "reindex followed by search"
+      ],
+      "not_implemented_phases": [],
+      "repository_contracts_checks": [
+        "Task-/Project-CRUD gegen PostgresTaskRepository",
+        "optimistische Versionspruefung",
+        "idempotente Wiederholung",
+        "Konflikt bei nicht-fortlaufender Version",
+        "Workspace-Isolation ueber Repository-Methoden",
+        "Cross-Workspace Read/Update/Delete verhindert",
+        "Transaktions-Rollback nach absichtlichem Fehler",
+        "JSONL-Migration ins isolierte Schema mit Mengen-/Feldvergleich",
+        "UTC-Zeitstempel und Serialisierungs-Roundtrip"
+      ],
+      "repository_contracts_side_fix": "migrate_jsonl_to_repository schreibt jetzt workspace-gruppiert (scoped write), sonst weist RLS WITH CHECK den kontextlosen Insert ab. Behoben in SecondBrain/tasks/repository.py.",
       "workspace_isolation_checks": [
         "RLS trennt Lesezugriff zwischen Workspaces",
         "fail-closed: ohne gesetzten Kontext keine Zeilen sichtbar",
@@ -376,27 +422,23 @@
         "dimension guard rejects mismatched vectors",
         "reindex followed by search"
       ],
-      "max_status_until_complete": "CONDITIONAL_PASS",
+      "max_status_when_db_reachable": "PASS",
+      "status_note": "Alle sechs Pruefphasen implementiert. PASS erreichbar, sobald das Gate gegen ein erreichbares PostgreSQL laeuft und jede obligatorische Phase besteht.",
       "control_flow_test": "tests/test_postgres_live_gate.py",
+      "integration_test": "tests/test_postgres_live_gate.py::test_repository_contracts_live (skip ohne TEST_DATABASE_URL)",
       "live_run_evidence": null
     },
     "workspace_isolation": {
       "assessed_at": "2026-07-21",
-      "hardened_at": "2026-07-21",
-      "spec": "docs/specs/workspace_isolation_spec.md",
-      "enforcement_level": "row_level_security_plus_bound_methods",
-      "row_level_security_present": true,
-      "primitives": "SecondBrain/storage/workspace_context.py",
-      "repository_binding": "SecondBrain/tasks/repository.py",
-      "live_gate_phase": "workspace_isolation",
-      "require_flag": "TASK_REPOSITORY_REQUIRE_WORKSPACE",
-      "backstops": {
-        "application": "read/write/append binden an workspace_id; write lehnt fremde Zeilen ab (SQLite und Postgres)",
-        "database": "RLS ENABLE + FORCE + Policy mit fail-closed current_setting (nur Postgres)"
-      },
-      "remaining_gap": "TaskService reicht workspace_id noch nicht an _read/_write/_append durch. Bis dahin bleibt der ungebundene Pfad aktiv und require_flag muss in Produktion aus bleiben. Umstellung ist test-abhaengig (Python 3.11) und als eigener Schritt geplant.",
+      "enforcement_level": "application_only",
+      "row_level_security_present": false,
       "contract_test": "tests/test_workspace_isolation_contract.py",
-      "binding_test": "tests/test_task_repository_workspace.py"
+      "structurally_safe": ["SecondBrain/jobs/repository.py"],
+      "convention_dependent": ["SecondBrain/tasks/repository.py"],
+      "detail": "PostgresTaskRepository.read(collection) hat keinen workspace_id-Parameter und liefert alle Workspaces; TaskService filtert erst danach in Python. write(collection, rows) loescht jeden Datensatz der Collection, der nicht in rows enthalten ist - ebenfalls ohne Workspace-Bezug.",
+      "current_risk": "kein aktiver Datenverlust: alle bekannten Aufrufer schreiben die vollstaendige ungefilterte Zeilenliste zurueck. Der Schutz haengt an dieser Konvention, die bis jetzt nirgends erzwungen wurde.",
+      "residual_risk": "Uebergibt ein Aufrufer je eine gefilterte Teilmenge, loescht write die Datensaetze aller anderen Workspaces. Ohne RLS gibt es keinen Backstop auf Datenbankebene.",
+      "prompt68_phase4_gap": "Die Anforderung 'Raw SQL Bypass muss blockiert werden' ist mit rein anwendungsseitiger Filterung nicht erfuellbar."
     },
     "test_server_tls": {
       "state": "not_supported_by_server",
@@ -427,7 +469,25 @@
     },
     "max_status_until_delegated_checks_run": "CONDITIONAL_PASS",
     "note": "Backup/Restore-Schritte sind injizierbar und werden ueber Fakes geprueft. Der Live-Nachweis gegen echtes Dateisystem und echte Datenbank steht aus.",
-    "outstanding": "Windows Credential Manager / OS-Keyring-Backend fehlt weiterhin (Blocker vault_os_keyring_backend_missing)."
+    "key_backend": {
+      "phase_a_done": "2026-07-22",
+      "module": "SecondBrain/secret_manager/key_provider.py",
+      "preferred_backend": "OS-Keyring (Windows Credential Manager / macOS Keychain / Secret Service)",
+      "ci_backend": "Env-Variable nur nach explizitem SECRET_KEY_BACKEND=env, in Produktion nur mit SECRET_KEY_ALLOW_ENV_IN_PROD=1",
+      "production_fail_closed": "kein sicheres Keyring -> KeyProviderUnavailable, Secret-Funktionen starten nicht",
+      "lifecycle": [
+        "create",
+        "load",
+        "rotate",
+        "revoke",
+        "health"
+      ],
+      "rotation": "gibt (old,new) zurueck; bestehende AES-GCM-Daten bleiben mit dem alten Key lesbar bis zur Umschluesselung",
+      "redaction": "Health/Fehler enthalten weder Key noch Klartext-Alias, Benutzer oder Pfad",
+      "health_surface": "SecondBrain/secret_manager/health.py::key_backend_health",
+      "test": "tests/test_key_provider.py",
+      "outstanding_phase_b": "echtes Dateisystem-Backup und pg_dump/pg_restore in isolierter Umgebung (siehe Folgeprompt)"
+    }
   },
   "live_certification_status": {
     "command": "python launcher.py live-certification --scope <area>",
@@ -435,7 +495,15 @@
     "config_example": "config/live-certification.example.toml",
     "runbook": "docs/certification/live_certification_runbook.md",
     "report": "runtime/reports/live_certification_summary.json",
-    "orchestrates": ["postgres", "approval", "provider", "gmail", "outlook", "google-calendar", "microsoft-calendar"],
+    "orchestrates": [
+      "postgres",
+      "approval",
+      "provider",
+      "gmail",
+      "outlook",
+      "google-calendar",
+      "microsoft-calendar"
+    ],
     "control_flow_test": "tests/test_live_certification.py",
     "note": "Aggregiert vorhandene Gates. Optionaler nicht konfigurierter Bereich = SKIPPED, kein Blocker. PASS nur ohne uebersprungene Bereiche. Erbt CONDITIONAL_PASS des PostgreSQL-Gates.",
     "live_run_evidence": null
@@ -445,18 +513,44 @@
     "generated_at": "2026-07-21",
     "canonical_runtime": "SecondBrain/jobs/",
     "implementation": "implemented",
-    "wired_to_production_entrypoint": false,
+    "wired_to_production_entrypoint": true,
+    "wired_at": "2026-07-22",
+    "runtime_lifecycle": "SecondBrain/jobs/runtime.py",
+    "production_entrypoint": "SecondBrain/gui/launch.py::start_native_gui -> start_job_runtime",
+    "central_factory": "create_job_repository (einzige Factory, keine zweite erstellt)",
     "production_backend_available": "PostgresJobRepository mit FOR UPDATE SKIP LOCKED und Guard jsonl_not_allowed_in_production",
-    "production_backend_wired": false,
-    "currently_wired_backend": "JobStore (JSONL) aus SecondBrain/jobs/service.py",
-    "parallel_subsystems": [
-      "SecondBrain/jobs/",
+    "production_backend_wired": true,
+    "profile_behaviour": {
+      "production_without_postgres": "fail-closed -> state=blocked, kein Worker",
+      "production_with_postgres": "state=running, Recovery beim Start",
+      "development_without_postgres": "state=degraded (sichtbar), kein Worker; JSONL nur nach expliziter Konfiguration"
+    },
+    "double_start_guard": "Singleton je Projektwurzel + idempotentes start(); persistente Worker-ID in runtime/native/job_worker.json",
+    "status_surface": "job_runtime in build_native_view_model (secondbrain/native/runtime_snapshot.py)",
+    "lifecycle_test": "tests/test_job_runtime.py",
+    "remaining_parallel_subsystems": [
       "SecondBrain/desktop/jobs/",
       "SecondBrain/agent/background/",
       "SecondBrain/importing/pipeline.py"
     ],
-    "streaming_import": "implementiert per ijson in SecondBrain/importing/streaming.py; Checkpoints liegen jedoch in SQLite",
-    "blocking_issue": "Die vorhandene Runtime wird von keinem produktiven Einstiegspunkt instanziiert. create_job_repository und jobs/integrations.py werden ausschliesslich von Tests aufgerufen."
+    "scope_note": "Dieses Paket verdrahtet nur Factory, Lifecycle und Einstiegspunkt. Die Migration der drei uebrigen Subsysteme und ein dauerhaft pollender Worker-Loop folgen als eigene Pakete.",
+    "streaming_import": "migriert (Phase 1): SecondBrain/jobs/import_runtime.py streamt record-weise, Checkpoints in der kanonischen Job-Repository, keine SQLite-Insel mehr",
+    "job_type_migration": {
+      "phase_1_done": "grosse Chat-/Dokumentimporte -> SecondBrain/jobs/import_runtime.py",
+      "phase_1_checkpoint_schema": "secondbrain.jobs.import.checkpoint.v1 (processed_bytes,total_bytes,records_ok,records_failed,records_processed,dead_letter,done)",
+      "phase_1_idempotency": "Skip-Count beim Resume plus inhaltsbasierter record_key; Sink dedupliziert",
+      "phase_1_memory": "Peak ~1,4% der Dateigroesse (1,4 MB Datei -> 21 KB Peak), unabhaengig von der Groesse",
+      "phase_1_test": "tests/test_import_runtime_streaming.py",
+      "deprecated_pipeline": "SecondBrain/importing/pipeline.py loest DeprecationWarning aus, nicht mehr produktiver Standard",
+      "remaining_phases": [
+        "2 OCR",
+        "3 RAG-Reindex und Embedding-Rebuild",
+        "4 Knowledge-Graph-Rebuild",
+        "5 Connector-Synchronisation",
+        "6 Backup und Restore",
+        "7 Scheduler- und Background-Agent-Aufgaben"
+      ]
+    }
   },
   "desktop_status": {
     "shell": "PySide6",
@@ -528,24 +622,23 @@
       "connector-e2e-gate",
       "provider-live-gate",
       "native-voice-app-gate",
-      "backup-gate"
-    ],
-    "partially_implemented": [
+      "backup-gate",
       "postgres-live-gate",
       "live-certification",
-      "disaster-recovery-gate"
-    ],
-    "missing": [
-      "windows-installer-gate",
+      "disaster-recovery-gate",
       "jarvis-1.0-gate"
+    ],
+    "partially_implemented": [],
+    "missing": [
+      "windows-installer-gate"
     ]
   },
-  "build": 307700,
+  "build": 319400,
   "version_source": "pyproject.toml",
-  "documented_feature_level": "v31.88",
-  "feature_level_source": "highest merged pull request on main (#116)",
-  "version_string_note": "pyproject.toml steht auf 30.77.0. Die v31.xx-Bezeichner sind Release-Labels der Entwicklungspakete und wurden nie in die Paketversion ueberfuehrt. version-sync leitet version, current_version und build weiterhin aus pyproject.toml ab.",
-  "documentation_updated_at": "2026-07-21",
+  "documented_feature_level": "v31.94",
+  "feature_level_source": "highest merged pull request on main (#122)",
+  "version_string_note": "pyproject.toml steht auf 31.94.0. Die v31.xx-Bezeichner sind Release-Labels der Entwicklungspakete und wurden nie in die Paketversion ueberfuehrt. version-sync leitet version, current_version und build weiterhin aus pyproject.toml ab.",
+  "documentation_updated_at": "2026-07-22",
   "ci_validation": {
     "release": "v31.26",
     "python_versions": [
@@ -587,5 +680,16 @@
     "production_backend": "postgres",
     "jsonl_status": "development_only",
     "release_recommendation": "Run the gate with a reachable PostgreSQL backend; JSONL returns BLOCKED"
+  },
+  "package_version": "31.94.0",
+  "inventoried_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
+  "verified_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
+  "live_evidence": null,
+  "release_state": "verified_integration",
+  "jarvis_1_0_certification": {
+    "status": "BLOCKED",
+    "report": "runtime/reports/jarvis_1_0_gate.json",
+    "commit_sha": "a42b7fcd0b756e372a99d991ca082cb2372d90a5",
+    "evaluated_at": "2026-07-23T09:02:07.867980+00:00"
   }
 }

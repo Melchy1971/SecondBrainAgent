@@ -34,11 +34,8 @@ from typing import Any, Callable
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/disaster_recovery_gate.json")
 
-DELEGATED_CHECKS = (
-    "pgvector_after_restore",       # PostgreSQL-Live-Gate
-    "approvals_after_restore",      # Approval-Live-Gate
-    "audit_after_restore",          # Approval-Live-Gate
-)
+# Diese Nachweise werden bei realen Schritten nicht mehr delegiert.
+DELEGATED_CHECKS: tuple[str, ...] = ()
 
 # Markerwoerter, die niemals im Klartext in einem Backup-Artefakt stehen duerfen.
 _SECRET_MARKERS = ("BEGIN PRIVATE KEY", "password=", "api_key", "secret_key", "aws_secret")
@@ -208,6 +205,22 @@ def _recovery_checks(steps: RecoverySteps, project_root: Path) -> list[dict[str,
     rollback_ok = rolled.get("ok", False) and rolled.get("checksum") == snapshot.get("checksum")
     checks.append(_check("rollback_restores_prior_state", rollback_ok))
 
+    failure_checks = getattr(steps, "failure_checks", None)
+    if callable(failure_checks):
+        for entry in failure_checks(project_root):
+            checks.append(_check(entry["name"], entry.get("ok", False),
+                                 detail=entry.get("detail", ""),
+                                 blocking=entry.get("blocking", True)))
+
+    # Optionale DB-Checks (echtes pg_dump/pg_restore) -- nur reale Schritte
+    # liefern sie; hermetische Fake-Schritte haben die Methode nicht.
+    db_checks = getattr(steps, "database_checks", None)
+    if callable(db_checks):
+        for entry in db_checks(project_root):
+            checks.append(_check(entry["name"], entry.get("ok", False),
+                                 detail=entry.get("detail", ""),
+                                 blocking=entry.get("blocking", True)))
+
     return checks
 
 
@@ -224,13 +237,19 @@ def run_disaster_recovery_gate(
     write_report: bool = True,
 ) -> dict[str, Any]:
     values = dict(os.environ if env is None else env)
-    steps = steps or RecoverySteps()
     root = Path(project_root)
+    # Default: echte Schritte (verschluesseltes FS-Backup + optional pg-Roundtrip).
+    # Injektion bleibt fuer hermetische Kontrollflusstests erhalten.
+    injected = steps is not None
+    if steps is None:
+        from secondbrain.release.backup_engine import RealRecoverySteps
+        steps = RealRecoverySteps(root, env=values)
 
     report: dict[str, Any] = {
         "gate": "disaster_recovery_gate",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "delegated_checks": list(DELEGATED_CHECKS),
+        "steps": "injected" if injected else "real",
         "checks": [],
     }
 
@@ -241,16 +260,26 @@ def run_disaster_recovery_gate(
     except Exception as exc:  # noqa: BLE001
         report["checks"].append(_check("disaster_recovery", False, detail=type(exc).__name__))
         report["error"] = _safe_error(exc)
+    finally:
+        cleanup = getattr(steps, "cleanup", None)
+        if callable(cleanup):
+            cleanup()
 
     blocking = [c["name"] for c in report["checks"] if c["blocking"] and not c["ok"]]
     warnings = [c["name"] for c in report["checks"] if not c["blocking"] and not c["ok"]]
     report["blockers"] = blocking
     report["warnings"] = warnings
 
+    real_db_executed = not injected and any(
+        check["name"] == "pg_restore_into_empty_database" and check["ok"]
+        for check in report["checks"]
+    )
     if blocking:
         report["status"] = BLOCKED
+    elif real_db_executed:
+        report["status"] = PASS
     else:
-        # Delegierte DB-Checks stehen aus -> nie PASS in dieser Stufe.
+        # Injizierte Schritte oder fehlende Test-DB sind kein realer Nachweis.
         report["status"] = CONDITIONAL_PASS
     report["ok"] = report["status"] != BLOCKED
 

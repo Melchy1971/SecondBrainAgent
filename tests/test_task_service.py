@@ -98,7 +98,7 @@ def test_events_are_recorded(tmp_path):
     s = _svc(tmp_path)
     t = s.create_task(workspace_id="w1", title="A", source="agent", confidence=0.6)
     s.complete_task(t.task_id, workspace_id="w1")
-    events = s._read("events")  # noqa: SLF001
+    events = s._read("events", workspace_id="w1")  # noqa: SLF001
     types = [e["event_type"] for e in events if e["task_id"] == t.task_id]
     assert "created" in types and "completed" in types
     created = next(e for e in events if e["event_type"] == "created" and e["task_id"] == t.task_id)

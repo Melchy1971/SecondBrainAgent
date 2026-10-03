@@ -15,4 +15,5 @@ if not defined MTX (
 )
 echo Starte MediaMTX-Gateway ... (Fenster offen lassen; Stop mit Strg+C)
 "%MTX%" "%~dp0config\mediamtx.yml"
-pause
+if errorlevel 1 pause
+endlocal

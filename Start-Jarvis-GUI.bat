@@ -7,3 +7,4 @@ set "PY=python"
 if exist "%~dp0.venv\Scripts\python.exe" set "PY=%~dp0.venv\Scripts\python.exe"
 "%PY%" launcher.py native-web-shell %*
 if errorlevel 1 pause
+endlocal

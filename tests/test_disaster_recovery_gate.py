@@ -28,7 +28,9 @@ def _named(report, name: str) -> dict:
 
 
 def test_crypto_self_test_passes_against_real_implementation() -> None:
-    report = drg.run_disaster_recovery_gate(".", write_report=False)
+    report = drg.run_disaster_recovery_gate(
+        ".", steps=drg.RecoverySteps(), write_report=False
+    )
     for name in (
         "encrypted_backup_roundtrip",
         "wrong_key_is_rejected",
@@ -41,10 +43,15 @@ def test_crypto_self_test_passes_against_real_implementation() -> None:
 
 
 def test_healthy_run_is_conditional_pass_not_pass() -> None:
-    """Delegierte DB-Checks stehen aus -> nie PASS in dieser Stufe."""
-    report = drg.run_disaster_recovery_gate(".", write_report=False)
+    """Delegierte DB-Checks stehen aus -> nie PASS in dieser Stufe.
+
+    Hermetisch: injizierte Fake-Schritte, damit der Kontrollfluss ohne echtes
+    Backend und ohne Master-Key prueft.
+    """
+    report = drg.run_disaster_recovery_gate(".", steps=drg.RecoverySteps(), write_report=False)
     assert report["status"] == drg.CONDITIONAL_PASS
     assert set(report["delegated_checks"]) == set(drg.DELEGATED_CHECKS)
+    assert report["steps"] == "injected"
 
 
 # --------------------------------------------------------------------------
@@ -126,7 +133,9 @@ def test_rollback_targets_prior_state_not_backup() -> None:
 
 
 def test_report_contains_no_secret_material() -> None:
-    report = drg.run_disaster_recovery_gate(".", write_report=False)
+    report = drg.run_disaster_recovery_gate(
+        ".", steps=drg.RecoverySteps(), write_report=False
+    )
     blob = json.dumps(report)
     # Die Krypto-Nutzlast enthielt genau diese Marker -- keiner darf auftauchen.
     for secret in ("do-not-log", "token=", "ws-a"):

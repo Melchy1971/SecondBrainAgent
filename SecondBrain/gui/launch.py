@@ -174,6 +174,13 @@ def start_web_hud(project_root: str | Path | None = None, *, open_browser: bool 
 def start_native_gui(project_root: str | Path | None = None, *, dry_run: bool = False) -> dict[str, Any]:
     root = _root(project_root)
     bootstrap = write_bootstrap_report(root, repair=True)
+    # Kanonische Job-Runtime am produktiven Einstiegspunkt starten (idempotent,
+    # Singleton). Ein Fehler hier darf den Desktop nicht am Start hindern.
+    try:
+        from secondbrain.jobs.runtime import start_job_runtime
+        job_runtime = start_job_runtime(root)
+    except Exception as exc:  # noqa: BLE001 - Fehlerklasse nur
+        job_runtime = {"component": "job_runtime", "state": "blocked", "reason": type(exc).__name__}
     native = build_native_view_model(root)
     payload = {
         "ok": bool(bootstrap.get("ok")),
@@ -181,6 +188,7 @@ def start_native_gui(project_root: str | Path | None = None, *, dry_run: bool = 
         "action": "native_desktop_primary",
         "project_root": str(root),
         "bootstrap": bootstrap,
+        "job_runtime": job_runtime,
         "native": {
             "schema": native.get("schema"),
             "version": native.get("version"),
@@ -191,8 +199,12 @@ def start_native_gui(project_root: str | Path | None = None, *, dry_run: bool = 
     if dry_run or not payload["ok"]:
         return payload
     try:
-        from secondbrain.native.ai_workspace.gui import run_gui
-        code = run_gui(root)
+        # Kanonische Desktop-Huelle: visuell an das Web-HUD angelehnt und mit
+        # derselben Action-Registry sowie deutscher Voice-Pipeline verbunden.
+        # Die generische AIWorkspace-GUI bleibt als Modul verfuegbar, ist aber
+        # nicht der Jarvis-/Desktop-Startpunkt.
+        from secondbrain.desktop_native.app import main as run_native_desktop
+        code = run_native_desktop(root)
         payload.update({"status": "closed", "exit_code": code})
         return payload
     except Exception as exc:

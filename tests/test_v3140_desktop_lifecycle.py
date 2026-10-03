@@ -3,7 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from secondbrain.desktop_native.lifecycle import InstanceAlreadyRunning, SingleInstanceLock, WindowStateStore
+from secondbrain.desktop_native.lifecycle import (
+    InstanceAlreadyRunning,
+    SingleInstanceLock,
+    WindowStateStore,
+    responsive_geometry,
+)
 
 
 def test_single_instance_rejects_live_owner(tmp_path: Path):
@@ -40,3 +45,13 @@ def test_invalid_or_corrupt_window_state_is_ignored(tmp_path: Path):
     assert store.load() == {"view": "Mail"}
     store.path.write_text("not-json", encoding="utf-8")
     assert store.load() == {}
+
+
+def test_responsive_geometry_fits_small_and_large_displays():
+    assert responsive_geometry(1024, 768) == "942x691+41+38"
+    assert responsive_geometry(2560, 1440) == "1500x900+530+270"
+
+
+def test_responsive_geometry_clamps_restored_window_to_visible_screen():
+    geometry = responsive_geometry(1366, 768, "2200x1200+4000+3000")
+    assert geometry == "1334x696+32+72"
