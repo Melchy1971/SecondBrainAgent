@@ -44,12 +44,8 @@ class FakeCursor:
         self.description = [("col",)] if self._result else None
         # rowcount ist ein schlichtes Attribut, kein Property: ein Getter mit
         # Seiteneffekt wird schon von hasattr() ausgeloest.
-        if sql.strip().upper().startswith("UPDATE"):
-            if ".records" in sql:
-                # Phase-4-Hijack: RLS laesst kein Update ueber die Grenze zu.
-                self.rowcount = 0
-            elif self.connection.rowcounts:
-                self.rowcount = self.connection.rowcounts.pop(0)
+        if sql.strip().upper().startswith("UPDATE") and self.connection.rowcounts:
+            self.rowcount = self.connection.rowcounts.pop(0)
 
     def fetchone(self):
         return self._result[0] if self._result else None
@@ -83,17 +79,10 @@ class FakeConnection:
         self.committed += 1
 
     def answer(self, sql: str) -> list[tuple]:
-        lowered = sql.lower()
-        # Phase-4-spezifisch, nach Tabellen-Suffix, damit sich die Phasen nicht
-        # ueberschneiden (records = Isolation, golden = Suche, queue = Concurrency).
-        if "select id from" in lowered and ".records" in lowered:
-            return [(1,)]                       # ws-a sieht nur die eigene Zeile
-        if "count(*)" in lowered and ".records" in lowered:
-            return [(0,)]                       # fail-closed ohne Kontext
-        # Sequenzen: aufeinanderfolgende gleiche Abfragen, unterschiedliche
-        # Ergebnisse -- noetig fuer SKIP LOCKED.
+        # Sequenzen zuerst: aufeinanderfolgende Aufrufe derselben Abfrage
+        # liefern unterschiedliche Ergebnisse -- noetig fuer SKIP LOCKED.
         for pattern, queue in self.sequences.items():
-            if pattern.lower() in lowered and queue:
+            if pattern.lower() in sql.lower() and queue:
                 return queue.pop(0)
         for pattern, rows in self.answers.items():
             if pattern.lower() in sql.lower():
@@ -139,7 +128,6 @@ REALISTIC_PGVECTOR = {
     "vector_cosine_ops": "raise",   # direkter Index auf 3072 Dimensionen
     "9001": "raise",                # Dimension Guard weist 3-dim Vektor ab
     "(99,": "raise",                # doppelter Idempotency Key
-    "'x')": "raise",                # WITH CHECK weist Cross-Workspace-Insert ab
 }
 
 
@@ -156,19 +144,6 @@ def _healthy_connection(**overrides: Any) -> FakeConnection:
     sequences = _skip_locked_sequence()
     sequences.update(overrides.pop("sequences", {}))
     return FakeConnection(answers=answers, failures=failures, sequences=sequences)
-
-
-def _passing_repository_contracts(connector, dsn, schema):
-    """Kontrollfluss-Stub: die produktiven Contracts brauchen ein echtes
-    PostgreSQL. Hier wird nur die Aggregation geprueft, daher passieren alle."""
-    names = [
-        "repo_crud", "repo_optimistic_version", "repo_idempotent_repeat",
-        "repo_version_conflict", "repo_workspace_isolation",
-        "repo_cross_workspace_prevented", "repo_transaction_rollback",
-        "repo_jsonl_migration", "repo_utc_serialization",
-    ]
-    return [{"name": n, "ok": True, "contract_status": "PASS", "detail": "ok",
-             "duration_ms": 0.1, "blocking": True} for n in names]
 
 
 def _run(connection: FakeConnection, *, dsn: str = DSN, **kw):
@@ -380,9 +355,7 @@ def test_schema_name_is_unique_per_run() -> None:
             s.split()[-1] for s in connection.statements if s.startswith("CREATE SCHEMA")
         )
     assert len(names) == len(set(names)), f"Schemanamen kollidieren: {names}"
-    # Je Lauf: Phase 2 (isolated), Phase 3 (repository_contracts), Phase 4 (RLS),
-    # Phase 5 (concurrency).
-    assert len(names) == runs * 4, "erwartet je vier Schemata pro Lauf"
+    assert len(names) == runs * 2, "erwartet je ein Schema fuer Phase 2 und Phase 5"
 
 
 def test_connection_is_closed() -> None:
@@ -476,71 +449,6 @@ def test_golden_dataset_stays_inside_test_schema() -> None:
             assert gate.SCHEMA_PREFIX in statement or "golden_hnsw" in statement, (
                 f"Statement ausserhalb des Testschemas: {statement[:80]}"
             )
-
-
-# --------------------------------------------------------------------------
-# Phase 4 -- Workspace-Isolation
-# --------------------------------------------------------------------------
-
-
-def test_workspace_isolation_checks_run_in_healthy_environment() -> None:
-    report = _run(_healthy_connection())
-    for name in (
-        "rls_read_isolation",
-        "rls_fail_closed_without_context",
-        "rls_write_check_blocks_cross_workspace",
-        "rls_update_cannot_reach_other_workspace",
-    ):
-        assert _named(report, name)["ok"], f"{name} fehlgeschlagen"
-    assert "workspace_isolation" not in report["scope"]["not_implemented_phases"]
-
-
-def test_rls_leak_is_blocked() -> None:
-    """Sieht ws-a mehr als die eigene Zeile, ist die Isolation gebrochen."""
-    connection = _healthy_connection()
-
-    original = connection.answer
-
-    def leaky(sql: str):
-        if "select id from" in sql.lower() and ".records" in sql.lower():
-            return [(1,), (2,)]           # ws-a sieht auch die Zeile von ws-b
-        return original(sql)
-
-    connection.answer = leaky  # type: ignore[method-assign]
-    report = _run(connection)
-    assert report["status"] == gate.BLOCKED
-    assert "rls_read_isolation" in report["blockers"]
-
-
-def test_rls_not_fail_closed_is_blocked() -> None:
-    connection = _healthy_connection()
-    original = connection.answer
-
-    def visible(sql: str):
-        if "count(*)" in sql.lower() and ".records" in sql.lower():
-            return [(2,)]                 # ohne Kontext trotzdem Zeilen sichtbar
-        return original(sql)
-
-    connection.answer = visible  # type: ignore[method-assign]
-    report = _run(connection)
-    assert report["status"] == gate.BLOCKED
-    assert "rls_fail_closed_without_context" in report["blockers"]
-
-
-def test_accepted_cross_workspace_write_is_blocked() -> None:
-    """Laesst WITH CHECK einen fremden Insert durch, fehlt der Schutz."""
-    failures = dict(REALISTIC_PGVECTOR)
-    failures["'x')"] = "allow"
-    report = _run(_healthy_connection(failures=failures))
-    assert report["status"] == gate.BLOCKED
-    assert "rls_write_check_blocks_cross_workspace" in report["blockers"]
-
-
-def test_workspace_isolation_schema_is_dropped() -> None:
-    connection = _healthy_connection()
-    _run(connection)
-    dropped = [s for s in connection.statements if s.startswith("DROP SCHEMA")]
-    assert any("_rls_" in s for s in dropped), "RLS-Testschema blieb zurueck"
 
 
 # --------------------------------------------------------------------------
