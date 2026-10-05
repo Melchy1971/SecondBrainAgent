@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import os
 from contextlib import contextmanager
-from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol
 
@@ -47,7 +46,6 @@ class PostgresTaskRepository:
     def __init__(self, executor: Any, *, require_workspace: bool | None = None,
                  env: Mapping[str, str] | None = None) -> None:
         self.executor = executor
-        self._active_transaction = ContextVar(f"task_repository_tx_{id(self)}", default=None)
         self.dialect = getattr(executor, "dialect", "postgresql")
         if require_workspace is None:
             values = env if env is not None else os.environ
@@ -155,10 +153,6 @@ class PostgresTaskRepository:
 
     @contextmanager
     def _transaction(self):
-        active = self._active_transaction.get()
-        if active is not None:
-            yield active
-            return
         database = getattr(self.executor, "database", None)
         if database is None:
             with self.executor.transaction() as tx:
@@ -173,43 +167,10 @@ class PostgresTaskRepository:
         with database.session() as session:
             yield SessionExecutor(session)
 
-    @contextmanager
-    def dependency_transaction(self, workspace_id: str):
-        """Serialize graph edits, including an initially empty graph."""
-        from secondbrain.storage.workspace_context import validate_workspace_id
-        workspace_id = validate_workspace_id(workspace_id)
-        with self._transaction() as tx:
-            self._apply_workspace(tx, workspace_id)
-            if self._supports_rls():
-                tx.execute("SELECT pg_advisory_xact_lock(hashtextextended(:scope, 0))",
-                           {"scope": f"task_dependencies:{workspace_id}"})
-            token = self._active_transaction.set(tx)
-            try:
-                yield
-            finally:
-                self._active_transaction.reset(token)
-
     def append(self, collection: str, row: dict[str, Any], *, workspace_id: str | None = None) -> None:
-        self._validate_collection(collection)
-        self._require_check(workspace_id)
-        desired = dict(row)
-        id_field = _ID_FIELDS[collection]
-        if not desired.get(id_field) or not desired.get("workspace_id"):
-            raise TaskRepositoryError(f"invalid_{collection}_record")
-        if workspace_id is not None:
-            from secondbrain.storage.workspace_context import validate_workspace_id
-            workspace_id = validate_workspace_id(workspace_id)
-            if str(desired["workspace_id"]) != workspace_id:
-                raise TaskRepositoryError("write_crosses_workspace")
-        params = {"collection": collection, "record_id": str(desired[id_field]),
-                  "workspace_id": str(desired["workspace_id"]),
-                  "version": int(desired.get("version", 1)),
-                  "data": json.dumps(desired, ensure_ascii=False, sort_keys=True)}
-        with self._transaction() as tx:
-            self._apply_workspace(tx, workspace_id)
-            tx.execute(
-                "INSERT INTO task_project_records(collection,record_id,workspace_id,version,data) "
-                "VALUES(:collection,:record_id,:workspace_id,:version,:data)", params)
+        existing = self.read(collection, workspace_id=workspace_id)
+        existing.append(dict(row))
+        self.write(collection, existing, workspace_id=workspace_id)
 
     @staticmethod
     def _validate_collection(collection: str) -> None:

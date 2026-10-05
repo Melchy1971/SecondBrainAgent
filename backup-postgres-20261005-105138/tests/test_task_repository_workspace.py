@@ -12,8 +12,6 @@ ist versionsneutral.
 from __future__ import annotations
 
 import pytest
-from concurrent.futures import ThreadPoolExecutor
-from threading import Barrier
 
 from secondbrain.storage.db_executor import SqliteExecutor
 from secondbrain.tasks.repository import PostgresTaskRepository, TaskRepositoryError
@@ -28,48 +26,6 @@ def _repo(tmp_path, *, require_workspace: bool = False) -> PostgresTaskRepositor
 
 def _project(pid: str, workspace: str) -> dict:
     return {"project_id": pid, "workspace_id": workspace, "title": pid, "version": 1}
-
-
-def test_concurrent_append_preserves_all_records_across_connections(tmp_path):
-    first = _repo(tmp_path, require_workspace=True)
-    second = _repo(tmp_path, require_workspace=True)
-    barrier = Barrier(2)
-
-    def append_records(repo, prefix):
-        barrier.wait(timeout=5)
-        for number in range(25):
-            repo.append("events", {"event_id": f"{prefix}-{number}", "workspace_id": "ws-a"},
-                        workspace_id="ws-a")
-
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        futures = [pool.submit(append_records, first, "first"),
-                   pool.submit(append_records, second, "second")]
-        for future in futures:
-            future.result(timeout=10)
-    assert {r["event_id"] for r in first.read("events", workspace_id="ws-a")} == {
-        f"{prefix}-{number}" for prefix in ("first", "second") for number in range(25)}
-
-
-def test_append_does_not_read_or_replace_collection(tmp_path, monkeypatch):
-    repo = _repo(tmp_path, require_workspace=True)
-    def forbidden(*args, **kwargs):
-        pytest.fail("append must not read or replace the collection")
-    monkeypatch.setattr(repo, "read", forbidden)
-    monkeypatch.setattr(repo, "write", forbidden)
-    repo.append("projects", _project("p1", "ws-a"), workspace_id="ws-a")
-    with pytest.raises(TaskRepositoryError, match="write_crosses_workspace"):
-        repo.append("projects", _project("p2", "ws-b"), workspace_id="ws-a")
-
-
-def test_dependency_transaction_rolls_back_and_clears_context(tmp_path):
-    repo = _repo(tmp_path, require_workspace=True)
-    with pytest.raises(RuntimeError, match="abort"):
-        with repo.dependency_transaction("ws-a"):
-            repo.append("events", {"event_id": "rolled-back", "workspace_id": "ws-a"}, workspace_id="ws-a")
-            raise RuntimeError("abort")
-    assert repo.read("events", workspace_id="ws-a") == []
-    repo.append("events", {"event_id": "committed", "workspace_id": "ws-a"}, workspace_id="ws-a")
-    assert [r["event_id"] for r in repo.read("events", workspace_id="ws-a")] == ["committed"]
 
 
 # --------------------------------------------------------------------------

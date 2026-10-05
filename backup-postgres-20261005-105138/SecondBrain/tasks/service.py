@@ -8,7 +8,6 @@ overdue tasks, isolates workspaces and routes deletes through an approval.
 from __future__ import annotations
 
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -164,13 +163,6 @@ class TaskProjectService:
     # -- projects ---------------------------------------------------------
 
     def create_project(self, *, workspace_id: str, title: str, actor: str = "user", **fields: Any) -> Project:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._create_project(workspace_id=workspace_id, title=title, actor=actor, **fields)
-        return self._create_project(workspace_id=workspace_id, title=title, actor=actor, **fields)
-
-    def _create_project(self, *, workspace_id: str, title: str, actor: str, **fields: Any) -> Project:
         project = Project(project_id=new_id("prj"), workspace_id=workspace_id, title=title,
                           source=fields.pop("source", "user"), **{k: v for k, v in fields.items() if k in Project.__dataclass_fields__})
         rows = self._read("projects", workspace_id=workspace_id)
@@ -179,13 +171,6 @@ class TaskProjectService:
         return project
 
     def update_project(self, project_id: str, *, workspace_id: str, **changes: Any) -> Project:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._update_project(project_id, workspace_id=workspace_id, **changes)
-        return self._update_project(project_id, workspace_id=workspace_id, **changes)
-
-    def _update_project(self, project_id: str, *, workspace_id: str, **changes: Any) -> Project:
         rows = self._read("projects", workspace_id=workspace_id)
         updated: Project | None = None
         for i, row in enumerate(rows):
@@ -221,19 +206,7 @@ class TaskProjectService:
 
     # -- tasks ------------------------------------------------------------
 
-    def _validate_project_reference(self, project_id: str | None, workspace_id: str) -> None:
-        if project_id is not None and self.get_project(project_id, workspace_id=workspace_id) is None:
-            raise TaskServiceError("project_not_found")
-
     def create_task(self, *, workspace_id: str, title: str, project_id: str | None = None, actor: str = "user", **fields: Any) -> Task:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._create_task(workspace_id=workspace_id, title=title, project_id=project_id, actor=actor, **fields)
-        return self._create_task(workspace_id=workspace_id, title=title, project_id=project_id, actor=actor, **fields)
-
-    def _create_task(self, *, workspace_id: str, title: str, project_id: str | None, actor: str, **fields: Any) -> Task:
-        self._validate_project_reference(project_id, workspace_id)
         allowed = {k: v for k, v in fields.items() if k in Task.__dataclass_fields__}
         task = Task(task_id=new_id("tsk"), project_id=project_id, workspace_id=workspace_id, title=title, **allowed)
         rows = self._read("tasks", workspace_id=workspace_id)
@@ -252,24 +225,13 @@ class TaskProjectService:
         return None
 
     def update_task(self, task_id: str, *, workspace_id: str, actor: str = "user", **changes: Any) -> Task:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._update_task(task_id, workspace_id=workspace_id, actor=actor, **changes)
-        return self._update_task(task_id, workspace_id=workspace_id, actor=actor, **changes)
-
-    def _update_task(self, task_id: str, *, workspace_id: str, actor: str, **changes: Any) -> Task:
         rows = self._read("tasks", workspace_id=workspace_id)
         updated: Task | None = None
-        previous_project_id: str | None = None
         for i, row in enumerate(rows):
             if row.get("task_id") == task_id and row.get("workspace_id") == workspace_id:
                 expected_version = changes.pop("expected_version", None)
                 if expected_version is not None and int(expected_version) != int(row.get("version", 1)):
                     raise VersionConflict(f"task_version_conflict:{task_id}")
-                if "project_id" in changes:
-                    self._validate_project_reference(changes["project_id"], workspace_id)
-                previous_project_id = row.get("project_id")
                 new_status = changes.get("status")
                 if new_status is not None and new_status != row.get("status"):
                     self._validate_transition(str(row.get("status")), str(new_status))
@@ -287,8 +249,6 @@ class TaskProjectService:
         self._emit(updated, TaskEventType.UPDATED, actor=actor, detail=",".join(changes))
         if updated.project_id:
             self._recompute_progress(updated.project_id, workspace_id)
-        if previous_project_id and previous_project_id != updated.project_id:
-            self._recompute_progress(previous_project_id, workspace_id)
         return updated
 
     @staticmethod
@@ -325,13 +285,6 @@ class TaskProjectService:
         return task
 
     def delete_task(self, task_id: str, *, workspace_id: str, actor: str = "user", approved: bool = False) -> dict[str, Any]:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if approved and transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._delete_task(task_id, workspace_id=workspace_id, actor=actor, approved=True)
-        return self._delete_task(task_id, workspace_id=workspace_id, actor=actor, approved=approved)
-
-    def _delete_task(self, task_id: str, *, workspace_id: str, actor: str, approved: bool) -> dict[str, Any]:
         task = self.get_task(task_id, workspace_id=workspace_id)
         if task is None:
             raise TaskServiceError(f"task_not_found:{task_id}")
@@ -344,8 +297,6 @@ class TaskProjectService:
                 if d.get("predecessor_id") != task_id and d.get("successor_id") != task_id]
         self._write("dependencies", deps, workspace_id=workspace_id)
         self._emit(task, TaskEventType.DELETED, actor=actor)
-        if task.project_id:
-            self._recompute_progress(task.project_id, workspace_id)
         return {"status": "deleted", "task_id": task_id}
 
     def _create_delete_approval(self, task: Task, actor: str) -> dict[str, Any]:
@@ -365,58 +316,23 @@ class TaskProjectService:
 
     def add_dependency(self, predecessor_id: str, successor_id: str, *, workspace_id: str,
                        dependency_type: str = DependencyType.FINISH_TO_START.value, lag_minutes: int = 0) -> TaskDependency:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                return self._add_dependency(predecessor_id, successor_id, workspace_id=workspace_id,
-                                            dependency_type=dependency_type, lag_minutes=lag_minutes)
-        return self._add_dependency(predecessor_id, successor_id, workspace_id=workspace_id,
-                                    dependency_type=dependency_type, lag_minutes=lag_minutes)
-
-    def _add_dependency(self, predecessor_id: str, successor_id: str, *, workspace_id: str,
-                        dependency_type: str, lag_minutes: int) -> TaskDependency:
-        if not isinstance(dependency_type, str) or dependency_type not in {item.value for item in DependencyType}:
-            raise TaskServiceError("invalid_dependency_type")
-        # Preserve integer strings used by form callers, without silently
-        # truncating decimals or interpreting booleans as minute counts.
-        if isinstance(lag_minutes, bool) or not isinstance(lag_minutes, (int, str)):
-            raise TaskServiceError("invalid_dependency_lag")
-        if isinstance(lag_minutes, str) and re.fullmatch(r"[+-]?[0-9]+", lag_minutes.strip()) is None:
-            raise TaskServiceError("invalid_dependency_lag")
-        try:
-            lag = int(lag_minutes)
-        except (TypeError, ValueError, OverflowError):
-            raise TaskServiceError("invalid_dependency_lag") from None
         if predecessor_id == successor_id:
             raise DependencyCycleError("self_dependency")
         for tid in (predecessor_id, successor_id):
             if self.get_task(tid, workspace_id=workspace_id) is None:
                 raise TaskServiceError(f"task_not_found:{tid}")
-        rows = self._read("dependencies", workspace_id=workspace_id)
-        for row in rows:
-            if row.get("predecessor_id") == predecessor_id and row.get("successor_id") == successor_id:
-                if row.get("dependency_type") != dependency_type or row.get("lag_minutes") != lag:
-                    raise TaskServiceError("dependency_conflict")
-                return TaskDependency.from_dict(row)
         edges = self._dependency_edges(workspace_id)
         edges.setdefault(predecessor_id, set()).add(successor_id)
         if self._creates_cycle(edges, successor_id, predecessor_id):
             raise DependencyCycleError(f"cycle:{predecessor_id}->{successor_id}")
         dep = TaskDependency(predecessor_id=predecessor_id, successor_id=successor_id,
-                             dependency_type=dependency_type, lag_minutes=lag)
+                             dependency_type=dependency_type, lag_minutes=int(lag_minutes))
+        rows = self._read("dependencies", workspace_id=workspace_id)
         rows.append({**dep.to_dict(), "workspace_id": workspace_id})
         self._write("dependencies", rows, workspace_id=workspace_id)
         return dep
 
     def remove_dependency(self, predecessor_id: str, successor_id: str, *, workspace_id: str) -> None:
-        transaction = getattr(self._repository, "dependency_transaction", None)
-        if transaction is not None:
-            with transaction(self._scope(workspace_id)):
-                self._remove_dependency(predecessor_id, successor_id, workspace_id=workspace_id)
-            return
-        self._remove_dependency(predecessor_id, successor_id, workspace_id=workspace_id)
-
-    def _remove_dependency(self, predecessor_id: str, successor_id: str, *, workspace_id: str) -> None:
         rows = [d for d in self._read("dependencies", workspace_id=workspace_id)
                 if not (d.get("predecessor_id") == predecessor_id and d.get("successor_id") == successor_id)]
         self._write("dependencies", rows, workspace_id=workspace_id)
@@ -510,7 +426,11 @@ class TaskProjectService:
 
     def _recompute_progress(self, project_id: str, workspace_id: str) -> None:
         tasks = self.list_tasks(workspace_id=workspace_id, project_id=project_id)
+        if not tasks:
+            return
         done = sum(1 for t in tasks if t.status == Status.COMPLETED.value)
-        progress = round(done / len(tasks) * 100.0, 1) if tasks else 0.0
-        if self.get_project(project_id, workspace_id=workspace_id) is not None:
+        progress = round(done / len(tasks) * 100.0, 1)
+        try:
             self.update_project(project_id, workspace_id=workspace_id, progress=progress)
+        except TaskServiceError:
+            pass

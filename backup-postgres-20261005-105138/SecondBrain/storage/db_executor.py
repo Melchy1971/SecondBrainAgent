@@ -94,14 +94,8 @@ class SqliteExecutor(SqlExecutor):
         self.path = path or ":memory:"
         # isolation_level=None -> autocommit; we manage transactions explicitly so that
         # DDL inside a transaction is rolled back atomically (Python default auto-commits DDL).
-        self._conn = sqlite3.connect(
-            self.path,
-            isolation_level=None,
-            check_same_thread=False,
-            timeout=30.0,
-        )
+        self._conn = sqlite3.connect(self.path, isolation_level=None, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
-        self._conn.execute("PRAGMA busy_timeout = 30000")
         self._lock = threading.RLock()
 
     def execute(self, sql: str, params=None) -> list[tuple]:
@@ -117,10 +111,7 @@ class SqliteExecutor(SqlExecutor):
     @contextmanager
     def transaction(self):
         with self._lock:
-            # Acquire the write reservation before repository read-modify-write
-            # sequences. Deferred transactions can deadlock when two separate
-            # connections both read and then attempt to upgrade to a writer.
-            self._conn.execute("BEGIN IMMEDIATE")
+            self._conn.execute("BEGIN")
             try:
                 yield self
                 self._conn.execute("COMMIT")
