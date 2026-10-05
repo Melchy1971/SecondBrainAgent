@@ -1,15 +1,15 @@
 # Executive Dashboard v9
 
-Aktualisiert: 2026-07-14
+Aktualisiert: 2026-10-05
 
 | KPI | Wert |
 |---|---:|
-| Markdown-Dateien | 212 |
+| Markdown-Dateien | 257 |
 | Projekte | 0 |
 | offene Aufgaben | 0 |
-| Risiko-/Blocker-Signale | 1079 |
-| Entscheidungs-Signale | 1198 |
-| Meeting-Signale | 287 |
+| Risiko-/Blocker-Signale | 1177 |
+| Entscheidungs-Signale | 700 |
+| Meeting-Signale | 437 |
 
 ## Management-Fokus
 

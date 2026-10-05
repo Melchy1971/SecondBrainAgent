@@ -1,0 +1,16 @@
+vaults:
+  secondbrain:
+    path: data/vaults/secondbrain
+    enabled: true
+  wissen:
+    path: data/vaults/wissen
+    enabled: false
+  beruf:
+    path: data/vaults/beruf
+    enabled: false
+  privat:
+    path: data/vaults/privat
+    enabled: false
+  verein:
+    path: data/vaults/verein
+    enabled: false

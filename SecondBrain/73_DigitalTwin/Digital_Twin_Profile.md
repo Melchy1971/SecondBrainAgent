@@ -1,17 +1,17 @@
 # Digital Twin Profile
 
-Aktualisiert: 2026-07-14
+Aktualisiert: 2026-10-05
 
 ## Arbeitsmuster
 
-- projekt: 362
-- prozess: 235
-- wissen: 100
-- claude: 29
-- python: 7
-- obsidian: 6
+- projekt: 531
+- prozess: 298
+- wissen: 136
+- claude: 63
+- obsidian: 8
+- python: 8
+- sap: 4
 - tischtennis: 4
-- sap: 3
 
 ## Ableitungen
 

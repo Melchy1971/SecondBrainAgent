@@ -2,4 +2,4 @@
 
 | Notiztyp | Anzahl |
 |---|---:|
-| unknown | 204 |
+| unknown | 248 |

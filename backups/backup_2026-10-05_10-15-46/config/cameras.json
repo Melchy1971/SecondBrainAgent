@@ -1,0 +1,18 @@
+{
+  "gateway_webrtc": "http://127.0.0.1:8889",
+  "gateway_hls": "http://127.0.0.1:8888",
+  "cameras": [
+    {
+      "id": "webcam",
+      "name": "USB-Webcam",
+      "location": "Arbeitsplatz",
+      "host": "",
+      "rtsp_port": 554,
+      "stream_path": "webcam",
+      "mode": "local",
+      "snapshot_url": "",
+      "onvif_port": 8000,
+      "enabled": true
+    }
+  ]
+}

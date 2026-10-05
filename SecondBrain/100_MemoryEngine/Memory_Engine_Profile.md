@@ -1,53 +1,54 @@
 # Memory Engine Profile v9.7
 
-Aktualisiert: 2026-07-14
+Aktualisiert: 2026-10-05
 
 ## Kurzzeitgedächtnis
 
-- [[Voice_Assistant_Status]]
-- [[Vector_RAG_Index]]
-- [[Temporal_Knowledge_Graph]]
 - [[SecondBrain_v9_5_Control_Center]]
-- [[SecondBrain_OS_Control_Center]]
-- [[Plugin_Ecosystem]]
-- [[Personal_CRM_Index]]
-- [[Meeting_Transcription_Status]]
-- [[Life_Dashboard_v10]]
-- [[Knowledge_Intelligence_Dashboard_v99]]
-- [[Executive_Dashboard_v9]]
-- [[Email_Connector_Status]]
-- [[Digital_Twin_v6]]
-- [[Calendar_Connector_Status]]
 - [[Autonomous_Agents_Status]]
-- [[2026-07-14_weekly-os]]
-- [[2026-07-14_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
-- [[2026-07-14_monitoring]]
-- [[2026-07-14_learning-plan]]
-- [[2026-07-14_knowledge-quality]]
-- [[2026-07-14_event-bus]]
-- [[2026-07-14_daily-os]]
-- [[2026-07-14_cross-source-intelligence]]
-- [[2026-07-14_contradictions]]
-- [[facts_tasks]]
-- [[facts_tags]]
-- [[facts_projects]]
-- [[facts_documents]]
-- [[facts_decisions]]
+- [[2026-10-05_event-bus]]
+- [[Email_Connector_Status]]
+- [[Calendar_Connector_Status]]
+- [[Meeting_Transcription_Status]]
+- [[Vector_RAG_Index]]
+- [[2026-10-05_daily-assistant]]
+- [[Goal_Map]]
+- [[SecondBrain_OS_Control_Center]]
+- [[Digital_Twin_v6]]
+- [[2026-10-05_reasoning-map]]
+- [[2026-10-05_self-reflection]]
+- [[Plugin_Ecosystem]]
+- [[2026-10-05_monitoring]]
+- [[Voice_Assistant_Status]]
+- [[Executive_Dashboard_v9]]
+- [[Personal_CRM_Index]]
+- [[Memory_Engine_Profile]]
+- [[2026-10-05_simulation_Was_passiert_wenn_ein_wichtiges_Projekt_blockiert_ist]]
+- [[2026-10-05_learning-plan]]
+- [[2026-10-05_recommendations]]
 - [[Workflow_Catalog]]
+- [[SecondBrain_OS_Dashboard]]
+- [[2026-10-05_self-improvement-plan]]
+- [[Digital_Twin_v5]]
+- [[MCP_Ecosystem_Status]]
+- [[facts_projects]]
+- [[facts_tags]]
+- [[facts_decisions]]
 
 ## Langzeit-Signale
 
-- decision: 1199
-- risk: 1078
-- project: 407
-- meeting: 272
-- learning: 12
+- risk: 1195
+- decision: 723
+- project: 570
+- meeting: 424
+- learning: 14
 
 ## Häufige Tags
 
+- #Entscheidungen: 3
+- #Prioritäten: 3
 - #Arbeitsmuster: 2
 - #BPMN: 2
-- #Entscheidungen: 2
 - #Fokuszeiten: 2
 - #Gesundheit: 2
 - #KPIs: 2
@@ -58,7 +59,6 @@ Aktualisiert: 2026-07-14
 - #Meeting-Vorbereitung: 2
 - #Multi-Agent-Swarm: 2
 - #Nachbereitung: 2
-- #Prioritäten: 2
 - #Produktivität: 2
 - #Prozesslandkarte: 2
 - #RACI: 2
@@ -70,36 +70,36 @@ Aktualisiert: 2026-07-14
 
 ## Häufige Verknüpfungen
 
-- [[Memory_Profile]]: 6248
-- [[facts_decisions]]: 3099
-- [[Decision_Journal]]: 1690
-- [[Decision_Intelligence_v2]]: 1529
-- [[Decision_Register]]: 946
-- [[weighted_edges]]: 281
-- [[Temporal_Graph]]: 261
-- [[2026-07-14_refactoring-proposals]]: 240
-- [[2026-07-14_quality-scores]]: 220
-- [[2026-07-13_knowledge-quality]]: 183
-- [[2026-07-13_self-improvement-plan]]: 164
-- [[Memory_Engine_Profile]]: 141
-- [[Personal_CRM_Index]]: 140
-- [[2026-07-13_chief-of-staff-v98]]: 138
-- [[2026-07-13_reasoning-map]]: 136
-- [[2026-07-14_memory-replay]]: 135
-- [[Digital_Twin_v5]]: 133
-- [[Digital_Twin_v6]]: 130
-- [[2026-07-14_semantic-deduplication]]: 125
-- [[2026-07-14_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 122
-- [[2026-07-14_self-improvement-plan]]: 122
-- [[Knowledge_Intelligence_Dashboard_v99]]: 118
-- [[Calendar_Agent_Memory_v2]]: 111
-- [[Project_Memory]]: 110
-- [[2026-07-14_process-design-backlog]]: 109
-- [[Project_Agent_Memory_v2]]: 109
-- [[2026-07-13_self-reflection]]: 108
-- [[Executive_Memory]]: 105
-- [[2026-07-13_project-agent]]: 103
-- [[2026-07-13_refactoring-proposals]]: 103
+- [[Memory_Profile]]: 8291
+- [[facts_decisions]]: 4631
+- [[Decision_Intelligence_v2]]: 2436
+- [[Decision_Journal]]: 2091
+- [[Decision_Register]]: 1913
+- [[weighted_edges]]: 332
+- [[Temporal_Graph]]: 322
+- [[2026-07-14_refactoring-proposals]]: 271
+- [[2026-07-14_quality-scores]]: 251
+- [[2026-07-14_knowledge-quality]]: 238
+- [[2026-07-13_knowledge-quality]]: 207
+- [[2026-07-13_reasoning-map]]: 179
+- [[2026-07-13_self-improvement-plan]]: 174
+- [[2026-07-13_chief-of-staff-v98]]: 163
+- [[Memory_Engine_Profile]]: 162
+- [[2026-07-14_reasoning-map]]: 161
+- [[2026-07-13_self-reflection]]: 158
+- [[Knowledge_Intelligence_Dashboard_v99]]: 157
+- [[2026-07-14_semantic-deduplication]]: 154
+- [[2026-07-14_memory-replay]]: 151
+- [[2026-07-14_self-improvement-plan]]: 145
+- [[2026-07-14_simulation_was-passiert-wenn-ein-zentrales-projekt-blockiert-ist]]: 144
+- [[2026-07-14_project-agent]]: 140
+- [[2026-07-14_chief-of-staff-v98]]: 135
+- [[Calendar_Agent_Memory_v2]]: 128
+- [[2026-07-14_process-design-backlog]]: 125
+- [[Project_Agent_Memory_v2]]: 124
+- [[2026-07-13_project-agent]]: 123
+- [[Project_Memory]]: 121
+- [[2026-07-14_project-intelligence]]: 119
 
 ## Offene Aufgaben
 

@@ -1,21 +1,27 @@
 # Research Agent Memory v2
 
-Aktualisiert: 2026-07-14
+Aktualisiert: 2026-10-05
 
 ## Relevante Notizen
 
 - [[2026-07-14_research-backlog-agent]] — Score 121
+- [[2026-07-14_knowledge-quality]] — Score 115
 - [[2026-07-14_self-improvement-plan]] — Score 100
 - [[2026-07-13_self-improvement-plan]] — Score 96
 - [[2026-07-13_knowledge-quality]] — Score 88
 - [[2026-07-13_research-backlog-agent]] — Score 85
 - [[Knowledge_Intelligence_Dashboard_v99]] — Score 36
 - [[Entity_Index]] — Score 6
-- [[Personal_CRM_Index]] — Score 4
+- [[2026-10-05_research-backlog]] — Score 5
 - [[2026-07-14_research-backlog]] — Score 4
+- [[Personal_CRM_Index]] — Score 3
+- [[2026-07-14_cross-source-intelligence]] — Score 3
 - [[2026-07-13_research-backlog]] — Score 3
 - [[2026-07-13_cross-source-intelligence]] — Score 3
+- [[Memory_Profile]] — Score 2
 - [[Enterprise_RAG_Status]] — Score 2
+- [[2026-10-05_knowledge-gaps]] — Score 2
+- [[2026-10-05_autonomy-report]] — Score 2
 - [[2026-07-14_knowledge-gaps]] — Score 2
 - [[2026-07-14_autonomy-report]] — Score 2
 - [[2026-07-13_autonomy-report]] — Score 2
@@ -27,7 +33,6 @@ Aktualisiert: 2026-07-14
 - [[Verein_Index]] — Score 1
 - [[Reisen_Index]] — Score 1
 - [[Process_Copilot_Commands]] — Score 1
-- [[Memory_Profile]] — Score 1
 - [[Knowledge_Lineage]] — Score 1
 - [[Gesundheit_Index]] — Score 1
 - [[Finanzen_Index]] — Score 1
@@ -37,22 +42,17 @@ Aktualisiert: 2026-07-14
 - [[Decision_Journal]] — Score 1
 - [[Decision_Intelligence_v2]] — Score 1
 - [[Agent_Collaboration_Protocol]] — Score 1
+- [[2026-10-05_self-healing-report]] — Score 1
+- [[2026-10-05_recommendations]] — Score 1
+- [[2026-10-05_prozesslandkarte]] — Score 1
+- [[2026-10-05_process-mining]] — Score 1
+- [[2026-10-05_learning-report]] — Score 1
+- [[2026-10-05_chief-of-staff-v2]] — Score 1
+- [[2026-10-05_chief-of-staff]] — Score 1
 - [[2026-07-14_task-agent]] — Score 1
 - [[2026-07-14_self-healing-report]] — Score 1
 - [[2026-07-14_recommendations]] — Score 1
 - [[2026-07-14_reasoning-map]] — Score 1
 - [[2026-07-14_prozesslandkarte]] — Score 1
-- [[2026-07-14_process-mining]] — Score 1
-- [[2026-07-14_learning-report]] — Score 1
-- [[2026-07-14_chief-of-staff-v98]] — Score 1
-- [[2026-07-14_chief-of-staff-v2]] — Score 1
-- [[2026-07-14_chief-of-staff]] — Score 1
-- [[2026-07-13_task-agent]] — Score 1
-- [[2026-07-13_self-healing-report]] — Score 1
-- [[2026-07-13_recommendations]] — Score 1
-- [[2026-07-13_reasoning-map]] — Score 1
-- [[2026-07-13_prozesslandkarte]] — Score 1
-- [[2026-07-13_process-mining]] — Score 1
-- [[2026-07-13_learning-report]] — Score 1
 
 ## Gelernte Tags

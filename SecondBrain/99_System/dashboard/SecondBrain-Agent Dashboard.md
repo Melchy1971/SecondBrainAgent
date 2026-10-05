@@ -1,12 +1,12 @@
 # SecondBrain-Agent Dashboard
 
-Aktualisiert: 2026-07-14 10:34:03
+Aktualisiert: 2026-10-05 10:15:49
 
 ## Status
 
 - Neue Imports im letzten Lauf: 0
 - Insgesamt verarbeitete Dateien: 0
-- Dateien aktuell in Inbox: 10
+- Dateien aktuell in Inbox: 11
 - Archivierte Dateien: 0
 - Fehlerhafte Dateien: 0
 
@@ -23,5 +23,5 @@ Aktualisiert: 2026-07-14 10:34:03
 
 ## Relevante Systemdateien
 
-- [[../reports/2026-07-14_import-report]]
-- [[../claude_review/2026-07-14_review-queue]]
+- [[../reports/2026-10-05_import-report]]
+- [[../claude_review/2026-10-05_review-queue]]
