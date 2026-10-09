@@ -26,10 +26,15 @@ Adresse: `http://127.0.0.1:8851`.
 
 Das HUD stellt lokale Status-, RAG-, Dokument-, Memory-, Connector-, Agent-, Settings- und Security-Endpunkte bereit. Es ist kein fuer das Internet gehaerteter Remote-Dienst.
 
+Request-Schutz: Der Server akzeptiert nur Requests mit Loopback-`Host` (bzw. dem gebundenen Host) gegen DNS-Rebinding. POSTs mit `Origin`-Header werden nur vom HUD-eigenen Origin angenommen (CSRF-Schutz); fremde Origins erhalten `403` und werden als `hud.request_rejected` geloggt.
+
+Systemstatus: Header, System-Info und Alerts zeigen ausschliesslich Echtdaten aus `GET /api/system-truth` (`secondbrain/gui/system_truth.py`, 30 s gecacht): Datenbank-Backend und pgvector, Embedding-Provider-Health, Vektorindex, Release-Gate-Bericht (mit Veraltet-Kennung bei abweichender Version), Backups, Memory-Governance, erreichbare Ollama-Modelle und Job-Queue. Nicht ermittelbare Werte werden als `—` angezeigt. Version und Environment sind keine Settings mehr, das wirkungslose `log_level` wurde entfernt; fruehere Statusfelder in `config/hud_settings.json` werden ignoriert und beim naechsten Speichern entfernt.
+
 Relevante Dateien:
 
 - `secondbrain/hud_core.py`
 - `secondbrain/jarvis_hud_server.py`
+- `secondbrain/gui/system_truth.py`
 - `web/jarvis_hud/index.html`
 - `scripts/start_hud.py`
 

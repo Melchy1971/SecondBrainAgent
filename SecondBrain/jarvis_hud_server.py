@@ -29,6 +29,7 @@ Endpoints:
     GET /api/memory            -> Vault-Memory-Ordner gruppiert (read-only)
     GET /api/memory/stats      -> echter Memory-Bestand
     GET /api/memory-center/status -> Memory Center Runtime Truth
+    GET /api/system-truth      -> Echtdaten fuer Header/System-Info/Alerts
     GET /api/knowledge/stats   -> Wissensgraph-Kennzahlen
     GET /api/knowledge/entities-> Entitaeten (Suche/Typ/Limit, dedupliziert)
     GET /api/knowledge/entity  -> Entitaet-Detail (Beziehungen + Quellnotiz)
@@ -93,6 +94,7 @@ from secondbrain.security_cameras import (  # noqa: E402
 )
 from secondbrain.env_loader import load_env_file  # noqa: E402
 from secondbrain.version import get_version  # noqa: E402
+from secondbrain.gui.system_truth import CachedSystemTruth, build_system_truth  # noqa: E402
 
 HUD_HTML = ROOT / "web" / "jarvis_hud" / "index.html"
 
@@ -136,38 +138,13 @@ DEFAULT_SETTINGS = {
     "news_max": NEWS_MAX,
     "weather_min": 15,   # Wetter-Refresh im Browser (Minuten)
     "accent": "#2fe6ff",  # HUD-Akzentfarbe
-    # --- Identitaet / Header (Version kommt aus get_version(), nicht aus Settings) ---
-    "environment": "production",
-    "log_level": "INFO",
-    "system_health": "EXCELLENT",
-    "system_status_text": "All Systems Operational",
+    # --- Identitaet / Header ---
+    # Version, Environment und alle Statuswerte (DB, Embedding, Release Gate,
+    # Backup, Queue ...) sind KEINE Settings: sie kommen aus /api/system-truth.
     "user_name": "Jarvis",
     "user_role": "Administrator",
-    # --- Datenbank / Stack ---
-    "database": "PostgreSQL 16 + pgvector",
-    "postgres_status": "ONLINE",
-    "pgvector_version": "1.0.5",
-    "embedding_provider": "OpenAI",
-    "embedding_model": "text-embedding-3-small",
-    "embedding_dim": 1536,
+    # --- Lokale Dienste ---
     "ollama_url": "http://localhost:11434",
-    "ollama_models": 7,
-    "memory_engine": "LangGraph + Memory Store",
-    # --- Queue / Release Gate ---
-    "queue_name": "Redis Queue",
-    "queue_pending": 3,
-    "release_blocking": 0,
-    # --- Statusleiste / Zaehler ---
-    "backup_active": "Aktiv",
-    "sync_active": "Aktiv",
-    "connectors": 8,
-    "agents_active": 3,
-    "vectors": 1248932,
-    "documents": 4392,
-    "memories": 12845,
-    "backup_last": "15:23",
-    "backup_next": "Heute, 22:00",
-    "vector_index": "OK",
     # --- Assistant (Chat) ---
     "assistant_engine": "ollama",          # ollama | openai
     "assistant_model": "",                 # leer = erstes verfuegbares Ollama-Modell
@@ -187,19 +164,11 @@ DEFAULT_SETTINGS = {
 _NUM = {
     "lat": (-90, 90), "lon": (-180, 180),
     "news_max": (1, 20), "weather_min": (1, 720),
-    "embedding_dim": (1, 100000), "ollama_models": (0, 10000),
-    "queue_pending": (0, 1000000), "release_blocking": (0, 1000000),
-    "connectors": (0, 100000), "agents_active": (0, 100000),
-    "vectors": (0, 10 ** 12), "documents": (0, 10 ** 12), "memories": (0, 10 ** 12),
     "assistant_temperature": (0, 2), "assistant_context_chunks": (1, 20),
     "coding_temperature": (0, 2),
 }
 # Zahlenfelder, die als Ganzzahl gespeichert werden (Rest bleibt float).
-_INT = {
-    "news_max", "weather_min", "embedding_dim", "ollama_models",
-    "queue_pending", "release_blocking", "connectors", "agents_active",
-    "vectors", "documents", "memories", "assistant_context_chunks",
-}
+_INT = {"news_max", "weather_min", "assistant_context_chunks"}
 _SECRET_SETTING_KEYS = {
     "openai_api_key",
     "gemini_api_key",
@@ -216,15 +185,18 @@ def _settings_for_log(settings: dict) -> dict:
 
 
 def load_settings() -> dict:
-    """Settings aus Datei, fehlende Werte aus DEFAULT_SETTINGS."""
+    """Settings aus Datei, fehlende Werte aus DEFAULT_SETTINGS.
+
+    Nur bekannte Keys: Altwerte frueherer Versionen (z. B. die einst
+    editierbaren Statusfelder) werden ignoriert und beim naechsten Speichern
+    aus der Datei entfernt."""
     data = dict(DEFAULT_SETTINGS)
     try:
         if SETTINGS_FILE.exists():
-            data.update(json.loads(SETTINGS_FILE.read_text(encoding="utf-8")))
+            stored = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
+            data.update({k: v for k, v in stored.items() if k in DEFAULT_SETTINGS})
     except Exception as exc:
         log_event("hud.settings_read_error", {"error": str(exc)})
-    # Kanonische Version (pyproject) ueberschreibt Altwerte aus hud_settings.json.
-    data["version"] = f"v{get_version()}"
     return data
 
 
@@ -244,9 +216,8 @@ def save_settings(incoming: dict) -> dict:
             current[key] = int(num) if key in _INT else num
         else:
             current[key] = str(val)[:300]
-    persisted = {k: v for k, v in current.items() if k != "version"}
     SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    SETTINGS_FILE.write_text(json.dumps(persisted, ensure_ascii=False, indent=2),
+    SETTINGS_FILE.write_text(json.dumps(current, ensure_ascii=False, indent=2),
                              encoding="utf-8")
     log_event("hud.settings_saved", _settings_for_log(current))
     return current
@@ -553,6 +524,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(system_status())
         elif path == "/api/runtime-truth":
             self._json(runtime_truth(ROOT))
+        elif path == "/api/system-truth":
+            self._json(system_truth())
         elif path == "/api/native-view":
             self._json(native_view_payload(qs.get("view", [""])[0], ROOT))
         elif path == "/api/dashboards":
@@ -1704,6 +1677,7 @@ _API_ENDPOINTS = [
     ("GET", "/api/review/metrics", "Governance-Metriken"),
     ("GET", "/api/review/notifications", "Review-Notifications + Badge"),
     ("GET", "/api/release-gate", "Release-Gate-Status"),
+    ("GET", "/api/system-truth", "Systemstatus (Echtdaten fuer Header/Alerts)"),
     ("GET", "/api/dev/info", "Developer-Diagnose"),
     ("GET", "/api/coding/models", "Coding-Modelle"),
     ("POST", "/api/coding/generate", "Code generieren (Ollama)"),
@@ -1742,12 +1716,31 @@ def hud_stats() -> dict:
     return out
 
 
+def _build_system_truth() -> dict:
+    base = load_settings().get("ollama_url") or "http://localhost:11434"
+    return build_system_truth(ROOT, release_gate=release_gate_status,
+                              ollama_models=lambda: _ollama_models(base), ollama_url=base)
+
+
+_SYSTEM_TRUTH = CachedSystemTruth(_build_system_truth)
+
+
+def system_truth() -> dict:
+    """Echtdaten fuer Header/System-Info/Alerts (30 s gecacht)."""
+    try:
+        return _SYSTEM_TRUTH.get()
+    except Exception as exc:  # noqa: BLE001 - GUI soll "—" zeigen statt zu brechen
+        log_event("hud.system_truth_error", {"error": type(exc).__name__})
+        return {"ok": False, "error": type(exc).__name__}
+
+
 def dev_info() -> dict:
     s = load_settings()
     st = system_status()
+    truth = system_truth()
+    emb = truth.get("embedding") or {}
     return {"ok": True,
-            "version": s.get("version", ""), "environment": s.get("environment", ""),
-            "log_level": s.get("log_level", ""),
+            "version": f"v{get_version()}", "environment": truth.get("environment", ""),
             "host": os.environ.get("HUD_HOST", "127.0.0.1"),
             "port": int(os.environ.get("HUD_PORT", 8851)),
             "reload": _reload_enabled(),
@@ -1758,10 +1751,10 @@ def dev_info() -> dict:
                       "vault_exists": st.get("vault_exists"),
                       "inbox_exists": st.get("inbox_exists")},
             "markdown_files": st.get("markdown_files", 0),
-            "database": s.get("database", ""),
-            "embedding": f"{s.get('embedding_provider','')} {s.get('embedding_model','')} "
-                         f"({s.get('embedding_dim','')})",
-            "ollama_url": s.get("ollama_url", ""), "ollama_models": s.get("ollama_models", 0),
+            "database": (truth.get("database") or {}).get("label", ""),
+            "embedding": f"{emb.get('provider', '')} {emb.get('model', '')} ({emb.get('dimensions') or '—'})",
+            "ollama_url": s.get("ollama_url", ""),
+            "ollama_models": (truth.get("ollama") or {}).get("models", 0),
             "allowed_scripts": len(ALLOWED_SCRIPTS), "settings_keys": len(DEFAULT_SETTINGS),
             "endpoints": [{"method": me, "path": pa, "desc": de} for me, pa, de in _API_ENDPOINTS]}
 
