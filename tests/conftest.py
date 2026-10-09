@@ -19,6 +19,30 @@ _TEMPROOT.mkdir(exist_ok=True)
 os.environ.setdefault("PYTEST_DEBUG_TEMPROOT", str(_TEMPROOT))
 
 
+@pytest.fixture
+def tk_display(capsys):
+    """Fuer Tests, die echte Tk-Fenster erzeugen.
+
+    Unter Windows scheitert die Tk-Initialisierung sporadisch ("couldn't read
+    file .../init.tcl: No error"), solange pytest stdin/stdout/stderr auf
+    Handle-Ebene umleitet (Standard --capture=fd). Die Erfassung wird daher fuer
+    den ganzen Test ausgesetzt. Die Display-Pruefung laeuft bewusst hier statt
+    in einem skipif zur Sammelzeit: dort griffe dieselbe Umleitung und ein
+    sporadischer Fehler wuerde den Test stillschweigend ueberspringen.
+    """
+    try:
+        import tkinter as tk
+    except ImportError:
+        pytest.skip("tkinter nicht installiert")
+    with capsys.disabled():
+        try:
+            probe = tk.Tk()
+        except tk.TclError as exc:
+            pytest.skip(f"kein Display verfuegbar: {exc}")
+        probe.destroy()
+        yield tk
+
+
 INTEGRATION_DIRS = {
     "integration",
     "connectors_runtime",

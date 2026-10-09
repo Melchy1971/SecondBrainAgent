@@ -12,11 +12,6 @@ from pathlib import Path
 
 import pytest
 
-try:
-    import tkinter as tk
-except Exception:  # pragma: no cover - Umgebungen ohne Tk
-    tk = None  # type: ignore[assignment]
-
 from secondbrain.document_understanding.parser_contract import ParseStatus
 from secondbrain.document_understanding.parsers import default_parser_registry
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
@@ -348,24 +343,12 @@ def test_preview_cli_status_returns_json(tmp_path: Path) -> None:
 
 # --- GUI (Tk-Smoke mit Display-Skip) -----------------------------------------------------
 
-def _display_available() -> bool:
-    if tk is None:
-        return False
-    try:
-        root = tk.Tk()
-    except Exception:  # noqa: BLE001 - TclError oder fehlendes Display
-        return False
-    root.destroy()
-    return True
-
-
-@pytest.mark.skipif(not _display_available(), reason="kein Display verfuegbar")
-def test_preview_frame_builds_and_opens_markdown(tmp_path: Path) -> None:
+def test_preview_frame_builds_and_opens_markdown(tmp_path: Path, tk_display) -> None:
     from secondbrain.native.document_preview.gui import DocumentPreviewFrame
 
     project = _project(tmp_path)
     _write(project, "notiz.md", "# Titel\n\nGUI Inhalt")
-    root = tk.Tk()
+    root = tk_display.Tk()
     try:
         frame = DocumentPreviewFrame(root, project)
         frame.open_document("notiz.md")
@@ -380,10 +363,11 @@ def test_preview_frame_builds_and_opens_markdown(tmp_path: Path) -> None:
         root.destroy()
 
 
-@pytest.mark.skipif(not _display_available(), reason="kein Display verfuegbar")
-def test_ai_workspace_embeds_preview_module(tmp_path: Path) -> None:
+def test_ai_workspace_embeds_preview_module(tk_display) -> None:
     from secondbrain.native.ai_workspace.gui import AIWorkspaceApp
 
+    # Echtes Projekt: die Modulverfuegbarkeit haengt an Projektdateien; in
+    # einem leeren tmp-Projekt stehen alle Module auf "missing".
     app = AIWorkspaceApp(ROOT, initial_module="chat")
     try:
         app.navigate("preview")
