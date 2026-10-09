@@ -508,7 +508,7 @@
     <header class="topbar">
       <div class="title">
         <h1>SECONDBRAIN</h1>
-        <div class="sub">JARVIS CONTROL CENTER <b id="hdr-ver">v30.21</b></div>
+        <div class="sub">JARVIS CONTROL CENTER <b id="hdr-ver">—</b></div>
       </div>
       <div class="pills">
         <div class="pill good"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-12 2 6h6"/></svg></div>
@@ -622,7 +622,7 @@
         <div class="panel">
           <h2>System-Info</h2>
           <div class="info">
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">v30.21</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">—</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="t"><div class="k">Environment</div><div class="v" id="i-env">production</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div><div class="t"><div class="k">Database</div><div class="v" id="i-db">PostgreSQL 16 + pgvector</div></div></div>
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg></div><div class="t"><div class="k">Embedding</div><div class="v" id="i-emb">OpenAI text-embedding-3-small<br><small>Dimension: 1536</small></div></div></div>
@@ -1017,10 +1017,7 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
     <div class="field"><label>News-Anzahl (1–20)</label><input id="set-news_max" type="number" min="1" max="20"></div>
 
     <div class="sec">Identität &amp; Header</div>
-    <div class="field"><div class="row">
-      <div><label>Version</label><input id="set-version" placeholder="v30.21"></div>
-      <div><label>Environment</label><input id="set-environment" placeholder="production"></div>
-    </div></div>
+    <div class="field"><label>Environment</label><input id="set-environment" placeholder="production"></div>
     <div class="field"><div class="row">
       <div><label>System Health</label><input id="set-system_health" placeholder="EXCELLENT"></div>
       <div><label>Log Level</label><input id="set-log_level" placeholder="INFO"></div>
@@ -1122,7 +1119,7 @@ const C = 2 * Math.PI * 30; // Ring-Umfang (r=30)
 // Vollständige Feldliste (muss DEFAULT_SETTINGS im Server entsprechen)
 const FIELDS = [
   "place","lat","lon","news_rss","news_max","weather_min","accent",
-  "version","environment","log_level","system_health","system_status_text","user_name","user_role",
+  "environment","log_level","system_health","system_status_text","user_name","user_role",
   "database","postgres_status","pgvector_version","embedding_provider","embedding_model","embedding_dim",
   "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
   "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",

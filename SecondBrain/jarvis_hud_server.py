@@ -92,6 +92,7 @@ from secondbrain.security_cameras import (  # noqa: E402
     cameras_discover,
 )
 from secondbrain.env_loader import load_env_file  # noqa: E402
+from secondbrain.version import get_version  # noqa: E402
 
 HUD_HTML = ROOT / "web" / "jarvis_hud" / "index.html"
 
@@ -135,8 +136,7 @@ DEFAULT_SETTINGS = {
     "news_max": NEWS_MAX,
     "weather_min": 15,   # Wetter-Refresh im Browser (Minuten)
     "accent": "#2fe6ff",  # HUD-Akzentfarbe
-    # --- Identitaet / Header ---
-    "version": "v30.21",
+    # --- Identitaet / Header (Version kommt aus get_version(), nicht aus Settings) ---
     "environment": "production",
     "log_level": "INFO",
     "system_health": "EXCELLENT",
@@ -223,6 +223,8 @@ def load_settings() -> dict:
             data.update(json.loads(SETTINGS_FILE.read_text(encoding="utf-8")))
     except Exception as exc:
         log_event("hud.settings_read_error", {"error": str(exc)})
+    # Kanonische Version (pyproject) ueberschreibt Altwerte aus hud_settings.json.
+    data["version"] = f"v{get_version()}"
     return data
 
 
@@ -242,8 +244,9 @@ def save_settings(incoming: dict) -> dict:
             current[key] = int(num) if key in _INT else num
         else:
             current[key] = str(val)[:300]
+    persisted = {k: v for k, v in current.items() if k != "version"}
     SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    SETTINGS_FILE.write_text(json.dumps(current, ensure_ascii=False, indent=2),
+    SETTINGS_FILE.write_text(json.dumps(persisted, ensure_ascii=False, indent=2),
                              encoding="utf-8")
     log_event("hud.settings_saved", _settings_for_log(current))
     return current
@@ -419,9 +422,52 @@ def native_view_payload(view: str, project_root: Path = ROOT) -> dict:
     return {"ok": False, "module": view, "status": "unknown_view"}
 
 
+# --- Request-Guard (CSRF / DNS-Rebinding) ------------------------------------
+# Der HUD-Server hat keine Authentisierung. Ohne Pruefung koennte jede im
+# Browser geoeffnete Webseite per "simple request" (text/plain, kein Preflight)
+# auf 127.0.0.1 POSTen; per DNS-Rebinding koennte sie zudem Antworten lesen.
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def _hostname(value: str) -> str:
+    try:
+        return (urlparse("//" + value).hostname or "").lower()
+    except ValueError:
+        return ""
+
+
+def request_allowed(method: str, host_header: str | None, origin_header: str | None,
+                    bound_host: str, bound_port: int) -> bool:
+    """Host muss Loopback (oder der gebundene Host) sein; POST-Origin, falls
+    vorhanden, muss exakt auf diesen Server zeigen."""
+    allowed = set(_LOOPBACK_HOSTS)
+    if bound_host and bound_host not in ("0.0.0.0", "::"):
+        allowed.add(bound_host.lower())
+    if _hostname(host_header or "") not in allowed:
+        return False
+    if method != "POST" or origin_header is None:
+        return True  # Nicht-Browser-Clients (CLI, Tests) senden keinen Origin
+    try:
+        origin = urlparse(origin_header)
+        port = origin.port or 80
+    except ValueError:
+        return False
+    return origin.scheme == "http" and (origin.hostname or "").lower() in allowed and port == bound_port
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):  # ruhiger Output
         pass
+
+    def _guard(self, method: str) -> bool:
+        host, port = self.server.server_address[:2]
+        if request_allowed(method, self.headers.get("Host"), self.headers.get("Origin"), str(host), int(port)):
+            return True
+        log_event("hud.request_rejected", {"method": method, "path": urlparse(self.path).path,
+                                           "host": self.headers.get("Host", ""),
+                                           "origin": self.headers.get("Origin", "")})
+        self._json({"ok": False, "error": "Anfrage abgelehnt (Host/Origin)."}, code=403)
+        return False
 
     def _send(self, body: bytes, ctype: str, code: int = 200):
         self.send_response(code)
@@ -486,6 +532,8 @@ class Handler(BaseHTTPRequestHandler):
         return b"" if over else b"".join(chunks)
 
     def do_GET(self):
+        if not self._guard("GET"):
+            return
         parsed = urlparse(self.path)
         path = parsed.path
         qs = parse_qs(parsed.query)
@@ -577,6 +625,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json({"ok": False, "error": f"Unbekannter Pfad: {path}"})
 
     def do_POST(self):
+        if not self._guard("POST"):
+            return
         parsed = urlparse(self.path)
         path = parsed.path
 

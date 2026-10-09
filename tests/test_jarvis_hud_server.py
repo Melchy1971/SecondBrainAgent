@@ -193,6 +193,56 @@ def test_http_post_settings(server):
     assert data["settings"]["news_max"] == 7
 
 
+def test_settings_version_is_canonical_not_persisted(hud):
+    from secondbrain.version import get_version
+
+    srv.SETTINGS_FILE.write_text(json.dumps({"version": "v30.21"}), encoding="utf-8")
+    assert srv.load_settings()["version"] == f"v{get_version()}"
+
+    srv.save_settings({"version": "v0.0.1", "place": "Bonn"})
+    stored = json.loads(srv.SETTINGS_FILE.read_text(encoding="utf-8"))
+    assert "version" not in stored
+    assert srv.load_settings()["version"] == f"v{get_version()}"
+
+
+@pytest.mark.parametrize("method,host,origin,expected", [
+    ("GET", "127.0.0.1:8851", None, True),
+    ("GET", "localhost:8851", None, True),
+    ("GET", "[::1]:8851", None, True),
+    ("GET", "evil.example:8851", None, False),          # DNS-Rebinding
+    ("GET", None, None, False),
+    ("POST", "127.0.0.1:8851", None, True),             # CLI/Tests ohne Origin
+    ("POST", "127.0.0.1:8851", "http://127.0.0.1:8851", True),
+    ("POST", "127.0.0.1:8851", "http://localhost:8851", True),
+    ("POST", "127.0.0.1:8851", "https://evil.example", False),  # CSRF
+    ("POST", "127.0.0.1:8851", "http://127.0.0.1:3000", False),  # anderer lokaler Dienst
+    ("POST", "127.0.0.1:8851", "null", False),
+])
+def test_request_allowed(method, host, origin, expected):
+    assert srv.request_allowed(method, host, origin, "127.0.0.1", 8851) is expected
+
+
+def test_http_post_rejects_foreign_origin(server):
+    req = urllib.request.Request(
+        server + "/api/settings", data=json.dumps({"place": "Evil"}).encode(),
+        headers={"Content-Type": "text/plain", "Origin": "https://evil.example"}, method="POST")
+
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
+        urllib.request.urlopen(req, timeout=10)
+
+    assert exc_info.value.code == 403
+    assert srv.load_settings()["place"] != "Evil"
+
+
+def test_http_get_rejects_foreign_host(server):
+    req = urllib.request.Request(server + "/api/status", headers={"Host": "evil.example"})
+
+    with pytest.raises(urllib.error.HTTPError) as exc_info:
+        urllib.request.urlopen(req, timeout=10)
+
+    assert exc_info.value.code == 403
+
+
 def test_http_post_settings_returns_json_write_error(server, monkeypatch):
     def fail_save(_body):
         raise OSError("disk full")
