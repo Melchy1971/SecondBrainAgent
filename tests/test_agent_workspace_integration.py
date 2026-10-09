@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import secondbrain
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
 
 # Real repo root (SecondBrain-Agent/), where the native module files actually
 # live - module readiness is resolved against the filesystem.
-REPO_ROOT = Path(secondbrain.__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_agent_control_registered_in_navigation(tmp_path):

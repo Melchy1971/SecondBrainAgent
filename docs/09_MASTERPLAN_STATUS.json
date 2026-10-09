@@ -182,8 +182,6 @@
   "remaining_blockers": [
     "postgresql_pgvector_live_validation_pending",
     "test_database_connection_without_ssl",
-    "workspace_isolation_without_database_enforcement",
-    "task_repository_isolation_is_application_level_only",
     "provider_live_validation_openai_ollama_pending",
     "connector_e2e_live_certification_pending",
     "review_approval_postgresql_production_health_pending",
@@ -368,26 +366,9 @@
         "isolated_schema",
         "concurrency",
         "vector_search_recall",
-        "report"
-      ],
-      "not_implemented_phases": [
         "repository_contracts",
-        "workspace_isolation"
-      ],
-      "workspace_isolation_note": "Gegen die Datenbank nicht sinnvoll pruefbar, solange die Isolation rein anwendungsseitig umgesetzt ist. Stattdessen als statischer Vertrag in tests/test_workspace_isolation_contract.py gesichert.",
-      "concurrency_checks": [
-        "FOR UPDATE SKIP LOCKED vergibt keine Zeile doppelt",
-        "beide Worker erhalten Arbeit",
-        "optimistische Versionierung weist veralteten Schreibzugriff ab",
-        "doppelter Idempotency Key wird abgelehnt"
-      ],
-      "vector_search_checks": [
-        "golden dataset with analytically known ranking",
-        "exact match ranked first",
-        "minimum recall",
-        "index usage proven via EXPLAIN with enable_seqscan off",
-        "dimension guard rejects mismatched vectors",
-        "reindex followed by search"
+        "workspace_isolation",
+        "report"
       ],
       "not_implemented_phases": [],
       "repository_contracts_checks": [
@@ -430,15 +411,15 @@
     },
     "workspace_isolation": {
       "assessed_at": "2026-07-21",
-      "enforcement_level": "application_only",
-      "row_level_security_present": false,
+      "enforcement_level": "application_and_database",
+      "row_level_security_present": true,
       "contract_test": "tests/test_workspace_isolation_contract.py",
-      "structurally_safe": ["SecondBrain/jobs/repository.py"],
-      "convention_dependent": ["SecondBrain/tasks/repository.py"],
-      "detail": "PostgresTaskRepository.read(collection) hat keinen workspace_id-Parameter und liefert alle Workspaces; TaskService filtert erst danach in Python. write(collection, rows) loescht jeden Datensatz der Collection, der nicht in rows enthalten ist - ebenfalls ohne Workspace-Bezug.",
-      "current_risk": "kein aktiver Datenverlust: alle bekannten Aufrufer schreiben die vollstaendige ungefilterte Zeilenliste zurueck. Der Schutz haengt an dieser Konvention, die bis jetzt nirgends erzwungen wurde.",
-      "residual_risk": "Uebergibt ein Aufrufer je eine gefilterte Teilmenge, loescht write die Datensaetze aller anderen Workspaces. Ohne RLS gibt es keinen Backstop auf Datenbankebene.",
-      "prompt68_phase4_gap": "Die Anforderung 'Raw SQL Bypass muss blockiert werden' ist mit rein anwendungsseitiger Filterung nicht erfuellbar."
+      "structurally_safe": ["SecondBrain/jobs/repository.py", "SecondBrain/tasks/repository.py"],
+      "convention_dependent": [],
+      "detail": "PostgresTaskRepository bindet read/write/append an workspace_id, setzt SET LOCAL app.workspace_id und richtet ENABLE/FORCE ROW LEVEL SECURITY mit USING/WITH CHECK ein.",
+      "current_risk": "Die Isolation ist statisch und hermetisch verifiziert; der produktionsnahe Nachweis benoetigt weiterhin TEST_DATABASE_URL.",
+      "residual_risk": "Die Live-Zertifizierung gegen die Ziel-PostgreSQL-Instanz steht noch aus.",
+      "prompt68_phase4_gap": null
     },
     "test_server_tls": {
       "state": "not_supported_by_server",
@@ -682,8 +663,8 @@
     "release_recommendation": "Run the gate with a reachable PostgreSQL backend; JSONL returns BLOCKED"
   },
   "package_version": "31.94.0",
-  "inventoried_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
-  "verified_commit": "2e9d0b9e0ac8412ef7e5d84ebbbb2125ed15bf77",
+  "inventoried_commit": "76e2faf6a81706fbdac6e7c065f62dded9d72cb6",
+  "verified_commit": "76e2faf6a81706fbdac6e7c065f62dded9d72cb6",
   "live_evidence": null,
   "release_state": "verified_integration",
   "jarvis_1_0_certification": {

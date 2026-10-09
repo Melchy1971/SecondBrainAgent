@@ -15,7 +15,7 @@ def test_agent_create_is_tagged_and_auditable(tmp_path):
     tools = _tools(tmp_path)
     res = tools.task_create(workspace_id="w1", title="Aus Doc", source_reference="doc:7", confidence=0.65)
     assert res["ok"] and res["source"] == "agent" and res["confidence"] == 0.65
-    events = tools.service._read("events")  # noqa: SLF001
+    events = tools.service._read("events", workspace_id="w1")  # noqa: SLF001
     created = next(e for e in events if e["event_type"] == "created")
     assert created["actor"] == "agent" and created["metadata"]["source"] == "agent"
     assert created["metadata"]["source_reference"] == "doc:7"
