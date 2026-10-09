@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from secondbrain.path import package_dir
 
 VERSION = "30.36"
 REPORT_DIR = Path("runtime/native/installer")
@@ -49,7 +50,7 @@ def _exists(root: Path, rel: str) -> bool:
 
 
 def _detect_native_modules(root: Path) -> list[str]:
-    native = root / "secondbrain" / "native"
+    native = package_dir(root) / "native"
     if not native.exists():
         return []
     return sorted(p.stem for p in native.glob("*.py") if not p.name.startswith("__"))
@@ -65,9 +66,9 @@ def installer_status(project_root: str | Path = ".") -> dict[str, Any]:
         InstallerCheck("requirements_runtime", _exists(root, "requirements-runtime.txt") or _exists(root, "requirements.txt"), "warning", "Runtime Requirements vorhanden", "requirements-runtime.txt"),
         InstallerCheck("requirements_voice", _exists(root, "requirements-voice.txt"), "warning", "Voice Requirements vorhanden", "requirements-voice.txt"),
         InstallerCheck("jarvis_bat", _exists(root, "Jarvis.bat"), "warning", "Jarvis.bat vorhanden", "Jarvis.bat"),
-        InstallerCheck("native_package", (root / "secondbrain" / "native").exists(), "blocker", "Native Package vorhanden", "secondbrain/native"),
-        InstallerCheck("native_workspace", "workspace_center" in native_modules or "native_app" in native_modules, "warning", "Native Workspace/App vorhanden", "secondbrain/native"),
-        InstallerCheck("native_voice", any("voice" in m for m in native_modules), "warning", "Deutsche Sprachsteuerung vorhanden", "secondbrain/native"),
+        InstallerCheck("native_package", (package_dir(root) / "native").exists(), "blocker", "Native Package vorhanden", "SecondBrain/native"),
+        InstallerCheck("native_workspace", "workspace_center" in native_modules or "native_app" in native_modules, "warning", "Native Workspace/App vorhanden", "SecondBrain/native"),
+        InstallerCheck("native_voice", any("voice" in m for m in native_modules), "warning", "Deutsche Sprachsteuerung vorhanden", "SecondBrain/native"),
     ]
     blockers = [c for c in checks if not c.ok and c.severity == "blocker"]
     warnings = [c for c in checks if not c.ok and c.severity == "warning"]
