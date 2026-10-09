@@ -1478,10 +1478,10 @@ def jobs_overview() -> dict:
     history = history[-25:][::-1]  # neueste zuerst
     jobs = []
     for sc in sorted(ALLOWED_SCRIPTS):
-        run = last.get(sc)
+        entry = last.get(sc)
         jobs.append({"script": sc,
-                     "last_time": run["time"] if run else "",
-                     "last_ok": run["ok"] if run else None})
+                     "last_time": entry["time"] if entry else "",
+                     "last_ok": entry["ok"] if entry else None})
     return {"ok": True, "jobs": jobs, "history": history}
 
 
