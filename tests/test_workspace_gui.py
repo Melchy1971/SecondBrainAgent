@@ -5,10 +5,6 @@ wenn ein Display verfuegbar ist (CI-sicher).
 """
 from __future__ import annotations
 
-import tkinter as tk
-
-import pytest
-
 from secondbrain.native.ai_workspace.panels import NAVIGATION_PRIMARY, PromptBar
 
 
@@ -36,17 +32,7 @@ def test_voice_module_lookup_uses_existing_navigation() -> None:
     assert PromptBar.voice_module_id([_Module("dashboard", "Dashboard")]) is None
 
 
-def _display_available() -> bool:
-    try:
-        root = tk.Tk()
-    except tk.TclError:
-        return False
-    root.destroy()
-    return True
-
-
-@pytest.mark.skipif(not _display_available(), reason="kein Display verfuegbar")
-def test_workspace_shell_builds_four_zones(tmp_path) -> None:
+def test_workspace_shell_builds_four_zones(tmp_path, tk_display) -> None:
     from secondbrain.native.ai_workspace.gui import AIWorkspaceApp
 
     app = AIWorkspaceApp(tmp_path)

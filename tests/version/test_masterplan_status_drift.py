@@ -3,8 +3,37 @@ import re
 import subprocess
 from pathlib import Path
 
+import pytest
+
+
 def _root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+COMMIT_FIELDS = ("inventoried_commit", "verified_commit")
+
+
+def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["git", *args], cwd=str(root), capture_output=True, text=True, check=False)
+
+
+def _git_available(root: Path) -> bool:
+    try:
+        return _git(root, "rev-parse", "HEAD").returncode == 0
+    except OSError:
+        return False  # git nicht installiert
+
+
+def _commit_present(root: Path, commit: str) -> bool:
+    return _git(root, "cat-file", "-e", f"{commit}^{{commit}}").returncode == 0
+
+
+def _is_shallow(root: Path) -> bool:
+    return _git(root, "rev-parse", "--is-shallow-repository").stdout.strip() == "true"
+
+
+def _is_ancestor_of_head(root: Path, commit: str) -> bool:
+    return _git(root, "merge-base", "--is-ancestor", commit, "HEAD").returncode == 0
 
 
 def _release_versions_61_to_77(notes_text: str) -> list[str]:
@@ -80,22 +109,10 @@ def test_masterplan_version_and_schema_consistency():
     
     assert masterplan["release_state"] in allowed_states
     
-    # Check that git HEAD commit matches inventoried_commit
-    try:
-        head_commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], 
-            cwd=str(root), 
-            text=True
-        ).strip()
-    except Exception:
-        head_commit = None
-
-    if head_commit:
-        assert masterplan["inventoried_commit"] == head_commit, (
-            f"inventoried_commit in masterplan ({masterplan['inventoried_commit']}) "
-            f"does not match actual git HEAD ({head_commit})"
+    for field in COMMIT_FIELDS:
+        assert re.fullmatch(r"[0-9a-f]{40}", masterplan[field]), (
+            f"{field} ist kein vollstaendiger Commit-Hash: {masterplan[field]!r}"
         )
-        assert masterplan["verified_commit"] == head_commit
 
     # Validate each capability status
     for item in masterplan["completed_capabilities"]:
@@ -107,3 +124,26 @@ def test_masterplan_version_and_schema_consistency():
         # Ensure no completed placeholder is used
         assert status != "completed", f"Capability {item.get('release')} uses obsolete 'completed' status"
         assert status != "completed_on_main", f"Capability {item.get('release')} uses obsolete 'completed_on_main' status"
+
+
+def test_masterplan_commits_are_in_head_history():
+    """Inventarisierte/verifizierte Commits muessen Teil der Historie von HEAD sein.
+
+    Gleichheit mit HEAD ist nicht erfuellbar: jeder Commit, der die
+    Masterplan-Datei mitnimmt, erzeugt einen neuen HEAD.
+    """
+    root = _root()
+    if not _git_available(root):
+        pytest.skip("kein Git-Repository (z. B. Quellarchiv)")
+    masterplan = json.loads((root / "docs" / "09_MASTERPLAN_STATUS.json").read_text(encoding="utf-8"))
+
+    for field in COMMIT_FIELDS:
+        commit = masterplan[field]
+        if not _commit_present(root, commit):
+            if _is_shallow(root):
+                pytest.skip(f"flacher Klon: {field} ({commit[:12]}) nicht lokal vorhanden, "
+                            "Historie nicht pruefbar (checkout mit fetch-depth: 0 noetig)")
+            raise AssertionError(f"{field} ({commit}) existiert nicht im Repository")
+        assert _is_ancestor_of_head(root, commit), (
+            f"{field} ({commit}) ist kein Vorgaenger von HEAD (fremder Branch)"
+        )

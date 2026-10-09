@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import json
-import tkinter as tk
 from pathlib import Path
-
-import pytest
 
 from secondbrain.agent.review_service import UnifiedReviewInbox
 from secondbrain.gui.approval_inbox import (
@@ -157,20 +154,10 @@ def test_native_workspace_registers_existing_inbox_module():
     assert service.module_payload("review_inbox")["status"] in {"ready", "error"}
 
 
-def _display_available() -> bool:
-    try:
-        root = tk.Tk()
-    except tk.TclError:
-        return False
-    root.destroy()
-    return True
-
-
-@pytest.mark.skipif(not _display_available(), reason="kein Display verfügbar")
-def test_embedded_frame_builds_without_queue_files(tmp_path):
+def test_embedded_frame_builds_without_queue_files(tmp_path, tk_display):
     from secondbrain.gui.approval_inbox import ApprovalInboxFrame
 
-    root = tk.Tk()
+    root = tk_display.Tk()
     root.withdraw()
     try:
         frame = ApprovalInboxFrame(root, tmp_path)
