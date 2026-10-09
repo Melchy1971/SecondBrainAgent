@@ -1,3 +1,6 @@
+from secondbrain.path import PACKAGE_DIRNAME
+
+
 class DeploymentPlanner:
     def __init__(self, store):
         self.store = store
@@ -12,7 +15,7 @@ class DeploymentPlanner:
                 "service": "python launcher.py prod-service-run",
                 "health": "python launcher.py prod-health",
             },
-            "required_files": ["launcher.py", "secondbrain/", "config/", "requirements.txt"],
+            "required_files": ["launcher.py", f"{PACKAGE_DIRNAME}/", "config/", "requirements.txt"],
         }
         self.store.save("installer_manifest", manifest)
         return manifest
