@@ -976,7 +976,8 @@ def assistant_save_note(title: str, content: str) -> dict:
     target = folder / f"{stamp}_{base}.md"
     n = 1
     while target.exists():  # niemals ueberschreiben
-        target = folder / f"{stamp}_{base}_{n}.md"; n += 1
+        target = folder / f"{stamp}_{base}_{n}.md"
+        n += 1
     head = f"# {title or 'Assistant-Notiz'}\n\n_Quelle: Jarvis Assistant · {now()}_\n\n"
     try:
         target.write_text(head + content + "\n", encoding="utf-8")
@@ -1477,10 +1478,10 @@ def jobs_overview() -> dict:
     history = history[-25:][::-1]  # neueste zuerst
     jobs = []
     for sc in sorted(ALLOWED_SCRIPTS):
-        l = last.get(sc)
+        run = last.get(sc)
         jobs.append({"script": sc,
-                     "last_time": l["time"] if l else "",
-                     "last_ok": l["ok"] if l else None})
+                     "last_time": run["time"] if run else "",
+                     "last_ok": run["ok"] if run else None})
     return {"ok": True, "jobs": jobs, "history": history}
 
 
