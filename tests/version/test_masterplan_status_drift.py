@@ -3,8 +3,23 @@ import re
 import subprocess
 from pathlib import Path
 
+
 def _root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+def _git_available(root: Path) -> bool:
+    try:
+        subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root), check=True, capture_output=True)
+        return True
+    except (OSError, subprocess.CalledProcessError):
+        return False  # z. B. Quell-Tarball ohne .git
+
+
+def _is_ancestor_of_head(root: Path, commit: str) -> bool:
+    result = subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"], check=False,
+                            cwd=str(root), capture_output=True)
+    return result.returncode == 0
 
 
 def _release_versions_61_to_77(notes_text: str) -> list[str]:
@@ -80,22 +95,16 @@ def test_masterplan_version_and_schema_consistency():
     
     assert masterplan["release_state"] in allowed_states
     
-    # Check that git HEAD commit matches inventoried_commit
-    try:
-        head_commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], 
-            cwd=str(root), 
-            text=True
-        ).strip()
-    except Exception:
-        head_commit = None
-
-    if head_commit:
-        assert masterplan["inventoried_commit"] == head_commit, (
-            f"inventoried_commit in masterplan ({masterplan['inventoried_commit']}) "
-            f"does not match actual git HEAD ({head_commit})"
-        )
-        assert masterplan["verified_commit"] == head_commit
+    # Inventarisierte/verifizierte Commits muessen real und Teil der Historie
+    # von HEAD sein. Gleichheit mit HEAD ist nicht erfuellbar: jeder Commit, der
+    # diese Datei mitnimmt, erzeugt einen neuen HEAD.
+    if _git_available(root):
+        for field in ("inventoried_commit", "verified_commit"):
+            commit = masterplan[field]
+            assert re.fullmatch(r"[0-9a-f]{40}", commit), f"{field} ist kein vollstaendiger Commit-Hash: {commit!r}"
+            assert _is_ancestor_of_head(root, commit), (
+                f"{field} ({commit}) ist kein Vorgaenger von HEAD (unbekannter oder fremder Commit)"
+            )
 
     # Validate each capability status
     for item in masterplan["completed_capabilities"]:

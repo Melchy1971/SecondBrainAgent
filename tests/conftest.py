@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -6,6 +7,16 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+# Temp-Verzeichnisse im Repo statt im System-Temp: dort kann die ACL von
+# %TEMP%\pytest-of-<user> defekt sein (WinError 5). Bewusst KEIN festes
+# --basetemp: das wird bei jedem Lauf geloescht und kollidiert bei parallelen
+# Laeufen. Mit PYTEST_DEBUG_TEMPROOT nutzt pytest seinen Standardmechanismus
+# (pytest-of-<user>/pytest-N je Lauf, gesperrt, die letzten 3 bleiben erhalten).
+# Ein explizites --basetemp hat weiterhin Vorrang.
+_TEMPROOT = ROOT / ".pytest_tmp"
+_TEMPROOT.mkdir(exist_ok=True)
+os.environ.setdefault("PYTEST_DEBUG_TEMPROOT", str(_TEMPROOT))
 
 
 INTEGRATION_DIRS = {
