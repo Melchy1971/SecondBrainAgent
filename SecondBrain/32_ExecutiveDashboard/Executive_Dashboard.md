@@ -1,10 +1,10 @@
 # Executive Dashboard
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## KPIs
 
-- unknown: 247
+- unknown: 299
 
 ## Führungsfragen
 

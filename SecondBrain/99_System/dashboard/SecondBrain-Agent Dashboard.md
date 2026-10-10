@@ -1,6 +1,6 @@
 # SecondBrain-Agent Dashboard
 
-Aktualisiert: 2026-10-05 10:15:49
+Aktualisiert: 2026-10-10 09:40:17
 
 ## Status
 
@@ -23,5 +23,5 @@ Aktualisiert: 2026-10-05 10:15:49
 
 ## Relevante Systemdateien
 
-- [[../reports/2026-10-05_import-report]]
-- [[../claude_review/2026-10-05_review-queue]]
+- [[../reports/2026-10-10_import-report]]
+- [[../claude_review/2026-10-10_review-queue]]

@@ -1,0 +1,20 @@
+runtime:
+  profile: safe
+  paths:
+    vault: ../SecondBrain
+    runtime: runtime
+    events: events/runtime
+  services:
+    event_store: true
+    connectors: true
+    ai_runtime: true
+    agent_kernel: true
+    desktop_commands: true
+    security: true
+    autonomous_agent: true
+    advanced_rag: true
+    api_server: false
+    gui: false
+    voice: false
+  ai:
+    default_provider: echo

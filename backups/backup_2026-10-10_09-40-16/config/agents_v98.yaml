@@ -1,0 +1,22 @@
+agents_v98:
+  task_agent:
+    autonomy: review_first
+    can_create_tasks: true
+    can_complete_tasks: false
+  research_agent:
+    autonomy: backlog_only
+    web_research: disabled
+  meeting_agent:
+    autonomy: review_first
+    can_create_protocols: true
+  project_agent:
+    autonomy: review_first
+    can_create_roadmaps: true
+  decision_agent:
+    autonomy: review_first
+    can_flag_missing_decisions: true
+  process_agent:
+    autonomy: review_first
+    can_create_process_backlog: true
+  chief_of_staff:
+    autonomy: summarize_only

@@ -1,6 +1,6 @@
 # Plugin Marketplace
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 | Plugin | Status | Nutzen |
 |---|---|---|
