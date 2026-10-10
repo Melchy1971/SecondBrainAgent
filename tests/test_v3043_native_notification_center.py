@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -8,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from secondbrain.native.notification_center.service import NotificationCenterService
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
+from secondbrain.path import package_dir
 
 
 def test_notification_status_empty(tmp_path: Path) -> None:
@@ -51,7 +51,7 @@ def test_clear_keep_unread(tmp_path: Path) -> None:
 
 
 def test_workspace_navigation_contains_notifications(tmp_path: Path) -> None:
-    module_dir = tmp_path / "secondbrain" / "native" / "notification_center"
+    module_dir = package_dir(tmp_path) / "native" / "notification_center"
     module_dir.mkdir(parents=True)
     service = AIWorkspaceService(tmp_path)
     nav = service.navigation()["navigation"]

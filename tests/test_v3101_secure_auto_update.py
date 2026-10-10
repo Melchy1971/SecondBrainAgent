@@ -12,6 +12,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from secondbrain.installer_update import InstallerUpdateRuntime, UpdateCenterViewModel, UpdateError
+from secondbrain.path import package_dir, PACKAGE_DIRNAME
 
 
 def _package(files: dict[str, str]) -> bytes:
@@ -48,15 +49,15 @@ def _manifest(private_key: Ed25519PrivateKey, package: bytes, **changes):
 
 @pytest.fixture
 def update_fixture(tmp_path: Path):
-    (tmp_path / "secondbrain").mkdir()
-    (tmp_path / "secondbrain" / "old.py").write_text("old", encoding="utf-8")
+    (package_dir(tmp_path)).mkdir()
+    (package_dir(tmp_path) / "old.py").write_text("old", encoding="utf-8")
     (tmp_path / "launcher.py").write_text("old", encoding="utf-8")
     (tmp_path / "requirements.txt").write_text("", encoding="utf-8")
     (tmp_path / "data").mkdir()
     (tmp_path / "data" / "user.txt").write_text("keep", encoding="utf-8")
     key = Ed25519PrivateKey.generate()
     public = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
-    package = _package({"launcher.py": "new", "secondbrain/new.py": "new"})
+    package = _package({"launcher.py": "new", f"{PACKAGE_DIRNAME}/new.py": "new"})
     updater = InstallerUpdateRuntime(tmp_path, current_version="31.0", trusted_keys={"release-2026": public}, installation_id="test")
     return updater, key, package, tmp_path
 

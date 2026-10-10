@@ -1,8 +1,9 @@
 from secondbrain.installer_update import InstallerUpdateRuntime
+from secondbrain.path import package_dir
 
 def prepared(tmp_path):
     (tmp_path/'launcher.py').write_text('')
-    (tmp_path/'secondbrain').mkdir()
+    (package_dir(tmp_path)).mkdir()
     (tmp_path/'requirements.txt').write_text('')
     return tmp_path
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from secondbrain.module_registry import ModuleRegistry
+from secondbrain.path import package_dir
 from launcher import main
 
 
@@ -197,8 +198,8 @@ def test_p0_gate_includes_runtime_readiness(tmp_path, capsys):
 def test_p0_audit_blocks_before_reports_exist(tmp_path, capsys):
     _write_required_config(tmp_path)
     (tmp_path / "launcher.py").write_text("# probe\n", encoding="utf-8")
-    (tmp_path / "secondbrain").mkdir()
-    (tmp_path / "secondbrain" / "p0_runtime.py").write_text("# probe\n", encoding="utf-8")
+    (package_dir(tmp_path)).mkdir()
+    (package_dir(tmp_path) / "p0_runtime.py").write_text("# probe\n", encoding="utf-8")
     (tmp_path / "tests").mkdir()
     (tmp_path / "tests" / "test_v170_p0_integration.py").write_text("# probe\n", encoding="utf-8")
     rc = main(["--project-root", str(tmp_path), "p0-audit", "--write-report"])
@@ -210,8 +211,8 @@ def test_p0_audit_blocks_before_reports_exist(tmp_path, capsys):
 
 def test_p0_production_gate_persists_full_p0_evidence(tmp_path, capsys):
     (tmp_path / "launcher.py").write_text("# probe\n", encoding="utf-8")
-    (tmp_path / "secondbrain").mkdir()
-    (tmp_path / "secondbrain" / "p0_runtime.py").write_text("# probe\n", encoding="utf-8")
+    (package_dir(tmp_path)).mkdir()
+    (package_dir(tmp_path) / "p0_runtime.py").write_text("# probe\n", encoding="utf-8")
     (tmp_path / "tests").mkdir()
     (tmp_path / "tests" / "test_v170_p0_integration.py").write_text("# probe\n", encoding="utf-8")
     rc = main(["--project-root", str(tmp_path), "p0-production", "--write-report"])
