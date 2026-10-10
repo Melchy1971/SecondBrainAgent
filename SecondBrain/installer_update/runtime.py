@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from dataclasses import asdict, dataclass, fields
@@ -244,8 +245,9 @@ class InstallerUpdateRuntime:
                 manifest = json.loads(payload)
             parsed = self.validate_update(manifest)
             available = _version(parsed.application_version) > _version(self.current_version)
-            result = {"ok": True, "status": "available" if available else "current", "update_available": available, "manifest": asdict(parsed)}
-            self._audit("check", result["status"], version=parsed.application_version)
+            status = "available" if available else "current"
+            result = {"ok": True, "status": status, "update_available": available, "manifest": asdict(parsed)}
+            self._audit("check", status, version=parsed.application_version)
             return result
         except (UpdateError, json.JSONDecodeError) as exc:
             error = exc if isinstance(exc, UpdateError) else UpdateError("manifest_invalid", str(exc))
