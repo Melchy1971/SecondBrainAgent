@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from secondbrain.path import package_dir
+
 from .models import ApplicationState, WorkspaceModuleState, WorkspaceSnapshot, normalize_project_root
 
 
@@ -322,7 +324,7 @@ class AIWorkspaceService:
 
     def _installer_payload(self) -> dict[str, Any]:
         return {
-            "ok": (self.project_root / "secondbrain" / "native" / "installer_center.py").exists(),
+            "ok": (package_dir(self.project_root) / "native" / "installer_center.py").exists(),
             "mode": "native_installer",
             "module": "secondbrain.native.installer_center",
         }

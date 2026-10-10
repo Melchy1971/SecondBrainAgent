@@ -1,115 +1,115 @@
 # Entity Extraction v9.9
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## Häufigste Entitäten
 
-- **2026-10-05** (date): 102
-- **2026-07-13** (date): 85
-- **2026-07-14** (date): 71
-- **Aktualisiert** (person_or_topic): 41
-- **Risiken** (project_or_topic): 40
-- **Score** (project_or_topic): 40
-- **Risiko** (project_or_topic): 38
-- **Aktualisiert** (project_or_topic): 32
-- **Aufgaben** (project_or_topic): 30
-- **Entscheidungen** (project_or_topic): 29
-- **Projekte** (project_or_topic): 28
-- **Projekt** (project_or_topic): 25
-- **Empfehlung** (project_or_topic): 22
-- **Aufgaben** (person_or_topic): 21
-- **Index** (project_or_topic): 20
-- **Was** (person_or_topic): 20
-- **Notiz** (project_or_topic): 20
-- **Notizen** (person_or_topic): 18
-- **Review** (project_or_topic): 17
-- **Ergebnis** (project_or_topic): 17
-- **Keine** (person_or_topic): 16
-- **Agent** (organization): 16
-- **Signale** (project_or_topic): 16
-- **Risiken** (person_or_topic): 15
-- **Gesundheit** (project_or_topic): 14
-- **Markdown** (project_or_topic): 14
-- **Entscheidung** (project_or_topic): 13
-- **Lernen** (project_or_topic): 13
-- **Quellen** (person_or_topic): 13
-- **Keine** (project_or_topic): 12
-- **Finanzen** (project_or_topic): 12
-- **Tags** (organization): 11
-- **Projektbezug** (project_or_topic): 11
-- **Risiko** (person_or_topic): 11
-- **Priorität** (project_or_topic): 11
-- **Project Agent** (organization): 11
-- **Process Agent** (organization): 11
-- **Chief** (project_or_topic): 11
-- **Bereich** (project_or_topic): 11
-- **Dashboard** (project_or_topic): 11
-- **Entscheidungen** (person_or_topic): 10
-- **Review Queue** (project_or_topic): 10
-- **Meeting** (project_or_topic): 10
-- **Welche Entscheidungen** (project_or_topic): 10
-- **Links** (project_or_topic): 10
-- **Alternativen** (project_or_topic): 10
-- **Automatisierung** (project_or_topic): 10
-- **Beruf** (project_or_topic): 10
-- **Blocker** (project_or_topic): 10
-- **Tagesplanung** (organization): 9
-- **Review Queue** (person_or_topic): 9
-- **Decision Agent** (organization): 9
+- **2026-10-10** (date): 102
+- **2026-07-13** (date): 92
+- **2026-07-14** (date): 75
+- **2026-10-05** (date): 73
+- **Risiken** (project_or_topic): 51
+- **Score** (project_or_topic): 49
+- **Risiko** (project_or_topic): 48
+- **Aktualisiert** (person_or_topic): 42
+- **Aufgaben** (project_or_topic): 39
+- **Entscheidungen** (project_or_topic): 37
+- **Projekte** (project_or_topic): 36
+- **Projekt** (project_or_topic): 32
+- **Aktualisiert** (project_or_topic): 31
+- **Empfehlung** (project_or_topic): 29
+- **Notiz** (project_or_topic): 28
+- **Was** (person_or_topic): 26
+- **Notizen** (person_or_topic): 24
+- **Aufgaben** (person_or_topic): 23
+- **Index** (project_or_topic): 23
+- **Ergebnis** (project_or_topic): 22
+- **Keine** (person_or_topic): 20
+- **Review** (project_or_topic): 20
+- **Signale** (project_or_topic): 19
+- **Agent** (organization): 18
+- **Gesundheit** (project_or_topic): 17
+- **Risiken** (person_or_topic): 17
+- **Markdown** (project_or_topic): 16
+- **Lernen** (project_or_topic): 16
+- **Quellen** (person_or_topic): 16
+- **Risiko** (person_or_topic): 15
+- **Entscheidung** (project_or_topic): 15
+- **Finanzen** (project_or_topic): 15
+- **Tags** (organization): 14
+- **Projektbezug** (project_or_topic): 14
+- **Keine** (project_or_topic): 14
+- **Priorität** (project_or_topic): 14
+- **Chief** (project_or_topic): 14
+- **Bereich** (project_or_topic): 14
+- **Project Agent** (organization): 13
+- **Process Agent** (organization): 13
+- **Beruf** (project_or_topic): 13
+- **Dashboard** (project_or_topic): 13
+- **Entscheidungen** (person_or_topic): 12
+- **Review Queue** (project_or_topic): 12
+- **Meeting** (project_or_topic): 12
+- **Links** (project_or_topic): 12
+- **Review Queue** (person_or_topic): 12
+- **Alternativen** (project_or_topic): 12
+- **Automatisierung** (project_or_topic): 12
+- **Blocker** (project_or_topic): 12
+- **Tagesplanung** (organization): 11
+- **Welche Entscheidungen** (project_or_topic): 11
+- **Review** (person_or_topic): 11
+- **Offene Aufgaben** (person_or_topic): 11
+- **Decision Agent** (organization): 11
+- **Annahmen** (project_or_topic): 11
+- **Wirkung** (project_or_topic): 11
+- **Fortschritt** (project_or_topic): 11
+- **Notizen** (project_or_topic): 11
+- **Verein** (project_or_topic): 11
+- **Quellen** (project_or_topic): 10
+- **Heute** (project_or_topic): 10
+- **Prozessmodell** (project_or_topic): 10
+- **Frontmatter** (project_or_topic): 10
+- **Wissenslücken** (project_or_topic): 10
+- **Signale** (person_or_topic): 9
+- **Fragen** (organization): 9
+- **Task Agent** (organization): 9
+- **Doppelte Aufgaben** (project_or_topic): 9
+- **Grund** (project_or_topic): 9
+- **Nächste Aktionen** (project_or_topic): 9
+- **Research Agent** (organization): 9
+- **Nächster Schritt** (project_or_topic): 9
+- **Fehlende Felder** (project_or_topic): 9
+- **Qualität** (project_or_topic): 9
+- **Reviewbedarf** (project_or_topic): 9
+- **Bottleneck** (project_or_topic): 9
+- **Staff** (project_or_topic): 9
 - **Gelernte Tags** (organization): 9
-- **Notizen** (project_or_topic): 9
-- **Verein** (project_or_topic): 9
-- **Quellen** (project_or_topic): 8
+- **Google Calendar** (organization): 9
+- **Gewicht** (project_or_topic): 9
+- **Reisen** (project_or_topic): 9
+- **Wissen** (project_or_topic): 9
+- **Wissenslücken** (person_or_topic): 9
+- **Index** (person_or_topic): 9
+- **Score** (person_or_topic): 9
+- **Import** (person_or_topic): 8
 - **Welche Risiken** (project_or_topic): 8
-- **Heute** (project_or_topic): 8
-- **Offene Aufgaben** (person_or_topic): 8
-- **Review** (person_or_topic): 8
-- **Research Agent** (organization): 8
-- **Annahmen** (project_or_topic): 8
-- **Wirkung** (project_or_topic): 8
-- **Prozessmodell** (project_or_topic): 8
-- **Google Calendar** (organization): 8
-- **Fortschritt** (project_or_topic): 8
-- **Frontmatter** (project_or_topic): 8
-- **Relevante Notizen** (project_or_topic): 8
-- **Wissen** (project_or_topic): 8
-- **Import** (person_or_topic): 7
-- **Fragen** (organization): 7
-- **Thema** (project_or_topic): 7
-- **Fokus** (person_or_topic): 7
-- **Staff** (project_or_topic): 7
-- **Agentenläufe** (organization): 7
-- **Dateien** (project_or_topic): 7
-- **Digital Twin** (project_or_topic): 7
-- **Gewicht** (project_or_topic): 7
-- **Reisen** (project_or_topic): 7
-- **Wissenslücken** (project_or_topic): 7
-- **Wissenslücken** (person_or_topic): 7
-- **Index** (person_or_topic): 7
-- **Score** (person_or_topic): 7
-- **Empfehlungen** (project_or_topic): 6
-- **Entscheidungs** (project_or_topic): 6
-- **Schritt** (person_or_topic): 6
-- **Signale** (person_or_topic): 6
-- **Task Agent** (organization): 6
-- **Doppelte Aufgaben** (project_or_topic): 6
-- **Grund** (project_or_topic): 6
-- **Nächste Aktionen** (project_or_topic): 6
-- **Sicherheitsregel** (project_or_topic): 6
-- **Meeting Agent** (organization): 6
-- **Nächster Schritt** (project_or_topic): 6
-- **Daily Briefing** (person_or_topic): 6
-- **Inbox** (person_or_topic): 6
-- **Fehlende Felder** (project_or_topic): 6
-- **Qualität** (project_or_topic): 6
-- **Reviewbedarf** (project_or_topic): 6
-- **Bottleneck** (project_or_topic): 6
+- **Entscheidungs** (person_or_topic): 8
+- **Schritt** (person_or_topic): 8
+- **Thema** (project_or_topic): 8
+- **Daily Briefing** (person_or_topic): 8
+- **Fokus** (person_or_topic): 8
+- **Inbox** (person_or_topic): 8
+- **Prozess** (project_or_topic): 8
+- **Lagebild** (organization): 8
+- **Nächste Schritte** (project_or_topic): 8
+- **Keine Tags** (organization): 8
+- **Auswirkungen** (project_or_topic): 8
+- **Simulation** (project_or_topic): 8
 
 ## Quellenverteilung
 
 ### vault
-- project_or_topic: 1375
-- person_or_topic: 837
-- date: 258
-- organization: 217
-- technology: 31
+- project_or_topic: 1675
+- person_or_topic: 1023
+- date: 345
+- organization: 254
+- technology: 33

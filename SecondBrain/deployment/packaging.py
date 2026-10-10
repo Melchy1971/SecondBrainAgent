@@ -5,7 +5,8 @@ from pathlib import Path
 import fnmatch
 import hashlib
 import json
-from typing import Iterable
+
+from secondbrain.path import PACKAGE_DIRNAME
 
 DEFAULT_INCLUDE_SUFFIXES = (
     ".py",
@@ -39,7 +40,7 @@ class PackagingRules:
     include_suffixes: tuple[str, ...] = DEFAULT_INCLUDE_SUFFIXES
     exclude_patterns: tuple[str, ...] = DEFAULT_EXCLUDE_PATTERNS
     required_files: tuple[str, ...] = ("README.md",)
-    required_dirs: tuple[str, ...] = ("secondbrain", "tests")
+    required_dirs: tuple[str, ...] = (PACKAGE_DIRNAME, "tests")
 
     def allows(self, relative_path: str, *, is_file: bool) -> bool:
         normalized = relative_path.replace("\\", "/")

@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
+from secondbrain.path import package_dir
 from secondbrain.agent.tool_registry import (
     ToolCapability,
     ToolDefinition,
@@ -166,7 +167,7 @@ class ToolDiscovery:
         return {"ok": True, **InstallerUpdateRuntime(self.project_root).update_check(str(payload.get("current_version") or "unknown"))}
 
     def _github_status(self, payload: Mapping[str, Any]) -> dict[str, Any]:
-        module = self.project_root / "secondbrain" / "connectors" / "github_sync.py"
+        module = package_dir(self.project_root) / "connectors" / "github_sync.py"
         return {"ok": module.exists(), "connector": "github", "module": str(module), "mode": "existing_connector"}
 
     def _filesystem_list(self, payload: Mapping[str, Any]) -> dict[str, Any]:

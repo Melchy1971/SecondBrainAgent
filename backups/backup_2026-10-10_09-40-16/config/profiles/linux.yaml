@@ -1,0 +1,5 @@
+vault_path: data/vaults/secondbrain
+inbox_path: data/inbox
+system_path: .
+path_separator: "/"
+platform: linux

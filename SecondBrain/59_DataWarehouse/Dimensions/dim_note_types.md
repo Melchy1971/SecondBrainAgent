@@ -1,3 +1,3 @@
 # dim_note_types
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10

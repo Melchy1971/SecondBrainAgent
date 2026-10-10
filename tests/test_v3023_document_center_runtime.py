@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from secondbrain.gui.document_center_runtime import document_center_status
+from secondbrain.path import package_dir
 
 
 def test_document_center_status_degrades_without_crash(tmp_path: Path):
@@ -16,7 +17,7 @@ def test_document_center_status_degrades_without_crash(tmp_path: Path):
 
 
 def test_document_center_endpoint_registered():
-    text = Path("secondbrain/jarvis_hud_server.py").read_text(encoding="utf-8")
+    text = (package_dir(".") / "jarvis_hud_server.py").read_text(encoding="utf-8")
     assert "/api/document-center/status" in text
     assert "document_center_status(ROOT)" in text
 

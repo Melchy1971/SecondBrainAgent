@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from secondbrain.gui.memory_center_runtime import memory_center_status
+from secondbrain.path import package_dir
 
 
 def test_memory_center_reports_vault_memory_and_governance(tmp_path: Path) -> None:
@@ -44,7 +45,7 @@ def test_memory_center_blocks_unencrypted_sqlite_memories(tmp_path: Path) -> Non
 
 
 def test_memory_center_endpoint_registered() -> None:
-    server = Path("secondbrain/jarvis_hud_server.py").read_text(encoding="utf-8")
+    server = (package_dir(".") / "jarvis_hud_server.py").read_text(encoding="utf-8")
     assert "/api/memory-center/status" in server
     assert "memory_center_status(ROOT)" in server
 

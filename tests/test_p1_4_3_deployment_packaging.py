@@ -7,12 +7,13 @@ from secondbrain.deployment.packaging import (
     collect_package_files,
     write_package_manifest,
 )
+from secondbrain.path import package_dir, PACKAGE_DIRNAME
 
 
 def _minimal_project(tmp_path: Path) -> Path:
-    (tmp_path / "secondbrain").mkdir()
+    (package_dir(tmp_path)).mkdir()
     (tmp_path / "tests").mkdir()
-    (tmp_path / "secondbrain" / "core.py").write_text("VALUE = 1\n", encoding="utf-8")
+    (package_dir(tmp_path) / "core.py").write_text("VALUE = 1\n", encoding="utf-8")
     (tmp_path / "tests" / "test_core.py").write_text("def test_ok(): assert True\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("version: P1.4.3\n", encoding="utf-8")
     return tmp_path
@@ -29,7 +30,7 @@ def test_collect_package_files_excludes_runtime_artifacts(tmp_path):
     paths = {item.path for item in files}
 
     assert "README.md" in paths
-    assert "secondbrain/core.py" in paths
+    assert f"{PACKAGE_DIRNAME}/core.py" in paths
     assert "debug.log" not in paths
     assert "data.sqlite" not in paths
     assert excluded >= 3
@@ -47,7 +48,7 @@ def test_build_package_manifest_passes_for_minimal_project(tmp_path):
 
 
 def test_build_package_manifest_fails_when_required_file_missing(tmp_path):
-    (tmp_path / "secondbrain").mkdir()
+    (package_dir(tmp_path)).mkdir()
     (tmp_path / "tests").mkdir()
 
     manifest = build_package_manifest(tmp_path, version="P1.4.3")

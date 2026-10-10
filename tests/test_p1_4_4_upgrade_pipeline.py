@@ -5,15 +5,15 @@ from secondbrain.deployment.upgrade import (
     build_upgrade_plan,
     create_backup_plan,
     create_migration_plan,
-    create_rollback_plan,
     run_preflight,
     validate_upgrade_plan,
     write_upgrade_plan,
 )
+from secondbrain.path import package_dir
 
 
 def _minimal_project(tmp_path: Path) -> Path:
-    (tmp_path / "secondbrain").mkdir()
+    (package_dir(tmp_path)).mkdir()
     (tmp_path / "tests").mkdir()
     (tmp_path / "README.md").write_text("version: P1.4.3\n", encoding="utf-8")
     (tmp_path / "pytest.ini").write_text("[pytest]\ntestpaths=tests\n", encoding="utf-8")

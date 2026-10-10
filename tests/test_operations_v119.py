@@ -1,13 +1,14 @@
 
 from pathlib import Path
-import zipfile
 
 from secondbrain.operations_v119 import OperationsEngine, BackupManager, ReleaseGate, MigrationManager
+from secondbrain.path import package_dir
 
 
 def test_backup_create_and_verify(tmp_path):
-    root = tmp_path / 'project'; runtime = tmp_path / 'runtime'
-    (root / 'secondbrain').mkdir(parents=True)
+    root = tmp_path / 'project'
+    runtime = tmp_path / 'runtime'
+    (package_dir(root)).mkdir(parents=True)
     (root / 'launcher.py').write_text('print("ok")', encoding='utf-8')
     (root / 'requirements.txt').write_text('', encoding='utf-8')
     engine = OperationsEngine(root, runtime)
@@ -19,8 +20,9 @@ def test_backup_create_and_verify(tmp_path):
 
 
 def test_release_gate_status(tmp_path):
-    root = tmp_path / 'project'; runtime = tmp_path / 'runtime'
-    (root / 'secondbrain').mkdir(parents=True)
+    root = tmp_path / 'project'
+    runtime = tmp_path / 'runtime'
+    (package_dir(root)).mkdir(parents=True)
     (root / 'launcher.py').write_text('x=1', encoding='utf-8')
     (root / 'requirements.txt').write_text('', encoding='utf-8')
     gate = ReleaseGate(root, runtime).run()
@@ -38,8 +40,11 @@ def test_migration_plan_and_marker(tmp_path):
 
 
 def test_restore_plan_safe(tmp_path):
-    root = tmp_path / 'project'; runtime = tmp_path / 'runtime'
-    root.mkdir(); (root / 'launcher.py').write_text('x=1', encoding='utf-8'); (root / 'secondbrain').mkdir()
+    root = tmp_path / 'project'
+    runtime = tmp_path / 'runtime'
+    root.mkdir()
+    (root / 'launcher.py').write_text('x=1', encoding='utf-8')
+    package_dir(root).mkdir()
     mgr = BackupManager(root, runtime)
     backup = mgr.create()
     plan = mgr.restore_plan(backup['backup_id'])

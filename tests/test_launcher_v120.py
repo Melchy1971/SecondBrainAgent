@@ -1,10 +1,11 @@
 from secondbrain.launcher_runtime_v120 import SecondBrainLauncherV120
+from secondbrain.path import package_dir
 
 
 def test_launcher_v120_status(tmp_path):
     root = tmp_path / 'project'
     root.mkdir()
-    (root / 'secondbrain').mkdir()
+    (package_dir(root)).mkdir()
     (root / 'launcher.py').write_text('x=1', encoding='utf-8')
     launcher = SecondBrainLauncherV120(root)
     status = launcher.os_status()
@@ -15,7 +16,7 @@ def test_launcher_v120_status(tmp_path):
 def test_launcher_v120_plan(tmp_path):
     root = tmp_path / 'project'
     root.mkdir()
-    (root / 'secondbrain').mkdir()
+    (package_dir(root)).mkdir()
     (root / 'launcher.py').write_text('x=1', encoding='utf-8')
     launcher = SecondBrainLauncherV120(root)
     plan = launcher.os_plan('Release Health prüfen')

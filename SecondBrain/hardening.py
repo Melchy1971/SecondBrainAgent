@@ -1,8 +1,8 @@
 from pathlib import Path
 import sys
-import json
 from .utils import now_date, now_datetime
-from .config import load_settings, load_simple_yaml
+from .config import load_settings
+from .path import package_dir
 
 REQUIRED_DIRS = [
     "00_Inbox",
@@ -26,7 +26,7 @@ def validate_paths(settings: dict, project_root: Path) -> list[tuple[str, bool, 
         ("inbox_exists", inbox.exists(), str(inbox)),
         ("config_exists", (project_root / "config").exists(), str(project_root / "config")),
         ("scripts_exists", (project_root / "scripts").exists(), str(project_root / "scripts")),
-        ("secondbrain_package_exists", (project_root / "secondbrain").exists(), str(project_root / "secondbrain")),
+        ("secondbrain_package_exists", package_dir(project_root).exists(), str(package_dir(project_root))),
     ]
 
     for d in REQUIRED_DIRS:

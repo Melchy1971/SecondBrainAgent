@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import DashboardCard, DashboardSnapshot, normalize_project_root
+from secondbrain.path import package_dir
 from secondbrain.storage.db_production_status import evaluate_db_pgvector_production_status
 
 
@@ -66,7 +67,7 @@ class NativeDashboardService:
         return DashboardCard(card_id, title, status, value, description, command, blockers or [], warnings or [])
 
     def _desktop_card(self) -> DashboardCard:
-        native_exists = self._exists("secondbrain", "native")
+        native_exists = (package_dir(self.project_root) / "native").exists()
         surface = os.environ.get("SECONDBRAIN_SURFACE", "native")
         warnings = [] if surface == "native" else ["surface_not_native"]
         return self._card(
@@ -119,7 +120,9 @@ class NativeDashboardService:
         return self._card("embeddings", "Embeddings", "warning", provider, "Lokale Embeddings sind für Entwicklung ok, nicht für Produktion.", "settings-center-gui", warnings=["local_embeddings_not_production_ready"])
 
     def _module_card(self, card_id: str, title: str, path: str, command: str) -> DashboardCard:
-        exists = self._exists(*path.split("/"))
+        # path ist paketrelativ; gemeint ist ein Paket-Ordner oder ein Modul (.py).
+        target = package_dir(self.project_root).joinpath(*path.split("/"))
+        exists = target.exists() or target.with_suffix(".py").exists()
         return self._card(card_id, title, "ready" if exists else "blocked", "available" if exists else "missing", f"Native Oberfläche: {title}.", command, blockers=[] if exists else [f"missing_module:{card_id}"])
 
     def _runtime_card(self) -> DashboardCard:
@@ -221,15 +224,15 @@ class NativeDashboardService:
             self._desktop_card(),
             self._database_card(),
             self._embedding_card(),
-            self._module_card("chat", "Chat Center", "secondbrain/native/chat_center", "native-chat-status"),
-            self._module_card("documents", "Document Explorer", "secondbrain/native/document_explorer", "document-explorer-status"),
-            self._module_card("memory", "Memory Explorer", "secondbrain/native/memory_explorer", "memory-explorer-status"),
-            self._module_card("agents", "Agent Control", "secondbrain/native/agent_control_center", "agent-control-status"),
+            self._module_card("chat", "Chat Center", "native/chat", "native-chat-status"),
+            self._module_card("documents", "Document Explorer", "native/document_explorer", "document-explorer-status"),
+            self._module_card("memory", "Memory Explorer", "native/memory_explorer", "memory-explorer-status"),
+            self._module_card("agents", "Agent Control", "native/agent_control_center", "agent-control-status"),
             self._tasks_card(),
-            self._module_card("voice", "Voice Control", "secondbrain/native/voice_control_center", "voice-control-status"),
-            self._module_card("commands", "Command Center", "secondbrain/native/command_center", "command-center-status"),
-            self._module_card("settings", "Settings Center", "secondbrain/native/settings_center", "settings-center-status"),
-            self._module_card("updates", "Update Center", "secondbrain/native/update_center", "update-status"),
+            self._module_card("voice", "Voice Control", "native/voice_control_center", "voice-control-status"),
+            self._module_card("commands", "Command Center", "native/command_center", "command-center-status"),
+            self._module_card("settings", "Settings Center", "runtime_config/service", "settings-center-status"),
+            self._module_card("updates", "Update Center", "update_system", "update-status"),
             self._runtime_card(),
             self._security_card(),
             self._governance_card(),

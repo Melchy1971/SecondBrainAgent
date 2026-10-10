@@ -2,4 +2,4 @@
 
 | Typ | Anzahl |
 |---|---:|
-| unknown | 255 |
+| unknown | 313 |

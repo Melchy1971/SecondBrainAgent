@@ -1,0 +1,22 @@
+folders:
+  inbox: 00_Inbox
+  projects: 01_Projekte
+  knowledge: 02_Wissen
+  people: 03_Personen
+  tasks: 04_Tasks
+  sources: 05_Quellen
+  journal: 06_Journal
+  graph: 07_Graph
+  semantic_search: 65_SemanticSearch
+  knowledge_graph_full: 66_KnowledgeGraph
+  project_intelligence: 67_ProjectIntelligence
+  decision_intelligence: 68_DecisionIntelligence
+  meeting_intelligence: 69_MeetingIntelligence
+  calendar_intelligence: 70_CalendarIntelligence
+  data_warehouse: 71_DataWarehouse
+  mcp_ecosystem: 72_MCPEcosystem
+  digital_twin: 73_DigitalTwin
+  self_improvement: 74_SelfImprovingKnowledge
+  secondbrain_os: 75_SecondBrainOS
+  templates: 90_Templates
+  system: 99_System

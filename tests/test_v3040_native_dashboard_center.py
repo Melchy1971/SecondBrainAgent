@@ -5,10 +5,11 @@ from pathlib import Path
 from secondbrain.native.dashboard_center.service import NativeDashboardService
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
 import secondbrain.native.dashboard_center.service as dashboard_service_module
+from secondbrain.path import package_dir
 
 
 def test_dashboard_status_contains_core_cards(tmp_path: Path) -> None:
-    (tmp_path / "secondbrain" / "native" / "dashboard_center").mkdir(parents=True)
+    (package_dir(tmp_path) / "native" / "dashboard_center").mkdir(parents=True)
     service = NativeDashboardService(tmp_path)
     payload = service.status()
     ids = {card["id"] for card in payload["cards"]}
@@ -33,7 +34,7 @@ def test_dashboard_detects_missing_native_modules(tmp_path: Path) -> None:
 
 
 def test_workspace_navigation_includes_dashboard(tmp_path: Path) -> None:
-    (tmp_path / "secondbrain" / "native" / "dashboard_center").mkdir(parents=True)
+    (package_dir(tmp_path) / "native" / "dashboard_center").mkdir(parents=True)
     nav = AIWorkspaceService(tmp_path).navigation()
     ids = {item["id"] for item in nav["navigation"]}
     assert "dashboard" in ids
