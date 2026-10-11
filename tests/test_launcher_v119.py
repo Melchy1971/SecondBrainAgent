@@ -1,5 +1,6 @@
 
 from secondbrain.launcher_runtime_v119 import SecondBrainLauncherV119
+from secondbrain.path import package_dir
 
 
 def test_launcher_ops_status(tmp_path):
@@ -11,7 +12,7 @@ def test_launcher_ops_status(tmp_path):
 
 def test_launcher_ops_backup(tmp_path):
     (tmp_path / 'launcher.py').write_text('x=1', encoding='utf-8')
-    (tmp_path / 'secondbrain').mkdir(exist_ok=True)
+    (package_dir(tmp_path)).mkdir(exist_ok=True)
     launcher = SecondBrainLauncherV119(project_root=tmp_path)
     row = launcher.ops_backup(label='unit')
     assert row['backup_id'].startswith('backup_')

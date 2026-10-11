@@ -7,6 +7,7 @@ from pathlib import Path
 
 from secondbrain.native.ai_workspace.models import ApplicationState
 from secondbrain.native.ai_workspace.service import AIWorkspaceService
+from secondbrain.path import package_dir
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,7 +53,7 @@ def test_workspace_activity_roundtrip(tmp_path: Path) -> None:
 
 
 def test_primary_native_launcher_uses_hud_voice_desktop() -> None:
-    source = (ROOT / "secondbrain" / "gui" / "launch.py").read_text(encoding="utf-8")
+    source = (package_dir(ROOT) / "gui" / "launch.py").read_text(encoding="utf-8")
     assert "secondbrain.desktop_native.app import main as run_native_desktop" in source
     assert "code = run_native_desktop(root)" in source
     assert "secondbrain.native.ai_workspace.gui import run_gui" not in source

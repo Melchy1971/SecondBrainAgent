@@ -7,6 +7,17 @@ DEFAULT_INCOMING_DIRNAME = "SecondBrain-Inbox"
 VAULT_SETTING_KEY = "paths.vault"
 INCOMING_SETTING_KEY = "paths.incoming"
 
+# Physischer Ordner des Python-Pakets. "secondbrain" ist nur ein Import-Shim
+# (secondbrain.py); fuer Dateisystempruefungen muss die echte Schreibweise
+# verwendet werden, sonst schlagen sie unter Linux/macOS fehl. Bewusst getrennt
+# von DEFAULT_VAULT_DIRNAME: der Vault ist konfigurierbar, das Paket nicht.
+PACKAGE_DIRNAME = "SecondBrain"
+
+
+def package_dir(project_root) -> Path:
+    """Paketordner unterhalb der Projektwurzel (exakte Schreibweise)."""
+    return Path(project_root) / PACKAGE_DIRNAME
+
 @dataclass(frozen=True)
 class AppPaths:
     vault: Path
@@ -27,8 +38,10 @@ def resolve_paths(project_root, *, vault_setting="", incoming_setting="") -> App
 
 def from_settings_service(service, project_root) -> AppPaths:
     def _get(k):
-        try: return service.get(k) or ""
-        except Exception: return ""
+        try:
+            return service.get(k) or ""
+        except Exception:
+            return ""
     return resolve_paths(project_root, vault_setting=_get(VAULT_SETTING_KEY),
                          incoming_setting=_get(INCOMING_SETTING_KEY))
 

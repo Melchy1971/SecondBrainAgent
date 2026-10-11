@@ -1,6 +1,6 @@
 # MCP Hub Status
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 | Connector | Status | Aktion |
 |---|---|---|

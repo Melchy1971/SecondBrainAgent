@@ -1,24 +1,24 @@
 # Full Knowledge Graph
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## Nodes
 
-- document: 51
-- project: 41
-- task: 27
-- decision: 24
-- person: 21
-- meeting: 19
-- risk: 15
-- process: 15
+- document: 63
+- project: 56
+- task: 32
+- decision: 30
+- person: 25
+- meeting: 23
+- risk: 19
+- process: 19
 - system: 7
 
 ## Edges
 
-- decides: 21254
-- blocks: 12217
-- references: 609
+- blocks: 18298
+- decides: 10199
+- references: 932
 
 ## Graph JSON
 

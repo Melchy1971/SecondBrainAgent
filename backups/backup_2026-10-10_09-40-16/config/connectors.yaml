@@ -1,0 +1,27 @@
+imap:
+  enabled: false
+  provider: generic
+  host: ""
+  port: 993
+  username: ""
+  password_secret: "email.imap_password"
+  mailbox: INBOX
+  max_messages: 25
+  mark_seen: false
+
+browser:
+  enabled: true
+  chrome_bookmarks_path: ""
+  edge_bookmarks_path: ""
+  firefox_profile_path: ""
+
+ollama:
+  enabled: true
+  base_url: http://localhost:11434
+  model: llama3.1
+  timeout_seconds: 60
+
+web_dashboard:
+  enabled: true
+  host: localhost
+  port: 8765

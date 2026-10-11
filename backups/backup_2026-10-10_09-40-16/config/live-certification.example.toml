@@ -1,0 +1,41 @@
+# Beispielkonfiguration fuer den Live-Zertifizierungs-Orchestrator (Prompt 69).
+#
+# KEINE echten Secrets in diese Datei. Sie dient als Dokumentation der
+# erwarteten Umgebungsvariablen. Die Werte werden zur Laufzeit aus der Umgebung
+# gelesen, nicht aus dieser Datei -- der Orchestrator parst sie nicht.
+#
+# Aufruf:
+#   python launcher.py live-certification --scope all
+#   python launcher.py live-certification --scope postgres
+#   python launcher.py live-certification --scope provider
+
+[general]
+# Kommagetrennte Liste der Bereiche, die als PFLICHT gelten. Ein Pflichtbereich
+# ohne Konfiguration fuehrt zu BLOCKED statt SKIPPED.
+# Umgebungsvariable: LIVE_CERTIFICATION_REQUIRED
+required = "postgres,approval"
+
+[postgres]
+# Umgebungsvariable: TEST_DATABASE_URL
+# Muss eine PostgreSQL-Testdatenbank sein. Die produktive DATABASE_URL wird nie
+# gelesen. Fuer verschluesselten Transport sslmode=require anhaengen.
+test_database_url = "postgresql://<user>:<password>@<host>:5432/<db>?sslmode=require"
+
+[provider]
+# Umgebungsvariable: LIVE_PROVIDERS  (zeigt an, dass Provider konfiguriert sind)
+# Umgebungsvariable: REQUIRED_LIVE_PROVIDERS  (welche als Pflicht gelten)
+# Nicht konfigurierte optionale Provider erzeugen keinen Blocker.
+live_providers = "openai,ollama"
+required_live_providers = ""
+
+[connectors]
+# Je Connector eine Testkonto-Variable. Fehlt sie und ist der Bereich nicht
+# als Pflicht markiert, wird er uebersprungen.
+gmail_test_account = "<gmail-test-account>"
+outlook_test_account = "<outlook-test-account>"
+google_calendar_test_account = "<google-calendar-test-account>"
+microsoft_calendar_test_account = "<microsoft-calendar-test-account>"
+
+# Externe Schreibaktionen (Send, Forward, Delete, Calendar Write, Publish)
+# laufen ausschliesslich ueber das Approval-System und werden bei unklarem
+# Ergebnis nicht automatisch wiederholt. Das erzwingen die einzelnen Gates.

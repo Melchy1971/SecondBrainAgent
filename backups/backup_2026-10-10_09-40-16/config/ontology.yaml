@@ -1,0 +1,27 @@
+ontology:
+  node_types:
+    - person
+    - customer
+    - project
+    - process
+    - document
+    - meeting
+    - task
+    - risk
+    - decision
+    - system
+    - supplier
+    - source
+    - health_metric
+    - finance_record
+  edge_types:
+    - works_on
+    - blocks
+    - caused_by
+    - decides
+    - creates
+    - belongs_to
+    - depends_on
+    - references
+    - impacts
+    - owns

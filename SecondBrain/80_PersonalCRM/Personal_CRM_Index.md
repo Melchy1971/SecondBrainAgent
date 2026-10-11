@@ -1,59 +1,59 @@
 # Personal CRM
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## E-Mail-Kontakte
 
 
 ## Namenssignale
 
-- Score: 643
-- Frontmatter: 375
-- Tags: 327
-- Links: 326
-- Signale: 253
-- Risiko: 251
-- Risiken: 231
-- Ergebnis: 213
-- Titel: 187
-- Zusammenfassung: 185
-- Datum: 134
-- Prozessdokumentation: 132
-- Testfälle: 131
-- Review: 125
-- Blocker: 113
-- Annahmen: 105
-- Alternativen: 100
-- Inhalt: 99
-- Recherchefrage: 95
-- Quellenbedarf: 94
-- Wissensnotiz: 93
-- Wirkung: 90
-- Schritt: 89
-- Struktur: 87
-- Entscheidungs: 86
+- Score: 659
+- Frontmatter: 525
+- Tags: 450
+- Links: 449
+- Risiko: 382
+- Signale: 374
+- Ergebnis: 369
+- Risiken: 348
+- Titel: 245
+- Zusammenfassung: 243
+- Review: 192
+- Prozessdokumentation: 191
+- Testfälle: 189
+- Datum: 183
+- Annahmen: 174
+- Blocker: 172
+- Alternativen: 168
+- Wirkung: 150
+- Recherchefrage: 146
+- Inhalt: 146
+- Quellenbedarf: 145
+- Struktur: 129
+- Wissensnotiz: 124
+- Entscheidungs: 112
+- Schritt: 109
+- Agenda: 99
+- Aufgaben: 97
+- Notizen: 96
 - Aktualisiert: 84
-- Aufgaben: 76
-- Notizen: 74
-- Agenda: 61
-- Keine: 60
-- Nachbereitung: 50
-- Status: 48
-- Kernnotizen: 46
-- Karteikarten: 46
-- Praxisaufgabe: 46
-- Automatisierung: 44
-- Prozessmodell: 42
-- Entscheidungen: 41
-- Projekte: 38
-- Index: 34
-- Entscheidung: 34
-- Agent: 32
-- Was: 32
-- Notiz: 29
+- Automatisierung: 81
+- Nachbereitung: 77
+- Keine: 71
+- Prozessmodell: 67
+- Kernnotizen: 61
+- Karteikarten: 61
+- Praxisaufgabe: 61
+- Status: 56
+- Entscheidungen: 52
+- Projekte: 51
+- Protokoll: 49
+- Was: 45
+- Notiz: 38
+- Index: 37
+- Agent: 37
+- Quellen: 34
+- Projekt: 34
+- Kontextknoten: 33
+- Review Queue: 31
 - Import: 27
-- Projekt: 26
-- Quellen: 25
-- Kontextknoten: 25
-- Protokoll: 25
-- Review Queue: 24
+- Wissenslücken: 27

@@ -4,13 +4,14 @@ import json
 from pathlib import Path
 
 from secondbrain.native.installer_center import installer_status, installer_plan, write_installer_artifacts
+from secondbrain.path import package_dir
 
 
 def _project(tmp_path: Path) -> Path:
     root = tmp_path
-    (root / "secondbrain" / "native").mkdir(parents=True)
-    (root / "secondbrain" / "native" / "workspace_center.py").write_text("", encoding="utf-8")
-    (root / "secondbrain" / "native" / "voice_control_center.py").write_text("", encoding="utf-8")
+    (package_dir(root) / "native").mkdir(parents=True)
+    (package_dir(root) / "native" / "workspace_center.py").write_text("", encoding="utf-8")
+    (package_dir(root) / "native" / "voice_control_center.py").write_text("", encoding="utf-8")
     (root / "launcher.py").write_text("print('jarvis')", encoding="utf-8")
     (root / "pyproject.toml").write_text("[project]\nname='secondbrain'\n", encoding="utf-8")
     (root / "requirements-runtime.txt").write_text("", encoding="utf-8")
@@ -52,7 +53,7 @@ def test_write_installer_artifacts(tmp_path: Path) -> None:
 
 def test_installer_status_blocks_missing_launcher(tmp_path: Path) -> None:
     root = tmp_path
-    (root / "secondbrain" / "native").mkdir(parents=True)
+    (package_dir(root) / "native").mkdir(parents=True)
     payload = installer_status(root)
     assert payload["ok"] is False
     keys = {b["key"] for b in payload["blockers"]}

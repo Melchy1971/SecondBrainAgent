@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from secondbrain.native.theme_center.service import ThemeCenterService
+from secondbrain.path import package_dir
 
 
 def test_theme_status_has_builtin_catalog(tmp_path: Path) -> None:
@@ -61,7 +62,7 @@ def test_theme_cli_status_from_delta(tmp_path: Path) -> None:
 def test_ai_workspace_contains_theme_navigation(tmp_path: Path) -> None:
     from secondbrain.native.ai_workspace.service import AIWorkspaceService
 
-    (tmp_path / "secondbrain" / "native" / "theme_center").mkdir(parents=True)
+    (package_dir(tmp_path) / "native" / "theme_center").mkdir(parents=True)
     svc = AIWorkspaceService(tmp_path)
     nav = svc.navigation()["navigation"]
     assert any(item["id"] == "themes" and item["command"] == "theme-status" for item in nav)

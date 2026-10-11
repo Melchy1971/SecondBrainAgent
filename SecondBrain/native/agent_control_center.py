@@ -7,6 +7,8 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any
 
+from secondbrain.path import package_dir
+
 
 RISKY_KEYWORDS = {
     "lösche", "loesche", "delete", "remove", "entferne", "repariere", "repair",
@@ -86,11 +88,11 @@ class AgentControlCenter:
     def agents(self) -> list[dict[str, Any]]:
         modules = [
             ("jarvis", "Primärer persönlicher Assistent", True),
-            ("document_agent", "Dokumentenimport, Vorschau, Tags, OCR-Status", (self.project_root / "secondbrain" / "native" / "document_explorer.py").exists()),
-            ("memory_agent", "Memory-Suche, Timeline, Export, Archiv", (self.project_root / "secondbrain" / "native" / "memory_explorer.py").exists()),
-            ("command_agent", "Kommando-Palette und Freigaben", (self.project_root / "secondbrain" / "native" / "command_center.py").exists()),
-            ("rag_agent", "RAG-Suche, Golden Gate, Vector Audit", (self.project_root / "secondbrain" / "p1_rag_runtime.py").exists()),
-            ("voice_agent", "Deutsche Sprachbefehle", (self.project_root / "secondbrain" / "native" / "voice_commands.py").exists()),
+            ("document_agent", "Dokumentenimport, Vorschau, Tags, OCR-Status", (package_dir(self.project_root) / "native" / "document_explorer.py").exists()),
+            ("memory_agent", "Memory-Suche, Timeline, Export, Archiv", (package_dir(self.project_root) / "native" / "memory_explorer.py").exists()),
+            ("command_agent", "Kommando-Palette und Freigaben", (package_dir(self.project_root) / "native" / "command_center.py").exists()),
+            ("rag_agent", "RAG-Suche, Golden Gate, Vector Audit", (package_dir(self.project_root) / "p1_rag_runtime.py").exists()),
+            ("voice_agent", "Deutsche Sprachbefehle", (package_dir(self.project_root) / "native" / "voice_commands.py").exists()),
         ]
         return [
             {

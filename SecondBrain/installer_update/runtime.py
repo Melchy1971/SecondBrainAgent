@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from dataclasses import asdict, dataclass, fields
@@ -24,6 +25,8 @@ from uuid import uuid4
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from packaging.version import InvalidVersion, Version
+
+from secondbrain.path import PACKAGE_DIRNAME
 
 CHANNELS = ("stable", "beta", "development")
 SCHEMA_VERSION = 1
@@ -242,8 +245,9 @@ class InstallerUpdateRuntime:
                 manifest = json.loads(payload)
             parsed = self.validate_update(manifest)
             available = _version(parsed.application_version) > _version(self.current_version)
-            result = {"ok": True, "status": "available" if available else "current", "update_available": available, "manifest": asdict(parsed)}
-            self._audit("check", result["status"], version=parsed.application_version)
+            status = "available" if available else "current"
+            result = {"ok": True, "status": status, "update_available": available, "manifest": asdict(parsed)}
+            self._audit("check", status, version=parsed.application_version)
             return result
         except (UpdateError, json.JSONDecodeError) as exc:
             error = exc if isinstance(exc, UpdateError) else UpdateError("manifest_invalid", str(exc))
@@ -396,7 +400,7 @@ class InstallerUpdateRuntime:
 
     # Compatibility with the previous installer API.
     def validate(self) -> dict[str, Any]:
-        checks = [{"name": name, "exists": (self.root / name).exists(), "path": str(self.root / name)} for name in ("launcher.py", "secondbrain", "requirements.txt")]
+        checks = [{"name": name, "exists": (self.root / name).exists(), "path": str(self.root / name)} for name in ("launcher.py", PACKAGE_DIRNAME, "requirements.txt")]
         return {"ok": all(row["exists"] for row in checks), "checks": checks}
 
     def status(self) -> dict[str, Any]:
@@ -409,7 +413,7 @@ class InstallerUpdateRuntime:
 
     def manifest_create(self, version: str = "15.2") -> dict[str, Any]:
         """Create the legacy local installer descriptor (never a trusted update)."""
-        value = {"name": "SecondBrain OS", "version": version, "channel": "local", "required_files": ["launcher.py", "secondbrain", "requirements.txt"], "rollback_supported": True, "created_at": _now()}
+        value = {"name": "SecondBrain OS", "version": version, "channel": "local", "required_files": ["launcher.py", PACKAGE_DIRNAME, "requirements.txt"], "rollback_supported": True, "created_at": _now()}
         self.store.save("legacy_release_manifest", value)
         return value
 

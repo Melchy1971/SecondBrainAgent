@@ -25,6 +25,7 @@ from uuid import uuid4
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+from secondbrain.path import package_dir
 from secondbrain.vault.crypto import derive_key_from_passphrase
 
 
@@ -783,7 +784,7 @@ class ReleaseGate:
             checks.append({'name': name, 'passed': bool(passed), 'severity': severity, 'detail': detail})
         check('launcher.py exists', (self.project_root / 'launcher.py').exists())
         check('requirements.txt exists', (self.project_root / 'requirements.txt').exists(), 'warning')
-        check('secondbrain package exists', (self.project_root / 'secondbrain').exists())
+        check('secondbrain package exists', package_dir(self.project_root).exists())
         check('runtime dir writable', self._writable(self.runtime_dir), detail=str(self.runtime_dir))
         check('config dir exists', (self.project_root / 'config').exists(), 'warning')
         check('tests dir exists', (self.project_root / 'tests').exists(), 'warning')

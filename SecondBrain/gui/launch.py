@@ -12,6 +12,7 @@ from typing import Any
 
 from secondbrain.gui.bootstrap import bootstrap_status, write_bootstrap_report
 from secondbrain.native.runtime_snapshot import build_native_view_model
+from secondbrain.path import package_dir
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8851
@@ -110,8 +111,8 @@ def gui_doctor(project_root: str | Path | None = None) -> dict[str, Any]:
     def check(name: str, ok: bool, detail: str) -> None:
         checks.append({"name": name, "ok": bool(ok), "detail": detail})
     check("launcher", (root / "launcher.py").exists(), "launcher.py vorhanden")
-    check("native_package", (root / "secondbrain" / "native" / "app.py").exists(), "secondbrain/native/app.py vorhanden")
-    check("native_voice_de", (root / "secondbrain" / "native" / "voice_de.py").exists(), "deutsche Sprachsteuerung vorhanden")
+    check("native_package", (package_dir(root) / "native" / "app.py").exists(), "SecondBrain/native/app.py vorhanden")
+    check("native_voice_de", (package_dir(root) / "native" / "voice_de.py").exists(), "deutsche Sprachsteuerung vorhanden")
     check("jarvis_bat", (root / "Jarvis.bat").exists(), "Jarvis.bat vorhanden")
     check("gui_ps1", (root / "Start-Jarvis-GUI.ps1").exists(), "Start-Jarvis-GUI.ps1 vorhanden")
     check("shortcut_installer", (root / "Install-Jarvis-Desktop.ps1").exists(), "Install-Jarvis-Desktop.ps1 vorhanden")

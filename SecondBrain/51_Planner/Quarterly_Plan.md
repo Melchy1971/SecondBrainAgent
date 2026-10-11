@@ -1,6 +1,6 @@
 # Quarterly Plan
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## Fokus
 

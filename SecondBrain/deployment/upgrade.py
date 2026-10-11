@@ -5,9 +5,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 import hashlib
 import json
-from typing import Iterable, Sequence
+from typing import Sequence
 
-DEFAULT_REQUIRED_PATHS = ("README.md", "secondbrain", "tests")
+from secondbrain.path import PACKAGE_DIRNAME
+
+DEFAULT_REQUIRED_PATHS = ("README.md", PACKAGE_DIRNAME, "tests")
 DEFAULT_RUNTIME_DIRS = ("release", "backups")
 
 

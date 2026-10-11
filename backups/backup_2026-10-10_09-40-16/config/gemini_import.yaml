@@ -1,0 +1,9 @@
+gemini_import:
+  enabled: true
+  watch_folder: data/inbox/Gemini/exports
+  processed_folder: data/inbox/Gemini/processed
+  target_folder: data/vaults/secondbrain/05_Quellen/Gemini
+  report_folder: data/vaults/secondbrain/99_System/gemini_import
+  auto_tags: true
+  update_semantic_search: true
+  update_secondbrain_os: false

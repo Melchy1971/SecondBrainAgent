@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-import sys
-sys.path.insert(0, str(ROOT))
-
 from secondbrain.native.layout_center.service import NativeLayoutService
 from secondbrain.native.layout_center.models import LayoutSpec, PanelSpec
+from secondbrain.path import package_dir
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_layout_defaults_and_status(tmp_path: Path) -> None:
@@ -77,7 +75,7 @@ def test_workspace_navigation_contains_layout(tmp_path: Path) -> None:
     from secondbrain.native.ai_workspace.service import AIWorkspaceService
 
     root = tmp_path
-    (root / "secondbrain" / "native" / "layout_center").mkdir(parents=True)
+    (package_dir(root) / "native" / "layout_center").mkdir(parents=True)
     service = AIWorkspaceService(root)
     nav = service.navigation()
     layout = [item for item in nav["navigation"] if item["id"] == "layout"]

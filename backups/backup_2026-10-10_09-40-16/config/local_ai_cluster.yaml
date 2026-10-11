@@ -1,0 +1,11 @@
+local_ai_cluster:
+  enabled: true
+  provider: ollama
+  models:
+    extraction: gemma
+    coding: deepseek-coder
+    reasoning: qwen
+    summary: llama3.1
+    vision: llava
+    embeddings: nomic-embed-text
+    reranking: bge-reranker

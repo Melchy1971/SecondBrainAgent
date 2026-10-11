@@ -10,6 +10,7 @@ import sqlite3
 import sys
 
 from .config import load_simple_yaml
+from .path import package_dir
 from .event_bus_v121 import EventBus
 from .module_registry import ModuleRegistry
 
@@ -341,7 +342,7 @@ def p0_artifact_audit(project_root: str | Path, profile: str | None = None, writ
     }
     checks: list[dict[str, Any]] = []
     checks.append(_check("launcher_file_present", (root / "launcher.py").exists(), "blocker", {"path": str(root / "launcher.py")}))
-    checks.append(_check("p0_runtime_module_present", (root / "secondbrain" / "p0_runtime.py").exists(), "blocker", {"path": str(root / "secondbrain" / "p0_runtime.py")}))
+    checks.append(_check("p0_runtime_module_present", (package_dir(root) / "p0_runtime.py").exists(), "blocker", {"path": str(package_dir(root) / "p0_runtime.py")}))
     checks.append(_check("p0_integration_tests_present", (root / "tests" / "test_v170_p0_integration.py").exists(), "blocker", {"path": str(root / "tests" / "test_v170_p0_integration.py")}))
     checks.append(_check("reports_dir_present", reports.exists(), "blocker", {"path": str(reports)}))
     for key, path in expected_reports.items():

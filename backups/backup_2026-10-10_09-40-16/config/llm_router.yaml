@@ -1,0 +1,16 @@
+llm_router:
+  default_provider: ollama
+  default_model: llama3.1
+  tasks:
+    extraction:
+      provider: ollama
+      model: gemma
+    coding:
+      provider: ollama
+      model: deepseek-coder
+    analysis:
+      provider: ollama
+      model: qwen
+    summary:
+      provider: ollama
+      model: llama3.1

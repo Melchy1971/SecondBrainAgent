@@ -1,29 +1,29 @@
 # Digital Twin v6
 
-Aktualisiert: 2026-10-05
+Aktualisiert: 2026-10-10
 
 ## Prioritätssignale
 
-- entscheidung: 700
-- risiko: 633
-- projekt: 585
-- prozess: 403
-- automatisierung: 86
-- gesundheit: 65
-- lernen: 14
+- projekt: 914
+- prozess: 606
+- risiko: 528
+- entscheidung: 336
+- automatisierung: 152
+- gesundheit: 77
+- lernen: 17
 - lokal: 5
 
 ## Wissensschwerpunkte
 
-- #Fokuszeiten: 5
-- #Meeting-Vorbereitung: 5
-- #Nachbereitung: 5
-- #Tagesplanung: 5
-- #Wochenplanung: 5
+- #Fokuszeiten: 6
+- #Meeting-Vorbereitung: 6
+- #Nachbereitung: 6
+- #Tagesplanung: 6
+- #Wochenplanung: 6
+- #Keine.: 5
 - #Entscheidungen: 4
 - #Keine: 4
 - #Prioritäten: 4
-- #Keine.: 4
 - #Arbeitsmuster: 3
 - #BPMN: 3
 - #Gesundheit: 3
