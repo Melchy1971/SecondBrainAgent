@@ -9,6 +9,7 @@ import os
 from typing import Iterable
 
 from secondbrain.providers.base.http_transport import JsonHttpTransport
+from secondbrain.providers.base.response_validation import text_content, embedding_vectors
 from secondbrain.providers.base.provider_capabilities import ProviderCapabilities
 from secondbrain.providers.base.provider_exception import ProviderConfigError, ProviderError
 from secondbrain.providers.base.provider_models import CompletionRequest, CompletionResponse, EmbeddingRequest, EmbeddingResponse, StreamChunk, messages_to_openai
@@ -36,13 +37,20 @@ class OpenAIProvider:
         }
         if request.max_tokens is not None:
             payload["max_tokens"] = request.max_tokens
+        if request.response_format == "json_object":
+            payload["response_format"] = {"type": "json_object"}
         response = self.transport.post_json(f"{self.base_url}/chat/completions", payload, self._headers())
-        choice = (response.data.get("choices") or [{}])[0]
-        message = choice.get("message") or {}
+        choices = response.data.get("choices")
+        if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+            raise ProviderError(self.name, "invalid_response", retryable=False)
+        choice = choices[0]
+        message = choice.get("message")
+        if not isinstance(message, dict):
+            raise ProviderError(self.name, "invalid_response", retryable=False)
         return CompletionResponse(
             provider=self.name,
             model=request.model,
-            content=message.get("content", ""),
+            content=text_content(self.name, message.get("content")),
             finish_reason=choice.get("finish_reason"),
             usage=response.data.get("usage", {}),
             raw=response.data,
@@ -61,8 +69,10 @@ class OpenAIProvider:
             {"model": request.model, "input": request.texts},
             self._headers(),
         )
-        data = response.data.get("data") or []
-        vectors = [[float(x) for x in item.get("embedding", [])] for item in data]
+        data = response.data.get("data")
+        if not isinstance(data, list) or any(not isinstance(item, dict) for item in data):
+            raise ProviderError(self.name, "invalid_embedding_response", retryable=False)
+        vectors = embedding_vectors(self.name, [item.get("embedding") for item in data], len(request.texts))
         if len(vectors) != len(request.texts):
             raise ProviderError(self.name, "embedding count mismatch", retryable=False)
         return EmbeddingResponse(provider=self.name, model=request.model, vectors=vectors, usage=response.data.get("usage", {}), raw=response.data)

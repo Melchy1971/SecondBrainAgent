@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Iterable
 
 from secondbrain.providers.base.http_transport import JsonHttpTransport
+from secondbrain.providers.base.response_validation import text_content, embedding_vectors
 from secondbrain.providers.base.provider_capabilities import ProviderCapabilities
 from secondbrain.providers.base.provider_exception import ProviderError
 from secondbrain.providers.base.provider_models import CompletionRequest, CompletionResponse, EmbeddingRequest, EmbeddingResponse, StreamChunk, messages_to_openai
@@ -11,20 +12,29 @@ from secondbrain.providers.base.provider_models import CompletionRequest, Comple
 
 class OllamaProvider:
     name = "ollama"
-    capabilities = ProviderCapabilities(chat=True, embeddings=True, streaming=False, local=True)
+    capabilities = ProviderCapabilities(chat=True, embeddings=True, streaming=False, local=True, supports_json_mode=True)
 
     def __init__(self, base_url: str = "http://localhost:11434", transport: JsonHttpTransport | None = None):
         self.base_url = base_url.rstrip("/")
         self.transport = transport or JsonHttpTransport()
 
     def complete(self, request: CompletionRequest) -> CompletionResponse:
+        payload = {"model": request.model, "messages": messages_to_openai(request.messages), "stream": False,
+                   "options": {"temperature": request.temperature}}
+        if request.max_tokens is not None:
+            payload["options"]["num_predict"] = request.max_tokens
+        if request.response_format == "json_object":
+            payload["format"] = "json"
         response = self.transport.post_json(
             f"{self.base_url}/api/chat",
-            {"model": request.model, "messages": messages_to_openai(request.messages), "stream": False, "options": {"temperature": request.temperature}},
+            payload,
             {},
         )
         message = response.data.get("message") or {}
-        return CompletionResponse(provider=self.name, model=request.model, content=message.get("content", ""), finish_reason="stop" if response.data.get("done") else None, raw=response.data)
+        if not isinstance(message, dict):
+            raise ProviderError(self.name, "invalid_response", retryable=False)
+        finish_reason = response.data.get("done_reason") or ("stop" if response.data.get("done") else None)
+        return CompletionResponse(provider=self.name, model=request.model, content=text_content(self.name, message.get("content")), finish_reason=finish_reason, raw=response.data)
 
     def stream(self, request: CompletionRequest) -> Iterable[StreamChunk]:
         response = self.complete(request)
@@ -35,7 +45,7 @@ class OllamaProvider:
         vectors = response.data.get("embeddings")
         if vectors is None and "embedding" in response.data:
             vectors = [response.data["embedding"]]
-        vectors = [[float(x) for x in vector] for vector in (vectors or [])]
+        vectors = embedding_vectors(self.name, vectors, len(request.texts))
         if len(vectors) != len(request.texts):
             raise ProviderError(self.name, "embedding count mismatch", retryable=True)
         return EmbeddingResponse(provider=self.name, model=request.model, vectors=vectors, raw=response.data)

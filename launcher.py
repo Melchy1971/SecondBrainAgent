@@ -196,9 +196,20 @@ def _provider_live_gate_main(argv: list[str]) -> int:
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
     parser.add_argument("--no-write-report", action="store_true")
-    args, _ = parser.parse_known_args(argv)
+    parser.add_argument("--required-providers", default=None,
+                        help="comma-separated required providers (openai,ollama)")
+    parser.add_argument("--timeout-seconds", type=float, default=None,
+                        help="provider request timeout from 1 to 120 seconds")
+    args = parser.parse_args(argv)
     from secondbrain.release.provider_live_gate import BLOCKED, run_provider_live_gate
-    report = run_provider_live_gate(args.project_root_option or args.project_root,
+    project_root = args.project_root_option or args.project_root
+    load_env_file(project_root)
+    gate_env = dict(os.environ)
+    if args.required_providers is not None:
+        gate_env["REQUIRED_LIVE_PROVIDERS"] = args.required_providers
+    if args.timeout_seconds is not None:
+        gate_env["PROVIDER_LIVE_TIMEOUT_SECONDS"] = str(args.timeout_seconds)
+    report = run_provider_live_gate(project_root, env=gate_env,
                                     write_report=not args.no_write_report)
     out(report)
     return 2 if report["status"] == BLOCKED else 0
@@ -224,17 +235,15 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
 def _approval_postgres_live_gate_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
-        description="Approval PostgreSQL live gate (requires TEST_DATABASE_URL)",
+        description="PostgreSQL-backed approval execution live gate (requires TEST_DATABASE_URL)",
     )
     parser.add_argument("cmd")
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
     parser.add_argument("--no-write-report", action="store_true")
     args, _ = parser.parse_known_args(argv)
-    from secondbrain.release.approval_postgres_live_gate import (
-        BLOCKED,
-        run_approval_postgres_live_gate,
-    )
+    from secondbrain.release.approval_postgres_live_gate import BLOCKED, run_approval_postgres_live_gate
+
     report = run_approval_postgres_live_gate(
         args.project_root_option or args.project_root,
         write_report=not args.no_write_report,
@@ -257,7 +266,6 @@ def _native_web_shell_main(argv: list[str]) -> int:
     from secondbrain.desktop_native.web_shell import run_web_shell
     result = run_web_shell(args.project_root_option or args.project_root, host=args.host, port=args.port)
     if result.get("status") == "webengine_missing":
-        # Sauberer Rueckfall auf die klassische native GUI.
         result["note"] = "QtWebEngine nicht verfuegbar - starte klassische Shell mit 'launcher.py jarvis'"
         out(result)
         return 1
@@ -929,7 +937,7 @@ def _embed_main(argv: list[str]) -> int:
 
 def _doc_main(argv: list[str]) -> int:
     from pathlib import Path as _P
-    from secondbrain.documents.preview import resolve, markdown_to_html, highlight
+    from secondbrain.documents.preview import resolve, markdown_to_html
     from secondbrain.documents.compare import diff_documents
     parser = argparse.ArgumentParser(prog="secondbrain")
     parser.add_argument("cmd")
@@ -938,22 +946,26 @@ def _doc_main(argv: list[str]) -> int:
     args, _ = parser.parse_known_args(argv)
     if args.cmd == "doc-preview":
         if not args.path:
-            out({"status": "error", "message": "usage: doc-preview <file>"}); return 2
+            out({"status": "error", "message": "usage: doc-preview <file>"})
+            return 2
         kind = resolve(args.path)
         payload = {"status": "ok", "kind": kind.kind, "renderer": kind.renderer, "mime": kind.mime}
         if kind.kind == "markdown" and _P(args.path).exists():
             payload["html"] = markdown_to_html(_P(args.path).read_text(encoding="utf-8", errors="replace"))
-        out(payload); return 0
+        out(payload)
+        return 0
     if args.cmd == "doc-diff":
         if not args.path or not args.against:
-            out({"status": "error", "message": "usage: doc-diff <a> --against <b>"}); return 2
+            out({"status": "error", "message": "usage: doc-diff <a> --against <b>"})
+            return 2
         a = _P(args.path).read_text(encoding="utf-8", errors="replace")
         b = _P(args.against).read_text(encoding="utf-8", errors="replace")
         result = diff_documents(a, b, left_label=args.path, right_label=args.against)
         out({"status": "ok", "added": result["added"], "removed": result["removed"],
              "similarity": result["similarity"], "identical": result["identical"]})
         return 0
-    out({"status": "unknown_command", "cmd": args.cmd}); return 2
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
 
 
 def _secret_main(argv: list[str]) -> int:
@@ -977,31 +989,41 @@ def _secret_main(argv: list[str]) -> int:
             return 0
         vault = SecretVault(args.path)
         if args.cmd == "secret-health":
-            out({"status": "ok", **vault_health(vault)}); return 0
+            out({"status": "ok", **vault_health(vault)})
+            return 0
         vault.unlock(pw)
         if args.cmd == "secret-set":
             if not args.name or not value:
-                out({"status": "error", "message": "set SECRET_VALUE env and --name"}); return 2
+                out({"status": "error", "message": "set SECRET_VALUE env and --name"})
+                return 2
             vault.set_secret(args.name, value, secret_type=args.type)
             out({"status": "ok", "name": args.name, "type": args.type})   # value never echoed
             return 0
         if args.cmd == "secret-list":
-            out({"status": "ok", "secrets": vault.list_secrets()}); return 0
+            out({"status": "ok", "secrets": vault.list_secrets()})
+            return 0
         if args.cmd == "secret-rotate":
-            out({"status": "ok", **vault.rotate_master_key(pw)}); return 0
+            out({"status": "ok", **vault.rotate_master_key(pw)})
+            return 0
         if args.cmd == "secret-export":
             if not args.file or not exp_pw:
-                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"})
+                return 2
             Path(args.file).write_text(_json.dumps(vault.export_bundle(exp_pw)), encoding="utf-8")
-            out({"status": "ok", "exported_to": args.file}); return 0
+            out({"status": "ok", "exported_to": args.file})
+            return 0
         if args.cmd == "secret-import":
             if not args.file or not exp_pw:
-                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"}); return 2
+                out({"status": "error", "message": "need --file and SECRET_EXPORT_PASSWORD"})
+                return 2
             bundle = _json.loads(Path(args.file).read_text(encoding="utf-8"))
-            out({"status": "ok", **vault.import_bundle(bundle, exp_pw)}); return 0
-        out({"status": "unknown_command", "cmd": args.cmd}); return 2
+            out({"status": "ok", **vault.import_bundle(bundle, exp_pw)})
+            return 0
+        out({"status": "unknown_command", "cmd": args.cmd})
+        return 2
     except (VaultError, VaultLockedError) as exc:
-        out({"status": "vault_error", "message": str(exc)}); return 3
+        out({"status": "vault_error", "message": str(exc)})
+        return 3
 
 
 def _connectors_ext_main(argv: list[str]) -> int:
@@ -1024,23 +1046,29 @@ def _connectors_ext_main(argv: list[str]) -> int:
 
     if args.cmd == "local-folder-sync":
         if not args.path:
-            out({"status": "error", "message": "usage: local-folder-sync --path <dir>"}); return 2
+            out({"status": "error", "message": "usage: local-folder-sync --path <dir>"})
+            return 2
         from secondbrain.connectors.local_folder import LocalFolderConnector
-        out({"status": "ok", **_run(LocalFolderConnector(args.path))}); return 0
+        out({"status": "ok", **_run(LocalFolderConnector(args.path))})
+        return 0
     if args.cmd == "github-issues":
         from secondbrain.connectors.github.config import GitHubConfig, GitHubConfigError
         from secondbrain.connectors.github.auth import token_provider_from_config
         from secondbrain.connectors.github.client import GitHubClient
         from secondbrain.connectors.github.connector import GitHubIssuesConnector
         if not args.owner or not args.repo:
-            out({"status": "error", "message": "usage: github-issues --owner <o> --repo <r> (env GITHUB_TOKEN)"}); return 2
+            out({"status": "error", "message": "usage: github-issues --owner <o> --repo <r> (env GITHUB_TOKEN)"})
+            return 2
         try:
             cfg = GitHubConfig.from_env()
         except GitHubConfigError as exc:
-            out({"status": "config_error", "message": str(exc)}); return 3
+            out({"status": "config_error", "message": str(exc)})
+            return 3
         client = GitHubClient(cfg, token_provider_from_config(cfg))
-        out({"status": "ok", **_run(GitHubIssuesConnector(client, args.owner, args.repo))}); return 0
-    out({"status": "unknown_command", "cmd": args.cmd}); return 2
+        out({"status": "ok", **_run(GitHubIssuesConnector(client, args.owner, args.repo))})
+        return 0
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
 
 
 def _ui_main(argv: list[str]) -> int:
@@ -1069,7 +1097,8 @@ def _ui_main(argv: list[str]) -> int:
             overall = overall and audit["passes_aa"]
         out({"status": "PASS" if overall else "FAIL", "themes": report})
         return 0 if overall else 4
-    out({"status": "unknown_command", "cmd": args.cmd}); return 2
+    out({"status": "unknown_command", "cmd": args.cmd})
+    return 2
 
 
 def main(argv: list[str] | None = None) -> int:

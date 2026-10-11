@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from datetime import datetime, timezone
 import json
+import math
 import os
 from pathlib import Path
 from time import perf_counter
@@ -26,6 +27,7 @@ class TimeoutTransport:
 
 def _safe_error(exc: BaseException) -> dict[str, Any]:
     return {"error_code": getattr(exc, "status_code", None) or type(exc).__name__,
+            "error_kind": getattr(exc, "error_code", None) if getattr(exc, "error_code", None) in {"insufficient_quota", "rate_limit_exceeded", "rate_limit", "http_error"} else None,
             "retryable": bool(getattr(exc, "retryable", False)), "message": "provider request failed"}
 
 
@@ -39,7 +41,10 @@ def _validated_probe_result(expected_name: str, result: Mapping[str, Any]) -> di
 
 
 def _configs(env: Mapping[str, str]) -> list[dict[str, Any]]:
-    timeout = max(1.0, min(float(env.get("PROVIDER_LIVE_TIMEOUT_SECONDS") or 20), 120.0))
+    timeout = float(env.get("PROVIDER_LIVE_TIMEOUT_SECONDS") or 20)
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("invalid timeout")
+    timeout = max(1.0, min(timeout, 120.0))
     return [
         {"name": "openai", "configured": bool(env.get("OPENAI_API_KEY") and env.get("OPENAI_LIVE_MODEL")),
          "model": str(env.get("OPENAI_LIVE_MODEL") or ""), "embedding_model": str(env.get("OPENAI_EMBEDDING_MODEL") or "text-embedding-3-small"),
@@ -73,11 +78,13 @@ def probe_provider(config: Mapping[str, Any], env: Mapping[str, str]) -> dict[st
     from secondbrain.providers.base.provider_models import ChatMessage, CompletionRequest, EmbeddingRequest
     started = perf_counter()
     provider = _provider(config, env)
-    response = provider.complete(CompletionRequest(model=str(config["model"]), max_tokens=24, temperature=0,
+    response = provider.complete(CompletionRequest(model=str(config["model"]), max_tokens=64, temperature=0, response_format="json_object",
         messages=[ChatMessage("user", 'Return only this JSON object: {"live":true}')]))
     embedding = provider.embed(EmbeddingRequest(model=str(config["embedding_model"]), texts=["public synthetic provider gate text"]))
     try:
-        structured = json.loads(response.content).get("live") is True
+        parsed = json.loads(response.content)
+        structured = (isinstance(parsed, dict) and set(parsed) == {"live"} and parsed["live"] is True
+                      and response.finish_reason != "length")
     except (json.JSONDecodeError, AttributeError):
         structured = False
     dimensions = len(embedding.vectors[0]) if embedding.vectors else 0
@@ -100,7 +107,9 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
     configuration_error = None
     try:
         configs = _configs(source)
-        max_cost = max(0.0, float(source.get("PROVIDER_LIVE_MAX_COST") or 0.05))
+        max_cost = float(source.get("PROVIDER_LIVE_MAX_COST") or 0.05)
+        if not math.isfinite(max_cost) or max_cost < 0:
+            raise ValueError("invalid cost limit")
     except (ValueError, OverflowError):
         configs, max_cost = [], 0.0
         configuration_error = "invalid_numeric_setting"
@@ -118,14 +127,18 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
             continue
         try:
             result = _validated_probe_result(config["name"], probe(config, source))
-            if float(result.get("estimated_cost") or 0) > max_cost:
+            estimated_cost = float(result.get("estimated_cost") or 0)
+            if not math.isfinite(estimated_cost) or estimated_cost < 0:
+                result.update(readiness="blocked", error_code="invalid_probe_cost", estimated_cost=0.0)
+            elif estimated_cost > max_cost:
                 result.update(readiness="blocked", error_code="cost_limit_exceeded")
             providers.append(result)
         except Exception as exc:
             providers.append({"name": config["name"], "readiness": "unavailable", "model": config["model"],
                 "capabilities": {}, "timeout_seconds": config["timeout"], "latency_ms": None, "usage": {},
                 "estimated_cost": 0.0, "source": config["source"], **_safe_error(exc)})
-    critical = [p["name"] for p in providers if p["readiness"] in {"blocked", "unavailable"}]
+    critical = [p["name"] for p in providers if p["readiness"] in {"blocked", "unavailable"}
+                or (p["name"] in required and p["readiness"] != "ready")]
     critical.extend(unknown_required)
     if configuration_error:
         critical.append("configuration")
