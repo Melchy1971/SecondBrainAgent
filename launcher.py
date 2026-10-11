@@ -196,9 +196,20 @@ def _provider_live_gate_main(argv: list[str]) -> int:
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
     parser.add_argument("--no-write-report", action="store_true")
-    args, _ = parser.parse_known_args(argv)
+    parser.add_argument("--required-providers", default=None,
+                        help="comma-separated required providers (openai,ollama)")
+    parser.add_argument("--timeout-seconds", type=float, default=None,
+                        help="provider request timeout from 1 to 120 seconds")
+    args = parser.parse_args(argv)
     from secondbrain.release.provider_live_gate import BLOCKED, run_provider_live_gate
-    report = run_provider_live_gate(args.project_root_option or args.project_root,
+    project_root = args.project_root_option or args.project_root
+    load_env_file(project_root)
+    gate_env = dict(os.environ)
+    if args.required_providers is not None:
+        gate_env["REQUIRED_LIVE_PROVIDERS"] = args.required_providers
+    if args.timeout_seconds is not None:
+        gate_env["PROVIDER_LIVE_TIMEOUT_SECONDS"] = str(args.timeout_seconds)
+    report = run_provider_live_gate(project_root, env=gate_env,
                                     write_report=not args.no_write_report)
     out(report)
     return 2 if report["status"] == BLOCKED else 0
@@ -224,17 +235,15 @@ def _postgres_live_gate_main(argv: list[str]) -> int:
 def _approval_postgres_live_gate_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
-        description="Approval PostgreSQL live gate (requires TEST_DATABASE_URL)",
+        description="PostgreSQL-backed approval execution live gate (requires TEST_DATABASE_URL)",
     )
     parser.add_argument("cmd")
     parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
     parser.add_argument("--project-root", dest="project_root_option", default=None)
     parser.add_argument("--no-write-report", action="store_true")
     args, _ = parser.parse_known_args(argv)
-    from secondbrain.release.approval_postgres_live_gate import (
-        BLOCKED,
-        run_approval_postgres_live_gate,
-    )
+    from secondbrain.release.approval_postgres_live_gate import BLOCKED, run_approval_postgres_live_gate
+
     report = run_approval_postgres_live_gate(
         args.project_root_option or args.project_root,
         write_report=not args.no_write_report,
@@ -257,7 +266,6 @@ def _native_web_shell_main(argv: list[str]) -> int:
     from secondbrain.desktop_native.web_shell import run_web_shell
     result = run_web_shell(args.project_root_option or args.project_root, host=args.host, port=args.port)
     if result.get("status") == "webengine_missing":
-        # Sauberer Rueckfall auf die klassische native GUI.
         result["note"] = "QtWebEngine nicht verfuegbar - starte klassische Shell mit 'launcher.py jarvis'"
         out(result)
         return 1

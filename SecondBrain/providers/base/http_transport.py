@@ -11,7 +11,7 @@ from typing import Any
 from urllib import request as urlrequest
 from urllib.error import HTTPError, URLError
 
-from secondbrain.providers.base.provider_exception import ProviderError
+from secondbrain.providers.base.provider_exception import ProviderError, ProviderRateLimitError, ProviderTimeoutError
 
 
 @dataclass(frozen=True)
@@ -27,9 +27,31 @@ class JsonHttpTransport:
         try:
             with urlrequest.urlopen(req, timeout=timeout) as resp:  # nosec - user-configured provider URLs
                 raw = resp.read().decode("utf-8")
-                return HttpResponse(status_code=resp.status, data=json.loads(raw or "{}"))
+                data = json.loads(raw)
+                if not isinstance(data, dict):
+                    raise ProviderError("http", "invalid_response", retryable=False)
+                return HttpResponse(status_code=resp.status, data=data)
         except HTTPError as exc:
-            raw = exc.read().decode("utf-8", errors="replace")
-            raise ProviderError("http", raw or exc.reason, retryable=exc.code in {429, 500, 502, 503, 504}, status_code=exc.code) from exc
+            code = "rate_limit" if exc.code == 429 else "http_error"
+            if exc.code == 429:
+                try:
+                    detail = json.loads(exc.read(65536)).get("error", {})
+                    if isinstance(detail, dict):
+                        # Only known machine codes survive; never retain response text.
+                        for value in (detail.get("code"), detail.get("type")):
+                            if value in ("insufficient_quota", "rate_limit_exceeded"):
+                                code = value
+                                break
+                except (ValueError, AttributeError, OSError):
+                    pass
+            error = ProviderRateLimitError if exc.code == 429 else ProviderError
+            raise error("http", code, error_code=code,
+                        retryable=exc.code in {429, 500, 502, 503, 504} and code != "insufficient_quota", status_code=exc.code) from None
+        except TimeoutError:
+            raise ProviderTimeoutError("http", "timeout", retryable=True) from None
         except URLError as exc:
-            raise ProviderError("http", str(exc.reason), retryable=True) from exc
+            if isinstance(exc.reason, TimeoutError):
+                raise ProviderTimeoutError("http", "timeout", retryable=True) from None
+            raise ProviderError("http", "connection_failed", retryable=True) from None
+        except (ValueError, UnicodeError):
+            raise ProviderError("http", "invalid_response", retryable=False) from None

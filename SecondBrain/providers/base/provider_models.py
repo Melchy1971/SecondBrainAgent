@@ -24,6 +24,7 @@ class CompletionRequest:
     max_tokens: int | None = None
     stream: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
+    response_format: Literal["text", "json_object"] = "text"
 
     def prompt_size(self) -> int:
         return sum(len(m.content) for m in self.messages)
@@ -37,6 +38,7 @@ class CompletionResponse:
     finish_reason: str | None = None
     usage: dict[str, int] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict)
+    routing: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,5 @@
 import json
+import pytest
 from launcher import main
 from secondbrain.release.provider_live_gate import BLOCKED, CONDITIONAL_PASS, PASS, _safe_error, run_provider_live_gate
 
@@ -78,3 +79,34 @@ def test_launcher_returns_success_for_optional_unconfigured(tmp_path, monkeypatc
         monkeypatch.delenv(key, raising=False)
     assert main(["provider-live-gate", "--project-root", str(tmp_path)]) == 0
     assert '"status": "CONDITIONAL_PASS"' in capsys.readouterr().out
+
+
+def test_launcher_loads_project_env_and_applies_safe_cli_overrides(tmp_path, monkeypatch):
+    monkeypatch.delenv("OLLAMA_LIVE_MODEL", raising=False)
+    monkeypatch.delenv("REQUIRED_LIVE_PROVIDERS", raising=False)
+    captured = {}
+
+    def fake_load_env(project_root):
+        captured["loaded_root"] = project_root
+        monkeypatch.setenv("OLLAMA_LIVE_MODEL", "from-file")
+        monkeypatch.setenv("REQUIRED_LIVE_PROVIDERS", "ollama")
+
+    def fake_gate(project_root, *, env, write_report):
+        captured.update(root=project_root, env=env, write_report=write_report)
+        return {"status": "PASS", "ok": True}
+
+    monkeypatch.setattr("launcher.load_env_file", fake_load_env)
+    monkeypatch.setattr("secondbrain.release.provider_live_gate.run_provider_live_gate", fake_gate)
+    assert main(["provider-live-gate", "--project-root", str(tmp_path), "--required-providers", "openai,ollama",
+                 "--timeout-seconds", "45", "--no-write-report"]) == 0
+    assert captured["root"] == str(tmp_path)
+    assert captured["loaded_root"] == str(tmp_path)
+    assert captured["env"]["OLLAMA_LIVE_MODEL"] == "from-file"
+    assert captured["env"]["REQUIRED_LIVE_PROVIDERS"] == "openai,ollama"
+    assert captured["env"]["PROVIDER_LIVE_TIMEOUT_SECONDS"] == "45.0"
+    assert captured["write_report"] is False
+
+
+def test_launcher_rejects_unknown_provider_gate_option(tmp_path):
+    with pytest.raises(SystemExit):
+        main(["provider-live-gate", "--project-root", str(tmp_path), "--unknown-option"])
