@@ -102,7 +102,7 @@ pythonpath = ["."]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-ra --strict-markers --basetemp=.pytest_tmp"
+addopts = "-ra --strict-markers"
 markers = [
   "unit: fast, hermetic tests without external services",
   "integration: tests crossing process, network, database, optional runtime, or connector boundaries",

@@ -193,16 +193,43 @@ def test_http_post_settings(server):
     assert data["settings"]["news_max"] == 7
 
 
-def test_settings_version_is_canonical_not_persisted(hud):
-    from secondbrain.version import get_version
+LEGACY_STATUS_SETTINGS = {
+    "version": "v30.21", "environment": "production", "system_health": "EXCELLENT",
+    "postgres_status": "ONLINE", "database": "PostgreSQL 16 + pgvector",
+    "release_blocking": 0, "queue_pending": 3, "backup_last": "15:23", "vector_index": "OK",
+    "log_level": "INFO",
+}
 
-    srv.SETTINGS_FILE.write_text(json.dumps({"version": "v30.21"}), encoding="utf-8")
-    assert srv.load_settings()["version"] == f"v{get_version()}"
 
-    srv.save_settings({"version": "v0.0.1", "place": "Bonn"})
+def test_legacy_status_settings_are_ignored_and_purged(hud):
+    srv.SETTINGS_FILE.write_text(json.dumps({**LEGACY_STATUS_SETTINGS, "place": "Koeln"}), encoding="utf-8")
+
+    loaded = srv.load_settings()
+    assert loaded["place"] == "Koeln"
+    assert not set(LEGACY_STATUS_SETTINGS) & set(loaded)
+
+    srv.save_settings({"postgres_status": "ONLINE", "news_max": 5})
     stored = json.loads(srv.SETTINGS_FILE.read_text(encoding="utf-8"))
-    assert "version" not in stored
-    assert srv.load_settings()["version"] == f"v{get_version()}"
+    assert not set(LEGACY_STATUS_SETTINGS) & set(stored)
+    assert stored["news_max"] == 5
+
+
+def test_http_system_truth_endpoint(server, monkeypatch):
+    from secondbrain.gui.system_truth import CachedSystemTruth
+
+    monkeypatch.setattr(srv, "_SYSTEM_TRUTH", CachedSystemTruth(lambda: {"ok": True, "schema": "x"}))
+    st, ct, body = _get(server, "/api/system-truth")
+    assert st == 200 and json.loads(body) == {"ok": True, "schema": "x"}
+
+
+def test_system_truth_failure_returns_error_payload(monkeypatch):
+    from secondbrain.gui.system_truth import CachedSystemTruth
+
+    def boom():
+        raise RuntimeError("db down")
+
+    monkeypatch.setattr(srv, "_SYSTEM_TRUTH", CachedSystemTruth(boom))
+    assert srv.system_truth() == {"ok": False, "error": "RuntimeError"}
 
 
 @pytest.mark.parametrize("method,host,origin,expected", [

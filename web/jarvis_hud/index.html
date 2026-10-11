@@ -105,6 +105,9 @@
   .pill .meta .v{font-size:11px; color:#eafcff; font-weight:600; letter-spacing:.06em}
   .pill.good .ic{color:var(--good); border-color:rgba(62,240,164,.4)} .pill.good .v{color:var(--good)}
   .pill.cyan .ic{color:var(--cyan); border-color:rgba(47,230,255,.4)} .pill.cyan .v{color:var(--cyan)}
+  .pill.warn .ic{color:var(--warn); border-color:rgba(255,178,77,.4)} .pill.warn .v{color:var(--warn)}
+  .pill.bad .ic{color:var(--bad); border-color:rgba(255,93,108,.4)} .pill.bad .v{color:var(--bad)}
+  .pill.na .ic{color:var(--muted)} .pill.na .v{color:var(--muted)}
   .user{margin-left:auto; display:flex; align-items:center; gap:10px}
   .user .av{width:36px; height:36px; border-radius:50%; border:1px solid var(--line);
     background:radial-gradient(circle at 40% 35%, #1a3a48, #07141c); display:flex;
@@ -214,6 +217,7 @@
   .alert-row span{color:var(--cyan-soft)}
   .alert-row b{font-weight:500}
   .alert-row b.ok{color:var(--good)} .alert-row b.warn{color:var(--warn)} .alert-row b.cy{color:var(--cyan)}
+  .alert-row b.bad{color:var(--bad)} .alert-row b.na{color:var(--muted)}
 
   /* Konsole */
   .console{grid-column:1 / -1}
@@ -495,7 +499,7 @@
     </nav>
     <div class="side-status">
       <div class="lbl">System Status</div>
-      <div class="txt" id="ss-text">All Systems Operational</div>
+      <div class="txt" id="ss-text">—</div>
       <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5 9-11"/></svg></div>
       <div class="chk">Letzter Check: <span id="ss-time">—</span></div>
     </div>
@@ -511,14 +515,14 @@
         <div class="sub">JARVIS CONTROL CENTER <b id="hdr-ver">—</b></div>
       </div>
       <div class="pills">
-        <div class="pill good"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-12 2 6h6"/></svg></div>
-          <div class="meta"><div class="k">System Health</div><div class="v" id="p-health">EXCELLENT</div></div></div>
-        <div class="pill good"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
-          <div class="meta"><div class="k">Release Gate</div><div class="v" id="p-gate">BLOCKING 0</div></div></div>
-        <div class="pill cyan"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
-          <div class="meta"><div class="k">Embedding</div><div class="v" id="p-emb">OpenAI (1536)</div></div></div>
-        <div class="pill cyan"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div>
-          <div class="meta"><div class="k">PostgreSQL</div><div class="v" id="p-pg">ONLINE</div></div></div>
+        <div class="pill na" id="pp-health"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-12 2 6h6"/></svg></div>
+          <div class="meta"><div class="k">System Health</div><div class="v" id="p-health">—</div></div></div>
+        <div class="pill na" id="pp-gate"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 6v6c0 5 3.5 8 9 10 5.5-2 9-5 9-10V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div class="meta"><div class="k">Release Gate</div><div class="v" id="p-gate">—</div></div></div>
+        <div class="pill na" id="pp-emb"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+          <div class="meta"><div class="k">Embedding</div><div class="v" id="p-emb">—</div></div></div>
+        <div class="pill na" id="pp-db"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div>
+          <div class="meta"><div class="k">Datenbank</div><div class="v" id="p-db">—</div></div></div>
       </div>
       <div class="user">
         <div class="nm" style="text-align:right"><span id="u-name">Jarvis</span><small id="u-role">Administrator</small></div>
@@ -597,7 +601,7 @@
             <div class="ring"><svg><circle class="track" cx="38" cy="38" r="30"/><circle class="prog" id="r-ram" cx="38" cy="38" r="30"/><text class="pct" id="t-ram" x="38" y="43" text-anchor="middle">0%</text></svg><div class="name">RAM</div></div>
             <div class="ring"><svg><circle class="track" cx="38" cy="38" r="30"/><circle class="prog" id="r-swap" cx="38" cy="38" r="30"/><text class="pct" id="t-swap" x="38" y="43" text-anchor="middle">0%</text></svg><div class="name">SWAP</div></div>
             <div class="ring"><svg><circle class="track" cx="38" cy="38" r="30"/><circle class="prog" id="r-disk" cx="38" cy="38" r="30"/><text class="pct" id="t-disk" x="38" y="43" text-anchor="middle">0%</text></svg><div class="name">DISK</div></div>
-            <div class="ring"><svg><circle class="track" cx="38" cy="38" r="30"/><circle class="prog" id="r-queue" cx="38" cy="38" r="30"/><text class="pct" id="t-queue" x="38" y="43" text-anchor="middle" style="font-size:16px">3</text></svg><div class="name">QUEUE</div></div>
+            <div class="ring"><svg><circle class="track" cx="38" cy="38" r="30"/><circle class="prog" id="r-queue" cx="38" cy="38" r="30"/><text class="pct" id="t-queue" x="38" y="43" text-anchor="middle" style="font-size:16px">—</text></svg><div class="name">QUEUE</div></div>
           </div>
         </div>
 
@@ -623,13 +627,12 @@
           <h2>System-Info</h2>
           <div class="info">
             <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div><div class="t"><div class="k">Version</div><div class="v" id="i-ver">—</div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="t"><div class="k">Environment</div><div class="v" id="i-env">production</div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div><div class="t"><div class="k">Database</div><div class="v" id="i-db">PostgreSQL 16 + pgvector</div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg></div><div class="t"><div class="k">Embedding</div><div class="v" id="i-emb">OpenAI text-embedding-3-small<br><small>Dimension: 1536</small></div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></div><div class="t"><div class="k">Ollama</div><div class="v" id="i-ollama">http://localhost:11434<br><small>Models: 7</small></div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div><div class="t"><div class="k">Memory Engine</div><div class="v" id="i-mem">LangGraph + Memory Store</div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><div class="t"><div class="k">Queue</div><div class="v" id="i-queue">Redis Queue<br><small>Pending: 3</small></div></div></div>
-            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6"/></svg></div><div class="t"><div class="k">Log Level</div><div class="v" id="i-log">INFO</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="t"><div class="k">Environment</div><div class="v" id="i-env">—</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div><div class="t"><div class="k">Database</div><div class="v" id="i-db">—</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a4 4 0 0 0-4 4 4 4 0 0 0 0 8 4 4 0 0 0 8 0 4 4 0 0 0 0-8 4 4 0 0 0-4-4z"/></svg></div><div class="t"><div class="k">Embedding</div><div class="v" id="i-emb">—</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 14h.01M15 14h.01"/></svg></div><div class="t"><div class="k">Ollama</div><div class="v" id="i-ollama">—</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div><div class="t"><div class="k">Memory</div><div class="v" id="i-mem">—</div></div></div>
+            <div class="info-row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><div class="t"><div class="k">Job-Queue</div><div class="v" id="i-queue">—</div></div></div>
           </div>
         </div>
       </div>
@@ -654,14 +657,14 @@
         </div>
         <div class="panel alerts">
           <h2>Alerts <small>system</small></h2>
-          <div class="alert-row"><span>Release Gate</span><b class="ok" id="a-gate">0 Blocker</b></div>
-          <div class="alert-row"><span>Embedding</span><b class="cy" id="a-emb">OpenAI (1536)</b></div>
-          <div class="alert-row"><span>PostgreSQL</span><b class="ok" id="a-pg">Online</b></div>
-          <div class="alert-row"><span>pgvector</span><b class="cy" id="a-pgvector">1.0.5</b></div>
-          <div class="alert-row"><span>Ollama</span><b class="cy" id="a-ollama">7 Models</b></div>
-          <div class="alert-row"><span>Backup</span><b class="ok" id="a-backup">Letztes: 15:23</b></div>
-          <div class="alert-row"><span>Vector Index</span><b class="ok" id="a-vindex">OK</b></div>
-          <div class="alert-row"><span>Queue</span><b class="warn" id="a-queue">3 Pending</b></div>
+          <div class="alert-row"><span>Release Gate</span><b class="na" id="a-gate">—</b></div>
+          <div class="alert-row"><span>Embedding</span><b class="na" id="a-emb">—</b></div>
+          <div class="alert-row"><span>Datenbank</span><b class="na" id="a-db">—</b></div>
+          <div class="alert-row"><span>pgvector</span><b class="na" id="a-pgvector">—</b></div>
+          <div class="alert-row"><span>Ollama</span><b class="na" id="a-ollama">—</b></div>
+          <div class="alert-row"><span>Backup</span><b class="na" id="a-backup">—</b></div>
+          <div class="alert-row"><span>Vector Index</span><b class="na" id="a-vindex">—</b></div>
+          <div class="alert-row"><span>Job-Queue</span><b class="na" id="a-queue">—</b></div>
         </div>
       </div>
 
@@ -1017,62 +1020,14 @@ Release Gate: GRÜN | Keine kritischen Issues.</pre>
     <div class="field"><label>News-Anzahl (1–20)</label><input id="set-news_max" type="number" min="1" max="20"></div>
 
     <div class="sec">Identität &amp; Header</div>
-    <div class="field"><label>Environment</label><input id="set-environment" placeholder="production"></div>
-    <div class="field"><div class="row">
-      <div><label>System Health</label><input id="set-system_health" placeholder="EXCELLENT"></div>
-      <div><label>Log Level</label><input id="set-log_level" placeholder="INFO"></div>
-    </div></div>
-    <div class="field"><label>System-Status-Text</label><input id="set-system_status_text" placeholder="All Systems Operational"></div>
     <div class="field"><div class="row">
       <div><label>Benutzer</label><input id="set-user_name" placeholder="Jarvis"></div>
       <div><label>Rolle</label><input id="set-user_role" placeholder="Administrator"></div>
     </div></div>
+    <p class="hint">Version, Environment, Datenbank-, Embedding-, Backup- und Release-Gate-Status werden live ermittelt und sind nicht editierbar.</p>
 
-    <div class="sec">Datenbank &amp; Stack</div>
-    <div class="field"><label>Datenbank</label><input id="set-database" placeholder="PostgreSQL 16 + pgvector"></div>
-    <div class="field"><div class="row">
-      <div><label>PostgreSQL-Status</label><input id="set-postgres_status" placeholder="ONLINE"></div>
-      <div><label>pgvector-Version</label><input id="set-pgvector_version" placeholder="1.0.5"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Embedding-Anbieter</label><input id="set-embedding_provider" placeholder="OpenAI"></div>
-      <div><label>Embedding-Dimension</label><input id="set-embedding_dim" type="number" min="1" max="100000"></div>
-    </div></div>
-    <div class="field"><label>Embedding-Modell</label><input id="set-embedding_model" placeholder="text-embedding-3-small"></div>
-    <div class="field"><div class="row">
-      <div><label>Ollama-URL</label><input id="set-ollama_url" placeholder="http://localhost:11434"></div>
-      <div><label>Ollama-Models</label><input id="set-ollama_models" type="number" min="0" max="10000"></div>
-    </div></div>
-    <div class="field"><label>Memory Engine</label><input id="set-memory_engine" placeholder="LangGraph + Memory Store"></div>
-
-    <div class="sec">Queue &amp; Release Gate</div>
-    <div class="field"><div class="row">
-      <div><label>Queue-Name</label><input id="set-queue_name" placeholder="Redis Queue"></div>
-      <div><label>Queue Pending</label><input id="set-queue_pending" type="number" min="0" max="1000000"></div>
-    </div></div>
-    <div class="field"><label>Release Gate – Blocker</label><input id="set-release_blocking" type="number" min="0" max="1000000"></div>
-
-    <div class="sec">Statusleiste &amp; Zähler</div>
-    <div class="field"><div class="row">
-      <div><label>Backup-Status</label><input id="set-backup_active" placeholder="Aktiv"></div>
-      <div><label>Sync-Status</label><input id="set-sync_active" placeholder="Aktiv"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Connectoren</label><input id="set-connectors" type="number" min="0" max="100000"></div>
-      <div><label>Agents aktiv</label><input id="set-agents_active" type="number" min="0" max="100000"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Vectors</label><input id="set-vectors" type="number" min="0"></div>
-      <div><label>Documents</label><input id="set-documents" type="number" min="0"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Memories</label><input id="set-memories" type="number" min="0"></div>
-      <div><label>Vector Index</label><input id="set-vector_index" placeholder="OK"></div>
-    </div></div>
-    <div class="field"><div class="row">
-      <div><label>Letztes Backup</label><input id="set-backup_last" placeholder="15:23"></div>
-      <div><label>Nächstes Backup</label><input id="set-backup_next" placeholder="Heute, 22:00"></div>
-    </div></div>
+    <div class="sec">Lokale Dienste</div>
+    <div class="field"><label>Ollama-URL</label><input id="set-ollama_url" placeholder="http://localhost:11434"></div>
 
     <div class="sec">Assistant</div>
     <div class="field"><div class="row">
@@ -1119,20 +1074,15 @@ const C = 2 * Math.PI * 30; // Ring-Umfang (r=30)
 // Vollständige Feldliste (muss DEFAULT_SETTINGS im Server entsprechen)
 const FIELDS = [
   "place","lat","lon","news_rss","news_max","weather_min","accent",
-  "environment","log_level","system_health","system_status_text","user_name","user_role",
-  "database","postgres_status","pgvector_version","embedding_provider","embedding_model","embedding_dim",
-  "ollama_url","ollama_models","memory_engine","queue_name","queue_pending","release_blocking",
-  "backup_active","sync_active","connectors","agents_active","vectors","documents","memories",
-  "backup_last","backup_next","vector_index",
+  "user_name","user_role","ollama_url",
   "assistant_engine","assistant_model","assistant_models","assistant_temperature","assistant_context_chunks",
   "coding_engine","coding_model","coding_temperature",
   "openai_api_key","gemini_api_key","anthropic_api_key"
 ];
-const INT_FIELDS = new Set(["news_max","weather_min","embedding_dim","ollama_models","queue_pending",
-  "release_blocking","connectors","agents_active","vectors","documents","memories","assistant_context_chunks"]);
+const INT_FIELDS = new Set(["news_max","weather_min","assistant_context_chunks"]);
 const FLOAT_FIELDS = new Set(["lat","lon","assistant_temperature","coding_temperature"]);
 
-let SS_ONLINE_TEXT = "All Systems Operational";
+let SS_ONLINE_TEXT = "—";  // gesetzt aus /api/system-truth
 
 ["r-cpu","r-ram","r-swap","r-disk","r-queue"].forEach(id=>{
   const e=$(id); e.style.strokeDasharray=C; e.style.strokeDashoffset=C;
@@ -1176,45 +1126,88 @@ function setConn(online){
     $("ss-text").textContent="HUD getrennt"; }
 }
 
-// --- Konfigurierbare Anzeige-Werte anwenden ---
+// --- Konfigurierbare Anzeige-Werte anwenden (nur Benutzer-Praeferenzen) ---
 function applySettings(s){
   s = s || {};
   applyAccent(s.accent);
-  SS_ONLINE_TEXT = s.system_status_text || SS_ONLINE_TEXT;
-  $("ss-text").textContent = SS_ONLINE_TEXT;
-  const dim = s.embedding_dim ?? "";
-  const embShort = (s.embedding_provider || "") + (dim!=="" ? " ("+dim+")" : "");
-  // Header
-  if(s.version){ $("hdr-ver").textContent = s.version; $("i-ver").textContent = s.version; }
-  $("p-health").textContent = s.system_health ?? "—";
-  $("p-gate").textContent   = "BLOCKING " + (s.release_blocking ?? 0);
-  $("p-emb").textContent    = embShort || "—";
-  $("p-pg").textContent     = s.postgres_status ?? "—";
   $("u-name").textContent   = s.user_name ?? "Jarvis";
   $("u-role").textContent   = s.user_role ?? "";
   $("u-av").textContent     = (s.user_name || "J").trim().charAt(0).toUpperCase() || "J";
-  // System-Info
-  $("i-env").textContent  = s.environment ?? "—";
-  $("i-db").textContent   = s.database ?? "—";
-  $("i-emb").innerHTML    = (s.embedding_provider||"") + " " + (s.embedding_model||"") +
-                            "<br><small>Dimension: " + (dim!==""?dim:"—") + "</small>";
-  $("i-ollama").innerHTML = (s.ollama_url||"") + "<br><small>Models: " + (s.ollama_models ?? 0) + "</small>";
-  $("i-mem").textContent  = s.memory_engine ?? "—";
-  $("i-queue").innerHTML  = (s.queue_name||"") + "<br><small>Pending: " + (s.queue_pending ?? 0) + "</small>";
-  $("i-log").textContent  = s.log_level ?? "—";
-  // Alerts
-  $("a-gate").textContent     = (s.release_blocking ?? 0) + " Blocker";
-  $("a-emb").textContent      = embShort || "—";
-  $("a-pg").textContent       = (s.postgres_status === "ONLINE") ? "Online" : (s.postgres_status || "—");
-  $("a-pgvector").textContent = s.pgvector_version ?? "—";
-  $("a-ollama").textContent   = (s.ollama_models ?? 0) + " Models";
-  $("a-backup").textContent   = "Letztes: " + (s.backup_last || "—");
-  $("a-vindex").textContent   = s.vector_index ?? "—";
-  $("a-queue").textContent    = (s.queue_pending ?? 0) + " Pending";
-  // Queue-Ring (statisch, Skala 0–10)
-  const qp = Number(s.queue_pending ?? 0);
-  ring("r-queue", null, Math.min(qp,10)*10); $("t-queue").textContent = isNaN(qp)?"0":qp;
-  // Statusleiste wird NICHT mehr aus Settings gespeist -> siehe loadStats() (Echtdaten)
+}
+
+// --- Systemstatus (Echtdaten aus /api/system-truth) ---
+// Alles, was nicht ermittelbar ist, bleibt "—". Keine Platzhalterwerte.
+const TONE = {good:"ok", warn:"warn", bad:"bad", na:"na"};
+function setPill(id, text, tone){
+  $("p-"+id).textContent = text;
+  $("pp-"+id).className = "pill " + (tone || "na");
+}
+function setAlert(id, text, tone){
+  const el = $("a-"+id); el.textContent = text; el.className = TONE[tone] || "na";
+}
+function setTwo(id, main, small){
+  const el = $(id); el.textContent = main;
+  if(small){ el.appendChild(document.createElement("br"));
+    const sm = document.createElement("small"); sm.textContent = small; el.appendChild(sm); }
+}
+// Bewertung kommt vom Server (health.blockers), damit Pill und Gesamtstatus nie widersprechen.
+function dbTone(db, health){
+  if(db.production_ready) return "good";
+  return (health.blockers || []).includes("database:" + db.status) ? "bad" : "warn";
+}
+function fmtDate(iso){
+  const d = new Date(iso); return isNaN(d) ? String(iso) : d.toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"});
+}
+function applySystemTruth(t){
+  const health = t.health || {}, db = t.database || {}, emb = t.embedding || {};
+  const gate = t.release_gate || {}, bk = t.backup || {}, vi = t.vector_index || {};
+  const mem = t.memory || {}, ol = t.ollama || {}, q = t.job_queue || {};
+
+  $("hdr-ver").textContent = t.version || "—"; $("i-ver").textContent = t.version || "—";
+  SS_ONLINE_TEXT = health.text || "—"; $("ss-text").textContent = SS_ONLINE_TEXT;
+  setPill("health", health.level || "—",
+          {"OK":"good","EINGESCHRÄNKT":"warn","BLOCKIERT":"bad"}[health.level] || "na");
+
+  const blockers = (gate.blockers || []).length;
+  const gateBlocked = String(gate.status).toUpperCase() === "BLOCKED";
+  const gateText = gate.status === "not_run" ? "nicht gelaufen"
+                 : (gateBlocked ? blockers + " Blocker" : String(gate.status || "—")) + (gate.stale ? " (veraltet)" : "");
+  const gateTone = gateBlocked ? "bad" : (gate.stale || gate.status === "not_run" ? "warn" : "good");
+  setPill("gate", gateText, gateTone); setAlert("gate", gateText, gateTone);
+  $("a-gate").title = gate.timestamp ? "Bericht vom " + fmtDate(gate.timestamp) + " (" + (gate.report_version||"?") + ")" : "";
+
+  const embShort = (emb.provider || "—") + (emb.dimensions ? " (" + emb.dimensions + ")" : "");
+  const embTone = emb.status === "blocked" ? "bad" : (emb.production_ready ? "good" : "warn");
+  setPill("emb", embShort, embTone); setAlert("emb", embShort, embTone);
+  $("a-emb").title = (emb.blockers || []).join(", ");
+
+  const dbText = (db.label || "—") + (db.production_ready ? "" : " · eingeschränkt");
+  setPill("db", dbText, dbTone(db, health)); setAlert("db", dbText, dbTone(db, health));
+  $("a-db").title = db.reason || "";
+  setAlert("pgvector", db.pgvector_version || "—", db.pgvector_version ? "good" : "na");
+
+  $("i-env").textContent = t.environment || "—";
+  setTwo("i-db", db.label || "—", db.status ? "Status: " + db.status : "");
+  setTwo("i-emb", ((emb.provider || "—") + " " + (emb.model || "")).trim(), "Dimension: " + (emb.dimensions || "—"));
+  setTwo("i-ollama", ol.url || "—", ol.models ? ol.models + " Modelle" : "nicht erreichbar");
+  setAlert("ollama", ol.models ? ol.models + " Modelle" : "nicht erreichbar", ol.models ? "good" : "warn");
+  setTwo("i-mem", fmt(mem.total) + " Einträge", "Governance: " + (mem.status || "—"));
+
+  const qActive = q.state && q.state !== "inactive";
+  setTwo("i-queue", qActive ? q.state : "inaktiv", qActive ? (q.backend || "") : "erfordert PostgreSQL");
+  setAlert("queue", q.pending != null ? q.pending + " Pending" : (qActive ? q.state : "inaktiv"), qActive ? "good" : "na");
+  ring("r-queue", null, q.pending != null ? Math.min(q.pending,10)*10 : 0);
+  $("t-queue").textContent = q.pending != null ? q.pending : "—";
+
+  setAlert("backup", bk.last_at ? "Letztes: " + fmtDate(bk.last_at) : "kein Backup", bk.last_at ? "good" : "warn");
+  setAlert("vindex", vi.status === "ok" ? fmt(vi.vectors) + " Vektoren" : (vi.status === "empty" ? "leer" : "Fehler"),
+           vi.status === "ok" ? "good" : (vi.status === "empty" ? "warn" : "bad"));
+}
+async function loadSystemTruth(){
+  try{
+    const t = await getJSON("/api/system-truth");
+    if(t.ok) applySystemTruth(t);
+  }catch(e){}
 }
 
 // --- Metriken (live) ---
@@ -2205,7 +2198,7 @@ async function devLoad(){
     const r=await getJSON("/api/dev/info");
     $("dev-sub").textContent = r.ok ? (r.version+" · "+r.environment+(r.reload?" · reload":"")) : "";
     const rows=[
-      ["Version", r.version],["Environment", r.environment],["Log-Level", r.log_level],
+      ["Version", r.version],["Environment", r.environment],
       ["Host:Port", (r.host||"")+":"+(r.port||"")],["Reload", r.reload?"an":"aus"],
       ["Python", String(r.python||"").split(" ")[0]],["psutil", r.psutil?"ja":"nein"],
       ["Root", (r.paths.root||"")+(r.paths.root_exists?"  ✓":"  ✗")],
@@ -2319,15 +2312,7 @@ loadNews();    setInterval(loadNews, 15*60*1000);
 loadDocStats();
 loadMemStats();
 loadStats(); setInterval(loadStats, 60000);
+loadSystemTruth(); setInterval(loadSystemTruth, 60000);
 </script>
-<section id="runtime-truth" hidden>
-  <h2>Runtime Truth</h2>
-  <span id="truth-db"></span><span id="truth-emb"></span><span id="truth-golden"></span>
-  <span id="set-database_url_env"></span><span id="set-embedding_provider_env"></span>
-  <span id="set-openai_key_env"></span><span id="set-golden_quality_status"></span>
-  <span id="set-migration_status"></span><span id="set-secret_vault_status"></span>
-  <span id="set-connector_runtime_status"></span>
-  <script>fetch('/api/runtime-truth').then(response => response.json()).catch(() => null);</script>
-</section>
 </body>
 </html>

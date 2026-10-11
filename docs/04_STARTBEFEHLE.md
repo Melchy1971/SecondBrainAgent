@@ -76,6 +76,8 @@ python launcher.py p1-gate
 pytest -q
 ```
 
+Temporaere Testverzeichnisse liegen unter `.pytest_tmp/pytest-of-<user>/pytest-N` (ein Verzeichnis pro Lauf, die letzten drei bleiben erhalten). Parallele Testlaeufe sind damit kollisionsfrei. Der Systemtemp wird bewusst nicht genutzt, weil die ACL von `%TEMP%\pytest-of-<user>` unter Windows defekt sein kann (`WinError 5`).
+
 Details: [`RELEASE_WORKFLOW_v18_9.md`](RELEASE_WORKFLOW_v18_9.md).
 
 ## Fehlerbehebung

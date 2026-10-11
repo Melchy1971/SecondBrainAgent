@@ -17,26 +17,30 @@ def test_runtime_truth_endpoint_function_shape():
     assert "security" in payload
 
 
-def test_hud_contains_runtime_truth_surface():
-    html = Path("web/jarvis_hud/index.html").read_text(encoding="utf-8")
+HUD_HTML = Path("web/jarvis_hud/index.html")
 
-    assert "/api/runtime-truth" in html
-    assert "Runtime Truth" in html
-    assert "truth-db" in html
-    assert "truth-emb" in html
-    assert "truth-golden" in html
+# Status-Elemente, die ausschliesslich aus /api/system-truth befuellt werden.
+SYSTEM_TRUTH_ELEMENTS = [
+    "p-health", "p-gate", "p-emb", "p-db",
+    "i-env", "i-db", "i-emb", "i-ollama", "i-mem", "i-queue",
+    "a-gate", "a-emb", "a-db", "a-pgvector", "a-ollama", "a-backup", "a-vindex", "a-queue",
+]
 
 
-def test_hud_settings_contains_p1_runtime_fields():
-    html = Path("web/jarvis_hud/index.html").read_text(encoding="utf-8")
+def test_hud_status_surface_is_fed_by_system_truth():
+    html = HUD_HTML.read_text(encoding="utf-8")
 
-    for field in [
-        "set-database_url_env",
-        "set-embedding_provider_env",
-        "set-openai_key_env",
-        "set-golden_quality_status",
-        "set-migration_status",
-        "set-secret_vault_status",
-        "set-connector_runtime_status",
-    ]:
-        assert field in html
+    assert 'getJSON("/api/system-truth")' in html
+    for element in SYSTEM_TRUTH_ELEMENTS:
+        assert f'id="{element}">—<' in html, f"{element} muss neutral initialisiert sein"
+
+
+def test_hud_contains_no_fabricated_status_values():
+    html = HUD_HTML.read_text(encoding="utf-8")
+
+    for fake in ["EXCELLENT", "BLOCKING 0", "All Systems Operational", "PostgreSQL 16 + pgvector",
+                 "Redis Queue", "LangGraph + Memory Store", "Letztes: 15:23", "OpenAI (1536)"]:
+        assert fake not in html
+    # Platzhalter-Elemente ohne Datenanbindung duerfen nicht zurueckkehren.
+    assert 'id="runtime-truth" hidden' not in html
+    assert "set-log_level" not in html
