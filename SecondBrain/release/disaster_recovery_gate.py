@@ -10,12 +10,15 @@ Hier prüfbar, gegen echte Kryptografie:
 * Schlüsselrotation: neuer Schlüssel liest alte Daten nach Re-Wrap
 * Rollback stellt den Vorzustand wieder her
 
-Delegiert / nur mit Live-Umgebung nachweisbar (als ``delegated`` markiert):
-* pgvector nach Restore -> PostgreSQL-Live-Gate
-* Approvals und Audit nach Restore -> Approval-Live-Gate
+Mit ``TEST_DATABASE_URL`` (sslmode=verify-full) und installierten
+PostgreSQL-Werkzeugen zusaetzlich live, siehe ``backup_engine.RealRecoverySteps``:
+* echter pg_dump und pg_restore in eine nachweislich leere Datenbank
+* Zeilenzahlen, Pruefsummen, Approvals (Payload-Hash), lueckenloses Audit und
+  pgvector-Recall ueber den wiederhergestellten HNSW-Index
+* Restore-Fehler mitten im Lauf: atomarer Rollback, Vorzustand intakt
 
-Die Orchestrierung ist über injizierbare Schritte testbar, ohne echtes
-Dateisystem-Backup. Der Kryptografieteil läuft real.
+Ohne Live-Umgebung hoechstens CONDITIONAL_PASS. Die Orchestrierung ist ueber
+injizierbare Schritte testbar; der Kryptografieteil laeuft immer real.
 
 Sicherheit
 ----------
@@ -29,7 +32,7 @@ import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/disaster_recovery_gate.json")

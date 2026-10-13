@@ -137,6 +137,57 @@ Wiederholungen. Der Gewinner der konkurrierenden Entscheidung wechselte zufälli
 (11× rejected, 9× approved), es gewann aber stets genau einer. Gegenprobe
 `sslmode=require` blockiert. Lokale Testinstanz, nicht die Zielinstanz.
 
+## Disaster-Recovery-Gate (pg_dump / pg_restore)
+
+Einzeln ausführbar mit `python launcher.py disaster-recovery-gate`
+(Report: `runtime/reports/disaster_recovery_gate.json`). PASS gibt es nur, wenn
+der echte Datenbankpfad gelaufen ist; ohne Werkzeuge oder `TEST_DATABASE_URL`
+höchstens `CONDITIONAL_PASS`.
+
+Voraussetzungen:
+
+- PostgreSQL-Clientwerkzeuge im `PATH`: `pg_dump`, `pg_restore`, `psql`,
+  `createdb`, `dropdb` (gleiche Hauptversion wie der Server).
+- `TEST_DATABASE_URL` mit `sslmode=verify-full`; die TLS-Parameter werden an die
+  Werkzeuge weitergereicht (`PGSSLMODE`, `PGSSLROOTCERT`). Andere sslmodes
+  blockieren über `pg_tls_verify_full`.
+- Rolle mit `CREATEDB` für die temporären Restore-Ziele (kein Superuser nötig).
+- **Restore-Template**, sobald nicht vertrauenswürdige Extensions wie pgvector
+  genutzt werden: Eine Rolle ohne Superuser-Recht kann `vector` in einer leeren
+  Datenbank nicht anlegen; der Restore scheitert dann mit
+  `permission denied to create extension`. Ein Administrator legt einmalig an:
+
+  ```sql
+  CREATE DATABASE sb_dr_template;
+  ALTER DATABASE sb_dr_template WITH IS_TEMPLATE true;
+  \connect sb_dr_template
+  CREATE EXTENSION vector;
+  ```
+
+  und setzt `DR_RESTORE_TEMPLATE=sb_dr_template`. Das Template enthält nur
+  Extensions, keine Tabellen. Die entsprechenden `EXTENSION`- und
+  `COMMENT ON EXTENSION`-Einträge des Dumps werden beim Restore übersprungen.
+
+Ablauf: Das Gate legt eigene Testdaten an (25 Approvals mit Payload-Hash,
+lückenloses Audit mit 50 Einträgen, 30 Vektoren in der Projektdimension 3072 mit
+dem produktiven `halfvec`-HNSW-Index aus `secondbrain.storage.vector_index`), erstellt einen
+echten Dump im Custom-Format und spielt ihn in eine nachweislich leere Datenbank
+zurück. Verglichen werden Tabellenmenge, Zeilenzahlen und Prüfsummen; der Recall
+zählt nur, wenn der Ausführungsplan den wiederhergestellten HNSW-Index nutzt. Für den
+Fehlerfall wird ein Dump im Verzeichnisformat so beschädigt, dass der Restore
+erst beim letzten Datenblock scheitert; `--single-transaction` muss dann alles
+zurückrollen. Testdaten, temporäre Datenbanken und Arbeitsdateien werden immer
+entfernt.
+
+Zuletzt live bestanden am 2026-10-13: `PASS`, 26/26 Checks, 5 von 5 Läufen,
+PostgreSQL 18.4 und Clientwerkzeuge 18.4 unter Linux (Container), `verify-full`,
+Rolle `NOSUPERUSER NOBYPASSRLS CREATEDB`. Der Fehlerfall scheiterte jeweils erst,
+nachdem 3 Tabellen angelegt und 2 befüllt waren, und hinterließ nichts.
+Gegenproben: ohne `--single-transaction` blieben 3 Tabellen mit 25/50 Zeilen
+zurück (die Rollback-Prüfung erkennt das); `sslmode=require` und ein Restore ohne
+Template blockieren. Unter Windows ist der Datenbankteil nicht live belegt,
+weil dort die Clientwerkzeuge fehlten.
+
 ## Bekannte Grenzen
 
 - Unter Docker Desktop für Windows ist `localhost` im DSN sehr langsam (libpq

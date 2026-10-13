@@ -6,7 +6,7 @@ Stand: 2026-07-15. Die Liste enthaelt nur aktuell relevante, belegte Grenzen.
 
 - PostgreSQL/pgvector aktiv konfigurieren und gegen die Zielinstanz live validieren.
 - Task-/Projekt-Repository v31.15 in `main` integrieren und gegen echtes PostgreSQL testen.
-- Migration, Backup und Restore-Probe vor produktivem `--apply` ausfuehren und dokumentieren.
+- Migration, Backup und Restore-Probe vor produktivem `--apply` ausfuehren und dokumentieren. Der DR-Pfad (pg_dump/pg_restore, Restore in leere Datenbank, atomarer Rollback) ist seit 2026-10-13 gegen eine lokale Testinstanz live belegt; offen sind die Zielinstanz und das Restore-Template dort (siehe Runbook).
 - Produktiven Embedding-Provider mit echten Credentials/Endpoints pruefen.
 - Vollstaendigen Reindex- und Dimensionsdrift-Pfad abnehmen.
 
