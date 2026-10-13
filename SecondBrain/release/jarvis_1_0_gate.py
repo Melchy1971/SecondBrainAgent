@@ -13,8 +13,12 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Mapping
 from uuid import uuid4
+
+# Produzenten versiegeln ueber dasselbe Modul; ein eigener Hash hier liefe sonst
+# unbemerkt auseinander.
+from secondbrain.release.evidence import canonical_hash
 
 PASS, BLOCKED, FAIL, SKIPPED, CONDITIONAL_PASS = (
     "PASS", "BLOCKED", "FAIL", "SKIPPED", "CONDITIONAL_PASS",
@@ -102,12 +106,6 @@ EVIDENCE_SPECS = (
         "secondbrain.ci_current_commit.v1", "ci", ("current_commit_ci_verified",),
     ),
 )
-
-
-def canonical_hash(report: Mapping[str, Any]) -> str:
-    payload = {key: value for key, value in report.items() if key != "evidence_sha256"}
-    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def seal_evidence(report: Mapping[str, Any]) -> dict[str, Any]:
@@ -253,6 +251,8 @@ def _validate_evidence(
     envelope_checks = (
         ("schema_mismatch", report.get("schema") == spec.schema),
         ("commit_mismatch", report.get("commit_sha") == commit_sha),
+        # Bei uncommitteten Aenderungen prueft der Nachweis anderen Code als HEAD.
+        ("dirty_worktree", report.get("worktree_clean") is True),
         ("environment_mismatch", report.get("environment") == spec.environment),
         ("integrity_hash_mismatch",
          isinstance(report.get("evidence_sha256"), str)

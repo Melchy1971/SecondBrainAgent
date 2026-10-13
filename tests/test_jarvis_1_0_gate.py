@@ -20,6 +20,7 @@ def _payload(spec: gate.EvidenceSpec, *, status: str = gate.PASS) -> dict:
         "generated_at": (NOW - timedelta(minutes=5)).isoformat(),
         "expires_at": (NOW + timedelta(hours=1)).isoformat(),
         "commit_sha": COMMIT,
+        "worktree_clean": True,
         "environment": spec.environment,
         "status": status,
     }
