@@ -97,7 +97,7 @@ def _dsn_sslmode(dsn: str) -> str | None:
     return values[-1].lower() if values else None
 
 
-def _effective_sslmode(connection, dsn: str) -> str:
+def effective_sslmode(connection, dsn: str) -> str:
     """Tatsaechlich verwendeter sslmode der Verbindung.
 
     Bevorzugt die Verbindungsparameter von libpq (beruecksichtigen auch
@@ -181,7 +181,7 @@ def _preflight(connection, dsn: str) -> tuple[list[dict[str, Any]], dict[str, An
     # verify-full prueft Zertifikatskette UND Hostnamen. libpq bricht den
     # Verbindungsaufbau ab, wenn eins davon scheitert -- eine bestehende
     # verify-full-Verbindung ist damit der Nachweis.
-    facts["sslmode"] = _effective_sslmode(connection, dsn)
+    facts["sslmode"] = effective_sslmode(connection, dsn)
     checks.append(
         _check("tls_verify_full", facts["sslmode"] == "verify-full",
                detail=f"sslmode={facts['sslmode']}; verify-full required")
