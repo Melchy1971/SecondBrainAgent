@@ -9,6 +9,9 @@ Stand: 2026-07-15. Die Liste enthaelt nur aktuell relevante, belegte Grenzen.
 - Migration, Backup und Restore-Probe vor produktivem `--apply` ausfuehren und dokumentieren. Der DR-Pfad (pg_dump/pg_restore, Restore in leere Datenbank, atomarer Rollback) ist seit 2026-10-13 gegen eine lokale Testinstanz live belegt; offen sind die Zielinstanz und das Restore-Template dort (siehe Runbook).
 - Produktiven Embedding-Provider mit echten Credentials/Endpoints pruefen.
 - Vollstaendigen Reindex- und Dimensionsdrift-Pfad abnehmen.
+- Produktionsvariable vereinheitlichen: Die Job-Runtime liest `SECONDBRAIN_ENV`, die Datenbank-Policy `SECOND_BRAIN_ENV`. Mit `SECOND_BRAIN_ENV=production` faellt die Job-Runtime auf JSONL zurueck (vom `runtime-architecture-gate` gemeldet, Stand 2026-10-13).
+- `importing/streaming.py` auf die kanonische Job-Runtime umstellen; es instanziiert noch den veralteten `ImportScheduler` (vom `runtime-architecture-gate` gemeldet).
+- Jarvis-1.0-Zertifizierung: alle Nachweise sind commit-gebunden versiegelt; Produktions-, Clean-Windows- und CI-Nachweise fuer einen gemeinsamen Commit stehen aus (siehe Runbook, Abschnitt jarvis-1.0-gate).
 
 Die Repository-Tests decken den SQL-Pfad ueber den vorhandenen Test-Executor ab. Das PostgreSQL-/pgvector-Live-Gate hat am 2026-10-12 gegen eine lokale Testinstanz (PostgreSQL 18.4, pgvector 0.8.6, TLS `verify-full`, Rolle ohne RLS-Umgehung) mit `PASS` bestanden, siehe `docs/certification/live_certification_runbook.md`. Offen bleibt der Lauf gegen die Zielinstanz.
 

@@ -188,6 +188,53 @@ zurück (die Rollback-Prüfung erkennt das); `sslmode=require` und ein Restore o
 Template blockieren. Unter Windows ist der Datenbankteil nicht live belegt,
 weil dort die Clientwerkzeuge fehlten.
 
+## Commit-gebundene Nachweise und jarvis-1.0-gate
+
+`python launcher.py jarvis-1.0-gate` führt keine Gates aus. Es prüft die unter
+`runtime/reports/` gespeicherten Berichte von zwölf Gates und blockiert jeden
+Bericht, der nicht für den aktuellen Commit, die geforderte Umgebung und
+unverändert erzeugt wurde.
+
+Jeder Produzent versiegelt seinen Bericht über `secondbrain.release.evidence.seal`:
+
+| Feld | Bedeutung |
+|---|---|
+| `schema` | Berichtsschema des Gates |
+| `commit_sha` | `git rev-parse HEAD` beim Lauf |
+| `worktree_clean` | keine uncommitteten Änderungen an versionierten Dateien; sonst blockiert der Aggregator (`dirty_worktree`) |
+| `environment` | `production` und `clean-windows` nur explizit über `SECONDBRAIN_EVIDENCE_ENVIRONMENT`; in GitHub Actions `ci`; sonst `local` |
+| `generated_at` / `expires_at` | UTC, 24 Stunden gültig |
+| `evidence_sha256` | SHA-256 über alle übrigen Felder |
+
+Produzenten:
+
+| Nachweis | Kommando | geforderte Umgebung |
+|---|---|---|
+| PostgreSQL | `postgres-live-gate` | production |
+| Approval | `approval-postgres-live-gate` | production |
+| Provider | `provider-live-gate` | production |
+| Connector-E2E | `connector-e2e-gate` (Release-Umfang über `REQUIRED_E2E_CONNECTORS`) | production |
+| Runtime-Architektur | `runtime-architecture-gate` | production |
+| Native Voice App | `native-voice-app-gate` | production |
+| Disaster Recovery | `disaster-recovery-gate` | production |
+| OS-Keyring | `os-keyring-gate` | production |
+| Windows-Installer | `windows-installer-gate` | clean-windows |
+| Testsuite | `evidence-full-pytest` | ci |
+| Versionssync | `evidence-version-sync` | ci |
+| CI des Commits | `evidence-ci-commit` (GitHub-Check-Runs genau dieses Commits) | ci (fest, die Fakten stammen aus der CI) |
+
+Ablauf: alles committen, Nachweise in der jeweiligen Umgebung erzeugen, dann
+`jarvis-1.0-gate` ausführen. Jeder neue Commit macht alle Nachweise ungültig.
+Lokal erzeugte Nachweise tragen `environment=local` und können das Gate daher
+nicht bestehen; das ist beabsichtigt.
+
+Das Runtime-Architektur-Gate prüft: `gui/launch` startet die kanonische
+Job-Runtime; eine Job-Runtime in Produktion ohne Datenbank ist für jede
+verwendete Schreibweise der Produktionsvariable `blocked`; kein zweiter
+Job-Scheduler wird außerhalb seines Definitionsmoduls instanziiert. Native Voice
+ordnet seine Checks den Komponenten `desktop` und `voice` zu;
+Querschnittsprüfungen zählen für beide.
+
 ## Bekannte Grenzen
 
 - Unter Docker Desktop für Windows ist `localhost` im DSN sehr langsam (libpq
