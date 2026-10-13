@@ -362,6 +362,29 @@ def _jarvis_1_0_gate_main(argv: list[str]) -> int:
     return 0 if report["status"] == PASS else 2
 
 
+def _evidence_main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="secondbrain",
+        description="Commit-bound evidence: full pytest run, version sync, CI of the current commit",
+    )
+    parser.add_argument("cmd")
+    parser.add_argument("project_root", nargs="?", default=str(Path.cwd()))
+    parser.add_argument("--project-root", dest="project_root_option", default=None)
+    parser.add_argument("--no-write-report", action="store_true")
+    args, rest = parser.parse_known_args(argv)
+    from secondbrain.release import evidence_producers as producers
+    root = args.project_root_option or args.project_root
+    write = not args.no_write_report
+    if args.cmd == "evidence-full-pytest":
+        report = producers.run_full_pytest_evidence(root, pytest_args=tuple(rest), write_report=write)
+    elif args.cmd == "evidence-version-sync":
+        report = producers.run_version_sync_evidence(root, write_report=write)
+    else:
+        report = producers.run_ci_commit_evidence(root, write_report=write)
+    out(report)
+    return 0 if report["status"] == producers.PASS else 2
+
+
 def _live_certification_main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog="secondbrain",
@@ -1169,6 +1192,8 @@ def main(argv: list[str] | None = None) -> int:
         return _windows_installer_gate_main(raw)
     if cmd == "jarvis-1.0-gate":
         return _jarvis_1_0_gate_main(raw)
+    if cmd in {"evidence-full-pytest", "evidence-version-sync", "evidence-ci-commit"}:
+        return _evidence_main(raw)
     if cmd == "support-bundle":
         return _support_bundle_main(raw)
     if cmd in {"native-web-shell", "jarvis-web", "desktop-web"}:
