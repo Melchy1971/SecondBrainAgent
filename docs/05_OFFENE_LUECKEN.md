@@ -10,7 +10,7 @@ Stand: 2026-07-15. Die Liste enthaelt nur aktuell relevante, belegte Grenzen.
 - Produktiven Embedding-Provider mit echten Credentials/Endpoints pruefen.
 - Vollstaendigen Reindex- und Dimensionsdrift-Pfad abnehmen.
 
-Die Repository-Tests decken den SQL-Pfad ueber den vorhandenen Test-Executor ab. Ein echter PostgreSQL-/pgvector-Lauf ist ohne `TEST_DATABASE_URL` weiterhin nicht belegt.
+Die Repository-Tests decken den SQL-Pfad ueber den vorhandenen Test-Executor ab. Das PostgreSQL-/pgvector-Live-Gate hat am 2026-10-12 gegen eine lokale Testinstanz (PostgreSQL 18.4, pgvector 0.8.6, TLS `verify-full`, Rolle ohne RLS-Umgehung) mit `PASS` bestanden, siehe `docs/certification/live_certification_runbook.md`. Offen bleibt der Lauf gegen die Zielinstanz.
 
 ## Prioritaet 2: Planner Runtime integrieren
 

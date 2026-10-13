@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import os
-from contextlib import contextmanager
 from typing import Any
 
 import pytest
@@ -120,6 +119,7 @@ def _healthy_answers() -> dict[str, list[tuple]]:
         "SELECT current_database()": [("secondbrain_test",)],
         "SHOW TimeZone": [("UTC",)],
         "usesuper": [(False,)],
+        "rolbypassrls": [(False, False)],
         "pg_stat_ssl": [(True,)],
         "extversion": [("0.8.4",)],
         "SELECT amname": [("btree",), ("hnsw",), ("ivfflat",)],
@@ -129,7 +129,7 @@ def _healthy_answers() -> dict[str, list[tuple]]:
     }
 
 
-DSN = "postgresql://user:secret@db.example.com:5432/secondbrain_test"
+DSN = "postgresql://user:secret@db.example.com:5432/secondbrain_test?sslmode=verify-full"
 
 
 # Echtes pgvector 0.8.4 lehnt einen direkten hnsw-Index auf vector(3072) ab und
@@ -171,8 +171,22 @@ def _passing_repository_contracts(connector, dsn, schema):
              "duration_ms": 0.1, "blocking": True} for n in names]
 
 
+TRANSACTION_CHECK_NAMES = (
+    "row_lock_blocks_concurrent_writer", "row_lock_released_after_rollback",
+    "parallel_read_modify_write_no_lost_update", "parallel_idempotent_insert_single_winner",
+    "parallel_skip_locked_claims_disjoint_and_complete", "transaction_rollback_discards_writes",
+    "savepoint_partial_rollback", "failed_statement_aborts_transaction",
+)
+
+
+def _passing_transaction_checks(connector, dsn):
+    """Kontrollfluss-Stub fuer Phase 7; die echte Pruefung braucht PostgreSQL."""
+    return [gate._check(n, True) for n in TRANSACTION_CHECK_NAMES], {"cleanup_schema_dropped": True}
+
+
 def _run(connection: FakeConnection, *, dsn: str = DSN, **kw):
     kw.setdefault("repository_contracts_impl", _passing_repository_contracts)
+    kw.setdefault("transaction_checks_impl", _passing_transaction_checks)
     return gate.run_postgres_live_gate(
         ".", env={"TEST_DATABASE_URL": dsn}, connect=lambda _: connection,
         write_report=False, **kw
@@ -321,6 +335,122 @@ def test_refused_tls_blocks() -> None:
     report = _run(_healthy_connection(answers={"pg_stat_ssl": [(False,)]}))
     assert report["status"] == gate.BLOCKED
     assert "transport_encryption" in report["blockers"]
+
+
+# --------------------------------------------------------------------------
+# TLS verify-full und RLS-Voraussetzung (Preflight)
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("dsn,mode", [
+    ("postgresql://u:p@db.example.com/x?sslmode=require", "require"),
+    ("postgresql://u:p@db.example.com/x?sslmode=verify-ca", "verify-ca"),
+    ("postgresql://u:p@db.example.com/x", "prefer"),
+])
+def test_tls_without_verify_full_blocks(dsn: str, mode: str) -> None:
+    report = _run(_healthy_connection(), dsn=dsn)
+    assert report["status"] == gate.BLOCKED
+    assert "tls_verify_full" in report["blockers"]
+    assert report["facts"]["sslmode"] == mode
+
+
+def test_tls_verify_full_passes() -> None:
+    report = _run(_healthy_connection())
+    check = next(c for c in report["checks"] if c["name"] == "tls_verify_full")
+    assert check["ok"] and report["facts"]["sslmode"] == "verify-full"
+
+
+class _Info:
+    def __init__(self, params: dict[str, str]) -> None:
+        self._params = params
+
+    def get_parameters(self) -> dict[str, str]:
+        return self._params
+
+
+@pytest.mark.parametrize("effective,expected_ok", [("verify-full", True), ("require", False)])
+def test_effective_sslmode_comes_from_connection_not_dsn_text(effective: str, expected_ok: bool) -> None:
+    # libpq-Parameter (inkl. PGSSLMODE) sind massgeblich, nicht der DSN-Text.
+    connection = _healthy_connection()
+    connection.info = _Info({"sslmode": effective})
+    dsn = "postgresql://u:p@db.example.com/x?sslmode=" + ("require" if expected_ok else "verify-full")
+    report = _run(connection, dsn=dsn)
+    check = next(c for c in report["checks"] if c["name"] == "tls_verify_full")
+    assert check["ok"] is expected_ok
+
+
+@pytest.mark.parametrize("role", [(True, False), (False, True), (True, True)])
+def test_role_able_to_bypass_rls_blocks(role: tuple[bool, bool]) -> None:
+    report = _run(_healthy_connection(answers={"rolbypassrls": [role]}))
+    assert report["status"] == gate.BLOCKED
+    assert "role_cannot_bypass_rls" in report["blockers"]
+    assert report["facts"]["role_bypasses_rls"] is True
+
+
+def test_fingerprint_reports_dsn_sslmode_without_secrets() -> None:
+    report = _run(_healthy_connection())
+    assert report["target"]["sslmode_in_dsn"] == "verify-full"
+    dumped = json.dumps(report)
+    assert "secret" not in dumped and "db.example.com" not in dumped
+
+
+# --------------------------------------------------------------------------
+# Phase 7 -- Transaktionssemantik (Kontrollfluss)
+# --------------------------------------------------------------------------
+
+
+def test_transaction_semantics_is_in_scope_and_reported() -> None:
+    report = _run(_healthy_connection())
+    assert "transaction_semantics" in report["scope"]["implemented_phases"]
+    names = {c["name"] for c in report["checks"]}
+    assert set(TRANSACTION_CHECK_NAMES) <= names
+    assert report["facts"]["transaction_semantics"]["cleanup_schema_dropped"] is True
+
+
+@pytest.mark.parametrize("failing", TRANSACTION_CHECK_NAMES)
+def test_any_transaction_check_failure_blocks(failing: str) -> None:
+    def impl(connector, dsn):
+        return [gate._check(n, n != failing) for n in TRANSACTION_CHECK_NAMES], {"cleanup_schema_dropped": True}
+
+    report = _run(_healthy_connection(), transaction_checks_impl=impl)
+    assert report["status"] == gate.BLOCKED
+    assert report["blockers"] == [failing]
+
+
+def test_transaction_phase_error_blocks_and_is_redacted() -> None:
+    def leaky(connector, dsn):
+        raise RuntimeError(f"connection to {dsn} failed")
+
+    report = _run(_healthy_connection(), transaction_checks_impl=leaky)
+    assert "transaction_semantics" in report["blockers"]
+    assert DSN not in json.dumps(report)
+
+
+def test_transaction_cleanup_failure_is_reported() -> None:
+    def impl(connector, dsn):
+        return [gate._check(n, True) for n in TRANSACTION_CHECK_NAMES], {"cleanup_schema_dropped": False}
+
+    report = _run(_healthy_connection(), transaction_checks_impl=impl)
+    assert report["cleanup"]["transaction_semantics_schema_dropped"] is False
+
+
+def test_run_parallel_starts_workers_together_and_redacts_errors() -> None:
+    import threading
+    arrived: list[int] = []
+    guard = threading.Lock()
+
+    def target(index, barrier):
+        barrier.wait()
+        with guard:
+            arrived.append(index)
+        if index == 2:
+            raise RuntimeError("postgresql://u:secret@host/db")
+        return index * 10
+
+    results, errors = gate._run_parallel(4, target)
+    assert sorted(arrived) == [0, 1, 2, 3]
+    assert results == [0, 10, None, 30]
+    assert errors == ["RuntimeError"]
 
 
 def test_missing_create_privilege_blocks() -> None:
@@ -681,3 +811,15 @@ def test_full_gate_live_reaches_pass_or_conditional() -> None:
     report = gate.run_postgres_live_gate(".", env={"TEST_DATABASE_URL": _TEST_DB}, write_report=False)
     assert report["status"] in {gate.PASS, gate.CONDITIONAL_PASS}, report.get("blockers")
     assert _TEST_DB not in json.dumps(report)
+
+
+@pytest.mark.skipif(not _TEST_DB, reason="set TEST_DATABASE_URL for the live transaction-semantics run")
+def test_transaction_semantics_live() -> None:
+    """Sperren, parallele Schreiber und Rollback gegen echtes PostgreSQL."""
+    pytest.importorskip("psycopg")
+    checks, facts = gate._transaction_semantics_checks(gate._default_connect, _TEST_DB)
+    by_name = {c["name"]: c for c in checks}
+    for name in TRANSACTION_CHECK_NAMES:
+        assert name in by_name, f"{name} fehlt im Report"
+        assert by_name[name]["ok"], f"{name}: {by_name[name]['detail']}"
+    assert facts["cleanup_schema_dropped"] is True

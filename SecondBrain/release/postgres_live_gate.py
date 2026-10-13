@@ -1,11 +1,13 @@
-"""PostgreSQL- und pgvector-Live-Gate (Prompt 68, Phase 1, 2 und 8).
+"""PostgreSQL- und pgvector-Live-Gate (Prompt 68, Phasen 1 bis 8).
 
 Umfang dieser Stufe
 -------------------
-Phase 1  Preflight: Treiber, Verbindung, Version, SSL, Rechte, Zeitzone,
-         Migrationsstand, pgvector-Extension und Indexfaehigkeit.
+Phase 1  Preflight: Treiber, Verbindung, Version, TLS mit sslmode=verify-full,
+         Rechte (keine RLS-Umgehung), Zeitzone, Migrationsstand,
+         pgvector-Extension und Indexfaehigkeit.
 Phase 2  Isolierte Testumgebung: eigenes Schema je Lauf, Aufraeumen im
          ``finally``-Block, niemals Zugriff auf produktive Tabellen.
+Phase 3  Repository-Vertraege gegen die produktiven Repository-Klassen.
 Phase 4  Workspace-Isolation per Row Level Security: Lese-Isolation,
          fail-closed ohne Kontext, WITH-CHECK gegen Cross-Workspace-Schreiben,
          kein Update ueber die Grenze.
@@ -13,11 +15,13 @@ Phase 5  Concurrency: ``FOR UPDATE SKIP LOCKED`` ohne Doppelvergabe,
          optimistische Versionierung, doppelter Idempotency Key.
 Phase 6  Vektorsuche: Golden Dataset, Trefferqualitaet, Mindest-Recall,
          nachgewiesene Indexnutzung, Dimension Guard, Reindex.
+Phase 7  Transaktionssemantik: Zeilensperren, echte parallele Schreiber
+         (Threads, je eigene Verbindung), Rollback und Savepoints.
 Phase 8  Redigierter Report.
 
-Offen bleibt allein Phase 3 (Repository-Vertraege). Der Report weist sie als
-``not_implemented`` aus, damit ein Teilumfang nicht als vollstaendige
-Zertifizierung missverstanden wird.
+Alle Phasen sind implementiert (``NOT_IMPLEMENTED_PHASES`` ist leer). Kaeme
+eine offene Phase hinzu, weist der Report sie als ``not_implemented`` aus und
+der Status kann hoechstens CONDITIONAL_PASS sein.
 
 Sicherheit
 ----------
@@ -38,7 +42,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
@@ -84,8 +88,29 @@ def _fingerprint(dsn: str) -> dict[str, Any]:
     return {
         "host_fingerprint": hashlib.sha256(host).hexdigest()[:12] if host else "unknown",
         "database": (parsed.path or "/").lstrip("/") or "unknown",
-        "sslmode_requested": "sslmode=require" in (parsed.query or ""),
+        "sslmode_in_dsn": _dsn_sslmode(dsn),
     }
+
+
+def _dsn_sslmode(dsn: str) -> str | None:
+    values = parse_qs(urlsplit(dsn).query).get("sslmode")
+    return values[-1].lower() if values else None
+
+
+def _effective_sslmode(connection, dsn: str) -> str:
+    """Tatsaechlich verwendeter sslmode der Verbindung.
+
+    Bevorzugt die Verbindungsparameter von libpq (beruecksichtigen auch
+    PGSSLMODE); faellt auf den DSN und zuletzt auf den libpq-Standard
+    ``prefer`` zurueck. ``prefer`` verschluesselt, prueft aber weder
+    Zertifikatskette noch Hostnamen.
+    """
+    try:
+        params = connection.info.get_parameters()
+    except Exception:  # noqa: BLE001 - kein psycopg-Objekt (z. B. Testattrappe)
+        params = {}
+    mode = params.get("sslmode") if isinstance(params, dict) else None
+    return (mode or _dsn_sslmode(dsn) or "prefer").lower()
 
 
 def _validate_dsn(dsn: str) -> None:
@@ -127,7 +152,7 @@ def _rows(connection, sql: str) -> list[tuple]:
 # --------------------------------------------------------------------------
 
 
-def _preflight(connection) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def _preflight(connection, dsn: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     checks: list[dict[str, Any]] = []
     facts: dict[str, Any] = {}
 
@@ -150,6 +175,29 @@ def _preflight(connection) -> tuple[list[dict[str, Any]], dict[str, Any]]:
             bool(facts["ssl_in_use"]),
             detail="server refuses TLS" if not facts["ssl_in_use"] else "TLS active",
         )
+    )
+
+    # Verschluesselung allein schuetzt nicht vor einem Man-in-the-Middle: erst
+    # verify-full prueft Zertifikatskette UND Hostnamen. libpq bricht den
+    # Verbindungsaufbau ab, wenn eins davon scheitert -- eine bestehende
+    # verify-full-Verbindung ist damit der Nachweis.
+    facts["sslmode"] = _effective_sslmode(connection, dsn)
+    checks.append(
+        _check("tls_verify_full", facts["sslmode"] == "verify-full",
+               detail=f"sslmode={facts['sslmode']}; verify-full required")
+    )
+
+    # Superuser und BYPASSRLS umgehen Row Level Security vollstaendig. Ohne
+    # diesen Check wuerde Phase 4 scheitern, ohne die Ursache zu nennen.
+    role = _rows(
+        connection,
+        "SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname = current_user",
+    )
+    rolsuper, rolbypassrls = role[0] if role else (None, None)
+    facts["role_bypasses_rls"] = bool(rolsuper or rolbypassrls)
+    checks.append(
+        _check("role_cannot_bypass_rls", rolsuper is False and rolbypassrls is False,
+               detail=f"superuser={rolsuper}, bypassrls={rolbypassrls}")
     )
 
     checks.append(
@@ -848,6 +896,338 @@ def _concurrency_checks(connector: Callable[[str], Any], dsn: str) -> tuple[list
     return checks, facts
 
 
+# --------------------------------------------------------------------------
+# Phase 7 -- Transaktionssemantik: Sperren, parallele Schreiber, Rollback
+# --------------------------------------------------------------------------
+
+PARALLEL_WORKERS = 4
+PARALLEL_INCREMENTS = 25
+PARALLEL_JOBS = 40
+LOCK_TIMEOUT = "1s"
+
+SQLSTATE_LOCK_NOT_AVAILABLE = "55P03"
+SQLSTATE_UNIQUE_VIOLATION = "23505"
+SQLSTATE_IN_FAILED_TRANSACTION = "25P02"
+
+
+def _transaction_semantics_checks(
+    connector: Callable[[str], Any], dsn: str,
+    *, impl: Callable[[Callable[[str], Any], str], tuple[list[dict[str, Any]], dict[str, Any]]] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Aggregiert Phase 7. Ein Fehler der Phase selbst blockiert, redigiert."""
+    try:
+        return (impl or _default_transaction_semantics)(connector, dsn)
+    except Exception as exc:  # noqa: BLE001
+        return [_check("transaction_semantics", False, detail=type(exc).__name__)], {}
+
+
+def _sqlstate(exc: BaseException) -> str | None:
+    return getattr(exc, "sqlstate", None)
+
+
+def _run_parallel(workers: int, target: Callable[[int, Any], Any]) -> tuple[list[Any], list[str]]:
+    """Startet ``workers`` Threads gleichzeitig (Barriere) und sammelt Ergebnisse.
+
+    Fehler werden nur als Klassenname zurueckgegeben -- Meldungen koennen
+    DSN-Fragmente enthalten.
+    """
+    import threading
+
+    barrier = threading.Barrier(workers)
+    results: list[Any] = [None] * workers
+    errors: list[str] = []
+    lock = threading.Lock()
+
+    def run(index: int) -> None:
+        try:
+            results[index] = target(index, barrier)
+        except Exception as exc:  # noqa: BLE001
+            with lock:
+                errors.append(type(exc).__name__)
+
+    threads = [threading.Thread(target=run, args=(i,), daemon=True) for i in range(workers)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=120)
+    if any(thread.is_alive() for thread in threads):
+        errors.append("TimeoutError")
+    return results, errors
+
+
+def _default_transaction_semantics(connector: Callable[[str], Any], dsn: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:  # pragma: no cover - benoetigt PostgreSQL
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+    schema = f"{SCHEMA_PREFIX}_tx_{uuid4().hex[:10]}"
+    setup = connector(dsn)
+    setup.autocommit = True
+    try:
+        with setup.cursor() as cursor:
+            cursor.execute(f"CREATE SCHEMA {schema}")
+            cursor.execute(f"CREATE TABLE {schema}.counter (id int primary key, n int NOT NULL)")
+            cursor.execute(f"CREATE TABLE {schema}.jobs (id int primary key, claimed_by text)")
+            cursor.execute(
+                f"CREATE TABLE {schema}.ledger (id int primary key, idempotency_key text UNIQUE, note text)"
+            )
+            cursor.execute(f"INSERT INTO {schema}.counter VALUES (1, 0), (2, 0)")
+            cursor.execute(
+                f"INSERT INTO {schema}.jobs (id) SELECT g FROM generate_series(1, {PARALLEL_JOBS}) g"
+            )
+        for phase in (_lock_checks, _parallel_write_checks):
+            phase_checks, phase_facts = phase(connector, dsn, schema)
+            checks.extend(phase_checks)
+            facts.update(phase_facts)
+        rollback_checks, rollback_facts = _rollback_checks(setup, schema)
+        checks.extend(rollback_checks)
+        facts.update(rollback_facts)
+    finally:
+        try:
+            setup.rollback()
+            setup.autocommit = True
+            with setup.cursor() as cursor:
+                cursor.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+            facts["cleanup_schema_dropped"] = True
+        except Exception:  # noqa: BLE001
+            facts["cleanup_schema_dropped"] = False
+        finally:
+            try:
+                setup.close()
+            except Exception:  # noqa: BLE001
+                pass
+    return checks, facts
+
+
+def _lock_checks(connector: Callable[[str], Any], dsn: str, schema: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:  # pragma: no cover - benoetigt PostgreSQL
+    """Eine gehaltene Zeilensperre blockiert einen zweiten Schreiber."""
+    holder = connector(dsn)
+    contender = connector(dsn)
+    holder.autocommit = False
+    contender.autocommit = False
+    checks: list[dict[str, Any]] = []
+    try:
+        with holder.cursor() as cursor:
+            cursor.execute(f"SELECT n FROM {schema}.counter WHERE id = 1 FOR UPDATE")
+        blocked_state = None
+        with contender.cursor() as cursor:
+            cursor.execute(f"SET LOCAL lock_timeout = '{LOCK_TIMEOUT}'")
+            try:
+                cursor.execute(f"UPDATE {schema}.counter SET n = n + 1 WHERE id = 1")
+            except Exception as exc:  # noqa: BLE001
+                blocked_state = _sqlstate(exc)
+        contender.rollback()
+        checks.append(
+            _check("row_lock_blocks_concurrent_writer", blocked_state == SQLSTATE_LOCK_NOT_AVAILABLE,
+                   detail=f"contender sqlstate={blocked_state}, expected {SQLSTATE_LOCK_NOT_AVAILABLE}")
+        )
+
+        holder.rollback()  # gibt die Sperre frei
+        with contender.cursor() as cursor:
+            cursor.execute(f"SET LOCAL lock_timeout = '{LOCK_TIMEOUT}'")
+            cursor.execute(f"UPDATE {schema}.counter SET n = n + 1 WHERE id = 1")
+            released = cursor.rowcount == 1
+        contender.rollback()
+        checks.append(_check("row_lock_released_after_rollback", released))
+    finally:
+        for connection in (holder, contender):
+            try:
+                connection.rollback()
+                connection.close()
+            except Exception:  # noqa: BLE001
+                pass
+    return checks, {}
+
+
+def _parallel_write_checks(connector: Callable[[str], Any], dsn: str, schema: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:  # pragma: no cover - benoetigt PostgreSQL
+    """Echte gleichzeitige Schreiber, je Thread eine eigene Verbindung."""
+    checks: list[dict[str, Any]] = []
+    facts: dict[str, Any] = {}
+
+    def read_modify_write(row_id: int, *, lock_row: bool) -> Callable[[int, Any], int]:
+        suffix = " FOR UPDATE" if lock_row else ""
+
+        def worker(_index: int, barrier) -> int:
+            connection = connector(dsn)
+            connection.autocommit = False
+            try:
+                barrier.wait()
+                for _ in range(PARALLEL_INCREMENTS):
+                    with connection.cursor() as cursor:
+                        cursor.execute(f"SELECT n FROM {schema}.counter WHERE id = %s{suffix}", (row_id,))
+                        current = cursor.fetchone()[0]
+                        cursor.execute(f"UPDATE {schema}.counter SET n = %s WHERE id = %s", (current + 1, row_id))
+                    connection.commit()
+                return PARALLEL_INCREMENTS
+            finally:
+                connection.close()
+        return worker
+
+    def counter_value(row_id: int) -> int:
+        connection = connector(dsn)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(f"SELECT n FROM {schema}.counter WHERE id = %s", (row_id,))
+                return int(cursor.fetchone()[0])
+        finally:
+            connection.close()
+
+    expected = PARALLEL_WORKERS * PARALLEL_INCREMENTS
+
+    # -- Read-Modify-Write mit Zeilensperre: kein Update geht verloren ---------
+    _, errors = _run_parallel(PARALLEL_WORKERS, read_modify_write(1, lock_row=True))
+    final = counter_value(1)
+    facts["parallel_rmw_locked"] = {"expected": expected, "final": final, "errors": errors}
+    checks.append(
+        _check("parallel_read_modify_write_no_lost_update", not errors and final == expected,
+               detail=f"final={final}, expected={expected}, errors={errors}")
+    )
+
+    # -- Gegenprobe ohne Sperre: belegt, dass die Schreiber wirklich parallel
+    #    liefen. Verlorene Updates sind wahrscheinlich, aber nicht garantiert;
+    #    deshalb nur als Fakt, nicht als Check.
+    _, control_errors = _run_parallel(PARALLEL_WORKERS, read_modify_write(2, lock_row=False))
+    facts["parallel_rmw_unlocked_control"] = {
+        "expected": expected, "final": counter_value(2), "errors": control_errors,
+    }
+
+    # -- Gleicher Idempotency Key von allen Workern gleichzeitig ---------------
+    def idempotent_insert(index: int, barrier) -> bool:
+        connection = connector(dsn)
+        connection.autocommit = False
+        try:
+            barrier.wait()
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        f"INSERT INTO {schema}.ledger (id, idempotency_key, note) VALUES (%s, 'same-key', 'p')",
+                        (1000 + index,),
+                    )
+                connection.commit()
+                return True
+            except Exception as exc:  # noqa: BLE001
+                connection.rollback()
+                if _sqlstate(exc) != SQLSTATE_UNIQUE_VIOLATION:
+                    raise
+                return False
+        finally:
+            connection.close()
+
+    outcomes, errors = _run_parallel(PARALLEL_WORKERS, idempotent_insert)
+    winners = sum(1 for outcome in outcomes if outcome is True)
+    stored = _scalar_via(connector, dsn, f"SELECT count(*) FROM {schema}.ledger WHERE idempotency_key = 'same-key'")
+    facts["parallel_idempotency"] = {"winners": winners, "stored": stored, "errors": errors}
+    checks.append(
+        _check("parallel_idempotent_insert_single_winner", not errors and winners == 1 and stored == 1,
+               detail=f"winners={winners}, stored={stored}, errors={errors}")
+    )
+
+    # -- SKIP LOCKED unter Last: jede Aufgabe genau einmal vergeben ------------
+    def claim_all(index: int, barrier) -> list[int]:
+        connection = connector(dsn)
+        connection.autocommit = False
+        claimed: list[int] = []
+        try:
+            barrier.wait()
+            while True:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        f"SELECT id FROM {schema}.jobs WHERE claimed_by IS NULL "
+                        "ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 1"
+                    )
+                    row = cursor.fetchone()
+                    if row is None:
+                        connection.rollback()
+                        return claimed
+                    cursor.execute(f"UPDATE {schema}.jobs SET claimed_by = %s WHERE id = %s",
+                                   (f"worker-{index}", row[0]))
+                connection.commit()
+                claimed.append(int(row[0]))
+        finally:
+            connection.close()
+
+    claims, errors = _run_parallel(PARALLEL_WORKERS, claim_all)
+    flat = [job for worker in claims if worker for job in worker]
+    unclaimed = _scalar_via(connector, dsn, f"SELECT count(*) FROM {schema}.jobs WHERE claimed_by IS NULL")
+    facts["parallel_skip_locked"] = {
+        "jobs": PARALLEL_JOBS, "claimed_per_worker": [len(w or []) for w in claims],
+        "unclaimed": unclaimed, "errors": errors,
+    }
+    disjoint = len(flat) == len(set(flat))
+    complete = set(flat) == set(range(1, PARALLEL_JOBS + 1)) and unclaimed == 0
+    checks.append(
+        _check("parallel_skip_locked_claims_disjoint_and_complete", not errors and disjoint and complete,
+               detail=f"claimed={len(flat)}, distinct={len(set(flat))}, unclaimed={unclaimed}, errors={errors}")
+    )
+    return checks, facts
+
+
+def _scalar_via(connector: Callable[[str], Any], dsn: str, sql: str) -> Any:  # pragma: no cover - benoetigt PostgreSQL
+    connection = connector(dsn)
+    try:
+        return _scalar(connection, sql)
+    finally:
+        connection.close()
+
+
+def _rollback_checks(connection, schema: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:  # pragma: no cover - benoetigt PostgreSQL
+    """Rollback verwirft Schreibvorgaenge vollstaendig; Savepoints wirken partiell."""
+    checks: list[dict[str, Any]] = []
+    connection.autocommit = False
+    ledger = f"{schema}.ledger"
+
+    def count(where: str) -> int:
+        return int(_scalar(connection, f"SELECT count(*) FROM {ledger} WHERE {where}"))
+
+    # -- Vollstaendiger Rollback -------------------------------------------
+    counter_before = _scalar(connection, f"SELECT n FROM {schema}.counter WHERE id = 1")
+    connection.commit()
+    with connection.cursor() as cursor:
+        cursor.execute(f"INSERT INTO {ledger} (id, note) VALUES (1, 'rb'), (2, 'rb'), (3, 'rb')")
+        cursor.execute(f"UPDATE {schema}.counter SET n = n + 1000 WHERE id = 1")
+    connection.rollback()
+    leftover = count("note = 'rb'")
+    counter_after = _scalar(connection, f"SELECT n FROM {schema}.counter WHERE id = 1")
+    connection.commit()
+    checks.append(
+        _check("transaction_rollback_discards_writes", leftover == 0 and counter_after == counter_before,
+               detail=f"leftover_rows={leftover}, counter {counter_before}->{counter_after}")
+    )
+
+    # -- Teil-Rollback per Savepoint ----------------------------------------
+    with connection.cursor() as cursor:
+        cursor.execute(f"INSERT INTO {ledger} (id, note) VALUES (10, 'kept')")
+        cursor.execute("SAVEPOINT gate_sp")
+        cursor.execute(f"INSERT INTO {ledger} (id, note) VALUES (11, 'discarded')")
+        cursor.execute("ROLLBACK TO SAVEPOINT gate_sp")
+    connection.commit()
+    kept, discarded = count("note = 'kept'"), count("note = 'discarded'")
+    connection.commit()
+    checks.append(
+        _check("savepoint_partial_rollback", kept == 1 and discarded == 0,
+               detail=f"kept={kept}, discarded={discarded}")
+    )
+
+    # -- Fehler bricht die Transaktion ab; nichts davon wird festgeschrieben --
+    aborted_state = None
+    with connection.cursor() as cursor:
+        cursor.execute(f"INSERT INTO {ledger} (id, note) VALUES (20, 'aborted')")
+        try:
+            cursor.execute(f"INSERT INTO {ledger} (id, note) VALUES (10, 'duplicate')")
+        except Exception:  # noqa: BLE001 - erwartete Unique-Verletzung
+            try:
+                cursor.execute("SELECT 1")
+            except Exception as exc:  # noqa: BLE001
+                aborted_state = _sqlstate(exc)
+    connection.rollback()
+    persisted = count("note = 'aborted'")
+    connection.commit()
+    checks.append(
+        _check("failed_statement_aborts_transaction",
+               aborted_state == SQLSTATE_IN_FAILED_TRANSACTION and persisted == 0,
+               detail=f"follow-up sqlstate={aborted_state}, persisted={persisted}")
+    )
+    return checks, {}
+
+
 def _index_usable(connection, table: str, order_by: str, query: str) -> tuple[bool, str]:
     """Kann die Abfrage den Vektorindex nutzen?
 
@@ -892,6 +1272,7 @@ def run_postgres_live_gate(
     env: dict[str, str] | None = None,
     connect: Callable[[str], Any] | None = None,
     repository_contracts_impl: Callable[[Callable[[str], Any], str, str], list[dict[str, Any]]] | None = None,
+    transaction_checks_impl: Callable[[Callable[[str], Any], str], tuple[list[dict[str, Any]], dict[str, Any]]] | None = None,
     write_report: bool = True,
 ) -> dict[str, Any]:
     values = dict(os.environ if env is None else env)
@@ -903,7 +1284,8 @@ def run_postgres_live_gate(
         "scope": {
             "implemented_phases": [
                 "preflight", "isolated_schema", "repository_contracts",
-                "workspace_isolation", "concurrency", "vector_search_recall", "report",
+                "workspace_isolation", "concurrency", "transaction_semantics",
+                "vector_search_recall", "report",
             ],
             "not_implemented_phases": list(NOT_IMPLEMENTED_PHASES),
         },
@@ -934,7 +1316,7 @@ def run_postgres_live_gate(
         connection = connector(dsn)
         connection.autocommit = True
 
-        checks, facts = _preflight(connection)
+        checks, facts = _preflight(connection, dsn)
         report["checks"].extend(checks)
         report["facts"].update(facts)
 
@@ -986,6 +1368,13 @@ def run_postgres_live_gate(
             report["facts"].update(conc_facts)
             if conc_facts.get("cleanup_schema_dropped") is False:
                 report["cleanup"]["concurrency_schema_dropped"] = False
+
+            tx_checks, tx_facts = _transaction_semantics_checks(
+                connector, dsn, impl=transaction_checks_impl)
+            report["checks"].extend(tx_checks)
+            report["facts"]["transaction_semantics"] = tx_facts
+            if tx_facts.get("cleanup_schema_dropped") is False:
+                report["cleanup"]["transaction_semantics_schema_dropped"] = False
         else:
             report["checks"].append(
                 _check("isolated_schema", False, detail="CREATE privilege missing")
