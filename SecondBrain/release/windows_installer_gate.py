@@ -263,6 +263,9 @@ def run_windows_installer_gate(
         "blockers": [row["name"] for row in rows if row["status"] == BLOCKED],
         "skipped": [row["name"] for row in rows if row["status"] == SKIPPED],
     }
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=report["schema"], root=root, env=values)
     if write_report:
         target = root / REPORT_PATH
         try:

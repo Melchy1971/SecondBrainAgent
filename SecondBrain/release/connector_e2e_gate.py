@@ -123,7 +123,12 @@ def run_connector_e2e_gate(project_root: str | Path = ".", *, env: Mapping[str, 
     report = {"schema": "secondbrain.connector_e2e_gate.v1", "generated_at": datetime.now(timezone.utc).isoformat(),
               "status": status, "ok": status != BLOCKED, "connectors": connectors, "required_connectors": sorted(required),
               "failed_connectors": failed, "pending_evidence": pending, "test_accounts_only": True,
-              "writes_require_approval": True, "automatic_write_retry": False}
+              "writes_require_approval": True, "automatic_write_retry": False,
+              # Release-Umfang fuer das jarvis-1.0-gate: ohne Angabe nie PASS.
+              "release_scope_connectors": sorted(required)}
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=report["schema"], root=root, env=source)
     if write_report:
         target = root / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)

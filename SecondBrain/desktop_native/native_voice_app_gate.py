@@ -46,6 +46,25 @@ def _readiness(voice_status: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+# Zuordnung der Checks zu den Komponenten, die das jarvis-1.0-gate prueft.
+# Querschnittspruefungen gelten fuer beide: eine Komponente ist nur PASS,
+# wenn ihre eigenen und alle gemeinsamen Checks PASS sind.
+VOICE_CHECKS = ("voice_input", "voice_output", "wake_word", "intent_coverage", "dialog_state", "confirmation")
+DESKTOP_CHECKS = ("application_shell", "service_integration", "windows_integration", "accessibility")
+SHARED_CHECKS = ("approval", "privacy", "workspace_isolation", "recovery", "performance")
+
+
+def _components(checks: Mapping[str, str]) -> dict[str, str]:
+    def component(own: tuple[str, ...]) -> str:
+        statuses = [checks.get(name) for name in (*own, *SHARED_CHECKS)]
+        if any(status is None for status in statuses):
+            return BLOCKED  # unbekannter Check-Name: nie stillschweigend PASS
+        if BLOCKED in statuses:
+            return BLOCKED
+        return CONDITIONAL_PASS if CONDITIONAL_PASS in statuses else PASS
+    return {"desktop": component(DESKTOP_CHECKS), "voice": component(VOICE_CHECKS)}
+
+
 def run_native_voice_app_gate(
     project_root: str | Path,
     *,
@@ -166,7 +185,11 @@ def run_native_voice_app_gate(
         "readiness": readiness,
         "privacy": stt_policy,
         "metrics": {"navigation_alias_seconds": round(alias_latency, 6), "navigation_views": len(VIEWS)},
+        "components": _components(checks),
     }
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=report["schema"], root=root)
     if write_report:
         path = root / "runtime" / "reports" / "native_voice_app_gate.json"
         path.parent.mkdir(parents=True, exist_ok=True)

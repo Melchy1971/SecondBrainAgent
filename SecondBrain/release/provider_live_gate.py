@@ -150,6 +150,9 @@ def run_provider_live_gate(project_root: str | Path = ".", *, env: Mapping[str, 
         "fallback": {"automatic": False, "policy": "explicit_provider_per_probe"}, "limits": {"max_cost": max_cost}}
     if configuration_error:
         report["configuration_error"] = configuration_error
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=report["schema"], root=project_root, env=source)
     if write_report:
         target = Path(project_root).resolve() / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)
