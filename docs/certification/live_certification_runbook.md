@@ -106,6 +106,37 @@ und pgvector 0.8.6 mit TLS 1.3, `verify-full`, `hostssl`-only und einer Rolle mi
 `BYPASSRLS`-Rolle) blockieren wie vorgesehen. Lokale Testinstanz, nicht die
 Zielinstanz.
 
+## Anforderungen an das Approval-PostgreSQL-Gate
+
+Einzeln ausführbar mit `python launcher.py approval-postgres-live-gate`
+(Report: `runtime/reports/approval_postgres_live_gate.json`). Gleiche
+`TEST_DATABASE_URL` wie das PostgreSQL-Gate; `sslmode=verify-full` ist auch hier
+Pflicht (`tls_verify_full`).
+
+Nachgewiesen wird gegen die produktive Klasse `PostgresReviewApprovalRepository`:
+
+- **Freigaben:** approve, reject, expire sowie deferred → approved.
+- **Konkurrierende Entscheidungen:** 4 Reviewer entscheiden gleichzeitig
+  (approve gegen reject, je eigene Verbindung): genau eine Entscheidung gewinnt,
+  nur sie steht im Audit. Zwei Reviewer mit gleicher erwarteter Version: genau
+  einer setzt sich durch. Eine doppelte Entscheidung wird nicht doppelt erfasst.
+- **Persistente Zustandsübergänge:** Jede Prüfung liest über eine neue
+  Verbindung (Neustart-Nachweis). Versionen steigen streng monoton, das Audit
+  zeigt approved → executing → completed in dieser Reihenfolge. Unzulässige
+  Übergänge (rejected/expired/completed → approved, approved → rejected) werden
+  abgewiesen und ändern weder Status noch Version; workspace-fremde Entscheidungen
+  greifen nicht.
+- **Ausführung und Recovery:** genau einer von 4 parallelen Executoren erhält die
+  Lease, Replay ist gesperrt; nach Verlust der Lease (recovery_required) übernimmt
+  ein neuer Executor, der abgelöste kann nicht mehr abschließen.
+- **Manipulation:** Eine direkt in der Datenbank veränderte Payload ist über den
+  Binding-Hash erkennbar.
+
+Zuletzt live bestanden am 2026-10-12: `PASS`, 27/27 Checks, 20 von 20
+Wiederholungen. Der Gewinner der konkurrierenden Entscheidung wechselte zufällig
+(11× rejected, 9× approved), es gewann aber stets genau einer. Gegenprobe
+`sslmode=require` blockiert. Lokale Testinstanz, nicht die Zielinstanz.
+
 ## Bekannte Grenzen
 
 - Unter Docker Desktop für Windows ist `localhost` im DSN sehr langsam (libpq
