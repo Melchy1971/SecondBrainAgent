@@ -823,3 +823,54 @@ def test_transaction_semantics_live() -> None:
         assert name in by_name, f"{name} fehlt im Report"
         assert by_name[name]["ok"], f"{name}: {by_name[name]['detail']}"
     assert facts["cleanup_schema_dropped"] is True
+
+
+# --------------------------------------------------------------------------
+# Commit-gebundener Umschlag fuer das jarvis-1.0-gate
+# --------------------------------------------------------------------------
+
+
+def test_report_is_sealed_with_aggregator_fields() -> None:
+    from secondbrain.release import jarvis_1_0_gate as aggregator
+    from secondbrain.release.evidence import canonical_hash
+
+    report = _run(_healthy_connection())
+    assert report["schema"] == gate.SCHEMA == "secondbrain.postgres_live_gate.v1"
+    assert report["evidence_sha256"] == canonical_hash({k: v for k, v in report.items() if k != "report"})
+    assert report["tls"] == {"active": True, "sslmode": "verify-full", "hostname_verified": True}
+    for criterion in ("postgresql_tls_verify_full", "repository_contracts", "workspace_isolation"):
+        assert aggregator._criterion_passes(criterion, report), criterion
+
+
+@pytest.mark.parametrize("failing,section", [
+    ("rls_read_isolation", "workspace_isolation"),
+    ("repo_crud", "repository_contracts"),
+])
+def test_single_failing_check_marks_section_blocked(failing: str, section: str) -> None:
+    report = {"facts": {"sslmode": "verify-full", "ssl_in_use": True}, "checks": [
+        {"name": "connection", "ok": True}, {"name": "rls_read_isolation", "ok": failing != "rls_read_isolation"},
+        {"name": "rls_fail_closed_without_context", "ok": True},
+        {"name": "repo_crud", "ok": failing != "repo_crud"}, {"name": "repo_utc_serialization", "ok": True},
+    ]}
+    gate._summarize_for_aggregation(report)
+    assert report["facts"][section]["status"] == gate.BLOCKED
+    other = {"workspace_isolation", "repository_contracts"} - {section}
+    assert report["facts"][other.pop()]["status"] == gate.PASS
+
+
+def test_section_without_any_check_is_not_pass() -> None:
+    report = {"facts": {}, "checks": [{"name": "connection", "ok": False}]}
+    gate._summarize_for_aggregation(report)
+    assert report["facts"]["workspace_isolation"]["status"] == gate.BLOCKED
+    assert report["tls"] == {"active": False, "sslmode": None, "hostname_verified": False}
+
+
+def test_tls_without_verify_full_is_not_hostname_verified() -> None:
+    report = _run(_healthy_connection(), dsn="postgresql://u:p@db.example.com/x?sslmode=require")
+    assert report["tls"]["hostname_verified"] is False
+
+
+def test_early_block_is_still_sealed() -> None:
+    report = gate.run_postgres_live_gate(".", env={}, write_report=False)
+    assert report["status"] == gate.BLOCKED
+    assert report["schema"] == gate.SCHEMA and report["environment"] == "local"

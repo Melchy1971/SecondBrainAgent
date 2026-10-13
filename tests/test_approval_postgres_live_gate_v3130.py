@@ -157,3 +157,12 @@ def test_parallel_does_not_hang_when_a_worker_cannot_connect() -> None:
     assert "ConnectionError" in results
     assert all(r in {"ConnectionError", "BrokenBarrierError"} for r in results)
     assert "secret" not in json.dumps(results)
+
+
+def test_report_is_sealed_for_aggregation(tmp_path) -> None:
+    from secondbrain.release.evidence import canonical_hash
+
+    report = run_approval_postgres_live_gate(tmp_path, env={}, write_report=False)
+    assert report["schema"] == "secondbrain.approval_postgres_live_gate.v1"
+    assert {"commit_sha", "worktree_clean", "environment", "expires_at"} <= set(report)
+    assert report["evidence_sha256"] == canonical_hash(report)

@@ -311,3 +311,13 @@ def test_diagnose_gives_hint_without_leaking_tool_output() -> None:
     assert detail.startswith("CalledProcessError: ") and "DR_RESTORE_TEMPLATE" in detail
     assert "db.internal" not in detail
     assert be._diagnose(RuntimeError("secret host")) == "RuntimeError"
+
+
+def test_dr_report_is_sealed_for_aggregation(tmp_path: Path) -> None:
+    from secondbrain.release.evidence import canonical_hash
+
+    env = {"SECRET_KEY_BACKEND": "env", "SECRET_MASTER_KEY_B64": b64e(random_key())}
+    report = drg.run_disaster_recovery_gate(tmp_path, env=env, write_report=False)
+    assert report["schema"] == drg.SCHEMA == "secondbrain.disaster_recovery_gate.v1"
+    assert report["environment"] == "local"
+    assert report["evidence_sha256"] == canonical_hash(report)

@@ -474,6 +474,9 @@ def run_approval_postgres_live_gate(
         "backend": "postgresql" if dsn else "not_configured", "test_data_only": True,
         "checks": checks, "failed_checks": failed, "evidence": {"test_schema": schema, "cleanup": cleanup},
     }
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=report["schema"], root=project_root, env=source)
     if write_report:
         target = Path(project_root).resolve() / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)

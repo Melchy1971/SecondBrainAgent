@@ -36,6 +36,7 @@ from typing import Any
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/disaster_recovery_gate.json")
+SCHEMA = "secondbrain.disaster_recovery_gate.v1"
 
 # Diese Nachweise werden bei realen Schritten nicht mehr delegiert.
 DELEGATED_CHECKS: tuple[str, ...] = ()
@@ -286,6 +287,9 @@ def run_disaster_recovery_gate(
         report["status"] = CONDITIONAL_PASS
     report["ok"] = report["status"] != BLOCKED
 
+    from secondbrain.release.evidence import seal
+
+    report = seal(report, schema=SCHEMA, root=root, env=values)
     if write_report:
         target = root / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)

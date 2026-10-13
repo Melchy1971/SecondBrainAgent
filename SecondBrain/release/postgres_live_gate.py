@@ -47,6 +47,7 @@ from uuid import uuid4
 
 PASS, CONDITIONAL_PASS, BLOCKED = "PASS", "CONDITIONAL_PASS", "BLOCKED"
 REPORT_PATH = Path("runtime/reports/postgres_live_gate.json")
+SCHEMA = "secondbrain.postgres_live_gate.v1"
 
 SCHEMA_PREFIX = "sb_gate"
 
@@ -1298,7 +1299,7 @@ def run_postgres_live_gate(
         report["status"] = BLOCKED
         report["ok"] = False
         report["blockers"] = ["TEST_DATABASE_URL is not set"]
-        return _finalize(report, project_root, write_report)
+        return _finalize(report, project_root, write_report, env=values)
 
     try:
         _validate_dsn(dsn)
@@ -1306,7 +1307,7 @@ def run_postgres_live_gate(
         report["status"] = BLOCKED
         report["ok"] = False
         report["blockers"] = [str(exc)]
-        return _finalize(report, project_root, write_report)
+        return _finalize(report, project_root, write_report, env=values)
 
     report["target"] = _fingerprint(dsn)
     connector = connect or _default_connect
@@ -1403,13 +1404,37 @@ def run_postgres_live_gate(
     else:
         report["status"] = PASS
     report["ok"] = report["status"] != BLOCKED
+    _summarize_for_aggregation(report)
 
-    return _finalize(report, project_root, write_report)
+    return _finalize(report, project_root, write_report, env=values)
 
 
-def _finalize(report: dict[str, Any], project_root: str | Path, write_report: bool) -> dict[str, Any]:
+def _summarize_for_aggregation(report: dict[str, Any]) -> None:
+    """Kennzahlen, die das jarvis-1.0-gate als Kriterien prueft."""
+    facts = report.setdefault("facts", {})
+    by_name = {c["name"]: c["ok"] for c in report.get("checks", [])}
+    sslmode = facts.get("sslmode")
+    connected = by_name.get("connection") is True
+    report["tls"] = {
+        "active": facts.get("ssl_in_use") is True,
+        "sslmode": sslmode,
+        # libpq baut eine verify-full-Verbindung nur bei gepruefter Kette UND
+        # passendem Hostnamen auf -- eine bestehende Verbindung ist der Nachweis.
+        "hostname_verified": connected and sslmode == "verify-full",
+    }
+    for key, prefix in (("repository_contracts", "repo_"), ("workspace_isolation", "rls_")):
+        rows = [ok for name, ok in by_name.items() if name.startswith(prefix)]
+        section = facts.get(key) if isinstance(facts.get(key), dict) else {}
+        facts[key] = {**section, "status": PASS if rows and all(rows) else BLOCKED}
+
+
+def _finalize(report: dict[str, Any], project_root: str | Path, write_report: bool,
+              env: dict[str, str] | None = None) -> dict[str, Any]:
+    from secondbrain.release.evidence import seal
+
     report.setdefault("warnings", [])
     report.setdefault("blockers", [])
+    report = seal(report, schema=SCHEMA, root=project_root, env=env)
     if write_report:
         target = Path(project_root) / REPORT_PATH
         target.parent.mkdir(parents=True, exist_ok=True)
