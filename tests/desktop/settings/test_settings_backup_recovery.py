@@ -1,17 +1,27 @@
 from __future__ import annotations
 
-import json
+from dataclasses import replace
+from datetime import UTC, datetime
 
 from secondbrain.desktop.settings.settings_backup import SettingsBackupService
 from secondbrain.desktop.settings.settings_integrity import SettingsIntegrityChecker
-from secondbrain.desktop.settings.settings_migration import SettingsMigration, SettingsMigrationService
+from secondbrain.desktop.settings.settings_migration import (
+    SettingsMigration,
+    SettingsMigrationService,
+)
+from secondbrain.desktop.settings.settings_recovery import SettingsRecoveryService
 from secondbrain.desktop.settings.settings_registry import default_settings_registry
 from secondbrain.desktop.settings.settings_restore import SettingsRestoreService
 from secondbrain.desktop.settings.settings_rollback import SettingsRollbackService
-from secondbrain.desktop.settings.settings_recovery import SettingsRecoveryService
-from secondbrain.desktop.settings.settings_snapshot import create_snapshot, settings_checksum
+from secondbrain.desktop.settings.settings_snapshot import (
+    create_snapshot,
+    settings_checksum,
+)
 from secondbrain.desktop.settings.settings_store import SettingsStore
-from secondbrain.desktop.settings.settings_versioning import SettingsVersion, is_compatible
+from secondbrain.desktop.settings.settings_versioning import (
+    SettingsVersion,
+    is_compatible,
+)
 
 
 def test_snapshot_checksum_is_stable() -> None:
@@ -22,14 +32,18 @@ def test_snapshot_checksum_is_stable() -> None:
 
 def test_backup_service_creates_and_lists_snapshots(tmp_path) -> None:
     service = SettingsBackupService(tmp_path / "snapshots")
-    snapshot = service.create_backup({"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0")
+    snapshot = service.create_backup(
+        {"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0"
+    )
     backups = service.list_backups()
     assert backups[0].snapshot_id == snapshot.snapshot_id
     assert service.latest_backup() is not None
 
 
 def test_integrity_detects_checksum_mismatch() -> None:
-    snapshot = create_snapshot({"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0")
+    snapshot = create_snapshot(
+        {"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0"
+    )
     broken = type(snapshot)(
         snapshot_id=snapshot.snapshot_id,
         version=snapshot.version,
@@ -38,7 +52,9 @@ def test_integrity_detects_checksum_mismatch() -> None:
         settings=snapshot.settings,
         metadata=snapshot.metadata,
     )
-    report = SettingsIntegrityChecker(default_settings_registry()).check_snapshot(broken)
+    report = SettingsIntegrityChecker(default_settings_registry()).check_snapshot(
+        broken
+    )
     assert report.valid is False
     assert any(issue.code == "checksum_mismatch" for issue in report.issues)
 
@@ -47,7 +63,9 @@ def test_restore_valid_snapshot_to_store(tmp_path) -> None:
     store = SettingsStore(tmp_path / "current.json")
     integrity = SettingsIntegrityChecker(default_settings_registry())
     restore = SettingsRestoreService(store, integrity)
-    snapshot = create_snapshot({"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0")
+    snapshot = create_snapshot(
+        {"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0"
+    )
     result = restore.restore(snapshot)
     assert result["restored"] is True
     assert store.load()["desktop.theme"] == "dark"
@@ -55,7 +73,9 @@ def test_restore_valid_snapshot_to_store(tmp_path) -> None:
 
 def test_migration_pipeline_applies_registered_steps() -> None:
     service = SettingsMigrationService()
-    service.register(SettingsMigration("1.0.0", "1.1.0", lambda data: {**data, "new": True}))
+    service.register(
+        SettingsMigration("1.0.0", "1.1.0", lambda data: {**data, "new": True})
+    )
     result = service.migrate({"old": True}, "1.0.0", "1.1.0")
     assert result == {"old": True, "new": True}
 
@@ -66,7 +86,9 @@ def test_recovery_restores_latest_valid_snapshot(tmp_path) -> None:
     backup = SettingsBackupService(tmp_path / "snapshots")
     store = SettingsStore(tmp_path / "current.json")
     restore = SettingsRestoreService(store, integrity)
-    backup.create_backup({"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0")
+    backup.create_backup(
+        {"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0"
+    )
     result = SettingsRecoveryService(backup, restore, integrity).recover_latest_valid()
     assert result["recovered"] is True
     assert store.load()["desktop.theme"] == "dark"
@@ -78,11 +100,39 @@ def test_rollback_uses_previous_snapshot(tmp_path) -> None:
     backup = SettingsBackupService(tmp_path / "snapshots")
     store = SettingsStore(tmp_path / "current.json")
     restore = SettingsRestoreService(store, integrity)
-    backup.create_backup({"desktop.theme": "light", "general.default_workspace": "default"}, "1.0.0")
-    backup.create_backup({"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0")
+    backup.create_backup(
+        {"desktop.theme": "light", "general.default_workspace": "default"}, "1.0.0"
+    )
+    backup.create_backup(
+        {"desktop.theme": "dark", "general.default_workspace": "default"}, "1.0.0"
+    )
     result = SettingsRollbackService(backup, restore).rollback_to_previous()
     assert result["rolled_back"] is True
     assert store.load()["desktop.theme"] == "light"
+
+
+def test_backup_order_is_stable_when_clock_does_not_advance(
+    tmp_path, monkeypatch
+) -> None:
+    from secondbrain.desktop.settings import settings_backup
+
+    original_create_snapshot = settings_backup.create_snapshot
+    fixed_time = datetime(2026, 1, 1, tzinfo=UTC)
+
+    def create_snapshot_with_fixed_time(*args, **kwargs):
+        return replace(original_create_snapshot(*args, **kwargs), created_at=fixed_time)
+
+    monkeypatch.setattr(
+        settings_backup, "create_snapshot", create_snapshot_with_fixed_time
+    )
+    backup = SettingsBackupService(tmp_path / "snapshots")
+    first = backup.create_backup({"desktop.theme": "light"}, "1.0.0")
+    second = backup.create_backup({"desktop.theme": "dark"}, "1.0.0")
+
+    assert [snapshot.snapshot_id for snapshot in backup.list_backups()] == [
+        second.snapshot_id,
+        first.snapshot_id,
+    ]
 
 
 def test_version_parse_and_compatibility() -> None:
