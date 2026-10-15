@@ -32,7 +32,7 @@ SERVICE_NAME = "secondbrain-secret-vault"
 DEFAULT_ALIAS = "master-key"
 
 # Umgebungsschluessel.
-ENV_PROFILE = "SECONDBRAIN_ENV"
+ENV_PROFILE = "SECOND_BRAIN_ENV"
 ENV_BACKEND = "SECRET_KEY_BACKEND"          # "keyring" | "env" | "" (auto)
 ENV_MASTER_KEY = "SECRET_MASTER_KEY_B64"    # nur fuer Env-Backend
 ENV_ALLOW_ENV_IN_PROD = "SECRET_KEY_ALLOW_ENV_IN_PROD"  # muss "1" sein

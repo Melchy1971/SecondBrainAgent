@@ -180,7 +180,7 @@ def test_health_and_report_are_secret_free(tmp_path: Path) -> None:
 
 def test_production_rejects_unencrypted_backup(tmp_path: Path) -> None:
     root, runtime = _project(tmp_path)
-    manager = BackupManager(root, runtime, env={"SECONDBRAIN_ENV": "production"})
+    manager = BackupManager(root, runtime, env={"SECOND_BRAIN_ENV": "production"})
 
     with pytest.raises(BackupError, match="unencrypted_backup_blocked_in_production"):
         manager.create(encrypt=False, include_database=False)

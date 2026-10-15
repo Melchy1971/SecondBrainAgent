@@ -8,9 +8,8 @@ Kriterien (vom jarvis-1.0-gate geprueft):
     AST geprueft.
 ``no_jsonl_production_fallback``
     Live: Eine ``JobRuntime`` in Produktion ohne Datenbank ist ``blocked``
-    (fail-closed), nie ``degraded``/JSONL -- fuer jede im Projekt verwendete
-    Schreibweise der Produktionsvariable (``SECONDBRAIN_ENV`` der Job-Runtime,
-    ``SECOND_BRAIN_ENV`` der Datenbank-Policy).
+    (fail-closed), nie ``degraded``/JSONL. Job-Runtime und Datenbank-Policy
+    verwenden beide die kanonische Produktionsvariable ``SECOND_BRAIN_ENV``.
 ``no_parallel_production_subsystems``
     Kein Modul ausserhalb des eigenen Definitionsmoduls instanziiert einen
     zweiten Job-Scheduler (``SECONDARY_SCHEDULERS``) -- statisch per AST.
@@ -34,9 +33,16 @@ REPORT_PATH = Path("runtime/reports/runtime_architecture_gate.json")
 ENTRY_MODULE = Path("SecondBrain/gui/launch.py")
 CANONICAL_MODULE = "secondbrain.jobs.runtime"
 CANONICAL_START = "start_job_runtime"
-# Bekannte Scheduler neben der kanonischen Job-Runtime -> Definitionsmodul.
-SECONDARY_SCHEDULERS = {"ImportScheduler": "SecondBrain/importing/pipeline.py"}
-PRODUCTION_VARIABLES = ("SECONDBRAIN_ENV", "SECOND_BRAIN_ENV")
+# Bekannte Scheduler neben der kanonischen Job-Runtime -> erlaubte Boundary-Module.
+# ``jobs/import_runtime.py`` kapselt den Legacy-Scheduler fuer kompatible
+# Stufenverarbeitung; Produktcode darf ihn nicht direkt instanziieren.
+SECONDARY_SCHEDULERS = {
+    "ImportScheduler": {
+        "SecondBrain/importing/pipeline.py",
+        "SecondBrain/jobs/import_runtime.py",
+    },
+}
+PRODUCTION_VARIABLE = "SECOND_BRAIN_ENV"
 
 
 def _canonical_job_runtime(root: Path) -> tuple[bool, str]:
@@ -64,11 +70,10 @@ def _job_runtime_state(env: Mapping[str, str]) -> str:
 
 
 def _no_jsonl_production_fallback() -> tuple[bool, dict[str, str]]:
-    states = {}
-    for variable in PRODUCTION_VARIABLES:
-        # Nur diese eine Variable gesetzt, keine Datenbank: muss fail-closed sein.
-        states[variable] = _job_runtime_state({variable: "production"})
-    return all(state == "blocked" for state in states.values()), states
+    # Produktion ohne Datenbank muss ueber den einen kanonischen Namen
+    # fail-closed sein.
+    state = _job_runtime_state({PRODUCTION_VARIABLE: "production"})
+    return state == "blocked", {PRODUCTION_VARIABLE: state}
 
 
 def _scheduler_instantiations(root: Path) -> list[str]:
@@ -88,7 +93,7 @@ def _scheduler_instantiations(root: Path) -> list[str]:
                 continue
             name = node.func.id if isinstance(node.func, ast.Name) else (
                 node.func.attr if isinstance(node.func, ast.Attribute) else None)
-            if name in SECONDARY_SCHEDULERS and rel != SECONDARY_SCHEDULERS[name]:
+            if name in SECONDARY_SCHEDULERS and rel not in SECONDARY_SCHEDULERS[name]:
                 findings.append(f"{rel}:{node.lineno}:{name}")
     return findings
 

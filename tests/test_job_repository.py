@@ -60,6 +60,6 @@ def test_expired_recovery_respects_idempotency(tmp_path):
 
 def test_production_refuses_jsonl_and_missing_dsn():
     with pytest.raises(JobRepositoryError, match="jsonl_not_allowed"):
-        create_job_repository(env={"SECONDBRAIN_ENV": "production", "JOB_REPOSITORY_BACKEND": "jsonl"})
+        create_job_repository(env={"SECOND_BRAIN_ENV": "production", "JOB_REPOSITORY_BACKEND": "jsonl"})
     with pytest.raises(JobRepositoryError, match="requires_database_url"):
-        create_job_repository(env={"SECONDBRAIN_ENV": "production"})
+        create_job_repository(env={"SECOND_BRAIN_ENV": "production"})

@@ -29,7 +29,7 @@ def test_optimistic_version_blocks_stale_preferences(tmp_path):
 
 def test_production_requires_postgres():
     with pytest.raises(DashboardRepositoryError, match="memory_not_allowed"):
-        create_dashboard_repository(env={"SECONDBRAIN_ENV": "production",
+        create_dashboard_repository(env={"SECOND_BRAIN_ENV": "production",
                                          "DASHBOARD_REPOSITORY_BACKEND": "memory"})
     with pytest.raises(DashboardRepositoryError, match="requires_database_url"):
-        create_dashboard_repository(env={"SECONDBRAIN_ENV": "production"})
+        create_dashboard_repository(env={"SECOND_BRAIN_ENV": "production"})

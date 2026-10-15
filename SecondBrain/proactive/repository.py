@@ -78,7 +78,7 @@ class PostgresProactiveRepository:
 def create_proactive_repository(*, env: Mapping[str, str] | None = None,
                                 executor: Any | None = None) -> PostgresProactiveRepository | None:
     values = env if env is not None else os.environ
-    profile = str(values.get("SECONDBRAIN_ENV") or "development").lower()
+    profile = str(values.get("SECOND_BRAIN_ENV") or "development").lower()
     backend = str(values.get("PROACTIVE_REPOSITORY_BACKEND") or
                   ("postgres" if profile.startswith("prod") else "memory")).lower()
     if backend == "memory":

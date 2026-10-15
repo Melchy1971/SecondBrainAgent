@@ -57,33 +57,38 @@ def test_retry_backoff_and_dead_letter_use_same_queue(tmp_path):
     assert DeadLetterQueue(queue).requeue(dead.id).status == "pending"
 
 
-def test_import_completion_does_not_wait_for_embeddings(tmp_path):
-    entered = threading.Event()
-    release = threading.Event()
-
-    class BlockingProvider:
-        provider_id = "test"
-        model = "blocking"
-        dimensions = 1
-
-        def embed(self, _text):
-            entered.set()
-            release.wait(2)
-            return [1.0]
-
+def test_streaming_service_delegates_jobs_to_canonical_import_runtime(tmp_path):
     source = tmp_path / "items.jsonl"
     source.write_text(json.dumps({"content": "one"}) + "\n", encoding="utf-8")
     service = StreamingImportService(tmp_path, batch_size=1)
-    service.scheduler = ImportScheduler(tmp_path, db_path=service.db_path, workers=1, embedding_provider=BlockingProvider())
-    service.scheduler.start()
-    session = service.import_file(source)
-    assert session.status == "completed"
-    assert entered.wait(2), "embedding worker did not start"
-    release.set()
-    service.scheduler.pool.run_until_idle(timeout=3)
+
+    class Job:
+        checkpoint = {}
+
+    class Context:
+        cancelled = False
+
+        def checkpoint(self, value, *, progress):
+            self.value = value
+            self.progress = progress
+
+    class Sink:
+        def __init__(self):
+            self.records = []
+
+        def ingest(self, record, *, key):
+            self.records.append((record, key))
+            return True
+
+    context = Context()
+    sink = Sink()
+    result = service.run_job(Job(), context, file_path=source, sink=sink)
+    assert result["done"] is True
+    assert len(sink.records) == 1
+    assert context.progress == 1.0
 
 
-def test_import_hands_content_to_chunk_queue_before_chunking(tmp_path):
+def test_import_hands_content_to_canonical_runtime_before_chunking(tmp_path):
     source = tmp_path / "queued.jsonl"
     source.write_text(json.dumps({"content": "queued"}) + "\n", encoding="utf-8")
     service = StreamingImportService(tmp_path, batch_size=1)
@@ -94,3 +99,4 @@ def test_import_hands_content_to_chunk_queue_before_chunking(tmp_path):
     assert session.status == "completed"
     assert chunks == 0 and staged == 1
     assert service.queue.list_jobs(kind="chunk")[0].status == "pending"
+    assert service.scheduler.__class__.__module__ == "secondbrain.jobs.import_runtime"

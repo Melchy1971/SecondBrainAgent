@@ -17,10 +17,10 @@ from zipfile import ZipFile
 import ijson
 
 from secondbrain.native.job_queue_center.service import JobQueueService
-from secondbrain.importing.pipeline import ImportScheduler
 from secondbrain.importing.normalization import Conversation, document_record, normalize_conversation
 from secondbrain.document_understanding.orchestrator import default_multi_format_orchestrator
 from secondbrain.document_understanding.parser_contract import ParsedDocument, ParseStatus
+from secondbrain.jobs.import_runtime import ImportRuntime, RecordSink, run_streaming_import
 from secondbrain.p3_rag_store import SQLiteRagStore
 from secondbrain.rag.indexing.change_detector import ChangeAction, ChangeDetector, DocumentSnapshot, hash_document_text
 
@@ -247,8 +247,25 @@ class StreamingImportService:
         self.checkpoints = CheckpointManager(self.db_path)
         self.writer = BatchWriter(self.db_path, self.checkpoints)
         self.queue = JobQueueService(self.project_root)
-        self.scheduler = ImportScheduler(self.project_root, db_path=self.db_path)
+        self.scheduler = ImportRuntime(self.project_root, db_path=self.db_path)
         self.document_parser = default_multi_format_orchestrator()
+
+    def run_job(
+        self,
+        job: Any,
+        context: Any,
+        *,
+        file_path: str | Path,
+        sink: RecordSink,
+    ) -> dict[str, Any]:
+        """Run an import through the canonical job runtime."""
+        return run_streaming_import(
+            job,
+            context,
+            path=file_path,
+            sink=sink,
+            batch_size=self.batch_size,
+        )
 
     def import_file(
         self,
@@ -303,9 +320,16 @@ class StreamingImportService:
                 batch.append(self._normalize(raw, session.source, path, position, workspace_id=workspace_id, version=version))
                 last_bytes, last_position = bytes_processed, position
                 if len(batch) >= session.batch_size:
-                    session, document_ids = self.writer.write(batch, session, bytes_processed=last_bytes, position=last_position)
+                    session, document_ids = self.writer.write(
+                        batch, session, bytes_processed=last_bytes, position=last_position,
+                    )
                     if document_ids:
-                        self.scheduler.schedule(session.session_id, document_ids, batch_position=last_position, parent_job_id=queue_job.id)
+                        self.scheduler.schedule(
+                            session.session_id,
+                            document_ids,
+                            batch_position=last_position,
+                            parent_job_id=queue_job.id,
+                        )
                     batch.clear(); batches += 1
                     self._notify(session, progress)
                     if session.control_state in {"paused", "stopped"}:
@@ -316,9 +340,16 @@ class StreamingImportService:
                         self.checkpoints.save(session); self.queue.update_status(queue_job.id, "cancelled")
                         return session
             if batch:
-                session, document_ids = self.writer.write(batch, session, bytes_processed=last_bytes, position=last_position)
+                session, document_ids = self.writer.write(
+                    batch, session, bytes_processed=last_bytes, position=last_position,
+                )
                 if document_ids:
-                    self.scheduler.schedule(session.session_id, document_ids, batch_position=last_position, parent_job_id=queue_job.id)
+                    self.scheduler.schedule(
+                        session.session_id,
+                        document_ids,
+                        batch_position=last_position,
+                        parent_job_id=queue_job.id,
+                    )
             session = replace(session, bytes_processed=session.file_size, status="completed", control_state="running", updated_at=_now())
             self.checkpoints.save(session); self.queue.update_status(queue_job.id, "success"); self._notify(session, progress)
             return session

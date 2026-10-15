@@ -138,7 +138,7 @@ class ReviewApprovalRepository(Protocol):
     def health(self) -> RepositoryHealth: ...
 
 
-_STRICT_ENV_KEYS = ("SECONDBRAIN_ENV", "SECONDBRAIN_PROFILE", "ENVIRONMENT")
+ENVIRONMENT_VARIABLE = "SECOND_BRAIN_ENV"
 
 
 def resolve_backend(env: Mapping[str, str] | None = None) -> str:
@@ -151,10 +151,9 @@ def resolve_backend(env: Mapping[str, str] | None = None) -> str:
 
 def is_production(env: Mapping[str, str] | None = None) -> bool:
     environ = env if env is not None else os.environ
-    for key in _STRICT_ENV_KEYS:
-        if str(environ.get(key) or "").strip().lower() in {"prod", "production", "strict"}:
-            return True
-    return False
+    return str(environ.get(ENVIRONMENT_VARIABLE) or "").strip().lower() in {
+        "prod", "production", "strict",
+    }
 
 
 def create_review_approval_repository(

@@ -233,7 +233,7 @@ def test_production_guard_blocks_jsonl_backend() -> None:
     from secondbrain.jobs.repository import JobRepositoryError, create_job_repository
 
     with pytest.raises(JobRepositoryError, match="jsonl_not_allowed_in_production"):
-        create_job_repository(env={"SECONDBRAIN_ENV": "production", "JOB_REPOSITORY_BACKEND": "jsonl"})
+        create_job_repository(env={"SECOND_BRAIN_ENV": "production", "JOB_REPOSITORY_BACKEND": "jsonl"})
 
 
 def test_handler_registers_for_import_type(tmp_path) -> None:

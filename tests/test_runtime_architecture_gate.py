@@ -65,19 +65,32 @@ def test_scheduler_in_tests_is_ignored(tmp_path: Path, fail_closed) -> None:
     assert gate.run_runtime_architecture_gate(root, env={}, write_report=False)["status"] == gate.PASS
 
 
-def test_any_production_spelling_that_degrades_fails(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(gate, "_job_runtime_state",
-                        lambda env: "blocked" if "SECONDBRAIN_ENV" in env else "degraded")
+def test_canonical_production_variable_must_fail_closed(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        gate,
+        "_job_runtime_state",
+        lambda env: "blocked" if env == {"SECOND_BRAIN_ENV": "production"} else "degraded",
+    )
     report = gate.run_runtime_architecture_gate(_project(tmp_path, entry=CANONICAL_ENTRY, modules={}), env={},
                                                 write_report=False)
-    assert report["assertions"]["no_jsonl_production_fallback"] is False
+    assert report["assertions"]["no_jsonl_production_fallback"] is True
     assert report["details"]["production_without_database_state"] == {
-        "SECONDBRAIN_ENV": "blocked", "SECOND_BRAIN_ENV": "degraded"}
+        "SECOND_BRAIN_ENV": "blocked"}
 
 
 def test_job_runtime_state_is_live_and_fail_closed_for_its_own_variable() -> None:
     # Echte JobRuntime: Produktion ohne Datenbank muss blockieren.
-    assert gate._job_runtime_state({"SECONDBRAIN_ENV": "production"}) == "blocked"
+    assert gate._job_runtime_state({"SECOND_BRAIN_ENV": "production"}) == "blocked"
+
+
+def test_legacy_production_variable_is_absent_from_runtime_code() -> None:
+    source_root = Path(gate.__file__).resolve().parents[1]
+    offenders = [
+        path.relative_to(source_root).as_posix()
+        for path in source_root.rglob("*.py")
+        if "SECONDBRAIN_ENV" in path.read_text(encoding="utf-8")
+    ]
+    assert offenders == [], f"legacy production variable found in: {offenders}"
 
 
 def test_launcher_command_exists(monkeypatch, tmp_path, capsys) -> None:

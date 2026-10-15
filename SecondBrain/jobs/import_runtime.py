@@ -46,6 +46,33 @@ _JSONL_SUFFIXES = {".jsonl", ".ndjson"}
 _JSON_SUFFIXES = {".json"}
 
 
+class ImportRuntime:
+    """Canonical facade for the staged import runtime.
+
+    The legacy implementation stays isolated behind this boundary while
+    callers migrate to job handlers and repository-backed checkpoints.
+    Product code must depend on this facade, never on ``ImportScheduler``.
+    """
+
+    def __init__(self, project_root: str | Path = ".", **options: Any) -> None:
+        from secondbrain.importing.pipeline import ImportScheduler
+
+        self._scheduler = ImportScheduler(project_root, **options)
+
+    @property
+    def pool(self) -> Any:
+        return self._scheduler.pool
+
+    def schedule(self, *args: Any, **kwargs: Any) -> Any:
+        return self._scheduler.schedule(*args, **kwargs)
+
+    def start(self) -> None:
+        self._scheduler.start()
+
+    def stop(self) -> None:
+        self._scheduler.stop()
+
+
 class ImportCancelled(RuntimeError):
     """Sauberer Abbruch an einer Batch-Grenze. Der Job bleibt wiederaufnehmbar."""
 

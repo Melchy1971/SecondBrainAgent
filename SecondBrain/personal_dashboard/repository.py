@@ -60,7 +60,7 @@ class PostgresDashboardRepository:
 def create_dashboard_repository(*, env: Mapping[str, str] | None = None,
                                 executor: Any | None = None) -> PostgresDashboardRepository | None:
     values = env if env is not None else os.environ
-    profile = str(values.get("SECONDBRAIN_ENV") or "development").lower()
+    profile = str(values.get("SECOND_BRAIN_ENV") or "development").lower()
     backend = str(values.get("DASHBOARD_REPOSITORY_BACKEND") or
                   ("postgres" if profile.startswith("prod") else "memory")).lower()
     if backend == "memory":

@@ -213,7 +213,7 @@ class BackupManager:
         use_encryption = self.encryption_configured if encrypt is None else bool(encrypt)
         if use_encryption and not self.encryption_configured:
             raise BackupError('backup_encryption_key_missing')
-        if self.env.get('SECONDBRAIN_ENV', '').lower() == 'production' and not use_encryption:
+        if self.env.get('SECOND_BRAIN_ENV', '').lower() == 'production' and not use_encryption:
             raise BackupError('unencrypted_backup_blocked_in_production')
 
         suffix = '.sbbackup' if use_encryption else '.zip'
@@ -619,7 +619,7 @@ class BackupManager:
         return {'ok': not errors, 'checked_files': checked, 'errors': sorted(set(errors))}
 
     def health(self) -> dict[str, Any]:
-        production = self.env.get('SECONDBRAIN_ENV', '').lower() == 'production'
+        production = self.env.get('SECOND_BRAIN_ENV', '').lower() == 'production'
         dsn_configured = bool(self.env.get('SECOND_BRAIN_DATABASE_URL') or self.env.get('DATABASE_URL'))
         checks = [
             {'name': 'backup_directory', 'passed': self.backup_dir.is_dir(), 'severity': 'blocker'},

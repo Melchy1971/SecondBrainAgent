@@ -40,7 +40,7 @@ _DEFAULT_WORKSPACE = "default"
 
 
 def _is_production(env: Mapping[str, str]) -> bool:
-    return str(env.get("SECONDBRAIN_ENV") or "development").lower().startswith("prod")
+    return str(env.get("SECOND_BRAIN_ENV") or "development").lower().startswith("prod")
 
 
 def _safe_error(exc: BaseException) -> str:

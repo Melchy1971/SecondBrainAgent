@@ -110,14 +110,14 @@ def test_locked_keyring_raises_keylocked() -> None:
 def test_production_without_keyring_is_fail_closed() -> None:
     with pytest.raises(KeyProviderUnavailable, match="no_secure_keyring_in_production"):
         resolve_key_provider(
-            {"SECONDBRAIN_ENV": "production"},
+            {"SECOND_BRAIN_ENV": "production"},
             keyring_provider=InMemoryKeyProvider(available=False),
         )
 
 
 def test_production_prefers_secure_keyring() -> None:
     secure = InMemoryKeyProvider(available=True)
-    chosen = resolve_key_provider({"SECONDBRAIN_ENV": "production"}, keyring_provider=secure)
+    chosen = resolve_key_provider({"SECOND_BRAIN_ENV": "production"}, keyring_provider=secure)
     assert chosen is secure
     assert chosen.secure is True
 
@@ -125,7 +125,7 @@ def test_production_prefers_secure_keyring() -> None:
 def test_env_backend_forbidden_in_production_without_optin() -> None:
     with pytest.raises(KeyProviderError, match="env_backend_forbidden_in_production"):
         resolve_key_provider({
-            "SECONDBRAIN_ENV": "production",
+            "SECOND_BRAIN_ENV": "production",
             "SECRET_KEY_BACKEND": "env",
             "SECRET_MASTER_KEY_B64": "x",
         })
@@ -135,7 +135,7 @@ def test_env_backend_allowed_in_production_with_explicit_optin() -> None:
     from secondbrain.secret_manager.crypto import b64e, random_key
 
     provider = resolve_key_provider({
-        "SECONDBRAIN_ENV": "production",
+        "SECOND_BRAIN_ENV": "production",
         "SECRET_KEY_BACKEND": "env",
         "SECRET_KEY_ALLOW_ENV_IN_PROD": "1",
         "SECRET_MASTER_KEY_B64": b64e(random_key()),
@@ -148,7 +148,7 @@ def test_no_silent_switch_to_insecure_in_dev() -> None:
     """Ohne konfiguriertes Backend und ohne Keyring: kein automatischer Env-Fallback."""
     with pytest.raises(KeyProviderUnavailable):
         resolve_key_provider(
-            {"SECONDBRAIN_ENV": "development"},
+            {"SECOND_BRAIN_ENV": "development"},
             keyring_provider=InMemoryKeyProvider(available=False),
         )
 
@@ -157,7 +157,7 @@ def test_dev_env_backend_requires_explicit_selection() -> None:
     from secondbrain.secret_manager.crypto import b64e, random_key
 
     provider = resolve_key_provider(
-        {"SECONDBRAIN_ENV": "development", "SECRET_KEY_BACKEND": "env",
+        {"SECOND_BRAIN_ENV": "development", "SECRET_KEY_BACKEND": "env",
          "SECRET_MASTER_KEY_B64": b64e(random_key())},
         keyring_provider=InMemoryKeyProvider(available=False),
     )
@@ -172,7 +172,7 @@ def test_dev_env_backend_requires_explicit_selection() -> None:
 def test_health_contains_no_key_or_plaintext_alias() -> None:
     secure = InMemoryKeyProvider(available=True)
     secure.create()
-    health = key_provider_health({"SECONDBRAIN_ENV": "production"}, keyring_provider=secure)
+    health = key_provider_health({"SECOND_BRAIN_ENV": "production"}, keyring_provider=secure)
     blob = json.dumps(health)
     # Kein Base64-Key, kein Klartext-Alias.
     assert "master-key" not in blob            # Klartext-Alias
@@ -183,7 +183,7 @@ def test_health_contains_no_key_or_plaintext_alias() -> None:
 
 def test_health_blocked_in_production_without_keyring() -> None:
     health = key_provider_health(
-        {"SECONDBRAIN_ENV": "production"},
+        {"SECOND_BRAIN_ENV": "production"},
         keyring_provider=InMemoryKeyProvider(available=False),
     )
     assert health["status"] == "blocked"

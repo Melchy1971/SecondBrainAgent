@@ -19,7 +19,7 @@ Kindprozess-Umgebung und nie als Kommandozeilenargument oder Reportfeld übergeb
 - `SECONDBRAIN_BACKUP_PASSPHRASE`: Alternative; der Schlüssel wird mit Salt abgeleitet.
 - `SECOND_BRAIN_DATABASE_URL` oder `DATABASE_URL`: PostgreSQL-Verbindung.
 - `SECONDBRAIN_PG_DUMP` und `SECONDBRAIN_PG_RESTORE`: optionale Tool-Pfade.
-- `SECONDBRAIN_ENV=production`: erzwingt verschlüsselte Backups.
+- `SECOND_BRAIN_ENV=production`: erzwingt verschlüsselte Backups.
 
 Der Schlüssel beziehungsweise die Passphrase muss außerhalb des Backup-Inhalts verwahrt
 werden. Ohne den passenden Schlüssel ist ein verschlüsseltes Backup absichtlich nicht

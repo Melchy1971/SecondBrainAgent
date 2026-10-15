@@ -69,13 +69,13 @@ def test_postgres_repository_rejects_stale_concurrent_write():
 
 def test_production_refuses_jsonl_and_missing_database_url(tmp_path):
     with pytest.raises(TaskRepositoryError, match="jsonl_not_allowed"):
-        create_task_repository(env={"SECONDBRAIN_ENV": "production", "TASK_REPOSITORY_BACKEND": "jsonl"})
+        create_task_repository(env={"SECOND_BRAIN_ENV": "production", "TASK_REPOSITORY_BACKEND": "jsonl"})
     with pytest.raises(TaskRepositoryError, match="requires_database_url"):
-        create_task_repository(env={"SECONDBRAIN_ENV": "production"})
+        create_task_repository(env={"SECOND_BRAIN_ENV": "production"})
 
 
 def test_migration_dry_run_detects_duplicates_without_writing(tmp_path):
-    service = TaskProjectService(tmp_path, env={"SECONDBRAIN_ENV": "development"})
+    service = TaskProjectService(tmp_path, env={"SECOND_BRAIN_ENV": "development"})
     task = service.create_task(workspace_id="alpha", title="One")
     path = tmp_path / "runtime" / "tasks" / "tasks.jsonl"
     path.write_text(path.read_text(encoding="utf-8") + json.dumps(task.to_dict()) + "\n", encoding="utf-8")
@@ -87,7 +87,7 @@ def test_migration_dry_run_detects_duplicates_without_writing(tmp_path):
 
 
 def test_migration_apply_preserves_ids_and_events(tmp_path):
-    source = TaskProjectService(tmp_path, env={"SECONDBRAIN_ENV": "development"})
+    source = TaskProjectService(tmp_path, env={"SECOND_BRAIN_ENV": "development"})
     task = source.create_task(workspace_id="alpha", title="Migrated", actor="tester")
     repository = PostgresTaskRepository(SqliteExecutor(":memory:"))
     repository.ensure_schema()

@@ -35,7 +35,7 @@ def test_feedback_is_workspace_scoped_and_redacted(tmp_path):
 
 def test_production_requires_postgres_configuration():
     with pytest.raises(ProactiveRepositoryError, match="memory_not_allowed"):
-        create_proactive_repository(env={"SECONDBRAIN_ENV": "production",
+        create_proactive_repository(env={"SECOND_BRAIN_ENV": "production",
                                          "PROACTIVE_REPOSITORY_BACKEND": "memory"})
     with pytest.raises(ProactiveRepositoryError, match="requires_database_url"):
-        create_proactive_repository(env={"SECONDBRAIN_ENV": "production"})
+        create_proactive_repository(env={"SECOND_BRAIN_ENV": "production"})

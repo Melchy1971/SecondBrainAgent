@@ -67,7 +67,7 @@ def _none_factory(*, env=None, executor=None):
 
 def test_production_with_postgres_runs(tmp_path) -> None:
     repo = _FakeRepo()
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"},
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"},
                     repository_factory=_prod_factory(repo))
     health = rt.start()
     assert health["state"] == "running"
@@ -79,7 +79,7 @@ def test_production_with_postgres_runs(tmp_path) -> None:
 
 
 def test_development_without_postgres_is_degraded(tmp_path) -> None:
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "development"},
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "development"},
                     repository_factory=_none_factory)
     health = rt.start()
     assert health["state"] == "degraded"
@@ -90,7 +90,7 @@ def test_development_without_postgres_is_degraded(tmp_path) -> None:
 
 def test_production_cannot_fall_back_to_jsonl(tmp_path) -> None:
     """Factory liefert None -> Production faellt fail-closed auf blocked, nie degraded-run."""
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"},
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"},
                     repository_factory=_none_factory)
     health = rt.start()
     assert health["state"] == "blocked"
@@ -99,7 +99,7 @@ def test_production_cannot_fall_back_to_jsonl(tmp_path) -> None:
 
 def test_production_guard_error_is_fail_closed_and_redacted(tmp_path) -> None:
     exc = JobRepositoryError("jsonl_not_allowed_in_production dsn=postgres://u:pw@h/db")
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"},
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"},
                     repository_factory=_raising_factory(exc))
     health = rt.start()
     assert health["state"] == "blocked"
@@ -117,7 +117,7 @@ def test_production_guard_error_is_fail_closed_and_redacted(tmp_path) -> None:
 
 def test_start_is_idempotent(tmp_path) -> None:
     repo = _FakeRepo()
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"},
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"},
                     repository_factory=_prod_factory(repo))
     rt.start()
     first_worker_id = rt.health()["worker_id"]
@@ -131,8 +131,8 @@ def test_start_is_idempotent(tmp_path) -> None:
 def test_singleton_prevents_second_worker(tmp_path) -> None:
     repo = _FakeRepo()
     factory = _prod_factory(repo)
-    a = get_job_runtime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=factory)
-    b = get_job_runtime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=factory)
+    a = get_job_runtime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=factory)
+    b = get_job_runtime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=factory)
     assert a is b
     a.start()
     b.start()
@@ -142,12 +142,12 @@ def test_singleton_prevents_second_worker(tmp_path) -> None:
 
 def test_worker_id_persists_across_restart(tmp_path) -> None:
     repo1 = _FakeRepo()
-    rt1 = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=_prod_factory(repo1))
+    rt1 = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=_prod_factory(repo1))
     wid = rt1.start()["worker_id"]
     rt1.shutdown()
     # Neue Instanz auf derselben Wurzel -> gleiche persistente Worker-ID.
     repo2 = _FakeRepo()
-    rt2 = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=_prod_factory(repo2))
+    rt2 = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=_prod_factory(repo2))
     assert rt2.start()["worker_id"] == wid
     rt2.shutdown()
 
@@ -158,7 +158,7 @@ def test_worker_id_persists_across_restart(tmp_path) -> None:
 
 
 def test_shutdown_is_idempotent_and_clears_worker(tmp_path) -> None:
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
     rt.start()
     h1 = rt.shutdown()
     h2 = rt.shutdown()  # zweiter Shutdown -> kein Fehler
@@ -168,14 +168,14 @@ def test_shutdown_is_idempotent_and_clears_worker(tmp_path) -> None:
 
 def test_shutdown_leaves_no_threads(tmp_path) -> None:
     before = threading.active_count()
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
     rt.start()
     rt.shutdown()
     assert threading.active_count() <= before, "Shutdown hinterliess aktive Threads"
 
 
 def test_pause_resume(tmp_path) -> None:
-    rt = JobRuntime(tmp_path, env={"SECONDBRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
+    rt = JobRuntime(tmp_path, env={"SECOND_BRAIN_ENV": "production"}, repository_factory=_prod_factory(_FakeRepo()))
     rt.start()
     assert rt.pause()["paused"] is True
     assert rt.resume()["paused"] is False
@@ -188,7 +188,7 @@ def test_pause_resume(tmp_path) -> None:
 
 
 def test_start_job_runtime_returns_health(tmp_path) -> None:
-    health = start_job_runtime(tmp_path, env={"SECONDBRAIN_ENV": "development"},
+    health = start_job_runtime(tmp_path, env={"SECOND_BRAIN_ENV": "development"},
                                repository_factory=_none_factory)
     assert health["component"] == "job_runtime"
     assert health["state"] in {"running", "degraded", "blocked"}

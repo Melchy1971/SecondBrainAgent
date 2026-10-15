@@ -264,7 +264,7 @@ class PostgresJobRepository:
 def create_job_repository(*, env: Mapping[str, str] | None = None,
                           executor: Any | None = None) -> PostgresJobRepository | None:
     values = env if env is not None else os.environ
-    profile = str(values.get("SECONDBRAIN_ENV") or "development").lower()
+    profile = str(values.get("SECOND_BRAIN_ENV") or "development").lower()
     backend = str(values.get("JOB_REPOSITORY_BACKEND") or
                   ("postgres" if profile.startswith("prod") else "jsonl")).lower()
     if backend == "jsonl":
