@@ -10,6 +10,6 @@ $commands = @(
 foreach ($arguments in $commands) {
     & python launcher.py @arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "RAG smoke command failed with exit code $LASTEXITCODE: $($arguments -join ' ')"
+        throw "RAG smoke command failed with exit code ${LASTEXITCODE}: $($arguments -join ' ')"
     }
 }
