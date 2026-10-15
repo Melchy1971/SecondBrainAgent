@@ -15,4 +15,4 @@ def test_dev_extra_installs_document_test_readers() -> None:
         for requirement in requirements
     }
 
-    assert {"pillow", "pymupdf", "python-docx"}.issubset(names)
+    assert {"pillow", "pymupdf", "pypdf", "python-docx"}.issubset(names)
